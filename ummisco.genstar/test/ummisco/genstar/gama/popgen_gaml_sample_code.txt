@@ -1,0 +1,224 @@
+create *species_name* from: synthetic_population_name with: [ aa :: aa, bb :: bb, cc :: cc ];
+	--> "sythetic_population_name" is the name of a synthetic population already generated and saved in the DBMS
+	
+
+create *species_name* from: 
+
+TODO create a "popgen_agent" agent dedicated to the interface between Genstar generator and GAMA!
+
+
+global {
+	population_generator my_generator <- nil;
+	create population_generation returns: generators;
+	my_generator <- generators at 0;
+	
+	create inhabitant from: my_generator get_population 'inhabitant'; // case 1
+	create inhabitant from: my_generator get_population 'inhabitant' number: 1000; // case 2
+	create inhabitant from: my_generator generate_population 'inhabitant'; // case 3
+	create inhabitant from: my_generator generate_population 'inhabitant' number: 1000; // case 4
+	--> case 1-4: try to populate created agents with variable values found in the synthetic population
+	
+	create inhabitant from: my_generator get_population 'inhabitant' init: [ age :: int(age), sex :: (int(sex) == 0 ? false : true) ]; // case 5
+	create inhabitant from: my_generator get_population 'inhabitant' number: 1000 init: [ age :: int(age), sex :: (int(sex) == 0 ? false : true) ]; // case 6
+	create inhabitant from: my_generator generate_population 'inhabitant' init: [ age :: int(age), sex :: (int(sex) == 0 ? false : true) ]; // case 7
+	create inhabitant from: my_generator generate_population 'inhabitant' number: 1000 init: [ age :: int(age), sex :: (int(sex) == 0 ? false : true) ]; // case 8
+	--> case 5-8: initialize agent variables specified in the "init" facet
+	 
+	--> case 1-8: 
+		+ if the "number" facet is not specified
+			+ if the agents are created from an already generated synthetic population (i.e., "get_population"),
+				the number of created agents are equal to the value returned by min(length(generated_synthetic_population), number_expression)
+			+ if the agents are created from an "on-line" generated synthetic population (i.e., "generate_population"),
+				the number of created agents are equal to the number of entities of the "on-line" generated synthetic population
+		+ if the "number" facet is specified
+			+ the number of created agents are equal to the number of entities of either the "online" generated population or the already saved synthetic population
+	
+	
+}
+
+
+example:
+  create inhabitant from: inhabitant_population1 with: [ sex :: sex, age :: age ];
+  create household from: household_population1 with: [ size :: size, area :: area ] {
+    inhabitants <- inhabitant where each.household = myself; // pseudo-code
+  }
+  
+ 
+ TODO: "household" + "inhabitant" populations at the same time ? -> compound population!
+   create household from: household_population1 {
+     create inhabitant from: inhabitant_population1 {
+     }
+   }
+  
+ 
+--> declaration 1 
+species household {
+	list<inhabitant> inhabitants;
+}
+
+species inhabitant {
+}
+
+
+--> declaration 2
+species household {
+
+	species inhabitant {
+	}
+}
+
+---
+TODO "shape" of agents? -> next version
+---
+Note:
+	SQLSKILL reads RDBMS table like CVS file to initialize agent's variables -> any table/kind of data can be used
+	Does population re-use this kind of RDBMS table organization?
+	+ Re-use :
+		+ Pros :
+			+ The modeler is free to interact directly with RDBMS tables
+		+ Cons :
+			+ The modeler has to deal with the SQL syntax
+	+ Not re-use :
+		+ Pros :
+			+ The modeler is abstracted away from the RDBMS tables, doesn't have to deal directly with SQL syntax
+		+ Cons :
+
+	--> Opting solution : not re-use the SQLSKILL. The syntax of GAML "create" statement should not be changed.
+---
+
+Organization of "synthetic population" tables in the DBMS:
+	+ PopulationGenerator --> TODO change to PopulationGenerator + add new table : SyntheticPopulation
+		+ id : int, primary key
+		+ name : string, not null, unique
+		+ initialNumberOfEntities : int, > 0, default : 1
+		
+	+ Entity : TODO : how to save "members"?
+		+ id : int, primary key
+		+ population_id : int, foreign key reference Population.id
+		+
+	
+	+ EntityAttribute
+		+ id : int, generated primary key
+		+ name : string, not null
+		+ type : int, foreign key reference ValueType.id
+		+ valueType : int [unique value, range value]
+		
+	+ EntityAttributeUniqueValue
+		+ id : int, generated primary key
+		+ entity_attribute_id : int, foreign key reference EntityAttribute.id
+		+ stringValue : string, not null
+	
+	+ EntityAttributeRangeValue
+		+ id : int, generated primary key
+		+ entity_attribute_id : int, foreign key reference EntityAttribute.id
+		+ minStringValue : string, not null
+		+ maxStringValue : string, not null
+		
+	+ ValueType (not really need to be persisted in the DBMS -> see ValueType.java)
+		+ id : int, primary key
+		+ name : string
+		+ correspondingJavaClass : string
+		+ default string value
+	
+		 
+	+ Attribute
+		+ id : int, generated primary key
+		+ population_generator_id : foreign key reference PopulationGenerator.id
+		+ nameOnData : string
+		+ nameOnEntity : string
+		+ valueTypeID : foreign key reference ValueType.id
+		+ valueClassOnData : string [RangeValue, UniqueValue] -> help to determine value class, i.e., Range or Unique value
+		+ valueClassOnEntity : string [RangeValue, UniqueValue]
+		
+	+ EnumerationValueAttribute
+		+ id : int, generated primary key : PROBLEM : redundancy, no added value compared to Attribute -> remove the RDBMS table
+		+ attribute_id : foreign key reference Attribute.id
+		
+//	+ EnumerationOfValuesAttribute : PROBLEM : redundancy, no added value compared to Attribute -> remove the RDBMS table
+//		+ id : int, generated primary key
+//		+ attribute_id : foreign key reference Attribute.id
+	
+//	+ EnumerationOfRangesAttribute : PROBLEM : redundancy, no added value compared to Attribute -> remove the RDBMS table
+//		+ id : int, generated primary key
+//		+ attribute_id : foreign key reference Attribute.id
+		
+	+ InferredAttribute
+		+ id : int, generated primary key
+		+ attribute_id : foreign key reference Attribute.id
+		+ inferring_attribute_id : foreign key reference Attribute.id
+		
+//	+ InferredValueAttribute : PROBLEM : redundancy, no further added value compared to InferredAttribute -> remove the RDBMS table
+//		+ id : int, generated primary key
+//		+ inferred_attribute_id : foreign key reference InferredAttribute.id
+	
+//	+ InferredRangeAttribute : PROBLEM : redundancy, no further added value compared to InferredAttribute -> remove the RDBMS table
+//		+ id : int, generated primary key
+//		+ inferred_attribute_id : foreign key reference InferredAttribute.id
+		
+		
+	+ InferenceValueAttributeData1
+		+ id : int, generated primary key
+		+ inferred_attribute_id : foreign key reference InferredAttribute.id
+		+ inferring_unique_value_id : foreign key reference UniqueValue.id
+		+ inferred_unique_value_id : foreign key reference UniqueValue.id
+	
+	+ InferenceValueAttributeData2
+		+ id : int, generated primary key
+		+ inferred_attribute_id : foreign key reference InferredAttribute.id
+		+ inferring_range_value_id : foreign key reference RangeValue.id
+		+ inferred_unique_value_id : foreign key reference UniqueValue.id
+
+	+ InferenceRangeAttributeData1
+		+ id : int, generated primary key
+		+ inferred_attribute_id : foreign key reference InferredAttribute.id
+		+ inferring_unique_value_id : foreign key reference UniqueValue.id
+		+ inferred_range_value_id : foreign key reference RangeValue.id
+		
+	+ InferenceRangeAttributeData2
+		+ id : int, generated primary key
+		+ inferred_attribute_id : foreign key reference InferredAttribute.id
+		+ inferring_range_value_id : foreign key reference RangeValue.id
+		+ inferring_range_value_id : foreign key reference RangeValue.id
+
+
+	+ UniqueValue
+		+ id : int, generated primary key
+		+ attribute_id : foreign key reference Attribute.id 
+		+ stringValue : string, not null 
+	
+	+ RangeValue
+		+ id : int, generated primary key
+		+ attribute_id : foreign key reference Attribute.id
+		+ minStringValue : string, not null
+		+ maxStringValue : string, not null
+
+		
+	+ GenerationRule
+		+ id : int, generated primary key
+		+ population_generator_id : int, foreign key reference PopulationGenerator.id
+		+ name : string, not null
+		+ rule_order : int, not null, min = 1
+		
+	+ FrequencyDistributionGenerationRule
+		+ id : int, generated primary key
+		+ generation_rule_id : int, foreign key reference GenerationRule.id
+		
+	+ InputAttribute
+		+ id, int, generated primary key
+		+ enumeration_value_attribute_id, int, foreign key reference EnumerationValueAttribute.id
+		+ frequency_distribution_feneration_rule_id : int, foreign key reference FrequencyDistributionGenerationRule
+		+ attribute_order : int, not null, min = 1
+	
+	+ OutputAttribute
+		+ id, int, generated primary key
+		+ enumeration_value_attribute_id, foreign key reference EnumerationValueAttribute.id
+		+ frequency_distribution_feneration_rule_id : int, foreign key reference FrequencyDistributionGenerationRule
+		+ attribute_order : int, not null, min = 1
+	
+	
+	+ AttributeInferenceGenerationRule
+		+ id : int, generated primary key
+		+ generation_rule_id : int, foreign key reference GenerationRule.id
+		+ inferred_attribute_id : int, foreign key reference InferredAttribute.id
+
+  
