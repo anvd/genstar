@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Genstar Synthetic Population Generator
+Bundle-SymbolicName: ummisco.genstar
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: UMMISCO
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: ummisco.genstar,
+ ummisco.genstar.dao,
+ ummisco.genstar.exception,
+ ummisco.genstar.metamodel,
+ ummisco.genstar.util
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: lib/derby.jar,
+ .,
+ lib/guava-16.0.1.jar
