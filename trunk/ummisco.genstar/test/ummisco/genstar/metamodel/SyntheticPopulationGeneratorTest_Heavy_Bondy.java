@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import ummisco.genstar.exception.GenerationException;
 import ummisco.genstar.exception.GenstarException;
 
 public class SyntheticPopulationGeneratorTest_Heavy_Bondy {
@@ -16,14 +15,14 @@ public class SyntheticPopulationGeneratorTest_Heavy_Bondy {
 		bondyData = new BondyData();
 	}
 	
-	@Test public void testGenerateFullInhabitantPopulation() throws GenerationException {
+	@Test public void testGenerateFullInhabitantPopulation() throws GenstarException {
 		ISyntheticPopulationGenerator inhabitantPopGenerator = bondyData.getInhabitantPopGenerator();
 		ISyntheticPopulation inhabitantPop = inhabitantPopGenerator.generate();
 		
 		assertTrue(inhabitantPopGenerator.getNbOfEntities() == inhabitantPop.getEntities().size());
 	}
 	
-	@Test public void testGenerateFullHouseholdPopulation() throws GenerationException {
+	@Test public void testGenerateFullHouseholdPopulation() throws GenstarException {
 		ISyntheticPopulationGenerator householdPopGenerator = bondyData.getHouseholdPopGenerator();
 		ISyntheticPopulation householdPop = householdPopGenerator.generate();
 		

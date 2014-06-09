@@ -1,5 +1,19 @@
 package ummisco.genstar.dao;
 
+import ummisco.genstar.exception.GenstarDAOException;
+import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
+
 public interface AttributeInferenceGenerationRuleDAO {
 
+	public abstract AttributeInferenceGenerationRule findAttributeInferenceGenerationRule(final String attributeInferenceGenerationRuleName) throws GenstarDAOException;
+	
+	public abstract AttributeInferenceGenerationRule findAttributeInferenceGenerationRuleID(final int attributeInferenceGenerationRuleID) throws GenstarDAOException;
+	
+	public abstract void createAttributeInferenceGenerationRule(final AttributeInferenceGenerationRule attributeInferenceGenerationRule) throws GenstarDAOException;
+	
+	public abstract void updateAttributeInferenceGenerationRule(final AttributeInferenceGenerationRule attributeInferenceGenerationRule) throws GenstarDAOException;
+	
+	public abstract void deleteAttributeInferenceGenerationRule(final AttributeInferenceGenerationRule attributeInferenceGenerationRule) throws GenstarDAOException;
+
+	public abstract void deleteAttributeInferenceGenerationRule(final int attributeInferenceGenerationRuleID) throws GenstarDAOException;
 }

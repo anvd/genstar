@@ -11,8 +11,6 @@ import ummisco.genstar.metamodel.FrequencyDistributionElementTest;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRuleTest;
 import ummisco.genstar.metamodel.EnumerationOfRangesAttributeTest;
 import ummisco.genstar.metamodel.EnumerationOfValuesAttributeTest;
-import ummisco.genstar.metamodel.InferredRangeAttributeTest;
-import ummisco.genstar.metamodel.InferredValueAttributeTest;
 import ummisco.genstar.metamodel.PopulationTest_Elementary;
 import ummisco.genstar.metamodel.RangeValueTest;
 import ummisco.genstar.metamodel.SyntheticPopulationGeneratorTest_Bondy;
@@ -23,8 +21,7 @@ import ummisco.genstar.metamodel.UniqueValueTest;
 @SuiteClasses({ AttributeInferenceGenerationRuleTest.class, EntityAttributeValueTest.class,
 	EntityTest.class, EnumerationOfRangesAttributeTest.class, 
 	EnumerationOfValuesAttributeTest.class,  FrequencyDistributionElementTest.class, 
-	FrequencyDistributionGenerationRuleTest.class,  InferredRangeAttributeTest.class, 
-	InferredValueAttributeTest.class,  
+	FrequencyDistributionGenerationRuleTest.class,
 	PopulationTest_Elementary.class,  RangeValueTest.class,
 	SyntheticPopulationGeneratorTest_Bondy.class, SyntheticPopulationTest_Bondy.class,
 	UniqueValueTest.class })

@@ -21,25 +21,15 @@ public abstract class GenstarDAOFactory {
 	
 	public abstract EntityDAO getEntityDAO() throws GenstarDAOException;
 	
-	public abstract EnumerationValueAttributeDAO getEnumerationValueAttributeDAO() throws GenstarDAOException;
+	public abstract FrequencyDistributionElementDAO getFrequencyDistributionElementDAO() throws GenstarDAOException;
 	
 	public abstract FrequencyDistributionGenerationRuleDAO getFrequencyDistributionGenerationRuleDAO() throws GenstarDAOException;
 	
 	public abstract GenerationRuleDAO getGenerationRuleDAO() throws GenstarDAOException;
 	
-	public abstract InferenceRangeAttributeData1DAO getInferenceRangeAttributeData1DAO() throws GenstarDAOException;
+	public abstract AttributeInferenceDataDAO getAttributeInferenceDataDAO() throws GenstarDAOException;
 	
-	public abstract InferenceRangeAttributeData2DAO getInferenceRangeAttributeData2DAO() throws GenstarDAOException;
-	
-	public abstract InferenceValueAttributeData1DAO getInferenceValueAttributeData1DAO() throws GenstarDAOException;
-	
-	public abstract InferenceValueAttributeData2DAO getInferenceValueAttributeData2DAO() throws GenstarDAOException;
-	
-	public abstract InferredAttributeDAO getInferredAttributeDAO() throws GenstarDAOException;
-	
-	public abstract InputAttributeDAO getInputAttributeDAO() throws GenstarDAOException;
-	
-	public abstract OutputAttributeDAO getOutputAttributeDAO() throws GenstarDAOException;
+	public abstract InputOutputAttributeDAO getInputOutputAttributeDAO() throws GenstarDAOException;
 	
 	public abstract SyntheticPopulationGeneratorDAO getSyntheticPopulationGeneratorDAO() throws GenstarDAOException;
 	

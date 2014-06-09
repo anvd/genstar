@@ -6,7 +6,7 @@ import ummisco.genstar.exception.GenstarDAOException;
 public class DerbyEntityAttributeUniqueValueDAO extends AbstractDerbyDAO implements EntityAttributeUniqueValueDAO {
 
 	public DerbyEntityAttributeUniqueValueDAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
-		super(daoFactory);
+		super(daoFactory, DBMS_Tables.ENTITY_ATTRIBUTE_UNIQUE_VALUE_TABLE.TABLE_NAME);
 	}
 
 }

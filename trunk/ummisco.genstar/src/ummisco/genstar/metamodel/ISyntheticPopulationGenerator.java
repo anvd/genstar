@@ -3,10 +3,14 @@ package ummisco.genstar.metamodel;
 import java.util.Collection;
 import java.util.List;
 
-import ummisco.genstar.exception.AttributeException;
-import ummisco.genstar.exception.GenerationException;
+import ummisco.genstar.exception.GenstarException;
+
 
 public interface ISyntheticPopulationGenerator { // FIXME change class name -> ISingleSyntheticPopulationGenerator
+	
+	public abstract void setID(final int id);
+	
+	public abstract int getID();
 
 	public abstract String getName();
 	
@@ -24,7 +28,7 @@ public interface ISyntheticPopulationGenerator { // FIXME change class name -> I
 
 	public abstract AbstractAttribute getAttribute(final String attributeNameOnData);
 
-	public abstract void addAttribute(final AbstractAttribute attribute) throws AttributeException;
+	public abstract void addAttribute(final AbstractAttribute attribute) throws GenstarException;
 
 	public abstract void removeAttribute(final AbstractAttribute attribute);
 
@@ -46,5 +50,5 @@ public interface ISyntheticPopulationGenerator { // FIXME change class name -> I
 
 	public abstract List<GenerationRule> getGenerationRules();
 
-	public abstract ISyntheticPopulation generate() throws GenerationException;
+	public abstract ISyntheticPopulation generate() throws GenstarException;
 }

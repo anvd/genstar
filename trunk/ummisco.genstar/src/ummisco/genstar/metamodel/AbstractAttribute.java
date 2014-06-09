@@ -2,11 +2,15 @@ package ummisco.genstar.metamodel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import ummisco.genstar.exception.AttributeException;
+import ummisco.genstar.exception.GenstarException;
 
 
-public abstract class AbstractAttribute {
+public abstract class AbstractAttribute implements AttributeValueSet {
+	
+	
+	protected int attributeID = -1;
 	
 	protected ISyntheticPopulationGenerator populationGenerator;
 	
@@ -14,7 +18,7 @@ public abstract class AbstractAttribute {
 	
 	protected String nameOnEntity;
 	
-	protected ValueType valueType;
+	protected DataType dataType;
 	
 	protected List<AttributeChangedListener> attributeChangeListeners;
 	
@@ -28,17 +32,17 @@ public abstract class AbstractAttribute {
 	
 	
 	public AbstractAttribute(final ISyntheticPopulationGenerator populationGenerator, final String attributeNameOnData, final String attributeNameOnEntity, 
-			final ValueType valueType, final Class<? extends AttributeValue> valueClassOnEntity) throws AttributeException {
-		if (populationGenerator == null) { throw new AttributeException("'population' parameter can not be null"); }
-		if (attributeNameOnData == null || attributeNameOnData.trim().length() == 0) { throw new AttributeException("'attributeNameOnData' parameter can not be null or empty"); }
-		if (attributeNameOnEntity == null || attributeNameOnEntity.trim().length() == 0) { throw new AttributeException("'attributeNameOnEntity' parameter can not be null or empty"); }
-		if (valueType == null) { throw new AttributeException("'valueType' parameter can not be null"); }
-		if (valueClassOnEntity == null) { throw new AttributeException("'valueClassOnEntity' can not be null"); }
+			final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
+		if (populationGenerator == null) { throw new GenstarException("'population' parameter can not be null"); }
+		if (attributeNameOnData == null || attributeNameOnData.trim().length() == 0) { throw new GenstarException("'attributeNameOnData' parameter can not be null or empty"); }
+		if (attributeNameOnEntity == null || attributeNameOnEntity.trim().length() == 0) { throw new GenstarException("'attributeNameOnEntity' parameter can not be null or empty"); }
+		if (dataType == null) { throw new GenstarException("'dataType' parameter can not be null"); }
+		if (valueClassOnEntity == null) { throw new GenstarException("'valueClassOnEntity' can not be null"); }
 		
 		this.populationGenerator = populationGenerator;
 		this.nameOnData = attributeNameOnData;
 		this.nameOnEntity = attributeNameOnEntity;
-		this.valueType = valueType;
+		this.dataType = dataType;
 		this.attributeChangeListeners = new ArrayList<AttributeChangedListener>();
 		this.valueClassOnEntity = valueClassOnEntity;
 	}
@@ -51,8 +55,8 @@ public abstract class AbstractAttribute {
 		return nameOnEntity;
 	}
 
-	public ValueType getValueType() {
-		return valueType;
+	public DataType getDataType() {
+		return dataType;
 	}
 	
 	public Class<? extends AttributeValue> getValueClassOnEntity() {
@@ -88,18 +92,18 @@ public abstract class AbstractAttribute {
 		for (AttributeChangedListener l : attributeChangeListeners) { l.attributeChanged(event); }
 	}
 	
-	public abstract AttributeValue valueFromString(final List<String> stringValue) throws AttributeException;
+	public abstract AttributeValue valueFromString(final List<String> stringValue) throws GenstarException;
 
 	@Override public String toString() {
-		return this.getClass().getSimpleName() + " with valueType : " + valueType.getName() + "; dataAttributeName : " + this.nameOnData + "; entityAttributeName : " + this.nameOnEntity;
+		return this.getClass().getSimpleName() + " with valueType : " + dataType.getName() + "; dataAttributeName : " + this.nameOnData + "; entityAttributeName : " + this.nameOnEntity;
 	}
 	
 
 	// TODO revise: should move this method to sub-class?
-	public void setDefaultValue(final AttributeValue defaultValue) throws AttributeException {
-		if (defaultValue == null) { throw new AttributeException("'defaultValue' parameter can not be null"); }
-		if (!defaultValue.getClass().equals(this.valueClassOnData)) { throw new AttributeException("'defaultValue' parameter doesn't belong to the appropriate class"); }
-		if (!defaultValue.valueType.equals(this.valueType)) { throw new AttributeException("valueType of 'defaultValue' is not appropriate"); }
+	public void setDefaultValue(final AttributeValue defaultValue) throws GenstarException {
+		if (defaultValue == null) { throw new GenstarException("'defaultValue' parameter can not be null"); }
+		if (!defaultValue.getClass().equals(this.valueClassOnData)) { throw new GenstarException("'defaultValue' parameter doesn't belong to the appropriate class"); }
+		if (!defaultValue.dataType.equals(this.dataType)) { throw new GenstarException("valueType of 'defaultValue' is not appropriate"); }
 		
 		this.defaultValue = defaultValue;
 		this.castDefaultValue = defaultValue.cast(valueClassOnEntity);
@@ -107,5 +111,13 @@ public abstract class AbstractAttribute {
 	
 	public AttributeValue getDefaultValue() {
 		return castDefaultValue;
+	}
+	
+	public int getAttributeID() {
+		return attributeID;
+	}
+	
+	public void setAttributeID(final int attributeID) {
+		this.attributeID = attributeID;
 	}
 }

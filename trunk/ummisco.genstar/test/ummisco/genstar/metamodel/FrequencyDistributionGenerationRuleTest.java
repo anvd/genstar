@@ -15,7 +15,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import ummisco.genstar.exception.AttributeException;
 import ummisco.genstar.exception.GenstarException;
 
 @RunWith(JUnit4.class)
@@ -46,9 +45,9 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "data var name", "entity var name", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
-		exception.expect(AttributeException.class);
+		exception.expect(GenstarException.class);
 		d.appendInputAttribute(attr1);
 		
 		assertTrue(d.getInputAttributes().size() == 0);
@@ -60,13 +59,13 @@ public class FrequencyDistributionGenerationRuleTest {
 		p.appendGenerationRule(d);
 		assertTrue(d.getInputAttributes().size() == 0);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.appendInputAttribute(attr1);
 		
 		assertTrue(d.getInputAttributes().size() == 1);
 		
-		EnumerationOfRangesAttribute attr2 = new EnumerationOfRangesAttribute(p, "attribute 2", ValueType.INTEGER);
+		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.appendInputAttribute(attr2);
 
@@ -80,13 +79,13 @@ public class FrequencyDistributionGenerationRuleTest {
 		
 		assertTrue(d.getInputAttributes().size() == 0);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.appendInputAttribute(attr1);
 		
 		assertTrue(d.getInputAttributes().size() == 1);
 		
-		exception.expect(AttributeException.class);
+		exception.expect(GenstarException.class);
 		d.appendInputAttribute(attr1);
 	}
 	
@@ -95,8 +94,8 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
-		exception.expect(AttributeException.class);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
+		exception.expect(GenstarException.class);
 		d.insertInputAttribute(attr1, 0);
 	}
 	
@@ -105,9 +104,9 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
-		exception.expect(AttributeException.class);
+		exception.expect(GenstarException.class);
 		d.insertInputAttribute(attr1, 1);
 	}
 	
@@ -116,13 +115,13 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.insertInputAttribute(attr1, 0);
 		assertTrue(d.getInputAttributes().size() == 1);
 		assertTrue(d.getInputAttributeAtOrder(0).equals(attr1));
 
-		EnumerationOfRangesAttribute attr2 = new EnumerationOfRangesAttribute(p, "attribute 2", ValueType.INTEGER);
+		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.insertInputAttribute(attr2, 0);
 		assertTrue(d.getInputAttributes().size() == 2);
@@ -134,15 +133,15 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.insertInputAttribute(attr1, 0);
 
-		EnumerationOfRangesAttribute attr2 = new EnumerationOfRangesAttribute(p, "attribute 2", ValueType.INTEGER);
+		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.insertInputAttribute(attr2, 0);
 
-		EnumerationOfRangesAttribute attr3 = new EnumerationOfRangesAttribute(p, "attribute 3", ValueType.INTEGER);
+		RangeValuesAttribute attr3 = new RangeValuesAttribute(p, "attribute 3", DataType.INTEGER);
 		p.addAttribute(attr3);
 		d.insertInputAttribute(attr3, 0);
 		
@@ -160,15 +159,15 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.appendInputAttribute(attr1);
 
-		EnumerationOfRangesAttribute attr2 = new EnumerationOfRangesAttribute(p, "attribute 2", ValueType.INTEGER);
+		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.appendInputAttribute(attr2);
 
-		EnumerationOfRangesAttribute attr3 = new EnumerationOfRangesAttribute(p, "attribute 3", ValueType.INTEGER);
+		RangeValuesAttribute attr3 = new RangeValuesAttribute(p, "attribute 3", DataType.INTEGER);
 		p.addAttribute(attr3);
 		d.appendInputAttribute(attr3);
 		
@@ -198,19 +197,19 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.appendInputAttribute(attr1);
 
-		EnumerationOfRangesAttribute attr2 = new EnumerationOfRangesAttribute(p, "attribute 2", ValueType.INTEGER);
+		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.appendInputAttribute(attr2);
 
-		EnumerationOfRangesAttribute attr3 = new EnumerationOfRangesAttribute(p, "attribute 3", ValueType.INTEGER);
+		RangeValuesAttribute attr3 = new RangeValuesAttribute(p, "attribute 3", DataType.INTEGER);
 		p.addAttribute(attr3);
 		d.appendInputAttribute(attr3);
 		
-		EnumerationOfRangesAttribute attr4 = new EnumerationOfRangesAttribute(p, "attribute 4", ValueType.INTEGER);
+		RangeValuesAttribute attr4 = new RangeValuesAttribute(p, "attribute 4", DataType.INTEGER);
 		p.addAttribute(attr4);
 		d.appendInputAttribute(attr4);
 
@@ -242,9 +241,9 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		
-		exception.expect(AttributeException.class);
+		exception.expect(GenstarException.class);
 		d.appendOutputAttribute(attr1);
 		
 		assertTrue(d.getOutputAttributes().size() == 0);
@@ -255,13 +254,13 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.appendOutputAttribute(attr1);
 		
 		assertTrue(d.getOutputAttributes().size() == 1);
 		
-		exception.expect(AttributeException.class);
+		exception.expect(GenstarException.class);
 		d.appendOutputAttribute(attr1);		
 	}
 	
@@ -270,12 +269,12 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.appendOutputAttribute(attr1);
 		assertTrue(d.getOutputAttributes().size() == 1);
 		
-		EnumerationOfRangesAttribute attr2 = new EnumerationOfRangesAttribute(p, "attribute 2", ValueType.INTEGER);
+		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.appendOutputAttribute(attr2);
 		assertTrue(d.getOutputAttributes().size() == 2);
@@ -286,8 +285,8 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
-		exception.expect(AttributeException.class);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
+		exception.expect(GenstarException.class);
 		d.insertOutputAttribute(attr1, 0);
 	}
 	
@@ -296,9 +295,9 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
-		exception.expect(AttributeException.class);
+		exception.expect(GenstarException.class);
 		d.insertOutputAttribute(attr1, 1);
 	}
 	
@@ -307,13 +306,13 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.insertOutputAttribute(attr1, 0);
 		assertTrue(d.getOutputAttributes().size() == 1);
 		assertTrue(d.getOutputAttributeAtOrder(0).equals(attr1));
 
-		EnumerationOfRangesAttribute attr2 = new EnumerationOfRangesAttribute(p, "attribute 2", ValueType.INTEGER);
+		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.insertOutputAttribute(attr2, 0);
 		assertTrue(d.getOutputAttributes().size() == 2);
@@ -325,15 +324,15 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.insertOutputAttribute(attr1, 0);
 
-		EnumerationOfRangesAttribute attr2 = new EnumerationOfRangesAttribute(p, "attribute 2", ValueType.INTEGER);
+		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.insertOutputAttribute(attr2, 0);
 
-		EnumerationOfRangesAttribute attr3 = new EnumerationOfRangesAttribute(p, "attribute 3", ValueType.INTEGER);
+		RangeValuesAttribute attr3 = new RangeValuesAttribute(p, "attribute 3", DataType.INTEGER);
 		p.addAttribute(attr3);
 		d.insertOutputAttribute(attr3, 0);
 		
@@ -350,15 +349,15 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.appendOutputAttribute(attr1);
 
-		EnumerationOfRangesAttribute attr2 = new EnumerationOfRangesAttribute(p, "attribute 2", ValueType.INTEGER);
+		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.appendOutputAttribute(attr2);
 
-		EnumerationOfRangesAttribute attr3 = new EnumerationOfRangesAttribute(p, "attribute 3", ValueType.INTEGER);
+		RangeValuesAttribute attr3 = new RangeValuesAttribute(p, "attribute 3", DataType.INTEGER);
 		p.addAttribute(attr3);
 		d.appendOutputAttribute(attr3);
 		
@@ -388,19 +387,19 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
-		EnumerationOfRangesAttribute attr1 = new EnumerationOfRangesAttribute(p, "attribute 1", ValueType.INTEGER);
+		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.appendOutputAttribute(attr1);
 
-		EnumerationOfRangesAttribute attr2 = new EnumerationOfRangesAttribute(p, "attribute 2", ValueType.INTEGER);
+		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.appendOutputAttribute(attr2);
 
-		EnumerationOfRangesAttribute attr3 = new EnumerationOfRangesAttribute(p, "attribute 3", ValueType.INTEGER);
+		RangeValuesAttribute attr3 = new RangeValuesAttribute(p, "attribute 3", DataType.INTEGER);
 		p.addAttribute(attr3);
 		d.appendOutputAttribute(attr3);
 		
-		EnumerationOfRangesAttribute attr4 = new EnumerationOfRangesAttribute(p, "attribute 4", ValueType.INTEGER);
+		RangeValuesAttribute attr4 = new RangeValuesAttribute(p, "attribute 4", DataType.INTEGER);
 		p.addAttribute(attr4);
 		d.appendOutputAttribute(attr4);
 
@@ -447,15 +446,15 @@ public class FrequencyDistributionGenerationRuleTest {
 	@Test public void testSetFrequencyValue() throws GenstarException {
 		SyntheticPopulationGenerator bondyPopulation = new SyntheticPopulationGenerator("Population of Bondy", 100);
 		
-		EnumerationOfRangesAttribute ageRangesAttr1 = new EnumerationOfRangesAttribute(bondyPopulation, "age_range_1", "age", ValueType.INTEGER);
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
 		for (int[] range : BondyData.age_ranges_1) {
-			ageRangesAttr1.add(new RangeValue(ValueType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangesAttr1.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
 		}
 		bondyPopulation.addAttribute(ageRangesAttr1);
 		
-		EnumerationOfValuesAttribute sexAttr = new EnumerationOfValuesAttribute(bondyPopulation, "sex", ValueType.BOOL);
-		sexAttr.add(new UniqueValue(ValueType.BOOL, Boolean.toString(BondyData.sexes[0])));
-		sexAttr.add(new UniqueValue(ValueType.BOOL, Boolean.toString(BondyData.sexes[1])));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(bondyPopulation, "sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0])));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1])));
 		bondyPopulation.addAttribute(sexAttr);
 				
 		
@@ -468,14 +467,14 @@ public class FrequencyDistributionGenerationRuleTest {
 		
 		AbstractAttribute ageRangeAttrBiz = distribution1.getAttributeByDataAttributeName("age_range_1");
 		AbstractAttribute sexAttrBiz = distribution1.getAttributeByDataAttributeName("sex");
-		Map<EnumerationValueAttribute, AttributeValue> attributeValues = new HashMap<EnumerationValueAttribute, AttributeValue>();
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		AttributeValue sexAttrValueBiz;
 		for (int[] range : BondyData.age_ranges_1) {
 			attributeValues.clear();
 			
-			attributeValues.put((EnumerationValueAttribute) ageRangeAttrBiz, new RangeValue(ValueType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
-			sexAttrValueBiz = new UniqueValue(ValueType.BOOL, Boolean.toString(BondyData.sexes[1]));
-			attributeValues.put((EnumerationValueAttribute) sexAttrBiz, sexAttrValueBiz);
+			attributeValues.put((AbstractAttribute) ageRangeAttrBiz, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			sexAttrValueBiz = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1]));
+			attributeValues.put((AbstractAttribute) sexAttrBiz, sexAttrValueBiz);
 			
 			// male
 			distribution1.setFrequency(attributeValues, range[2]);
@@ -483,7 +482,7 @@ public class FrequencyDistributionGenerationRuleTest {
 			
 			// female
 //			attributeValues.remove(sexAttrValueBiz);
-			attributeValues.put((EnumerationValueAttribute) sexAttrBiz, new UniqueValue(ValueType.BOOL, Boolean.toString(BondyData.sexes[0])));
+			attributeValues.put((AbstractAttribute) sexAttrBiz, new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0])));
 			distribution1.setFrequency(attributeValues, range[3]);
 		}
 
@@ -493,13 +492,13 @@ public class FrequencyDistributionGenerationRuleTest {
 		for (int[] range : BondyData.age_ranges_1) {
 			attributeValues.clear();
 			
-			ageRangeAttrValueBiz = new RangeValue(ValueType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]));
-			attributeValues.put((EnumerationValueAttribute) ageRangeAttrBiz, ageRangeAttrValueBiz);
+			ageRangeAttrValueBiz = new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]));
+			attributeValues.put((AbstractAttribute) ageRangeAttrBiz, ageRangeAttrValueBiz);
 			assertTrue(distribution1.findDistributionElements(attributeValues).size() == 2);
 			
 			// male
-			sexAttrValueBiz = new UniqueValue(ValueType.BOOL, Boolean.toString(BondyData.sexes[1]));
-			attributeValues.put((EnumerationValueAttribute) sexAttrBiz, sexAttrValueBiz);
+			sexAttrValueBiz = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1]));
+			attributeValues.put((AbstractAttribute) sexAttrBiz, sexAttrValueBiz);
 
 			// assertion
 			matches = distribution1.findDistributionElements(attributeValues);
@@ -507,7 +506,7 @@ public class FrequencyDistributionGenerationRuleTest {
 			assertTrue(matches.get(0).getFrequency() == range[2]);
 			
 			// female
-			attributeValues.put((EnumerationValueAttribute) sexAttrBiz, new UniqueValue(ValueType.BOOL, Boolean.toString(BondyData.sexes[0])));
+			attributeValues.put((AbstractAttribute) sexAttrBiz, new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0])));
 
 			// assertion
 			matches = distribution1.findDistributionElements(attributeValues);
@@ -536,14 +535,14 @@ public class FrequencyDistributionGenerationRuleTest {
 		
 		EntityAttributeValue entityAgeAttributeValue = entity.getEntityAttributeValue("age");
 		AttributeValue originalAgeAttributeValue = entityAgeAttributeValue.getAttributeValueOnData();
-		assertTrue(originalAgeAttributeValue.getValueType().equals(ValueType.INTEGER));
+		assertTrue(originalAgeAttributeValue.getDataType().equals(DataType.INTEGER));
 		assertTrue(originalAgeAttributeValue instanceof RangeValue);
 		AttributeValue castedAgeAttributeValue = entityAgeAttributeValue.getAttributeValueOnEntity();
 		assertTrue(castedAgeAttributeValue instanceof UniqueValue);
 		assertTrue(originalAgeAttributeValue.isValueMatch(castedAgeAttributeValue));
 		
 		AttributeValue sexAttributeValue = entity.getEntityAttributeValue("sex").getAttributeValueOnData();
-		assertTrue(sexAttributeValue.getValueType().equals(ValueType.BOOL));
+		assertTrue(sexAttributeValue.getDataType().equals(DataType.BOOL));
 		assertTrue(sexAttributeValue instanceof UniqueValue);
 		
 		
@@ -570,7 +569,7 @@ public class FrequencyDistributionGenerationRuleTest {
 		assertTrue(entity.containAttribute("pcs"));
 		
 		EntityAttributeValue pcsEntityAttrValue = entity.getEntityAttributeValue("pcs");
-		assertTrue(pcsEntityAttrValue.getAttributeValueOnData().isValueMatch(new UniqueValue(ValueType.INTEGER, "8")));
+		assertTrue(pcsEntityAttrValue.getAttributeValueOnData().isValueMatch(new UniqueValue(DataType.INTEGER, "8")));
 		assertTrue(pcsEntityAttrValue.getAttributeValueOnData().equals(pcsEntityAttrValue.getAttributeValueOnEntity()));
 	}
 }

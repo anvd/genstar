@@ -210,31 +210,35 @@ public final class BondyData {
 		bondyInhabitantPopGenerator = new SyntheticPopulationGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
-		EnumerationOfRangesAttribute ageRangesAttr1 = new EnumerationOfRangesAttribute(bondyInhabitantPopGenerator, "age_range_1", "age", ValueType.INTEGER, UniqueValue.class);
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyInhabitantPopGenerator, "age_range_1", "age", DataType.INTEGER, UniqueValue.class);
 		for (int[] range : age_ranges_1) {
-			ageRangesAttr1.add(new RangeValue(ValueType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangesAttr1.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
 		}
 		bondyInhabitantPopGenerator.addAttribute(ageRangesAttr1);
 		
-		EnumerationOfValuesAttribute sexAttr = new EnumerationOfValuesAttribute(bondyInhabitantPopGenerator, "sex", ValueType.BOOL);
-		sexAttr.add(new UniqueValue(ValueType.BOOL, Boolean.toString(sexes[0])));
-		sexAttr.add(new UniqueValue(ValueType.BOOL, Boolean.toString(sexes[1])));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
 		bondyInhabitantPopGenerator.addAttribute(sexAttr);
 		
 		
-		EnumerationOfRangesAttribute ageRangesAttr2 = new EnumerationOfRangesAttribute(bondyInhabitantPopGenerator, "age_range_2", "age", ValueType.INTEGER);
+		RangeValuesAttribute ageRangesAttr2 = new RangeValuesAttribute(bondyInhabitantPopGenerator, "age_range_2", "age", DataType.INTEGER);
 		for (int[] range : age_ranges_2) {
-			ageRangesAttr2.add(new RangeValue(ValueType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangesAttr2.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
 		}
 		bondyInhabitantPopGenerator.addAttribute(ageRangesAttr2);
 		
-		EnumerationOfValuesAttribute pcsAttr = new EnumerationOfValuesAttribute(bondyInhabitantPopGenerator, "pcs", ValueType.INTEGER);
-		for (int v : pcs_values) { pcsAttr.add(new UniqueValue(ValueType.INTEGER, Integer.toString(v))); }
-		pcsAttr.setDefaultValue(new UniqueValue(ValueType.INTEGER, "8"));
+		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
+		for (int v : pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v))); }
+		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8"));
 		bondyInhabitantPopGenerator.addAttribute(pcsAttr);
 		
-		InferredAttribute hourlyNetWageAttr = new InferredRangeAttribute(bondyInhabitantPopGenerator, pcsAttr, "hourlyNetWage", ValueType.DOUBLE, UniqueValue.class);
+		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute(bondyInhabitantPopGenerator, "hourlyNetWage", DataType.DOUBLE, RangeValue.class);
+		for (double[] wage_range : hourly_net_wages) {
+			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2])));
+		}
 		bondyInhabitantPopGenerator.addAttribute(hourlyNetWageAttr);
+		
 		
 		
 		// create attributes -
@@ -251,20 +255,20 @@ public final class BondyData {
 		
 		AbstractAttribute ageRangeAttrBiz = generationRule1.getAttributeByDataAttributeName("age_range_1");
 		AbstractAttribute sexAttrBiz = generationRule1.getAttributeByDataAttributeName("sex");
-		Map<EnumerationValueAttribute, AttributeValue> attributeValues = new HashMap<EnumerationValueAttribute, AttributeValue>();
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		AttributeValue sexAttrValueBiz;
 		for (int[] range : BondyData.age_ranges_1) {
 			attributeValues.clear();
 			
-			attributeValues.put((EnumerationValueAttribute) ageRangeAttrBiz, new RangeValue(ValueType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
-			sexAttrValueBiz = new UniqueValue(ValueType.BOOL, Boolean.toString(BondyData.sexes[1]));
-			attributeValues.put((EnumerationValueAttribute) sexAttrBiz, sexAttrValueBiz);
+			attributeValues.put(ageRangeAttrBiz, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			sexAttrValueBiz = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1]));
+			attributeValues.put(sexAttrBiz, sexAttrValueBiz);
 			
 			// male
 			generationRule1.setFrequency(attributeValues, range[2]);
 			
 			// female
-			attributeValues.put((EnumerationValueAttribute) sexAttrBiz, new UniqueValue(ValueType.BOOL, Boolean.toString(BondyData.sexes[0])));
+			attributeValues.put(sexAttrBiz, new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0])));
 			generationRule1.setFrequency(attributeValues, range[3]);
 		}
 		
@@ -284,23 +288,23 @@ public final class BondyData {
 		for (int[] range : age_ranges_2) {
 			attributeValues.clear();
 			
-			attributeValues.put((EnumerationValueAttribute) ageRangeAttrBiz1, new RangeValue(ValueType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			attributeValues.put(ageRangeAttrBiz1, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
 			
 			// male pcs
-			sexAttrBiz1Value = new UniqueValue(ValueType.BOOL, Boolean.toString(BondyData.sexes[1]));
-			attributeValues.put((EnumerationValueAttribute) sexAttrBiz1, sexAttrBiz1Value);
+			sexAttrBiz1Value = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1]));
+			attributeValues.put(sexAttrBiz1, sexAttrBiz1Value);
 			for (int i=0; i<8; i++) {
-				malePcsValue = new UniqueValue(ValueType.INTEGER, Integer.toString(i+1));
-				attributeValues.put((EnumerationValueAttribute) pcsAttrBiz1, malePcsValue);
+				malePcsValue = new UniqueValue(DataType.INTEGER, Integer.toString(i+1));
+				attributeValues.put(pcsAttrBiz1, malePcsValue);
 				
 				generationRule2.setFrequency(attributeValues, range[i+2]);
 			}
 			
 			// female pcs
-			attributeValues.put((EnumerationValueAttribute) sexAttrBiz1, new UniqueValue(ValueType.BOOL, Boolean.toString(BondyData.sexes[0])));
+			attributeValues.put(sexAttrBiz1, new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0])));
 			for (int i=0; i<8; i++) {
-				femalePcsValue = new UniqueValue(ValueType.INTEGER, Integer.toString(i+1));
-				attributeValues.put((EnumerationValueAttribute) pcsAttrBiz1, femalePcsValue);
+				femalePcsValue = new UniqueValue(DataType.INTEGER, Integer.toString(i+1));
+				attributeValues.put(pcsAttrBiz1, femalePcsValue);
 				
 				generationRule2.setFrequency(attributeValues, range[i+2+8]);
 			}
@@ -308,14 +312,14 @@ public final class BondyData {
 		
 
 		// rule 3
-		generationRule3 = new AttributeInferenceGenerationRule(bondyInhabitantPopGenerator, "Hourly net wage by socio-profession category", hourlyNetWageAttr);
+		generationRule3 = new AttributeInferenceGenerationRule(bondyInhabitantPopGenerator, "Hourly net wage by socio-profession category", pcsAttr, hourlyNetWageAttr);
 		
 		Map<AttributeValue, AttributeValue> pcsInferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (double[] net_wage : hourly_net_wages) {
-			pcsInferenceData.put(new UniqueValue(ValueType.INTEGER, Integer.toString((int) net_wage[0])), 
-					new RangeValue(ValueType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2])));
+			pcsInferenceData.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0])), 
+					new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2])));
 		}
-		generationRule3.getInferredAttribute().setInferenceData(pcsInferenceData);
+		generationRule3.setInferenceData(pcsInferenceData);
 		
 		// create generation rule -
 	}
@@ -325,37 +329,37 @@ public final class BondyData {
 		
 		// create attributes +
 		// Rule 4 : Household by size, sex and age of household's head
-		EnumerationOfRangesAttribute ageRangeAttr3 =  new EnumerationOfRangesAttribute(bondyHouseholdPopGenerator, "age_range_3", "age", ValueType.INTEGER, UniqueValue.class);
+		RangeValuesAttribute ageRangeAttr3 =  new RangeValuesAttribute(bondyHouseholdPopGenerator, "age_range_3", "age", DataType.INTEGER, UniqueValue.class);
 		for (int[] range : household_sizes) {
-			ageRangeAttr3.add(new RangeValue(ValueType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangeAttr3.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
 		}
 		bondyHouseholdPopGenerator.addAttribute(ageRangeAttr3);
 		
-		EnumerationOfValuesAttribute sexAttr = new EnumerationOfValuesAttribute(bondyHouseholdPopGenerator, "sex", ValueType.BOOL);
-		sexAttr.add(new UniqueValue(ValueType.BOOL, Boolean.toString(sexes[0])));
-		sexAttr.add(new UniqueValue(ValueType.BOOL, Boolean.toString(sexes[1])));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(bondyHouseholdPopGenerator, "sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
 		bondyHouseholdPopGenerator.addAttribute(sexAttr);
 		
-		EnumerationOfValuesAttribute householdSizeAttr = new EnumerationOfValuesAttribute(bondyHouseholdPopGenerator, "size", ValueType.INTEGER);
+		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute(bondyHouseholdPopGenerator, "size", DataType.INTEGER);
 		for (int size = 1; size < 7; size++) {
-			householdSizeAttr.add(new UniqueValue(ValueType.INTEGER, Integer.toString(size)));
+			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size)));
 		}
 		bondyHouseholdPopGenerator.addAttribute(householdSizeAttr);
 		
 		
 		// Rule 5 : Household by type and age of household's head
 		// reuse ageRangeAttr3
-		EnumerationOfValuesAttribute householdTypeAttr = new EnumerationOfValuesAttribute(bondyHouseholdPopGenerator, "household_type", ValueType.INTEGER);
+		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute(bondyHouseholdPopGenerator, "household_type", DataType.INTEGER);
 		for (int hhType = 1; hhType <= 4; hhType++) {
-			householdTypeAttr.add(new UniqueValue(ValueType.INTEGER, Integer.toString(hhType)));
+			householdTypeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(hhType)));
 		}
 		bondyHouseholdPopGenerator.addAttribute(householdTypeAttr);
 		
 		
 		// Rule 6 : Housing by number of rooms and household size
-		EnumerationOfValuesAttribute roomsAttr = new EnumerationOfValuesAttribute(bondyHouseholdPopGenerator, "rooms", ValueType.INTEGER);
+		UniqueValuesAttribute roomsAttr = new UniqueValuesAttribute(bondyHouseholdPopGenerator, "rooms", DataType.INTEGER);
 		for (int r=1; r<=6; r++) {
-			roomsAttr.add(new UniqueValue(ValueType.INTEGER, Integer.toString(r)));
+			roomsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(r)));
 		}
 		bondyHouseholdPopGenerator.addAttribute(roomsAttr);
 		
@@ -364,17 +368,17 @@ public final class BondyData {
 		
 		// Rule 7 : Housing by number of rooms and area
 		// reuse roomsAttr
-		EnumerationOfRangesAttribute housingAreaAttr = new EnumerationOfRangesAttribute(bondyHouseholdPopGenerator, "area", ValueType.INTEGER, UniqueValue.class);
+		RangeValuesAttribute housingAreaAttr = new RangeValuesAttribute(bondyHouseholdPopGenerator, "area", DataType.INTEGER, UniqueValue.class);
 		for (int[] area_range : housing_area_types) {
-			housingAreaAttr.add(new RangeValue(ValueType.INTEGER, Integer.toString(area_range[0]), Integer.toString(area_range[1])));
+			housingAreaAttr.add(new RangeValue(DataType.INTEGER, Integer.toString(area_range[0]), Integer.toString(area_range[1])));
 		}
 		bondyHouseholdPopGenerator.addAttribute(housingAreaAttr);
 		
 		
 		// Rule 8 : Number of housings by type
-		EnumerationOfValuesAttribute housingTypeAttr = new EnumerationOfValuesAttribute(bondyHouseholdPopGenerator, "housing_type", ValueType.INTEGER);
+		UniqueValuesAttribute housingTypeAttr = new UniqueValuesAttribute(bondyHouseholdPopGenerator, "housing_type", DataType.INTEGER);
 		for (int type=1; type<=3; type++) {
-			housingTypeAttr.add(new UniqueValue(ValueType.INTEGER, Integer.toString(type)));
+			housingTypeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(type)));
 		}
 		bondyHouseholdPopGenerator.addAttribute(housingTypeAttr);
 		// create attributes -
@@ -388,29 +392,29 @@ public final class BondyData {
 		generationRule4.appendOutputAttribute(ageRangeAttr3);
 		bondyHouseholdPopGenerator.appendGenerationRule(generationRule4);
 		generationRule4.generateFrequencyElements();
-		Map<EnumerationValueAttribute, AttributeValue> attributeValues = new HashMap<EnumerationValueAttribute, AttributeValue>();
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		UniqueValue sexValue;
 		UniqueValue hhSizeValue;
 		for (int[] sizes : household_sizes) {
 			attributeValues.clear();
 			
-			attributeValues.put(ageRangeAttr3, new RangeValue(ValueType.INTEGER, Integer.toString(sizes[0]), Integer.toString(sizes[1])));
+			attributeValues.put(ageRangeAttr3, new RangeValue(DataType.INTEGER, Integer.toString(sizes[0]), Integer.toString(sizes[1])));
 			
 			// male
-			sexValue = new UniqueValue(ValueType.BOOL, Boolean.toString(sexes[0]));
-			attributeValues.put((EnumerationValueAttribute) sexAttr, sexValue);
+			sexValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]));
+			attributeValues.put(sexAttr, sexValue);
 			for (int hhSize = 0; hhSize < 6; hhSize++) {
-				hhSizeValue = new UniqueValue(ValueType.INTEGER, Integer.toString(hhSize +1));
+				hhSizeValue = new UniqueValue(DataType.INTEGER, Integer.toString(hhSize +1));
 				attributeValues.put(householdSizeAttr, hhSizeValue);
 				
 				generationRule4.setFrequency(attributeValues, sizes[hhSize + 2]);
 			}
 			
 			// female
-			sexValue = new UniqueValue(ValueType.BOOL, Boolean.toString(sexes[1]));
+			sexValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]));
 			attributeValues.put(sexAttr, sexValue);
 			for (int hhSize = 0; hhSize < 6; hhSize++) {
-				hhSizeValue = new UniqueValue(ValueType.INTEGER, Integer.toString(hhSize +1));
+				hhSizeValue = new UniqueValue(DataType.INTEGER, Integer.toString(hhSize +1));
 				attributeValues.put(sexAttr, hhSizeValue);
 				
 				generationRule4.setFrequency(attributeValues, sizes[hhSize + 6 + 2]);
@@ -428,9 +432,9 @@ public final class BondyData {
 		for (int[] types : household_types) {
 			attributeValues.clear();
 			
-			attributeValues.put(ageRangeAttr3, new RangeValue(ValueType.INTEGER, Integer.toString(types[0]), Integer.toString(types[1])));
+			attributeValues.put(ageRangeAttr3, new RangeValue(DataType.INTEGER, Integer.toString(types[0]), Integer.toString(types[1])));
 			for (int typeIndex=2; typeIndex<types.length; typeIndex++) {
-				hhTypeValue = new UniqueValue(ValueType.INTEGER, Integer.toString(typeIndex - 1));
+				hhTypeValue = new UniqueValue(DataType.INTEGER, Integer.toString(typeIndex - 1));
 				attributeValues.put(householdTypeAttr, hhTypeValue);
 				
 				generationRule5.setFrequency(attributeValues, types[typeIndex]);
@@ -448,9 +452,9 @@ public final class BondyData {
 		for (int[] r : housing_rooms) {
 			attributeValues.clear();
 			
-			attributeValues.put(householdSizeAttr, new UniqueValue(ValueType.INTEGER, Integer.toString(r[0])));
+			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(r[0])));
 			for (int i=1; i<r.length; i++) {
-				roomAttrValue = new UniqueValue(ValueType.INTEGER, Integer.toString(i));
+				roomAttrValue = new UniqueValue(DataType.INTEGER, Integer.toString(i));
 				attributeValues.put(roomsAttr, roomAttrValue);
 				
 				generationRule6.setFrequency(attributeValues, r[i]);
@@ -469,10 +473,10 @@ public final class BondyData {
 		for (int[] areas : housing_areas) {
 			attributeValues.clear();
 			
-			attributeValues.put(roomsAttr, new UniqueValue(ValueType.INTEGER, Integer.toString(areas[0])));
+			attributeValues.put(roomsAttr, new UniqueValue(DataType.INTEGER, Integer.toString(areas[0])));
 			area_index = 1;
 			for (int[] housing_area : housing_area_types) {
-				housingAreaTypeValue = new RangeValue(ValueType.INTEGER, Integer.toString(housing_area[0]), Integer.toString(housing_area[1]));
+				housingAreaTypeValue = new RangeValue(DataType.INTEGER, Integer.toString(housing_area[0]), Integer.toString(housing_area[1]));
 				attributeValues.put(housingAreaAttr, housingAreaTypeValue);
 				
 				generationRule7.setFrequency(attributeValues, areas[area_index]);
@@ -487,7 +491,7 @@ public final class BondyData {
 		generationRule8.generateFrequencyElements();
 		for (int type=1; type<=3; type++) {
 			attributeValues.clear();
-			attributeValues.put(housingTypeAttr, new UniqueValue(ValueType.INTEGER, Integer.toString(type)));
+			attributeValues.put(housingTypeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(type)));
 			generationRule8.setFrequency(attributeValues, housing_types[type-1]);
 		}
 

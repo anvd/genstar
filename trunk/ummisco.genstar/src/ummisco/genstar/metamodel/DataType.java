@@ -2,16 +2,18 @@ package ummisco.genstar.metamodel;
 
 import java.lang.reflect.Constructor;
 
-public enum ValueType {
+public enum DataType {
 
-	INTEGER("integer", java.lang.Integer.class, "0"),
-	FLOAT("float", java.lang.Float.class, "0"),
-	DOUBLE("double", java.lang.Double.class, "0"),
-	STRING("string", java.lang.String.class, ""),
-	BOOL("bool", java.lang.Boolean.class, Boolean.TRUE.toString());
+	INTEGER("integer", 1, java.lang.Integer.class, "0"),
+	FLOAT("float", 2, java.lang.Float.class, "0"),
+	DOUBLE("double", 3, java.lang.Double.class, "0"),
+	STRING("string", 4, java.lang.String.class, ""),
+	BOOL("bool", 5, java.lang.Boolean.class, Boolean.TRUE.toString());
 	
 	
 	private String name;
+	
+	private int id;
 	
 	private Class wrapperClass;
 	
@@ -19,8 +21,9 @@ public enum ValueType {
 	
 	private String defaultStringValue;
 
-	private ValueType(final String name, final Class wrapperClass, final String defaultStringValue) {
+	private DataType(final String name, final int id, final Class wrapperClass, final String defaultStringValue) {
 		this.name = name;
+		this.id = id;
 		this.wrapperClass = wrapperClass;
 		this.defaultStringValue = defaultStringValue;
 
@@ -35,9 +38,9 @@ public enum ValueType {
 	public String getName() {
 		return name;
 	}
-
-	public void setName(final String name) {
-		this.name = name;
+	
+	public int getID() {
+		return id;
 	}
 
 	public Class getWrapperClass() {
@@ -69,7 +72,7 @@ public enum ValueType {
 	
 	@Override
 	public String toString() {
-		return name + " ValueType";
+		return name + " DataType";
 	}
 	
 	public boolean isNumericValue() {

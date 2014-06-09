@@ -15,11 +15,11 @@ public class DBMS_Tables {
 		
 		static final int NAME_ON_ENTITY_COLUMN_INDEX = 4;
 		
-		static final int VALUE_TYPE_ID_COLUMN_INDEX = 5;
+		static final int DATA_TYPE_COLUMN_INDEX = 5;
 		
-		static final int VALUE_CLASS_ON_DATA_COLUMN_INDEX = 6;
+		static final int VALUE_TYPE_ON_DATA_COLUMN_INDEX = 6;
 		
-		static final int VALUE_CLASS_ON_ENTITY_COLUMN_INDEX = 7;
+		static final int VALUE_TYPE_ON_ENTITY_COLUMN_INDEX = 7;
 		
 		
 		// column names
@@ -31,11 +31,11 @@ public class DBMS_Tables {
 		
 		static final String NAME_ON_ENTITY_COLUMN_NAME = "NAME_ON_ENTITY";
 		
-		static final String VALUE_TYPE_ID_COLUMN_NAME = "VALUE_TYPE_ID";
+		static final String DATA_TYPE_COLUMN_NAME = "DATA_TYPE";
 		
-		static final String VALUE_CLASS_ON_DATA_COLUMN_NAME = "VALUE_CLASS_ON_DATA";
+		static final String VALUE_TYPE_ON_DATA_COLUMN_NAME = "VALUE_TYPE_ON_DATA";
 		
-		static final String VALUE_CLASS_ON_ENTITY_COLUMN_NAME = "VALUE_CLASS_ON_ENTITY";
+		static final String VALUE_TYPE_ON_ENTITY_COLUMN_NAME = "VALUE_TYPE_ON_ENTITY";
 		
 	}
 	
@@ -44,17 +44,17 @@ public class DBMS_Tables {
 		
 		
 		// column indexes
-		static final int ATTRIBUTE_INFERENCE_GENERATION_RULE_COLUMN_INDEX = 1;
+		static final int GENERATION_RULE_ID_COLUMN_INDEX = 1;
 		
-		static final int GENERATION_RULE_ID_COLUMN_INDEX = 2;
+		static final int INFERRING_ATTRIBUTE_ID_COLUMN_INDEX = 2;
 		
 		static final int INFERRED_ATTRIBUTE_ID_COLUMN_INDEX = 3;
 		
 		
 		// column names
-		static final String ATTRIBUTE_INFERENCE_GENERATION_RULE_COLUMN_NAME = "ATTRIBUTE_INFERENCE_GENERATION_RULE";
-		
 		static final String GENERATION_RULE_ID_COLUMN_NAME = "GENERATION_RULE_ID";
+		
+		static final String INFERRING_ATTRIBUTE_ID_COLUMN_NAME = "INFERRING_ATTRIBUTE_ID";
 		
 		static final String INFERRED_ATTRIBUTE_ID_COLUMN_NAME = "INFERRED_ATTRIBUTE_ID";
 	}
@@ -149,37 +149,52 @@ public class DBMS_Tables {
 		
 	}
 	
-	static final class ENUMERATION_VALUE_ATTRIBUTE_TABLE {
-		static final String TABLE_NAME = "ENUMERATION_VALUE_ATTRIBUTE";
+	static final class FREQUENCY_DISTRIBUTION_ELEMENT_TABLE {
+		static final String TABLE_NAME = "FREQUENCY_DISTRIBUTION_ELEMENT";
 		
 		
 		// column indexes
-		static final int ENUMERATION_VALUE_ATTRIBUTE_ID_COLUMN_INDEX = 1;
-		
-		static final int ATTRIBUTE_ID_COLUMN_INDEX = 2;
-				
-		
-		// column names
-		static final String ENUMERATION_VALUE_ATTRIBUTE_ID_COLUMN_NAME = "ENUMERATION_VALUE_ATTRIBUTE_ID";
-		
-		static final String ATTRIBUTE_ID_COLUMN_NAME = "ATTRIBUTE_ID";
-		
-	}
-	
-	static final class FREQUENCY_DISTRIBUTION_GENERATION_RULE_TABLE {
-		static final String TABLE_NAME = "FREQUENCY_DISTRIBUTION_GENERATION_RULE";
-		
-		
-		// column indexes
-		static final int FREQUENCY_DISTRIBUTION_GENERATION_RULE_COLUMN_INDEX = 1;
+		static final int FREQUENCY_DISTRIBUTION_ELEMENT_ID_COLUMN_INDEX = 1;
 		
 		static final int GENERATION_RULE_ID_COLUMN_INDEX = 2;
 		
+		static final int FREQUENCY_COLUMN_INDEX = 3;
+		
 		
 		// column names
-		static final String FREQUENCY_DISTRIBUTION_GENERATION_RULE_COLUMN_NAME = "FREQUENCY_DISTRIBUTION_GENERATION_RULE";
+		static final String FREQUENCY_DISTRIBUTION_ELEMENT_ID_COLUMN_NAME = "FREQUENCY_DISTRIBUTION_ELEMENT_ID";
 		
 		static final String GENERATION_RULE_ID_COLUMN_NAME = "GENERATION_RULE_ID";
+		
+		static final String FREQUENCY_COLUMN_NAME = "FREQUENCY";
+	}
+	
+	static final class FREQUENCY_DISTRIBUTION_ELEMENT_ATTRIBUTE_VALUE_TABLE {
+		static final String TABLE_NAME = "FREQUENCY_DISTRIBUTION_ELEMENT_ATTRIBUTE_VALUE";
+		
+		
+		// column indexes
+		static final int FREQUENCY_DISTRIBUTION_ELEMENT_ATTRIBUTE_VALUE_ID_COLUMN_INDEX = 1; // TODO remove
+		
+		static final int FREQUENCY_DISTRIBUTION_ELEMENT_ID_COLUMN_INDEX = 2;
+		
+		static final int ATTRIBUTE_ID_COLUMN_INDEX = 3;
+		
+		static final int UNIQUE_VALUE_ID_COLUMN_INDEX = 4;
+		
+		static final int RANGE_VALUE_ID_COLUMN_INDEX = 5;
+		
+		
+		// column names
+		static final String FREQUENCY_DISTRIBUTION_ELEMENT_ATTRIBUTE_VALUE_ID_COLUMN_NAME = "FREQUENCY_DISTRIBUTION_ELEMENT_ATTRIBUTE_VALUE_ID"; // TODO remove
+		
+		static final String FREQUENCY_DISTRIBUTION_ELEMENT_ID_COLUMN_NAME = "FREQUENCY_DISTRIBUTION_ELEMENT_ID";
+		
+		static final String ATTRIBUTE_ID_COLUMN_NAME = "ATTRIBUTE_ID";
+		
+		static final String UNIQUE_VALUE_ID_COLUMN_NAME = "UNIQUE_VALUE_ID";
+		
+		static final String RANGE_VALUE_ID_COLUMN_NAME = "RANGE_VALUE_ID";
 	}
 	
 	static final class GENERATION_RULE_TABLE {
@@ -195,6 +210,8 @@ public class DBMS_Tables {
 		
 		static final int RULE_ORDER_COLUMN_INDEX = 4;
 		
+		static final int RULE_TYPE_COLUMN_INDEX = 5;
+		
 		
 		// column names
 		static final String GENERATION_RULE_ID_COLUMN_NAME = "GENERATION_RULE_ID";
@@ -204,6 +221,8 @@ public class DBMS_Tables {
 		static final String NAME_COLUMN_NAME = "NAME";
 		
 		static final String RULE_ORDER_COLUMN_NAME = "RULE_ORDER";
+		
+		static final String RULE_TYPE_COLUMN_NAME = "RULE_TYPE";
 	}
 	
 	static final class INFERENCE_RANGE_ATTRIBUTE_DATA1_TABLE {
@@ -211,19 +230,15 @@ public class DBMS_Tables {
 		
 		
 		// column indexes
-		static final int INFERENCE_RANGE_ATTRIBUTE_ID_COLUMN_INDEX = 1;
+		static final int GENERATION_RULE_ID_COLUMN_INDEX = 1;
 		
-		static final int INFERRED_ATTRIBUTE_ID_COLUMN_INDEX = 2;
+		static final int INFERRING_UNIQUE_VALUE_ID_COLUMN_INDEX = 2;
 		
-		static final int INFERRING_UNIQUE_VALUE_ID_COLUMN_INDEX = 3;
-		
-		static final int INFERRED_RANGE_VALUE_ID_COLUMN_INDEX = 4;
+		static final int INFERRED_RANGE_VALUE_ID_COLUMN_INDEX = 3;
 		
 		
 		// column names
-		static final String INFERENCE_RANGE_ATTRIBUTE_ID_COLUMN_NAME = "INFERENCE_RANGE_ATTRIBUTE_ID";
-		
-		static final String INFERRED_ATTRIBUTE_ID_COLUMN_NAME = "INFERRED_ATTRIBUTE_ID";
+		static final String GENERATION_RULE_ID_COLUMN_NAME = "GENERATION_RULE_ID";
 		
 		static final String INFERRING_UNIQUE_VALUE_ID_COLUMN_NAME = "INFERRING_UNIQUE_VALUE_ID";
 		
@@ -235,19 +250,15 @@ public class DBMS_Tables {
 		
 		
 		// column indexes
-		static final int INFERENCE_RANGE_ATTRIBUTE_ID_COLUMN_INDEX = 1;
+		static final int GENERATION_RULE_ID_COLUMN_INDEX = 1;
 		
-		static final int INFERRED_ATTRIBUTE_ID_COLUMN_INDEX = 2;
+		static final int INFERRING_RANGE_VALUE_ID_COLUMN_INDEX = 2;
 		
-		static final int INFERRING_RANGE_VALUE_ID_COLUMN_INDEX = 3;
-		
-		static final int INFERRED_RANGE_VALUE_ID_COLUMN_INDEX = 4;
+		static final int INFERRED_RANGE_VALUE_ID_COLUMN_INDEX = 3;
 		
 		
 		// column names
-		static final String INFERENCE_RANGE_ATTRIBUTE_ID_COLUMN_NAME = "INFERENCE_RANGE_ATTRIBUTE_ID";
-		
-		static final String INFERRED_ATTRIBUTE_ID_COLUMN_NAME = "INFERRED_ATTRIBUTE_ID";
+		static final String GENERATION_RULE_ID_COLUMN_NAME = "GENERATION_RULE_ID";
 		
 		static final String INFERRING_RANGE_VALUE_ID_COLUMN_NAME = "INFERRING_RANGE_VALUE_ID";
 		
@@ -259,19 +270,15 @@ public class DBMS_Tables {
 		
 		
 		// column indexes
-		static final int INFERENCE_VALUE_ID_COLUMN_INDEX = 1;
+		static final int ATTRIBUTE_INFERENCE_GENERATION_RULE_ID_COLUMN_INDEX = 1;
 		
-		static final int INFERRED_ATTRIBUTE_ID_COLUNMN_INDEX = 2;
+		static final int INFERRING_UNIQUE_VALUE_ID_COLUMN_INDEX = 2;
 		
-		static final int INFERRING_UNIQUE_VALUE_ID_COLUMN_INDEX = 3;
-		
-		static final int INFERRED_UNIQUE_VALUE_ID_COLUMN_INDEX = 4;
+		static final int INFERRED_UNIQUE_VALUE_ID_COLUMN_INDEX = 3;
 		
 		
 		// column names
-		static final String INFERENCE_VALUE_ID_COLUMN_NAME = "INFERENCE_VALUE_ID";
-		
-		static final String INFERRED_ATTRIBUTE_ID_COLUNMN_NAME = "INFERRED_ATTRIBUTE_ID";
+		static final String GENERATION_RULE_ID_COLUMN_NAME = "GENERATION_RULE_ID";
 		
 		static final String INFERRING_UNIQUE_VALUE_ID_COLUMN_NAME = "INFERRING_UNIQUE_VALUE_ID";
 		
@@ -283,101 +290,57 @@ public class DBMS_Tables {
 		
 		
 		// column indexes
-		static final int INFERENCE_VALUE_ID_COLUMN_INDEX = 1;
+		static final int GENERATION_RULE_ID_COLUMN_INDEX = 1;
 		
-		static final int INFERRED_ATTRIBUTE_ID_COLUNMN_INDEX = 2;
+		static final int INFERRING_RANGE_VALUE_ID_COLUMN_INDEX = 2;
 		
-		static final int INFERRING_RANGE_VALUE_ID_COLUMN_INDEX = 3;
-		
-		static final int INFERRED_UNIQUE_VALUE_ID_COLUMN_INDEX = 4;
+		static final int INFERRED_UNIQUE_VALUE_ID_COLUMN_INDEX = 3;
 		
 		
 		// column names
-		static final String INFERENCE_VALUE_ID_COLUMN_NAME = "INFERENCE_VALUE_ID";
-		
-		static final String INFERRED_ATTRIBUTE_ID_COLUNMN_NAME = "INFERRED_ATTRIBUTE_ID";
+		static final String GENERATION_RULE_ID_COLUMN_NAME = "GENERATION_RULE_ID";
 		
 		static final String INFERRING_RANGE_VALUE_ID_COLUMN_NAME = "INFERRING_RANGE_VALUE_ID";
 		
 		static final String INFERRED_UNIQUE_VALUE_ID_COLUMN_NAME = "INFERRED_UNIQUE_VALUE_ID";
 	}
 	
-	static final class INFERRED_ATTRIBUTE_TABLE {
-		static final String TABLE_NAME = "INFERRED_ATTRIBUTE";
-		
-		
-		// column indexes
-		static final int INFERRED_ATTRIBUTE_ID_COLUMN_INDEX = 1;
-		
-		static final int ATTRIBUTE_ID_COLUMN_INDEX = 2;
-		
-		static final int INFERRING_ATTRIBUTE_ID_COLUMN_INDEX = 3;
-		
-		
-		// column names
-		static final String INFERRED_ATTRIBUTE_ID_COLUMN_NAME = "INFERRED_ATTRIBUTE_ID";
-		
-		static final String ATTRIBUTE_ID_COLUMN_NAME = "ATTRIBUTE_ID";
-		
-		static final String INFERRING_ATTRIBUTE_ID_COLUMN_NAME = "INFERRING_ATTRIBUTE_ID";
-	}
-	
-	static final class INPUT_ATTRIBUTE_TABLE {
-		static final String TABLE_NAME = "INPUT_ATTRIBUTE";
+	static final class INPUT_OUTPUT_ATTRIBUTE_TABLE {
+		static final String TABLE_NAME = "INPUT_OUTPUT_ATTRIBUTE";
 		
 		
 		// column indexes
 		static final int INPUT_ATTRIBUTE_ID_COLUMN_INDEX = 1;
 		
-		static final int ENUMERATION_VALUE_ATTRIBUTE_ID_COLUMN_INDEX = 2;
+		static final int ATTRIBUTE_ID_COLUMN_INDEX = 2;
 		
 		static final int FREQUENCY_DISTRIBUTION_GENERATION_RULE_ID_COLUMN_INDEX = 3;
 		
 		static final int ATTRIBUTE_ORDER_COLUMN_INDEX = 4;
+		
+		static final int IS_INPUT_ATTRIBUTE_COLUMN_INDEX = 5;
 		
 		
 		// column names
 		static final String INPUT_ATTRIBUTE_ID_COLUMN_NAME = "INPUT_ATTRIBUTE";
 		
-		static final String ENUMERATION_VALUE_ATTRIBUTE_ID_COLUMN_NAME = "ENUMERATION_VALUE_ATTRIBUTE_ID";
+		static final String ATTRIBUTE_ID_COLUMN_NAME = "ATTRIBUTE_ID";
 		
 		static final String FREQUENCY_DISTRIBUTION_GENERATION_RULE_ID_COLUMN_NAME = "FREQUENCY_DISTRIBUTION_GENERATION_RULE_ID";
 		
 		static final String ATTRIBUTE_ORDER_COLUMN_NAME = "ATTRIBUTE_ORDER";
+		
+		static final String IS_INPUT_ATTRIBUTE_COLUMN_NAME = "IS_INPUT_ATTRIBUTE";
 	}
 	
-	static final class OUTPUT_ATTRIBUTE_TABLE {
-		static final String TABLE_NAME = "OUTPUT_ATTRIBUTE";
-		
-		
-		// column indexes
-		static final int OUTPUT_ATTRIBUTE_ID_COLUMN_INDEX = 1;
-		
-		static final int ENUMERATION_VALUE_ATTRIBUTE_ID_COLUMN_INDEX = 2;
-		
-		static final int FREQUENCY_DISTRIBUTION_GENERATION_RULE_ID_COLUMN_INDEX = 3;
-		
-		static final int ATTRIBUTE_ORDER_COLUMN_INDEX = 4;
-		
-		
-		// column names
-		static final String OUTPUT_ATTRIBUTE_ID_COLUMN_NAME = "OUTPUT_ATTRIBUTE";
-		
-		static final String ENUMERATION_VALUE_ATTRIBUTE_ID_COLUMN_NAME = "ENUMERATION_VALUE_ATTRIBUTE_ID";
-		
-		static final String FREQUENCY_DISTRIBUTION_GENERATION_RULE_ID_COLUMN_NAME = "FREQUENCY_DISTRIBUTION_GENERATION_RULE_ID";
-		
-		static final String ATTRIBUTE_ORDER_COLUMN_NAME = "ATTRIBUTE_ORDER";
-	}
-	
-	static final class POPULATION_GENERATOR_TABLE {
+	static final class SYNTHETIC_POPULATION_GENERATOR_TABLE {
 		static final String TABLE_NAME = "POPULATION_GENERATOR";
 		
 		
 		// column indexes
 		static final int POPULATION_GENERATOR_ID_COLUMN_INDEX = 1;
 		
-		static final int NAME_ID_COLUMN_INDEX = 2;
+		static final int NAME_COLUMN_INDEX = 2;
 		
 		static final int INITIAL_NUMBER_OF_ENTITIES_COLUMN_INDEX = 3;
 		
@@ -385,7 +348,7 @@ public class DBMS_Tables {
 		// column names
 		static final String POPULATION_GENERATOR_ID_COLUMN_NAME = "POPULATION_GENERATOR_ID";
 		
-		static final String NAME_ID_COLUMN_NAME = "NAME";
+		static final String NAME_COLUMN_NAME = "NAME";
 		
 		static final String INITIAL_NUMBER_OF_ENTITIES_COLUMN_NAME = "INITIAL_NUMBER_OF_ENTITIES";
 	}

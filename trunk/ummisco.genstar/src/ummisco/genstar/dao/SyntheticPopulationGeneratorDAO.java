@@ -5,6 +5,15 @@ import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 
 public interface SyntheticPopulationGeneratorDAO {
 
-	public abstract ISyntheticPopulationGenerator findSyntheticPopulationGenerator(final String populationGeneratorName) throws GenstarDAOException;
+	public abstract ISyntheticPopulationGenerator findSyntheticPopulationGeneratorByName(final String populationGeneratorName) throws GenstarDAOException;
+	
+	public abstract ISyntheticPopulationGenerator findSyntheticPopulationGeneratorByID(final int populationGeneratorID) throws GenstarDAOException;
+	
+	public abstract void createSyntheticPopulationGenerator(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;
+	
+	public abstract void updateSyntheticPopulationGenerator(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;
+	
+	public abstract void deleteSyntheticPopulationGenerator(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;
 
+	public abstract void deleteSyntheticPopulationGenerator(final int populationGeneratorID) throws GenstarDAOException;
 }

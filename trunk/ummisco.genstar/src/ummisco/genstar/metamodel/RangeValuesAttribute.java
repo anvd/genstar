@@ -4,26 +4,26 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ummisco.genstar.exception.AttributeException;
+import ummisco.genstar.exception.GenstarException;
 
-public class EnumerationOfRangesAttribute extends EnumerationValueAttribute {
+public class RangeValuesAttribute extends AbstractAttribute {
 	
 	private Set<RangeValue> rangeValues;
 	
 	
-	public EnumerationOfRangesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final ValueType valueType) throws AttributeException {
+	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType valueType) throws GenstarException {
 		this(populationGenerator, nameOnData, nameOnData, valueType, RangeValue.class);
 	}
 
-	public EnumerationOfRangesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final ValueType valueType, final Class<? extends AttributeValue> entityAttributeValueClass) throws AttributeException {
+	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType valueType, final Class<? extends AttributeValue> entityAttributeValueClass) throws GenstarException {
 		this(populationGenerator, nameOnData, nameOnData, valueType, entityAttributeValueClass);
 	}
 
-	public EnumerationOfRangesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final ValueType valueType) throws AttributeException {
+	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final DataType valueType) throws GenstarException {
 		this(populationGenerator, nameOnData, nameOnEntity, valueType, RangeValue.class);
 	}
 
-	public EnumerationOfRangesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final ValueType valueType, final Class<? extends AttributeValue> valueClassOnEntity) throws AttributeException {
+	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final DataType valueType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
 		super(populationGenerator, nameOnData, nameOnEntity, valueType, valueClassOnEntity);
 
 		if (!valueType.isNumericValue()) { throw new IllegalArgumentException(this.getClass().getName() + " only supports Double, Float and Integer value."); }
@@ -31,19 +31,19 @@ public class EnumerationOfRangesAttribute extends EnumerationValueAttribute {
 		this.valueClassOnData = RangeValue.class;
 		this.rangeValues = new HashSet<RangeValue>();
 		try {
-			this.setDefaultValue(valueClassOnData.getConstructor(ValueType.class).newInstance(valueType));
+			this.setDefaultValue(valueClassOnData.getConstructor(DataType.class).newInstance(valueType));
 		} catch (Exception e) {
-			throw new AttributeException(e);
+			throw new GenstarException(e);
 		}
 	}
 	
 	// FIXME move up to parent class, use the "valueClassOnData" for the validation process
-	@Override public boolean add(final AttributeValue rangeValue) throws AttributeException {
-		if (rangeValue == null) { throw new AttributeException("'rangeValue' parameter can not be null."); }
+	@Override public boolean add(final AttributeValue rangeValue) throws GenstarException {
+		if (rangeValue == null) { throw new GenstarException("'rangeValue' parameter can not be null."); }
 		
-		if (!rangeValue.getClass().equals(this.valueClassOnData)) { throw new AttributeException("'rangeValue' must be an instance of " + valueClassOnData.getSimpleName()); }
+		if (!rangeValue.getClass().equals(this.valueClassOnData)) { throw new GenstarException("'rangeValue' must be an instance of " + valueClassOnData.getSimpleName()); }
 		
-		if (!this.valueType.equals(rangeValue.valueType)) { throw new AttributeException("Incompatible valueType between rangeValue and attribute : " + rangeValue.valueType.getName() + " v.s. " + this.valueType.getName()); }
+		if (!this.dataType.equals(rangeValue.dataType)) { throw new GenstarException("Incompatible valueType between rangeValue and attribute : " + rangeValue.dataType.getName() + " v.s. " + this.dataType.getName()); }
 		
 		if (this.contains(rangeValue)) { return false; }
 		
@@ -56,8 +56,8 @@ public class EnumerationOfRangesAttribute extends EnumerationValueAttribute {
 		return true;
 	}
 	
-	@Override public boolean addAll(final Set<AttributeValue> values) throws AttributeException {
-		if (values == null) { throw new AttributeException("'values' parameter can not be null"); }
+	@Override public boolean addAll(final Set<AttributeValue> values) throws GenstarException {
+		if (values == null) { throw new GenstarException("'values' parameter can not be null"); }
 		
 		boolean changed = false;
 		for (AttributeValue v : values) {
@@ -111,7 +111,7 @@ public class EnumerationOfRangesAttribute extends EnumerationValueAttribute {
 	}
 	
 	@Override
-	public Set<AttributeValue> values() throws AttributeException {
+	public Set<AttributeValue> values() {
 		Set<AttributeValue> attributeValues = new HashSet<AttributeValue>();
 		attributeValues.addAll(rangeValues);
 
@@ -119,10 +119,10 @@ public class EnumerationOfRangesAttribute extends EnumerationValueAttribute {
 	}
 
 	@Override
-	public AttributeValue valueFromString(final List<String> stringValue) throws AttributeException {
-		if (stringValue == null || stringValue.isEmpty()) { throw new AttributeException("'stringValue' parameter can not be null"); }
+	public AttributeValue valueFromString(final List<String> stringValue) throws GenstarException {
+		if (stringValue == null || stringValue.isEmpty()) { throw new GenstarException("'stringValue' parameter can not be null"); }
 		if (stringValue.size() < 2) { throw new IllegalArgumentException("length of 'stringValue' must be at least 2"); }
 		
-		return new RangeValue(valueType, stringValue.get(0), stringValue.get(1));
+		return new RangeValue(dataType, stringValue.get(0), stringValue.get(1));
 	}
 }
