@@ -10,7 +10,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import ummisco.genstar.exception.AttributeException;
 import ummisco.genstar.exception.GenstarException;
 
 public class EntityTest {
@@ -33,16 +32,16 @@ public class EntityTest {
 		ISyntheticPopulationGenerator bondyPopulation = new SyntheticPopulationGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
-		EnumerationOfRangesAttribute ageRangesAttr1 = new EnumerationOfRangesAttribute(bondyPopulation, "age_range_1", "age", ValueType.INTEGER);
-		RangeValue ageRange1 = new RangeValue(ValueType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
-		RangeValue ageRange2 = new RangeValue(ValueType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]));
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
+		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]));
 		ageRangesAttr1.add(ageRange1);
 		ageRangesAttr1.add(ageRange2);
 		bondyPopulation.addAttribute(ageRangesAttr1);
 		
 		
-		EnumerationOfValuesAttribute sexAttr = new EnumerationOfValuesAttribute(bondyPopulation, "sex", ValueType.BOOL);
-		UniqueValue maleValueOrigin = new UniqueValue(ValueType.BOOL, Boolean.toString(BondyData.sexes[0]));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(bondyPopulation, "sex", DataType.BOOL);
+		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]));
 		sexAttr.add(maleValueOrigin);
 		bondyPopulation.addAttribute(sexAttr);
 
@@ -64,9 +63,9 @@ public class EntityTest {
 		SyntheticPopulationGenerator bondyPopulation = new SyntheticPopulationGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
-		EnumerationOfRangesAttribute ageRangesAttr1 = new EnumerationOfRangesAttribute(bondyPopulation, "age_range_1", "age", ValueType.INTEGER);
-		RangeValue ageRange1 = new RangeValue(ValueType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
-		RangeValue ageRange2 = new RangeValue(ValueType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]));
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
+		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]));
 		ageRangesAttr1.add(ageRange1);
 		ageRangesAttr1.add(ageRange2);
 		bondyPopulation.addAttribute(ageRangesAttr1);
@@ -78,7 +77,7 @@ public class EntityTest {
 		entity1.putAttributeValue(ageRangesAttr1, ageRange1);
 		assertTrue(entity1.containAttribute(ageRangesAttr1.getNameOnEntity()));
 		
-		exception.expect(AttributeException.class);
+		exception.expect(GenstarException.class);
 		entity1.putAttributeValue(ageRangesAttr1, ageRange1);
 	}
 	
@@ -86,9 +85,9 @@ public class EntityTest {
 		SyntheticPopulationGenerator bondyPopulation = new SyntheticPopulationGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
-		EnumerationOfRangesAttribute ageRangesAttr1 = new EnumerationOfRangesAttribute(bondyPopulation, "age_range_1", "age", ValueType.INTEGER);
-		RangeValue ageRange1 = new RangeValue(ValueType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
-		RangeValue ageRange2 = new RangeValue(ValueType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]));
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
+		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]));
 		ageRangesAttr1.add(ageRange1);
 		ageRangesAttr1.add(ageRange2);
 		bondyPopulation.addAttribute(ageRangesAttr1);
@@ -109,8 +108,8 @@ public class EntityTest {
 		SyntheticPopulationGenerator bondyPopulation = new SyntheticPopulationGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
-		EnumerationOfRangesAttribute ageRangesAttr1 = new EnumerationOfRangesAttribute(bondyPopulation, "age_range_1", "age", ValueType.INTEGER);
-		RangeValue ageRange1 = new RangeValue(ValueType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
 		ageRangesAttr1.add(ageRange1);
 		bondyPopulation.addAttribute(ageRangesAttr1);
 
@@ -123,25 +122,25 @@ public class EntityTest {
 		assertTrue(entity1.isMatch(null));
 		
 		
-		UniqueValue ageRangeMatchAttrValue1 = new UniqueValue(ValueType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]));
+		UniqueValue ageRangeMatchAttrValue1 = new UniqueValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]));
 		set1.put("age", ageRangeMatchAttrValue1);
 		assertTrue(entity1.isMatch(set1));
 		
 		
 		set1.clear();
-		UniqueValue ageRangeMatchAttrValue2 = new UniqueValue(ValueType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0] - 1));
+		UniqueValue ageRangeMatchAttrValue2 = new UniqueValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0] - 1));
 		set1.put("age", ageRangeMatchAttrValue2);
 		assertFalse(entity1.isMatch(set1));
 		
 		
 		set1.clear();
-		RangeValue ageRangeMatchAttrValue3 = new RangeValue(ValueType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
+		RangeValue ageRangeMatchAttrValue3 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
 		set1.put("age", ageRangeMatchAttrValue3);
 		assertTrue(entity1.isMatch(set1));
 		
 		
 		set1.clear();
-		RangeValue ageRangeMatchAttrValue4 = new RangeValue(ValueType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][1] + 1), Integer.toString(BondyData.age_ranges_1[0][1] + 2));
+		RangeValue ageRangeMatchAttrValue4 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][1] + 1), Integer.toString(BondyData.age_ranges_1[0][1] + 2));
 		set1.put("age", ageRangeMatchAttrValue4);
 		assertFalse(entity1.isMatch(set1));
 		

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ummisco.genstar.exception.AttributeException;
+import ummisco.genstar.exception.GenstarException;
 
 public class Entity {
 
@@ -45,25 +45,25 @@ public class Entity {
 		return attributes.get(attributeNameOnEntity) != null;
 	}
 	
-	public void putAttributeValue(final AbstractAttribute attribute, final AttributeValue attributeValue) throws AttributeException {
+	public void putAttributeValue(final AbstractAttribute attribute, final AttributeValue attributeValue) throws GenstarException {
 		this.putAttributeValue(new EntityAttributeValue(attribute, attributeValue));
 	}
 
-	public void putAttributeValue(final EntityAttributeValue entityAttributeValue) throws AttributeException {
+	public void putAttributeValue(final EntityAttributeValue entityAttributeValue) throws GenstarException {
 		
 		if (entityAttributeValue == null) { throw new IllegalArgumentException("'attributeValue' parameter can not be null"); }
 		
 		String attributeNameOnEntity = entityAttributeValue.getAttribute().getNameOnEntity();
-		if (containAttribute(attributeNameOnEntity)) { throw new AttributeException("Entity " + population.getName() + " already contains '" + attributeNameOnEntity + "' attribute."); }
+		if (containAttribute(attributeNameOnEntity)) { throw new GenstarException("Entity " + population.getName() + " already contains '" + attributeNameOnEntity + "' attribute."); }
 		
 		attributes.put(entityAttributeValue.getAttribute().getNameOnEntity(), entityAttributeValue);
 	}
 	
-	public void replaceAttributeValue(final AbstractAttribute attribute, final AttributeValue attributeValue) throws AttributeException {
+	public void replaceAttributeValue(final AbstractAttribute attribute, final AttributeValue attributeValue) throws GenstarException {
 		this.replaceAttributeValue(new EntityAttributeValue(attribute, attributeValue));
 	}
 
-	public void replaceAttributeValue(final EntityAttributeValue entityAttributeValue) throws AttributeException {
+	public void replaceAttributeValue(final EntityAttributeValue entityAttributeValue) throws GenstarException {
 		if (entityAttributeValue == null) { throw new IllegalArgumentException("'attributeValue' parameter can not be null"); }
 		
 		attributes.put(entityAttributeValue.getAttribute().getNameOnEntity(), entityAttributeValue);

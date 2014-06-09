@@ -4,23 +4,46 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FrequencyDistributionElement { // TODO change to AttributeValueFrequency
+import ummisco.genstar.exception.GenstarException;
 
-	private Map<EnumerationValueAttribute, AttributeValue> attributeValues;
+public class FrequencyDistributionElement { // TODO change to AttributeValueFrequency
+	
+	private int frequencyDistributionElementID = -1;
+	
+	private FrequencyDistributionGenerationRule frequencyDistributionGenerationRule = null;
+
+	private Map<AbstractAttribute, AttributeValue> attributeValues;
 	
 	private int frequency = 0;
 	
 	
-	public FrequencyDistributionElement(final Map<EnumerationValueAttribute, AttributeValue> data) {
+	public FrequencyDistributionElement(final FrequencyDistributionGenerationRule frequencyDistributionGenerationRule, final Map<AbstractAttribute, AttributeValue> data) 
+		throws GenstarException {
+		if (frequencyDistributionGenerationRule == null) { throw new IllegalArgumentException("'frequencyDistributionGenerationRule' can not be null"); }
 		if (data == null || data.size() == 0) { throw new IllegalArgumentException("'data' parameter can not be null or empty"); }
 		
-		this.attributeValues = new HashMap<EnumerationValueAttribute, AttributeValue>();
+		for (AbstractAttribute attribute : data.keySet()) {
+			if (!frequencyDistributionGenerationRule.containAttribute(attribute)) {
+				throw new GenstarException("'frequencyDistributionGenerationRule' doesn't contain one or some attributes of 'data'");
+			}
+			
+			if (!attribute.contains(data.get(attribute))) {
+				throw new GenstarException("Some attribute values don't belong to the corresponding attributes.");
+			}
+		}
+		
+		
+		this.attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		this.attributeValues.putAll(data); // TODO : validation?
 	}
 	
 	
-	public AttributeValue getAttributeValue(final EnumerationValueAttribute attribute) {
+	public AttributeValue getAttributeValue(final AbstractAttribute attribute) {
 		return attributeValues.get(attribute);
+	}
+	
+	public Map<AbstractAttribute, AttributeValue> getAttributeValues() {
+		return attributeValues;
 	}
 
 	public int getFrequency() {
@@ -67,7 +90,7 @@ public class FrequencyDistributionElement { // TODO change to AttributeValueFreq
 		return true;
 	}
 	
-	public boolean isMatchDataSet(final Map<EnumerationValueAttribute, ? extends AttributeValue> dataSet) {
+	public boolean isMatchDataSet(final Map<AbstractAttribute, ? extends AttributeValue> dataSet) {
 		if (dataSet == null || dataSet.isEmpty()) { throw new IllegalArgumentException("'dataSet' parameter can not be null or empty"); }
 		
 		AttributeValue attributeValue;
@@ -80,6 +103,28 @@ public class FrequencyDistributionElement { // TODO change to AttributeValueFreq
 		
 		return true;
 	}
+
+	public int getFrequencyDistributionElementID() {
+		return frequencyDistributionElementID;
+	}
+
+
+	public void setFrequencyDistributionElementID(
+			int frequencyDistributionElementID) {
+		this.frequencyDistributionElementID = frequencyDistributionElementID;
+	}
+
+
+	public FrequencyDistributionGenerationRule getFrequencyDistributionGenerationRule() {
+		return frequencyDistributionGenerationRule;
+	}
+
+
+	public void setFrequencyDistributionGenerationRule(
+			FrequencyDistributionGenerationRule frequencyDistributionGenerationRule) {
+		this.frequencyDistributionGenerationRule = frequencyDistributionGenerationRule;
+	}
+
 
 	@Override
 	public String toString() {

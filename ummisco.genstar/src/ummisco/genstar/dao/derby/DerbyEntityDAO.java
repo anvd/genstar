@@ -6,7 +6,7 @@ import ummisco.genstar.exception.GenstarDAOException;
 public class DerbyEntityDAO extends AbstractDerbyDAO implements EntityDAO {
 
 	public DerbyEntityDAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
-		super(daoFactory);
+		super(daoFactory, DBMS_Tables.ENTITY_TABLE.TABLE_NAME);
 	}
 
 }

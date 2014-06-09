@@ -1,6 +1,6 @@
 package ummisco.genstar.metamodel;
 
-import ummisco.genstar.exception.AttributeException;
+import ummisco.genstar.exception.GenstarException;
 
 public class EntityAttributeValue {
 	
@@ -11,7 +11,7 @@ public class EntityAttributeValue {
 	private AttributeValue attributeValueOnData;
 	
 	
-	public EntityAttributeValue(final AbstractAttribute attribute, final AttributeValue attributeValueOnData) throws AttributeException {
+	public EntityAttributeValue(final AbstractAttribute attribute, final AttributeValue attributeValueOnData) throws GenstarException {
 		if (attribute == null || attributeValueOnData == null) { throw new IllegalArgumentException("Neither 'attribute' nor 'attributeValueOnData' parameter can not be null"); }
 		
 		// FIXME validation : attribute can accept attributeValueOnData

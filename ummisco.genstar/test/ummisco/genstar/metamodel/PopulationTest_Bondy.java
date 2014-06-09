@@ -2,8 +2,6 @@ package ummisco.genstar.metamodel;
 
 import org.junit.Test;
 
-import ummisco.genstar.exception.AttributeException;
-
 public class PopulationTest_Bondy {
 	
 

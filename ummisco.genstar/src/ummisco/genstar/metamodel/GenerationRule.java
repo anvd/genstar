@@ -1,13 +1,16 @@
 package ummisco.genstar.metamodel;
 
-import ummisco.genstar.exception.GenerationException;
 import ummisco.genstar.exception.GenstarException;
 
 public abstract class GenerationRule {
 	
+	protected int generationRuleID = -1;
+	
 	protected ISyntheticPopulationGenerator populationGenerator;
 	
 	protected String name;
+	
+	protected int order = -1;
 	
 	
 	public GenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String name) throws GenstarException {
@@ -18,6 +21,14 @@ public abstract class GenerationRule {
 		this.name = name;
 	}
 	
+	public void setGenerationRuleID(final int generationRuleID) {
+		this.generationRuleID = generationRuleID;
+	}
+	
+	public int getGenerationRuleID() {
+		return generationRuleID;
+	}
+	
 	public ISyntheticPopulationGenerator getGenerator() {
 		return populationGenerator;
 	}
@@ -25,6 +36,16 @@ public abstract class GenerationRule {
 	public String getName() {
 		return name;
 	}
+	
+	public void setOrder(final int order) {
+		this.order = order;
+	}
+	
+	public int getOrder() {
+		return order;
+	}
+	
+	public abstract int getRuleType();
 
-	public abstract void generate(final Entity entity) throws GenerationException;
+	public abstract void generate(final Entity entity) throws GenstarException;
 }

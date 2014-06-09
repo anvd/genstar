@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import ummisco.genstar.exception.AttributeException;
-import ummisco.genstar.exception.GenerationException;
 import ummisco.genstar.exception.GenstarException;
 
 
 public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerator {
+	
+	private int id = -1;
 	
 	private String name;
 	
@@ -30,6 +30,14 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 		this.nbOfEntities = nbOfEntities;
 		this.attributes = new TreeMap<String, AbstractAttribute>();
 		this.generationRules = new TreeMap<Integer, GenerationRule>();
+	}
+	
+	@Override public void setID(final int id) {
+		this.id = id;
+	}
+	
+	@Override public int getID() {
+		return id;
 	}
 	
 	@Override public String getName() {
@@ -70,10 +78,10 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 		return attributes.get(attributeNameOnData);
 	}
 	
-	@Override public void addAttribute(final AbstractAttribute attribute) throws AttributeException {
-		if (attribute == null) { throw new AttributeException("'attribute' parameter can not be null"); }
-		if (containAttribute(attribute.getNameOnData())) { throw new AttributeException("'" + name + "' population already contains '" + attribute.getNameOnData() + "' attribute."); }
-		if (!attribute.getPopulationGenerator().equals(this)) { throw new AttributeException("Can not add '" + attribute.getNameOnData() + "' attribute to '" + this.getName() + 
+	@Override public void addAttribute(final AbstractAttribute attribute) throws GenstarException {
+		if (attribute == null) { throw new GenstarException("'attribute' parameter can not be null"); }
+		if (containAttribute(attribute.getNameOnData())) { throw new GenstarException("'" + name + "' population already contains '" + attribute.getNameOnData() + "' attribute."); }
+		if (!attribute.getPopulationGenerator().equals(this)) { throw new GenstarException("Can not add '" + attribute.getNameOnData() + "' attribute to '" + this.getName() + 
 				"' population. Because attribute's population is " + attribute.getPopulationGenerator() + " (different from " + this + " population)."); }
 		
 		
@@ -232,7 +240,7 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 		return retVal;
 	}
 
-	@Override public ISyntheticPopulation generate() throws GenerationException {
+	@Override public ISyntheticPopulation generate() throws GenstarException {
 		ISyntheticPopulation population = new SyntheticPopulation(name, nbOfEntities);
 		
 		for (Entity e : population.getEntities()) {

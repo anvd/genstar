@@ -3,11 +3,11 @@ package ummisco.genstar.smach;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import ummisco.genstar.exception.AttributeException;
+import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AttributeValue;
 import ummisco.genstar.metamodel.RangeValue;
 import ummisco.genstar.metamodel.UniqueValue;
-import ummisco.genstar.metamodel.ValueType;
+import ummisco.genstar.metamodel.DataType;
 
 public class NationalLevelDistribution {
 
@@ -55,9 +55,9 @@ public class NationalLevelDistribution {
 	static {
 		for (double[] entry : coupleAgeDifferences) {
 			try {
-				coupleAgeDifferencesAttributeValuesMap.put(new UniqueValue(ValueType.INTEGER, Integer.toString((int) entry[0])), 
-						new UniqueValue(ValueType.DOUBLE, Double.toString(entry[1])) );
-			} catch (AttributeException e) {
+				coupleAgeDifferencesAttributeValuesMap.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) entry[0])), 
+						new UniqueValue(DataType.DOUBLE, Double.toString(entry[1])) );
+			} catch (GenstarException e) {
 				e.printStackTrace();
 			}
 		}
@@ -84,11 +84,11 @@ public class NationalLevelDistribution {
 		
 		for (int[] order : liveBirthOrder) {
 			try {
-				firstBirthOrder.put(new RangeValue(ValueType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(ValueType.INTEGER, Integer.toString(order[2])));
-				secondBirthOrder.put(new RangeValue(ValueType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(ValueType.INTEGER, Integer.toString(order[3])));
-				thirdBirthOrder.put(new RangeValue(ValueType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(ValueType.INTEGER, Integer.toString(order[4])));
-				fourthBirthOrder.put(new RangeValue(ValueType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(ValueType.INTEGER, Integer.toString(order[5])));
-			} catch (AttributeException e) {
+				firstBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(DataType.INTEGER, Integer.toString(order[2])));
+				secondBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(DataType.INTEGER, Integer.toString(order[3])));
+				thirdBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(DataType.INTEGER, Integer.toString(order[4])));
+				fourthBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(DataType.INTEGER, Integer.toString(order[5])));
+			} catch (GenstarException e) {
 				e.printStackTrace();
 			}
 		}

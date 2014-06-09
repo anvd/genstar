@@ -1,29 +1,33 @@
 package ummisco.genstar.metamodel;
 
-import ummisco.genstar.exception.AttributeException;
+import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.util.SharedInstances;
 
 public class RangeValue extends AttributeValue {
 	
+	public static final int RANGE_VALUE_TYPE = 2;
+	
+	static { AttributeValue.registerValueTypeID(RangeValue.class, RANGE_VALUE_TYPE); }
+
 	private String minStringValue = "";
 	
 	private String maxStringValue = "";
 	
 	
-	public RangeValue(final RangeValue origin) throws AttributeException {
-		this(origin.valueType, origin.minStringValue, origin.maxStringValue);
+	public RangeValue(final RangeValue origin) throws GenstarException {
+		this(origin.dataType, origin.minStringValue, origin.maxStringValue);
 	}
 	
-	public RangeValue(final ValueType valueType) throws AttributeException {
-		this(valueType, valueType.getDefaultStringValue(), valueType.getDefaultStringValue());
+	public RangeValue(final DataType dataType) throws GenstarException {
+		this(dataType, dataType.getDefaultStringValue(), dataType.getDefaultStringValue());
 	}
 	
-	public RangeValue(final ValueType valueType, final String minStringValue, final String maxStringValue) throws AttributeException {
-		super(valueType);
+	public RangeValue(final DataType dataType, final String minStringValue, final String maxStringValue) throws GenstarException {
+		super(dataType);
 		
-		if (minStringValue == null) { throw new AttributeException("'minStringValue' can not be null"); }
-		if (maxStringValue == null) { throw new AttributeException("'maxStringValue' can not be null"); }
-		if (!valueType.isNumericValue()) { throw new AttributeException(this.getClass().getName() + " only supports Double, Float and Integer value."); }
+		if (minStringValue == null) { throw new GenstarException("'minStringValue' can not be null"); }
+		if (maxStringValue == null) { throw new GenstarException("'maxStringValue' can not be null"); }
+		if (!dataType.isNumericValue()) { throw new GenstarException(this.getClass().getName() + " only supports Double, Float and Integer value."); }
 		
 		setMinStringValue(minStringValue);
 		setMaxStringValue(maxStringValue);
@@ -31,12 +35,12 @@ public class RangeValue extends AttributeValue {
 		verifyValidity();
 	}
 	
-	private void verifyValidity() throws AttributeException {
-		Comparable minComparable = valueType.getComparableValue(minStringValue);
-		Comparable maxComparable = valueType.getComparableValue(maxStringValue);
+	private void verifyValidity() throws GenstarException {
+		Comparable minComparable = dataType.getComparableValue(minStringValue);
+		Comparable maxComparable = dataType.getComparableValue(maxStringValue);
 		
 		if (minComparable.compareTo(maxComparable) > 0) {
-			throw new AttributeException("Min value must not be greater than Max value.");
+			throw new GenstarException("Min value must not be greater than Max value.");
 		}
 	}
 
@@ -44,9 +48,9 @@ public class RangeValue extends AttributeValue {
 		return minStringValue;
 	}
 
-	public void setMinStringValue(final String minStringValue) throws AttributeException {
-		if (minStringValue == null) { throw new AttributeException("'minStringValue' can not be null"); }
-		if (!valueType.isValueValid(minStringValue)) { throw new AttributeException("'" + minStringValue + "'" + " is not a valid " + valueType.getName() + " value"); }
+	public void setMinStringValue(final String minStringValue) throws GenstarException {
+		if (minStringValue == null) { throw new GenstarException("'minStringValue' can not be null"); }
+		if (!dataType.isValueValid(minStringValue)) { throw new GenstarException("'" + minStringValue + "'" + " is not a valid " + dataType.getName() + " value"); }
 		
 		this.minStringValue = minStringValue;
 	}
@@ -55,23 +59,23 @@ public class RangeValue extends AttributeValue {
 		return maxStringValue;
 	}
 
-	public void setMaxStringValue(final String maxStringValue) throws AttributeException {
-		if (maxStringValue == null) { throw new AttributeException("'maxStringValue' can not be null"); }
-		if (!valueType.isValueValid(maxStringValue)) { throw new AttributeException("'" + maxStringValue + "'" + " is not a valid " + valueType.getName() + " value"); }
+	public void setMaxStringValue(final String maxStringValue) throws GenstarException {
+		if (maxStringValue == null) { throw new GenstarException("'maxStringValue' can not be null"); }
+		if (!dataType.isValueValid(maxStringValue)) { throw new GenstarException("'" + maxStringValue + "'" + " is not a valid " + dataType.getName() + " value"); }
 		
 		this.maxStringValue = maxStringValue;
 	}
 
 	@Override
 	public String toString() {
-		return "RangeValue of " + valueType.getName() + " : [" + minStringValue + ", " + maxStringValue + "]";
+		return "RangeValue of " + dataType.getName() + " : [" + minStringValue + ", " + maxStringValue + "]";
 	}
 	
 	@Override
 	public boolean equals(final Object other) {
 		if (other instanceof RangeValue) {
 			RangeValue otherRange = (RangeValue) other;
-			return this.valueType.equals(((RangeValue) other).valueType) 
+			return this.dataType.equals(((RangeValue) other).dataType) 
 					&& minStringValue.equals(otherRange.minStringValue) && maxStringValue.equals(otherRange.maxStringValue);
 		}
 		
@@ -82,18 +86,18 @@ public class RangeValue extends AttributeValue {
 	public int compareTo(final AttributeValue other) {
 		if (other instanceof RangeValue) {
 			RangeValue otherRangeValue = (RangeValue) other;
-			if (!valueType.equals(otherRangeValue.valueType)) {
-				throw new IllegalArgumentException("Can not compare two instances of RangeValue  having different valueTypes : " + valueType.getName() + " v.s. " + otherRangeValue.valueType.getName());
+			if (!dataType.equals(otherRangeValue.dataType)) {
+				throw new IllegalArgumentException("Can not compare two instances of RangeValue  having different valueTypes : " + dataType.getName() + " v.s. " + otherRangeValue.dataType.getName());
 			}
 			
 			// compare the maxValues
-			Comparable thisMax = valueType.getComparableValue(maxStringValue);
-			Comparable otherMax = otherRangeValue.valueType.getComparableValue(otherRangeValue.maxStringValue);
+			Comparable thisMax = dataType.getComparableValue(maxStringValue);
+			Comparable otherMax = otherRangeValue.dataType.getComparableValue(otherRangeValue.maxStringValue);
 			if (thisMax.compareTo(otherMax) != 0) { return thisMax.compareTo(otherMax); }
 			
 			// compare the minValue
-			Comparable thisMin = valueType.getComparableValue(minStringValue);
-			Comparable otherMin = otherRangeValue.valueType.getComparableValue(otherRangeValue.minStringValue);
+			Comparable thisMin = dataType.getComparableValue(minStringValue);
+			Comparable otherMin = otherRangeValue.dataType.getComparableValue(otherRangeValue.minStringValue);
 			return thisMin.compareTo(otherMin);
 		}
 	
@@ -101,7 +105,7 @@ public class RangeValue extends AttributeValue {
 	}
 	
 	private String getValueInRange() {
-		switch (valueType) {
+		switch (dataType) {
 			case INTEGER:
 				int minIntValue = Integer.parseInt(minStringValue);
 				int maxIntValue = Integer.parseInt(maxStringValue);
@@ -129,7 +133,7 @@ public class RangeValue extends AttributeValue {
 	
 	public boolean cover(final UniqueValue numericValue) {
 		
-		if (numericValue.valueType.isNumericValue()) {
+		if (numericValue.dataType.isNumericValue()) {
 			double minDoubleValue = Double.parseDouble(minStringValue);
 			double maxDoubleValue = Double.parseDouble(maxStringValue);
 			double value = Double.parseDouble( (numericValue.getStringValue()) );
@@ -146,7 +150,7 @@ public class RangeValue extends AttributeValue {
 		if (otherValue instanceof UniqueValue) {
 			
 			UniqueValue otherUniqueValue = (UniqueValue) otherValue;
-			if (otherUniqueValue.valueType.isNumericValue()) {
+			if (otherUniqueValue.dataType.isNumericValue()) {
 				Double otherDoubleValue = Double.parseDouble(otherUniqueValue.getStringValue());
 				Double maxDoubleValue = Double.parseDouble(maxStringValue);
 				
@@ -174,7 +178,7 @@ public class RangeValue extends AttributeValue {
 		if (otherValue instanceof UniqueValue) {
 			UniqueValue otherUniqueValue = (UniqueValue) otherValue;
 			
-			if (otherUniqueValue.valueType.isNumericValue()) {
+			if (otherUniqueValue.dataType.isNumericValue()) {
 				Double otherDoubleValue = Double.parseDouble(otherUniqueValue.getStringValue());
 				Double minDoubleValue = Double.parseDouble(minStringValue);
 				
@@ -196,15 +200,15 @@ public class RangeValue extends AttributeValue {
 	}
 
 	@Override
-	public AttributeValue cast(final Class<? extends AttributeValue> targetType) throws AttributeException {
+	public AttributeValue cast(final Class<? extends AttributeValue> targetType) throws GenstarException {
 		if (targetType == null) { throw new IllegalArgumentException("'targetType' parameter can not be null"); }
 		
 		String targetClassName = targetType.getName();
 		
 		if (targetClassName.equals(this.getClass().getName())) { return this; }
-		if (targetClassName.equals(UniqueValue.class.getName())) { return new UniqueValue(valueType, getValueInRange()); }
+		if (targetClassName.equals(UniqueValue.class.getName())) { return new UniqueValue(dataType, getValueInRange()); }
 		
-		throw new AttributeException("'targetType' is not an appropriate type");
+		throw new GenstarException("'targetType' is not an appropriate type");
 	}
 
 	@Override
@@ -216,7 +220,7 @@ public class RangeValue extends AttributeValue {
 		double maxDoubleValue = Double.parseDouble(maxStringValue);
 
 		if (otherValue instanceof UniqueValue) { 
-			if (otherValue.getValueType().isNumericValue()) {
+			if (otherValue.getDataType().isNumericValue()) {
 				double otherUniqueValue = Double.parseDouble( ( (UniqueValue) otherValue).getStringValue() );
 				
 				return (minDoubleValue <= otherUniqueValue) && (otherUniqueValue <= maxDoubleValue);
@@ -232,5 +236,10 @@ public class RangeValue extends AttributeValue {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public int getValueTypeID() {
+		return RANGE_VALUE_TYPE;
 	}	
 }

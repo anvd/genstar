@@ -6,22 +6,17 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import ummisco.genstar.dao.AttributeDAO;
+import ummisco.genstar.dao.AttributeInferenceDataDAO;
 import ummisco.genstar.dao.AttributeInferenceGenerationRuleDAO;
+import ummisco.genstar.dao.FrequencyDistributionElementDAO;
 import ummisco.genstar.dao.GenstarDAOFactory;
 import ummisco.genstar.dao.EntityAttributeDAO;
 import ummisco.genstar.dao.EntityAttributeRangeValueDAO;
 import ummisco.genstar.dao.EntityAttributeUniqueValueDAO;
 import ummisco.genstar.dao.EntityDAO;
-import ummisco.genstar.dao.EnumerationValueAttributeDAO;
 import ummisco.genstar.dao.FrequencyDistributionGenerationRuleDAO;
 import ummisco.genstar.dao.GenerationRuleDAO;
-import ummisco.genstar.dao.InferenceRangeAttributeData1DAO;
-import ummisco.genstar.dao.InferenceRangeAttributeData2DAO;
-import ummisco.genstar.dao.InferenceValueAttributeData1DAO;
-import ummisco.genstar.dao.InferenceValueAttributeData2DAO;
-import ummisco.genstar.dao.InferredAttributeDAO;
-import ummisco.genstar.dao.InputAttributeDAO;
-import ummisco.genstar.dao.OutputAttributeDAO;
+import ummisco.genstar.dao.InputOutputAttributeDAO;
 import ummisco.genstar.dao.SyntheticPopulationGeneratorDAO;
 import ummisco.genstar.dao.RangeValueDAO;
 import ummisco.genstar.dao.SyntheticPopulationDAO;
@@ -45,7 +40,7 @@ public class DerbyGenstarDAOFactory extends GenstarDAOFactory {
 	
 	private static String DERBY_BASE_URL = "jdbc:derby:";
 	
-	private static String DATABASE_NAME = "./dbms/genstar_db";
+	private static String DATABASE_NAME = "genstar_db";
 	
 	private Connection connection = null;
 
@@ -55,6 +50,8 @@ public class DerbyGenstarDAOFactory extends GenstarDAOFactory {
 	
 	private AttributeInferenceGenerationRuleDAO attributeInferenceGenerationRuleDAO = null;
 	
+	private AttributeInferenceDataDAO attributeInferenceDataDAO = null;
+	
 	private EntityAttributeDAO entityAttributeDAO = null;
 	
 	private EntityAttributeRangeValueDAO entityAttributeRangeValueDAO = null;
@@ -63,25 +60,13 @@ public class DerbyGenstarDAOFactory extends GenstarDAOFactory {
 	
 	private EntityDAO entityDAO = null;
 	
-	private EnumerationValueAttributeDAO enumerationValueAttributeDAO = null;
+	private FrequencyDistributionElementDAO frequencyDistributionElementDAO = null;
 	
 	private FrequencyDistributionGenerationRuleDAO frequencyDistributionGenerationRuleDAO = null; 
 	
 	private GenerationRuleDAO generationRuleDAO = null;
 	
-	private InferenceRangeAttributeData1DAO inferenceRangeAttributeData1DAO = null;
-	
-	private InferenceRangeAttributeData2DAO inferenceRangeAttributeData2DAO = null;
-	
-	private InferenceValueAttributeData1DAO inferenceValueAttributeData1DAO = null;
-	
-	private InferenceValueAttributeData2DAO inferenceValueAttributeData2DAO = null;
-	
-	private InferredAttributeDAO inferredAttributeDAO = null;
-	
-	private InputAttributeDAO inputAttributeDAO = null;
-	
-	private OutputAttributeDAO outputAttributeDAO = null;
+	private InputOutputAttributeDAO inputOutputAttributeDAO = null;
 	
 	private SyntheticPopulationGeneratorDAO populationGeneratorDAO = null;
 	
@@ -94,7 +79,7 @@ public class DerbyGenstarDAOFactory extends GenstarDAOFactory {
 	
 	private DerbyGenstarDAOFactory() {
 		systemProperties = System.getProperties();
-		systemProperties.put("derby.system.home", "./lib");
+		systemProperties.put("derby.system.home", "./dbms");
 	}
 
 	public synchronized Connection getConnection() throws GenstarDAOException {
@@ -119,7 +104,7 @@ public class DerbyGenstarDAOFactory extends GenstarDAOFactory {
 
 	@Override
 	public AttributeInferenceGenerationRuleDAO getAttributeInferenceGenerationRuleDAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
+		if (attributeInferenceGenerationRuleDAO == null) { attributeInferenceGenerationRuleDAO = new DerbyAttributeInferenceGenerationRuleDAO(this); }
 		
 		return attributeInferenceGenerationRuleDAO;
 	}
@@ -153,74 +138,26 @@ public class DerbyGenstarDAOFactory extends GenstarDAOFactory {
 	}
 
 	@Override
-	public EnumerationValueAttributeDAO getEnumerationValueAttributeDAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
-		
-		return enumerationValueAttributeDAO;
-	}
-
-	@Override
 	public FrequencyDistributionGenerationRuleDAO getFrequencyDistributionGenerationRuleDAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
+		if (frequencyDistributionGenerationRuleDAO == null) { frequencyDistributionGenerationRuleDAO = new DerbyFrequencyDistributionGenerationRuleDAO(this); }
 		
 		return frequencyDistributionGenerationRuleDAO;
 	}
 
 	@Override
 	public GenerationRuleDAO getGenerationRuleDAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
+		if (generationRuleDAO == null) { generationRuleDAO = new DerbyGenerationRuleDAO(this); }
 		
 		return generationRuleDAO;
 	}
 
 	@Override
-	public InferenceRangeAttributeData1DAO getInferenceRangeAttributeData1DAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
+	public InputOutputAttributeDAO getInputOutputAttributeDAO() throws GenstarDAOException {
+		if (inputOutputAttributeDAO == null) { inputOutputAttributeDAO = new DerbyInputOutputAttributeDAO(this); }
 		
-		return inferenceRangeAttributeData1DAO;
+		return inputOutputAttributeDAO;
 	}
 
-	@Override
-	public InferenceRangeAttributeData2DAO getInferenceRangeAttributeData2DAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
-		
-		return inferenceRangeAttributeData2DAO;
-	}
-
-	@Override
-	public InferenceValueAttributeData1DAO getInferenceValueAttributeData1DAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
-		
-		return inferenceValueAttributeData1DAO;
-	}
-
-	@Override
-	public InferenceValueAttributeData2DAO getInferenceValueAttributeData2DAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
-		
-		return inferenceValueAttributeData2DAO;
-	}
-
-	@Override
-	public InferredAttributeDAO getInferredAttributeDAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
-		
-		return inferredAttributeDAO;
-	}
-
-	@Override
-	public InputAttributeDAO getInputAttributeDAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
-		
-		return inputAttributeDAO;
-	}
-
-	@Override
-	public OutputAttributeDAO getOutputAttributeDAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
-		
-		return outputAttributeDAO;
-	}
 
 	@Override
 	public SyntheticPopulationGeneratorDAO getSyntheticPopulationGeneratorDAO() throws GenstarDAOException {
@@ -233,7 +170,7 @@ public class DerbyGenstarDAOFactory extends GenstarDAOFactory {
 
 	@Override
 	public RangeValueDAO getRangeValueDAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
+		if (rangeValueDAO == null) { rangeValueDAO = new DerbyRangeValueDAO(this); }
 		
 		return rangeValueDAO;
 	}
@@ -247,8 +184,22 @@ public class DerbyGenstarDAOFactory extends GenstarDAOFactory {
 
 	@Override
 	public UniqueValueDAO getUniqueValueDAO() throws GenstarDAOException {
-		// TODO Auto-generated method stub
+		if (uniqueValueDAO == null) { uniqueValueDAO = new DerbyUniqueValueDAO(this); }
 		
 		return uniqueValueDAO;
+	}
+
+	@Override
+	public AttributeInferenceDataDAO getAttributeInferenceDataDAO() throws GenstarDAOException {
+		if (attributeInferenceDataDAO == null) { attributeInferenceDataDAO = new DerbyAttributeInferenceDataDAO(this); }
+		
+		return attributeInferenceDataDAO;
+	}
+
+	@Override
+	public FrequencyDistributionElementDAO getFrequencyDistributionElementDAO() throws GenstarDAOException {
+		if (frequencyDistributionElementDAO == null) { frequencyDistributionElementDAO = new DerbyFrequencyDistributionElementDAO(this); }
+		
+		return frequencyDistributionElementDAO;
 	}
 }

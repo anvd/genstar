@@ -10,10 +10,14 @@ public abstract class AbstractDerbyDAO {
 
 	protected Connection connection = null;
 	
-	public AbstractDerbyDAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
+	protected String TABLE_NAME;
+	
+	public AbstractDerbyDAO(final DerbyGenstarDAOFactory daoFactory, final String tableName) throws GenstarDAOException {
 		if (daoFactory == null) { throw new IllegalArgumentException("'daoFactory' parameter can not be null"); }
+		if (tableName == null) { throw new IllegalArgumentException("tableName' parameter can not be null"); }
 		
 		this.daoFactory = daoFactory;
 		this.connection = daoFactory.getConnection();
+		this.TABLE_NAME = tableName;
 	}
 }

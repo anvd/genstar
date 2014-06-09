@@ -11,7 +11,7 @@ public class ProbabilityMassFunction {
 	
 	private Class<? extends AttributeValue> keyClass;
 	
-	private ValueType valueType;
+	private DataType valueType;
 	
 	
 	// internal data +
@@ -27,14 +27,14 @@ public class ProbabilityMassFunction {
 		if (data == null || data.isEmpty()) { throw new IllegalArgumentException("'data' can be neither null nor empty"); }
 		
 		keyClass = data.firstKey().getClass();
-		valueType = data.get(data.firstKey()).valueType;
+		valueType = data.get(data.firstKey()).dataType;
 		if (!valueType.isNumericValue()) {
 			throw new IllegalArgumentException("All values of 'data' must be numeric value type (i.e., integer, float, double).");
 		}
 		
 		for (AttributeValue key : data.keySet()) {
 			if (!key.getClass().equals(keyClass)) { throw new IllegalArgumentException("All keys of 'data' must be instances of " + keyClass.getSimpleName()); }
-			if (!valueType.equals(data.get(key).valueType)) {
+			if (!valueType.equals(data.get(key).dataType)) {
 				throw new IllegalArgumentException("All values of 'data' must have " + valueType.getName() + " as value type.");
 			}
 		}

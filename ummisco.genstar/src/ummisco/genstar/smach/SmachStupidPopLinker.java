@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import ummisco.genstar.exception.AttributeException;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AbstractPopulationsLinker;
 import ummisco.genstar.metamodel.AttributeValue;
@@ -18,7 +17,7 @@ import ummisco.genstar.metamodel.ISyntheticPopulation;
 import ummisco.genstar.metamodel.ProbabilityMassFunction;
 import ummisco.genstar.metamodel.RangeValue;
 import ummisco.genstar.metamodel.UniqueValue;
-import ummisco.genstar.metamodel.ValueType;
+import ummisco.genstar.metamodel.DataType;
 import ummisco.genstar.util.SharedInstances;
 
 
@@ -111,7 +110,7 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 	}
 
 	
-	private void buildFamilyCoupleHousehold(final Entity householdEntity) throws AttributeException {
+	private void buildFamilyCoupleHousehold(final Entity householdEntity) throws GenstarException {
 		
 		// pick the householdHead by age(range)
 		UniqueValue headAgeOnHouseholdAttrValue = (UniqueValue) householdEntity.getEntityAttributeValue("age").getAttributeValueOnEntity();
@@ -135,7 +134,7 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 			}
 			
 			Map<String, AttributeValue> headPartnerAgeMap = new HashMap<String, AttributeValue>();
-			UniqueValue headPartnerAgeAttrValue = new UniqueValue(ValueType.INTEGER, Integer.toString(headPartnerAge));
+			UniqueValue headPartnerAgeAttrValue = new UniqueValue(DataType.INTEGER, Integer.toString(headPartnerAge));
 			headPartnerAgeMap.put("age", headPartnerAgeAttrValue);
 			Entity headPartner = inhabitantPopulation.pick(headPartnerAgeMap);
 			List<Entity> pickedChildren = Collections.EMPTY_LIST;
@@ -177,7 +176,7 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 		}
 	}
 	
-	private void buildFamilyMonoParentHousehold(final Entity householdEntity) throws AttributeException {
+	private void buildFamilyMonoParentHousehold(final Entity householdEntity) throws GenstarException {
 		// pick the householdHead by age(range)
 		UniqueValue headAgeOnHouseholdAttrValue = (UniqueValue) householdEntity.getEntityAttributeValue("age").getAttributeValueOnEntity();
 		Map<String, AttributeValue> headAgeMap1 = new HashMap<String, AttributeValue>();
@@ -272,7 +271,7 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 		}
 	}
 	
-	private Entity pickChild(final Entity mother, final int previousChildAge, final ProbabilityMassFunction liveBirthOrder) throws AttributeException {
+	private Entity pickChild(final Entity mother, final int previousChildAge, final ProbabilityMassFunction liveBirthOrder) throws GenstarException {
 		
 		SortedMap<AttributeValue, UniqueValue> liveBirthData = liveBirthOrder.getData();
 		
@@ -286,7 +285,7 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 		}
 		
 		for (AttributeValue ageRange : liveBirthData.keySet()) {
-			if (previousChildAge > 0 && ( (RangeValue) ageRange).cover(new UniqueValue(ValueType.INTEGER, 
+			if (previousChildAge > 0 && ( (RangeValue) ageRange).cover(new UniqueValue(DataType.INTEGER, 
 					Integer.toString((Integer.parseInt(motherAgeValue.getStringValue()) - previousChildAge) ) ) ) ) {
 				headKey = (RangeValue) ageRange;
 			}
@@ -320,13 +319,13 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 		
 		
 		// pick a child according to the age from the InhabitantPopulation
-		UniqueValue childAgeValue = new UniqueValue(ValueType.INTEGER, Integer.toString(childAge));
+		UniqueValue childAgeValue = new UniqueValue(DataType.INTEGER, Integer.toString(childAge));
 		Map<String, AttributeValue> childAgeAttributeValues = new HashMap<String, AttributeValue>();
 		childAgeAttributeValues.put("age", childAgeValue);
 		return inhabitantPopulation.pick(childAgeAttributeValues);
 	}
 	
-	private List<Entity> pickChildren(final Entity mother, final int nbOfChildren) throws AttributeException {
+	private List<Entity> pickChildren(final Entity mother, final int nbOfChildren) throws GenstarException {
 		
 		if (mother == null) { throw new IllegalArgumentException("'mother' parameter must not be null"); }
 		if (nbOfChildren <= 0) { throw new IllegalArgumentException("'nbOfChildren' parameter must be positive"); }

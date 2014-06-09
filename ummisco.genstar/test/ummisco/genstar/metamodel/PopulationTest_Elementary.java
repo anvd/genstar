@@ -12,7 +12,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import ummisco.genstar.exception.AttributeException;
 import ummisco.genstar.exception.GenstarException;
 
 @RunWith(JUnit4.class)
@@ -46,7 +45,7 @@ public class PopulationTest_Elementary {
 	public void testAddNullAttribute() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 
-		exception.expect(AttributeException.class);
+		exception.expect(GenstarException.class);
 		population.addAttribute(null);
 	}
 	
@@ -56,11 +55,11 @@ public class PopulationTest_Elementary {
 		
 		assertTrue(population.getAttributes().size() == 0);
 
-		AbstractAttribute attr = new EnumerationOfValuesAttribute(population, "dummy attribute", ValueType.STRING);
+		AbstractAttribute attr = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
 		population.addAttribute(attr);
 		assertTrue(population.getAttributes().size() == 1);
 
-		AbstractAttribute attr1 = new EnumerationOfValuesAttribute(population, "dummy attribute1", ValueType.STRING);
+		AbstractAttribute attr1 = new UniqueValuesAttribute(population, "dummy attribute1", DataType.STRING);
 		population.addAttribute(attr1);
 		assertTrue(population.getAttributes().size() == 2);
 	}
@@ -69,11 +68,11 @@ public class PopulationTest_Elementary {
 	public void testDuplicatedAttributeName() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 
-		AbstractAttribute attr = new EnumerationOfValuesAttribute(population, "dummy attribute", ValueType.STRING);
+		AbstractAttribute attr = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
 		population.addAttribute(attr);
 
-		AbstractAttribute attr1 = new EnumerationOfValuesAttribute(population, "dummy attribute", ValueType.STRING);
-		exception.expect(AttributeException.class);
+		AbstractAttribute attr1 = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
+		exception.expect(GenstarException.class);
 		population.addAttribute(attr1);
 	}
 	
@@ -81,19 +80,19 @@ public class PopulationTest_Elementary {
 		SyntheticPopulationGenerator population1 = new SyntheticPopulationGenerator("test population1", 1);
 		SyntheticPopulationGenerator population2 = new SyntheticPopulationGenerator("test population2", 1);
 
-		AbstractAttribute attr = new EnumerationOfValuesAttribute(population1, "dummy attribute", ValueType.STRING);
-		exception.expect(AttributeException.class);
+		AbstractAttribute attr = new UniqueValuesAttribute(population1, "dummy attribute", DataType.STRING);
+		exception.expect(GenstarException.class);
 		population2.addAttribute(attr);
 	}
 	
 	@Test public void testGetAttributes() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 
-		AbstractAttribute attr = new EnumerationOfValuesAttribute(population, "dummy attribute", ValueType.STRING);
+		AbstractAttribute attr = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
 		population.addAttribute(attr);
 		assertTrue(population.getAttributes().size() == 1);
 
-		AbstractAttribute attr1 = new EnumerationOfValuesAttribute(population, "dummy attribute1", ValueType.STRING);
+		AbstractAttribute attr1 = new UniqueValuesAttribute(population, "dummy attribute1", DataType.STRING);
 		population.addAttribute(attr1);
 		assertTrue(population.getAttributes().size() == 2);
 		
@@ -106,11 +105,11 @@ public class PopulationTest_Elementary {
 		
 		assertFalse(population.containAttribute("dummy attribute"));
 
-		AbstractAttribute attr = new EnumerationOfValuesAttribute(population, "dummy attribute", ValueType.STRING);
+		AbstractAttribute attr = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
 		population.addAttribute(attr);
 		assertTrue(population.containAttribute("dummy attribute"));
 
-		AbstractAttribute attr1 = new EnumerationOfValuesAttribute(population, "dummy attribute1", ValueType.STRING);
+		AbstractAttribute attr1 = new UniqueValuesAttribute(population, "dummy attribute1", DataType.STRING);
 		population.addAttribute(attr1);
 		assertTrue(population.containAttribute("dummy attribute1"));
 

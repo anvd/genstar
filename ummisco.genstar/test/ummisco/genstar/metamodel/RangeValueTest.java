@@ -8,7 +8,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import ummisco.genstar.exception.AttributeException;
 import ummisco.genstar.exception.GenstarException;
 
 @RunWith(JUnit4.class)
@@ -16,38 +15,38 @@ public class RangeValueTest {
 	@Rule public ExpectedException exception = ExpectedException.none();
 	
 	@Test public void testNullValueConstructor1() throws GenstarException {
-		exception.expect(AttributeException.class);
+		exception.expect(GenstarException.class);
 		new RangeValue(null, "", "");
 	}
 	
 	@Test public void testNullValueConstructor2() throws GenstarException {
-		exception.expect(AttributeException.class);
-		new RangeValue(ValueType.INTEGER, null, "");
+		exception.expect(GenstarException.class);
+		new RangeValue(DataType.INTEGER, null, "");
 	}
 	
 	@Test public void testNullValueConstructor3() throws GenstarException {
-		exception.expect(AttributeException.class);
+		exception.expect(GenstarException.class);
 		new RangeValue(null, null, null);
 	}
 
 	@Test
 	public void testNotNullValueConstructor() throws GenstarException {
-		new RangeValue(ValueType.INTEGER, "1", "1");
+		new RangeValue(DataType.INTEGER, "1", "1");
 	}
 	
 	@Test
 	public void testInvalidMinMaxRange() throws GenstarException {
-		exception.expect(AttributeException.class);
-		new RangeValue(ValueType.INTEGER, "2", "1");
+		exception.expect(GenstarException.class);
+		new RangeValue(DataType.INTEGER, "2", "1");
 	}
 	
 	@Test
 	public void testEquals() throws GenstarException {
-		RangeValue rangeValue1 = new RangeValue(ValueType.INTEGER, "1", "2");
-		RangeValue rangeValue2 = new RangeValue(ValueType.DOUBLE, "1", "2");
-		RangeValue rangeValue3 = new RangeValue(ValueType.FLOAT, "1", "2");
-		RangeValue rangeValue4 = new RangeValue(ValueType.INTEGER, "1", "3");
-		RangeValue rangeValue5 = new RangeValue(ValueType.INTEGER, "1", "2");
+		RangeValue rangeValue1 = new RangeValue(DataType.INTEGER, "1", "2");
+		RangeValue rangeValue2 = new RangeValue(DataType.DOUBLE, "1", "2");
+		RangeValue rangeValue3 = new RangeValue(DataType.FLOAT, "1", "2");
+		RangeValue rangeValue4 = new RangeValue(DataType.INTEGER, "1", "3");
+		RangeValue rangeValue5 = new RangeValue(DataType.INTEGER, "1", "2");
 		
 		assertFalse(rangeValue1.equals(new Object()));
 		assertFalse(rangeValue1.equals(rangeValue2));
@@ -58,9 +57,9 @@ public class RangeValueTest {
 	}
 	
 	@Test public void testCompareTo1() throws GenstarException {
-		RangeValue rangeValue1 = new RangeValue(ValueType.INTEGER, "1", "2");
-		RangeValue rangeValue2 = new RangeValue(ValueType.INTEGER, "1", "2");
-		RangeValue rangeValue3 = new RangeValue(ValueType.INTEGER, "1", "3");
+		RangeValue rangeValue1 = new RangeValue(DataType.INTEGER, "1", "2");
+		RangeValue rangeValue2 = new RangeValue(DataType.INTEGER, "1", "2");
+		RangeValue rangeValue3 = new RangeValue(DataType.INTEGER, "1", "3");
 		
 		assertTrue(rangeValue1.compareTo(rangeValue2) == 0);
 		assertTrue(rangeValue1.compareTo(rangeValue3) < 0);
