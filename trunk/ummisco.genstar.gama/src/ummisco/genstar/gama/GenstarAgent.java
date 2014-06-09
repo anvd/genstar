@@ -65,13 +65,13 @@ public class GenstarAgent extends GamlAgent {
 			
 			final String populationGeneratorName = scope.getStringArg("name");
 			if (populationGeneratorName == null) { // necessary or not?
-				GamaRuntimeException.error("'name' argument can not be null");
+				GamaRuntimeException.error("'name' argument can not be null", scope);
 			}
 			
 			
 			GenstarDAOFactory daoFactory = GenstarDAOFactory.getDAOFactory();
 			SyntheticPopulationGeneratorDAO populationGeneratorDAO = daoFactory.getSyntheticPopulationGeneratorDAO();
-			ISyntheticPopulationGenerator populationGenerator = populationGeneratorDAO.findSyntheticPopulationGenerator(populationGeneratorName);
+			ISyntheticPopulationGenerator populationGenerator = populationGeneratorDAO.findSyntheticPopulationGeneratorByName(populationGeneratorName);
 			
 			ISyntheticPopulation mockPopulation = populationGenerator.generate();
 			
@@ -99,8 +99,9 @@ public class GenstarAgent extends GamlAgent {
 
 			return syntheticPopulation;
 		} catch (final GenstarException e) {
-			throw new GamaRuntimeException(e);
+			GamaRuntimeException.error(e.getMessage(), scope);
 		}
 		
+		return GamaList.EMPTY_LIST;
 	}
 }

@@ -1,10 +1,10 @@
 package ummisco.genstar.gama;
 
-import ummisco.genstar.exception.AttributeException;
+import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AttributeValue;
 import ummisco.genstar.metamodel.RangeValue;
 import ummisco.genstar.metamodel.UniqueValue;
-import ummisco.genstar.metamodel.ValueType;
+import ummisco.genstar.metamodel.DataType;
 
 public class Genstar2GamaTypeConversion {
 
@@ -58,7 +58,7 @@ public class Genstar2GamaTypeConversion {
 		try {
 			UniqueValue genstarUniqueValue = (UniqueValue) genstarAttributeValue.cast(UniqueValue.class);
 			
-			switch (genstarUniqueValue.getValueType()) {
+			switch (genstarUniqueValue.getDataType()) {
 				case BOOL:
 					return new Boolean(genstarUniqueValue.getStringValue());
 					
@@ -74,7 +74,7 @@ public class Genstar2GamaTypeConversion {
 				case STRING:
 					return new String(genstarUniqueValue.getStringValue());
 			}
-		} catch (AttributeException e) {
+		} catch (GenstarException e) {
 			e.printStackTrace();
 		}
 		
