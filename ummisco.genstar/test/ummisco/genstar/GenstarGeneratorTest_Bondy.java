@@ -7,8 +7,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.BondyData;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.ISyntheticPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;

@@ -16,6 +16,7 @@ import msi.gama.util.IList;
 import msi.gaml.types.IType;
 import ummisco.genstar.dao.GenstarDAOFactory;
 import ummisco.genstar.dao.SyntheticPopulationGeneratorDAO;
+import ummisco.genstar.data.UrbanEvolutionData;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.EntityAttributeValue;
@@ -30,11 +31,15 @@ public class GenstarAgent extends GamlAgent {
 	}
 
 
-	@action(name = "get_population",
+	@action(name = "query_genstar_population",
 		args = {
 			@arg(name = "name", type = IType.STRING, optional = false, doc = @doc("Name of the synthetic population")),
 			@arg(name = "number", type = IType.INT, optional = true, doc = @doc("Number of agents to be created"))
-	})
+		},
+		doc = @doc(examples = {},
+			value = "Returns a synthetic population with the specified name"
+		)
+	)
 	public IList getSyntheticPopulation(final IScope scope) throws GamaRuntimeException {
 		/*
 	create inhabitant from: my_generator get_population 'inhabitant'; // case 1
@@ -44,17 +49,41 @@ public class GenstarAgent extends GamlAgent {
 		 */
 		
 		// TODO
+		// "Building population"
+		final String populationName = scope.getStringArg("name");
+		if (populationName == null) { GamaRuntimeException.error("'name' argument can not be null", scope); }
 		
+		int number = scope.hasArg("number") ? scope.getIntArg("name") : -1;
+		
+		// TODO query the DAO
+		
+		IList syntheticPopulation = new GamaList();
+		syntheticPopulation.add(new String("genstar_population"));
+
+		try {
+			// mock population
+			UrbanEvolutionData urbanPopulationData = new UrbanEvolutionData();
+			ISyntheticPopulation urbanPopulation = urbanPopulationData.getPopulationGenerator().generate();
+			
+			return convertGenstarPopulation2GamaPopulation(scope, urbanPopulation);
+		} catch (GenstarException e) {
+			GamaRuntimeException.error(e.getMessage(), scope);
+		}
+				
 		return null;
 	}
 	
 	
-	@action(name = "generate_population",
+	@action(name = "generate_genstar_population",
 		args = {
 			@arg(name = "name", type = IType.STRING, optional = false, doc = @doc("Name of the synthetic population")),
 			@arg(name = "number", type = IType.INT, optional = true, doc = @doc("Number of agents to be created"))
 			// TODO "save" argument!?
-	})
+		},
+		doc = @doc(examples = {},
+			value = ""
+			)
+	)
 	public IList generateSyntheticPopulation(final IScope scope) throws GamaRuntimeException {
 		
 		// TODO 
@@ -78,7 +107,7 @@ public class GenstarAgent extends GamlAgent {
 			// TODO what is the structure of the returned list?
 			// returns a List with
 			// first element is a string : "genstar_population"
-			// other elements are maps
+			// other elements are maps in which each map entry is <attribute name, attribute value>
 			IList syntheticPopulation = new GamaList();
 			syntheticPopulation.add(new String("genstar_population"));
 			
@@ -103,5 +132,37 @@ public class GenstarAgent extends GamlAgent {
 		}
 		
 		return GamaList.EMPTY_LIST;
+	}
+	
+	private final String GENSTAR_POPULATION_NAME = "genstar_population";
+	
+	/**
+	 * Converts a Gen* population to a GAMA population.
+	 * The struture of the GAMA population is a list in which
+	 * 		the first element is the GENSTAR_POPULATION_NAME string
+	 * 		other elements are maps. Each map represents attribute values of an agent (a map element is <attribute name, attribute value>).
+	 * 
+	 * @param scope
+	 * @param genstarPopulation the Gen* population 
+	 * @return a list, representing the GAMA population.
+	 */
+	private GamaList convertGenstarPopulation2GamaPopulation(final IScope scope, final ISyntheticPopulation genstarPopulation) {
+		GamaList gamaPopulation = new GamaList();
+		gamaPopulation.add(GENSTAR_POPULATION_NAME);
+		
+		try {
+			Map<String, Object> map;
+			for (Entity entity : genstarPopulation.getEntities()) {
+				map = new GamaMap<String, Object>();
+				for (Map.Entry<String, EntityAttributeValue> entry : entity.getAttributes().entrySet()) {
+					map.put(entry.getKey(), Genstar2GamaTypeConversion.convertGenstar2GamaType(entry.getValue().getAttributeValueOnEntity()));
+				}
+				gamaPopulation.add(map);
+			}
+		} catch (final GenstarException e) {
+			GamaRuntimeException.error(e.getMessage(), scope);
+		}
+		
+		return gamaPopulation;
 	}
 }

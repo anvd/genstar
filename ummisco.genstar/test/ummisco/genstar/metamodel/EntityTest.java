@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
 
 public class EntityTest {

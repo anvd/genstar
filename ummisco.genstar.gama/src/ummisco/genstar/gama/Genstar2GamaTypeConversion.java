@@ -54,30 +54,27 @@ public class Genstar2GamaTypeConversion {
 	 * 		range value (int) -> cast range value (int) TO unique value (int) -> GAML (int)
 	 */
 	
-	public static Object convertGenstar2GamaType(final AttributeValue genstarAttributeValue) {
-		try {
-			UniqueValue genstarUniqueValue = (UniqueValue) genstarAttributeValue.cast(UniqueValue.class);
-			
-			switch (genstarUniqueValue.getDataType()) {
-				case BOOL:
-					return new Boolean(genstarUniqueValue.getStringValue());
-					
-				case DOUBLE:
-					return new Double(genstarUniqueValue.getStringValue());
-					
-				case FLOAT:
-					return new Float(genstarUniqueValue.getStringValue());
-				
-				case INTEGER:
-					return new Integer(genstarUniqueValue.getStringValue());
-					
-				case STRING:
-					return new String(genstarUniqueValue.getStringValue());
-			}
-		} catch (GenstarException e) {
-			e.printStackTrace();
-		}
+	public static Object convertGenstar2GamaType(final AttributeValue genstarAttributeValue) throws GenstarException {
+		UniqueValue genstarUniqueValue = (UniqueValue) genstarAttributeValue.cast(UniqueValue.class);
 		
-		return null;
+		switch (genstarUniqueValue.getDataType()) {
+			case BOOL:
+				return new Boolean(genstarUniqueValue.getStringValue());
+				
+			case DOUBLE:
+				return new Double(genstarUniqueValue.getStringValue());
+				
+			case FLOAT:
+				return new Float(genstarUniqueValue.getStringValue());
+			
+			case INTEGER:
+				return new Integer(genstarUniqueValue.getStringValue());
+				
+			case STRING:
+				return new String(genstarUniqueValue.getStringValue());
+			
+			default:
+				return null;	
+		}
 	}
 }

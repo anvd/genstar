@@ -1,9 +1,21 @@
-package ummisco.genstar.metamodel;
+package ummisco.genstar.data;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.AbstractAttribute;
+import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
+import ummisco.genstar.metamodel.AttributeValue;
+import ummisco.genstar.metamodel.DataType;
+import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
+import ummisco.genstar.metamodel.GenerationRule;
+import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.RangeValue;
+import ummisco.genstar.metamodel.RangeValuesAttribute;
+import ummisco.genstar.metamodel.SyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.UniqueValue;
+import ummisco.genstar.metamodel.UniqueValuesAttribute;
 
 public final class BondyData {
 	

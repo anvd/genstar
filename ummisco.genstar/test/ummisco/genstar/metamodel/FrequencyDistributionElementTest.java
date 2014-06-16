@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
 
 public class FrequencyDistributionElementTest {

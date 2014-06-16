@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
 
 public class SyntheticPopulationGeneratorTest_Bondy { 
