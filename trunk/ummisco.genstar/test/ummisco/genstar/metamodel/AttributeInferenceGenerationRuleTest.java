@@ -12,6 +12,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
 
 @RunWith(JUnit4.class)
@@ -225,6 +226,10 @@ public class AttributeInferenceGenerationRuleTest {
 		AttributeValue firstKey = (new ArrayList<AttributeValue>(inferenceData.keySet())).get(0);
 		inferenceData.remove(firstKey);
 		assertTrue(inferenceData.size() == generationRule3.getInferenceData().size() - 1);
+	}
+	
+	@Test public void testSetInferenceData() throws GenstarException {
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 	
 	@Test public void testGenerate() throws GenstarException {

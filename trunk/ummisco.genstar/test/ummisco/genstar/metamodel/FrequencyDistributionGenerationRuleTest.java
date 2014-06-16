@@ -15,6 +15,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
 
 @RunWith(JUnit4.class)

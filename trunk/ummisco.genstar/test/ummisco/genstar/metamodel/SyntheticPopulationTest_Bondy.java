@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
 
 public class SyntheticPopulationTest_Bondy {

@@ -4,9 +4,9 @@ import org.junit.Test;
 
 import ummisco.genstar.dao.GenstarDAOFactory;
 import ummisco.genstar.dao.SyntheticPopulationGeneratorDAO;
+import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarDAOException;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.BondyData;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 
 public class DerbySyntheticPopulationGeneratorDAOTest {

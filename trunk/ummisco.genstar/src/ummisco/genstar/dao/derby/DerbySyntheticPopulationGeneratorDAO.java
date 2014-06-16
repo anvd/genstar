@@ -9,9 +9,9 @@ import ummisco.genstar.dao.AttributeDAO;
 import ummisco.genstar.dao.GenerationRuleDAO;
 import ummisco.genstar.dao.SyntheticPopulationGeneratorDAO;
 import ummisco.genstar.dao.derby.DBMS_Tables.SYNTHETIC_POPULATION_GENERATOR_TABLE;
+import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarDAOException;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.BondyData;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 
 public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO implements SyntheticPopulationGeneratorDAO {
