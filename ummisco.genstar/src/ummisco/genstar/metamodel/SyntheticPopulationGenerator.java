@@ -17,7 +17,7 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 	
 	private SortedMap<String, AbstractAttribute> attributes; // <attribute name on data, attribute>
 	
-	private SortedMap<Integer, GenerationRule> generationRules;
+	private SortedMap<Integer, GenerationRule> generationRules; // rule order begins by 0
 	
 	private int nbOfEntities;
 	
@@ -112,6 +112,7 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 		verifyRuleValidity(rule);
 		
 		int index = generationRules.size();
+		setRuleOrder(rule, index);
 		generationRules.put(index, rule);
 	}
 	
@@ -133,11 +134,15 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 		
 		// insert the rule
 		newRules.put(order, rule);
+		setRuleOrder(rule, order);
 		newIndex = order + 1;
 		
 		// process the second part
+		GenerationRule secondPartRule;
 		while (oldIndex < size) {
-			newRules.put(newIndex, generationRules.get(oldIndex));
+			secondPartRule = generationRules.get(oldIndex);
+			setRuleOrder(secondPartRule, newIndex);
+			newRules.put(newIndex, secondPartRule);
 			newIndex++;
 			oldIndex++;
 		}
@@ -175,8 +180,11 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 		int newIndex = removedOrder + 1;
 		
 		// process the second part
+		GenerationRule secondPartRule;
 		while (newIndex < size) {
-			newRules.put(oldIndex, generationRules.get(newIndex));
+			secondPartRule = generationRules.get(newIndex);
+			newRules.put(oldIndex, secondPartRule);
+			this.setRuleOrder(secondPartRule, oldIndex);
 			oldIndex++;
 			newIndex++;
 		}
@@ -248,5 +256,9 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 		}
 		
 		return population;
+	}
+	
+	private void setRuleOrder(final GenerationRule rule, final int order) {
+		rule.setOrder(order);
 	}
 }

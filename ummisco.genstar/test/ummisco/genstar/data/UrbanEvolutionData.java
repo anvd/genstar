@@ -110,7 +110,8 @@ public class UrbanEvolutionData {
 			rule2InferenceData.put(new UniqueValue(DataType.STRING, build_type_values[i]), new UniqueValue(DataType.STRING, building_color_values[i]));
 		}
 		generationRule2.setInferenceData(rule2InferenceData);
-		
+//		if (true) throw new GenstarException("BUG here -> FIXME");
+		// FIXME BUG! 
 		
 		// rule3 : building_type -> building_size
 		generationRule3 = new AttributeInferenceGenerationRule(buildingPopulationGenerator, "build_type -> building_size generation rule", buildingTypeAttr, buildingSizeAttr);

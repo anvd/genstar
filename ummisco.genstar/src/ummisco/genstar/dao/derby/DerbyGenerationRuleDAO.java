@@ -42,8 +42,6 @@ public class DerbyGenerationRuleDAO extends AbstractDerbyDAO implements Generati
 		attributeInferenceGenerationRuleDAO = daoFactory.getAttributeInferenceGenerationRuleDAO();
 		frequencyDistributionGenerationRuleDAO = daoFactory.getFrequencyDistributionGenerationRuleDAO();
 	}
-
-	// FIXME GenerationRule is an abstract class!!! Are these methods necessary? 
 	
 	
 	@Override
