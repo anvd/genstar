@@ -290,6 +290,7 @@ public final class BondyData {
 		generationRule2.appendInputAttribute(ageRangesAttr2);
 		generationRule2.appendInputAttribute(sexAttr);
 		generationRule2.appendOutputAttribute(pcsAttr);
+		bondyInhabitantPopGenerator.appendGenerationRule(generationRule2);
 		
 		generationRule2.generateFrequencyElements();
 		
@@ -325,6 +326,7 @@ public final class BondyData {
 
 		// rule 3
 		generationRule3 = new AttributeInferenceGenerationRule(bondyInhabitantPopGenerator, "Hourly net wage by socio-profession category", pcsAttr, hourlyNetWageAttr);
+		bondyInhabitantPopGenerator.appendGenerationRule(generationRule3);
 		
 		Map<AttributeValue, AttributeValue> pcsInferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (double[] net_wage : hourly_net_wages) {
@@ -332,6 +334,9 @@ public final class BondyData {
 					new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2])));
 		}
 		generationRule3.setInferenceData(pcsInferenceData);
+		
+		throw new GenstarException("BUG here : FIXME");
+		// FIXME --> BUG : different instances compared to values in the attributes!
 		
 		// create generation rule -
 	}
@@ -500,6 +505,7 @@ public final class BondyData {
 		// Rule 8 : Number of housings by type
 		generationRule8 = new FrequencyDistributionGenerationRule(bondyHouseholdPopGenerator, "Number of housings by type");
 		generationRule8.appendOutputAttribute(housingTypeAttr);
+		bondyHouseholdPopGenerator.appendGenerationRule(generationRule8);
 		generationRule8.generateFrequencyElements();
 		for (int type=1; type<=3; type++) {
 			attributeValues.clear();

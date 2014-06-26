@@ -89,7 +89,13 @@ public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO imple
 			
 			// TODO fire event?
 			
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				throw new GenstarDAOException(e1);
+			}
+			
 			throw new GenstarDAOException(e);
 		} finally {
 			try {

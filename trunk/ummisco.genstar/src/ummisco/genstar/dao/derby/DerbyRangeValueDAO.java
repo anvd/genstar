@@ -8,10 +8,9 @@ import java.sql.Statement;
 import ummisco.genstar.dao.RangeValueDAO;
 import ummisco.genstar.dao.derby.DBMS_Tables.RANGE_VALUE_TABLE;
 import ummisco.genstar.exception.GenstarDAOException;
-import ummisco.genstar.metamodel.AbstractAttribute;
 import ummisco.genstar.metamodel.AttributeValue;
-import ummisco.genstar.metamodel.RangeValuesAttribute;
 import ummisco.genstar.metamodel.RangeValue;
+import ummisco.genstar.metamodel.RangeValuesAttribute;
 
 public class DerbyRangeValueDAO extends AbstractDerbyDAO implements RangeValueDAO {
 	
@@ -25,7 +24,7 @@ public class DerbyRangeValueDAO extends AbstractDerbyDAO implements RangeValueDA
 			createRangeValuesStmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " ("
 					+ RANGE_VALUE_TABLE.ATTRIBUTE_ID_COLUMN_NAME + ", "
 					+ RANGE_VALUE_TABLE.MIN_STRING_VALUE_COLUMN_NAME + ", "
-					+ RANGE_VALUE_TABLE.MAX_STRING_VALUE_COLUMN_INDEX
+					+ RANGE_VALUE_TABLE.MAX_STRING_VALUE_COLUMN_NAME
 					+ " ) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		} catch (SQLException e) {
 			throw new GenstarDAOException(e);
