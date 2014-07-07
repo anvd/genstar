@@ -58,7 +58,7 @@ public class UrbanEvolutionData {
 	// map<string, float> building_height <-map([wc_bd ::5.0,uc_bd ::8.0,app_bd ::20.0,indu_bd::7.0]);
 	private float[] building_height_values = { 5.0f, 8.0f, 20.0f, 7.0f };
 	
-	// TODO create rules
+	// create rules
 	private ISyntheticPopulationGenerator buildingPopulationGenerator;
 	private FrequencyDistributionGenerationRule generationRule1;
 	private AttributeInferenceGenerationRule generationRule2, generationRule3, generationRule4;
@@ -90,10 +90,12 @@ public class UrbanEvolutionData {
 		// rule1 :
 		generationRule1 = new FrequencyDistributionGenerationRule(buildingPopulationGenerator, "Building type generation rule");
 		generationRule1.appendOutputAttribute(buildingTypeAttr);
+		
+		generationRule1.generateAttributeValuesFrequencies();
+		
 		buildingPopulationGenerator.appendGenerationRule(generationRule1);
 		
 		// set frequency
-		generationRule1.generateFrequencyElements();
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		for (int i=0; i < build_type_nb.length; i++) {
 			attributeValues.put(buildingTypeAttr, new UniqueValue(DataType.STRING, build_type_values[i]));
@@ -106,12 +108,18 @@ public class UrbanEvolutionData {
 		
 		// set inference data
 		Map<AttributeValue, AttributeValue> rule2InferenceData = new HashMap<AttributeValue, AttributeValue>();
+		AttributeValue inferringValue, inferredValue;
 		for (int i=0; i<building_color_values.length; i++) {
-			rule2InferenceData.put(new UniqueValue(DataType.STRING, build_type_values[i]), new UniqueValue(DataType.STRING, building_color_values[i]));
+			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i]));
+			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, building_color_values[i]));
+			
+			if (inferringValue == null || inferredValue == null) {
+				throw new GenstarException("Some attribute values are not contained in the inferring attribute or inferred attribute");
+			}
+			
+			rule2InferenceData.put(inferringValue, inferredValue);
 		}
 		generationRule2.setInferenceData(rule2InferenceData);
-//		if (true) throw new GenstarException("BUG here -> FIXME");
-		// FIXME BUG! 
 		
 		// rule3 : building_type -> building_size
 		generationRule3 = new AttributeInferenceGenerationRule(buildingPopulationGenerator, "build_type -> building_size generation rule", buildingTypeAttr, buildingSizeAttr);
@@ -120,7 +128,15 @@ public class UrbanEvolutionData {
 		// set inference data
 		Map<AttributeValue, AttributeValue> rule3InferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (int i=0; i<building_size_values.length; i++) {
-			rule3InferenceData.put(new UniqueValue(DataType.STRING, build_type_values[i]), new UniqueValue(DataType.INTEGER, Integer.toString(building_size_values[i])));
+			
+			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i]));
+			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.INTEGER, Integer.toString(building_size_values[i])));
+			
+			if (inferringValue == null || inferredValue == null) {
+				throw new GenstarException("Some attribute values are not contained in the inferring attribute or inferred attribute");
+			}
+			
+			rule3InferenceData.put(inferringValue, inferredValue);
 		}
 		generationRule3.setInferenceData(rule3InferenceData);
 		
@@ -131,7 +147,14 @@ public class UrbanEvolutionData {
 		// set inference data
 		Map<AttributeValue, AttributeValue> rule4InferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (int i=0; i<building_height_values.length; i++) {
-			rule4InferenceData.put(new UniqueValue(DataType.STRING, build_type_values[i]), new UniqueValue(DataType.FLOAT, Float.toString(building_height_values[i])));
+			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i]));
+			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.FLOAT, Float.toString(building_height_values[i])));
+
+			if (inferringValue == null || inferredValue == null) {
+				throw new GenstarException("Some attribute values are not contained in the inferring attribute or inferred attribute");
+			}
+
+			rule4InferenceData.put(inferringValue, inferredValue);
 		}
 		generationRule4.setInferenceData(rule4InferenceData);
 		

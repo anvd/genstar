@@ -12,13 +12,16 @@ import ummisco.genstar.dao.derby.DBMS_Tables.ATTRIBUTE_TABLE;
 import ummisco.genstar.exception.GenstarDAOException;
 import ummisco.genstar.metamodel.AbstractAttribute;
 import ummisco.genstar.metamodel.AttributeValue;
+import ummisco.genstar.metamodel.DataType;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.RangeValue;
 import ummisco.genstar.metamodel.RangeValuesAttribute;
+import ummisco.genstar.metamodel.UniqueValue;
 import ummisco.genstar.metamodel.UniqueValuesAttribute;
 
 public class DerbyAttributeDAO extends AbstractDerbyDAO implements AttributeDAO {
 	
-	private PreparedStatement createAttributeStmt;
+	private PreparedStatement createAttributeStmt, populateAttributesStmt;
 	
 	private RangeValueDAO rangeValueDAO;
 	
@@ -36,6 +39,9 @@ public class DerbyAttributeDAO extends AbstractDerbyDAO implements AttributeDAO 
 					+ ATTRIBUTE_TABLE.VALUE_TYPE_ON_DATA_COLUMN_NAME + ", "
 					+ ATTRIBUTE_TABLE.VALUE_TYPE_ON_ENTITY_COLUMN_NAME
 					+ ") VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			
+			populateAttributesStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE "
+					+ ATTRIBUTE_TABLE.POPULATION_GENERATOR_ID_COLUMN_NAME + " = ?");
 			
 		} catch (SQLException e) {
 			throw new GenstarDAOException(e);
@@ -84,16 +90,66 @@ public class DerbyAttributeDAO extends AbstractDerbyDAO implements AttributeDAO 
 					uniqueValueDAO.createUniqueValues((UniqueValuesAttribute) attribute);
 				}
 			}
-		} catch (SQLException e) {
+		} catch (final Exception e) {
+			if (e instanceof GenstarDAOException) { throw (GenstarDAOException)e; }
 			throw new GenstarDAOException(e);
 		}
 		
 	}
 	
 	@Override
-	public void updateAttributes(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException {
-		// TODO Auto-generated method stub
-		
+	public void updateAttributes(final ISyntheticPopulationGenerator populationGenerator) throws GenstarDAOException {
+	}
+
+	@Override
+	public void populateAttributes(final ISyntheticPopulationGenerator populationGenerator) throws GenstarDAOException {
+		try {
+			int attributeID;
+			String nameOnData;
+			String nameOnEntity;
+			int dataTypeID;
+			int valueTypeOnDataID;
+			int valueTypeOnEntityID;
+			
+			populateAttributesStmt.setInt(1, populationGenerator.getID());
+			ResultSet resultSet = populateAttributesStmt.executeQuery();
+			while (resultSet.next()) {
+				attributeID = resultSet.getInt(ATTRIBUTE_TABLE.ATTRIBUTE_ID_COLUMN_NAME);
+				nameOnData = resultSet.getString(ATTRIBUTE_TABLE.NAME_ON_DATA_COLUMN_NAME);
+				nameOnEntity = resultSet.getString(ATTRIBUTE_TABLE.NAME_ON_ENTITY_COLUMN_NAME);
+				dataTypeID = resultSet.getInt(ATTRIBUTE_TABLE.DATA_TYPE_COLUMN_NAME);
+				valueTypeOnDataID = resultSet.getInt(ATTRIBUTE_TABLE.VALUE_TYPE_ON_DATA_COLUMN_NAME);
+				valueTypeOnEntityID = resultSet.getInt(ATTRIBUTE_TABLE.VALUE_TYPE_ON_ENTITY_COLUMN_NAME);
+				
+				DataType dataType = DataType.getDataTypeByID(dataTypeID);
+				Class<? extends AttributeValue> valueClassOnEntity = (valueTypeOnEntityID == UniqueValue.UNIQUE_VALUE_TYPE) ? UniqueValue.class : RangeValue.class;
+				
+				// initialize the appropriate Attribute class
+				if (valueTypeOnDataID == UniqueValue.UNIQUE_VALUE_TYPE) {
+					UniqueValuesAttribute uniqueValuesAttribute = new UniqueValuesAttribute(populationGenerator, nameOnData, nameOnEntity, dataType, valueClassOnEntity);
+					uniqueValuesAttribute.setAttributeID(attributeID);
+					populationGenerator.addAttribute(uniqueValuesAttribute);
+					
+					// populate unique attribute values
+					uniqueValueDAO.populateUniqueValues(uniqueValuesAttribute);
+					
+				} else { // RangeValue
+					RangeValuesAttribute rangeValuesAttribute = new RangeValuesAttribute(populationGenerator, nameOnData, nameOnEntity, dataType, valueClassOnEntity);
+					rangeValuesAttribute.setAttributeID(attributeID);
+					populationGenerator.addAttribute(rangeValuesAttribute);
+					
+					// populate range attribute values
+					rangeValueDAO.populateRangeValues(rangeValuesAttribute);
+				}
+			}
+			
+			resultSet.close();
+			resultSet = null;
+			
+		} catch (Exception e) {
+			if (e instanceof GenstarDAOException) { throw (GenstarDAOException)e; }
+			throw new GenstarDAOException(e);
+		}
 	}
 
 }

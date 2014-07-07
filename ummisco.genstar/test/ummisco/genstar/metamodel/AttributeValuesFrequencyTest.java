@@ -14,7 +14,7 @@ import org.junit.Test;
 import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
 
-public class FrequencyDistributionElementTest {
+public class AttributeValuesFrequencyTest {
 
 	@Test public void testIsMatchDataSet() throws GenstarException {
 		SyntheticPopulationGenerator bondyPopulationGenerator = new SyntheticPopulationGenerator("Population of Bondy", 100);
@@ -44,37 +44,37 @@ public class FrequencyDistributionElementTest {
 		Map<AbstractAttribute, AttributeValue> catersian1 = new HashMap<AbstractAttribute, AttributeValue>();
 		catersian1.put(ageRangesAttr1, ageRange1);
 		catersian1.put(sexAttr, maleValueOrigin);
-		FrequencyDistributionElement element = new FrequencyDistributionElement(generationRule, catersian1);
+		AttributeValuesFrequency element = new AttributeValuesFrequency(generationRule, catersian1);
 		
 		
 		Map<AbstractAttribute, AttributeValue> dataSet1 = new HashMap<AbstractAttribute, AttributeValue>();
 		dataSet1.put(ageRangesAttr1, ageRange1);
-		assertTrue(element.isMatchDataSet(dataSet1));
+		assertTrue(element.isMatch(dataSet1));
 		
 		dataSet1.put(sexAttr, maleValueOrigin);
-		assertTrue(element.isMatchDataSet(dataSet1));
+		assertTrue(element.isMatch(dataSet1));
 		
 		
 		Map<AbstractAttribute, AttributeValue> dataSet2 = new HashMap<AbstractAttribute, AttributeValue>();
 		dataSet2.put(ageRangesAttr1, ageRange2);
-		assertFalse(element.isMatchDataSet(dataSet2));
+		assertFalse(element.isMatch(dataSet2));
 		
 		
 		Map<AbstractAttribute, AttributeValue> dataSet3 = new HashMap<AbstractAttribute, AttributeValue>();
 		dataSet3.put(ageRangesAttr1, copyAgeRange1);
-		assertTrue(element.isMatchDataSet(dataSet3));
+		assertTrue(element.isMatch(dataSet3));
 		
 		
 		Map<AbstractAttribute, AttributeValue> dataSet4 = new HashMap<AbstractAttribute, AttributeValue>();
 		dataSet4.put(ageRangesAttr1, copyAgeRange1);
 		dataSet4.put(sexAttr, maleValueCopy);
-		assertTrue(element.isMatchDataSet(dataSet4));
+		assertTrue(element.isMatch(dataSet4));
 		
 		
 		Map<AbstractAttribute, AttributeValue> dataSet5 = new HashMap<AbstractAttribute, AttributeValue>();
 		dataSet5.put(ageRangesAttr1, copyAgeRange1);
 		dataSet5.put(sexAttr, femaleValue);
-		assertFalse(element.isMatchDataSet(dataSet5));
+		assertFalse(element.isMatch(dataSet5));
 	}
 	
 	@Test public void testIsMatchEntity() throws GenstarException {
@@ -105,7 +105,7 @@ public class FrequencyDistributionElementTest {
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValues.put(ageRangesAttr1, ageRange1);
 		attributeValues.put(sexAttr, maleValueOrigin);
-		FrequencyDistributionElement element = new FrequencyDistributionElement(generationRule, attributeValues);
+		AttributeValuesFrequency element = new AttributeValuesFrequency(generationRule, attributeValues);
 		
 		List<AbstractAttribute> inputAttributes1 = new ArrayList<AbstractAttribute>();
 		assertTrue(element.isMatchEntity(inputAttributes1, entity1));
@@ -120,7 +120,7 @@ public class FrequencyDistributionElementTest {
 		Map<AbstractAttribute, AttributeValue> attributeValues1 = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValues1.put(ageRangesAttr1, ageRange2);
 		attributeValues1.put(sexAttr, maleValueOrigin);
-		FrequencyDistributionElement element1 = new FrequencyDistributionElement(generationRule, attributeValues1);
+		AttributeValuesFrequency element1 = new AttributeValuesFrequency(generationRule, attributeValues1);
 		
 		assertFalse(element1.isMatchEntity(inputAttributes1, entity1));
 		
@@ -128,7 +128,7 @@ public class FrequencyDistributionElementTest {
 		
 		Map<AbstractAttribute, AttributeValue> attributeValues2 = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValues2.put(ageRangesAttr1, ageRange2);
-		FrequencyDistributionElement element2 = new FrequencyDistributionElement(generationRule, attributeValues2);
+		AttributeValuesFrequency element2 = new AttributeValuesFrequency(generationRule, attributeValues2);
 		 
 		assertFalse(element2.isMatchEntity(inputAttributes1, entity1));
 		

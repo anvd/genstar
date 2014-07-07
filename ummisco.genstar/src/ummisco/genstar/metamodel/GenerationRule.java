@@ -1,5 +1,7 @@
 package ummisco.genstar.metamodel;
 
+import java.util.List;
+
 import ummisco.genstar.exception.GenstarException;
 
 public abstract class GenerationRule {
@@ -45,7 +47,11 @@ public abstract class GenerationRule {
 		return order;
 	}
 	
-	public abstract int getRuleType();
+	public abstract List<AbstractAttribute> getAttributes();
+
+	public abstract int getRuleTypeID();
 
 	public abstract void generate(final Entity entity) throws GenstarException;
+
+	public abstract AbstractAttribute findAttributeByNameOnData(final String attributeNameOnData);
 }

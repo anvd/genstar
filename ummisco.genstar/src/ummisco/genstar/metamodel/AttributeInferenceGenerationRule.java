@@ -17,6 +17,7 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	
 	private Map<AttributeValue, AttributeValue> inferenceData;
 
+	
 	public AttributeInferenceGenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String name, 
 			final AbstractAttribute inferringAttribute, final AbstractAttribute inferredAttribute) throws GenstarException {
 		super(populationGenerator, name);
@@ -26,7 +27,7 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	
 	private void setInferenceAttributes(final AbstractAttribute inferringAttribute, final AbstractAttribute inferredAttribute) throws GenstarException {
 		if (inferringAttribute == null || inferredAttribute == null) { throw new GenstarException("Neither 'inferringAttribute' nor 'inferredAttribute' can be null"); }
-		if (inferringAttribute.equals(inferredAttribute)) { throw new GenstarException("'inferringAttribute' and 'inferredAttribute' can be identical"); }
+		if (inferringAttribute.equals(inferredAttribute)) { throw new GenstarException("'inferringAttribute' and 'inferredAttribute' can not be identical"); }
 		if (inferringAttribute.values().size() != inferredAttribute.values().size()) { throw new GenstarException("'inferringAttribute' and 'inferredAttribute' must contains the same number of attribute values"); }
 		
 		// FIXME more validation!
@@ -106,8 +107,25 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	}
 
 	@Override
-	public int getRuleType() {
+	public int getRuleTypeID() {
 		return ATTRIBUTE_INFERENCE_GENERATION_RULE_ID;
+	}
+
+	@Override
+	public List<AbstractAttribute> getAttributes() {
+		List<AbstractAttribute> retVal = new ArrayList<AbstractAttribute>();
+		retVal.add(inferringAttribute);
+		retVal.add(inferredAttribute);
+		
+		return retVal;
+	}
+
+	@Override
+	public AbstractAttribute findAttributeByNameOnData(final String attributeNameOnData) {
+		if (inferringAttribute.getNameOnData().equals(attributeNameOnData)) { return inferringAttribute; }
+		if (inferredAttribute.getNameOnData().equals(attributeNameOnData)) { return inferredAttribute; }
+		
+		return null;
 	}
 	
 }

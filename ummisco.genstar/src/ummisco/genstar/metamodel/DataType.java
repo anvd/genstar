@@ -1,6 +1,8 @@
 package ummisco.genstar.metamodel;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 public enum DataType {
 
@@ -9,6 +11,17 @@ public enum DataType {
 	DOUBLE("double", 3, java.lang.Double.class, "0"),
 	STRING("string", 4, java.lang.String.class, ""),
 	BOOL("bool", 5, java.lang.Boolean.class, Boolean.TRUE.toString());
+	
+	private static Map<Integer, DataType> dataTypes = new HashMap<Integer, DataType>();
+	static {
+		dataTypes.put(INTEGER.id, INTEGER);
+		dataTypes.put(FLOAT.id, FLOAT);
+		dataTypes.put(DOUBLE.id, DOUBLE);
+		dataTypes.put(STRING.id, STRING);
+		dataTypes.put(BOOL.id, BOOL);
+	}
+	
+	public static DataType getDataTypeByID(final int id) { return dataTypes.get(id); }
 	
 	
 	private String name;

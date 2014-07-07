@@ -8,7 +8,8 @@ import java.util.Properties;
 import ummisco.genstar.dao.AttributeDAO;
 import ummisco.genstar.dao.AttributeInferenceDataDAO;
 import ummisco.genstar.dao.AttributeInferenceGenerationRuleDAO;
-import ummisco.genstar.dao.FrequencyDistributionElementDAO;
+import ummisco.genstar.dao.AttributeValuesFrequencyDataDAO;
+import ummisco.genstar.dao.AttributeValuesFrequencyDAO;
 import ummisco.genstar.dao.GenstarDAOFactory;
 import ummisco.genstar.dao.EntityAttributeDAO;
 import ummisco.genstar.dao.EntityAttributeRangeValueDAO;
@@ -60,7 +61,9 @@ public class DerbyGenstarDAOFactory extends GenstarDAOFactory {
 	
 	private EntityDAO entityDAO = null;
 	
-	private FrequencyDistributionElementDAO frequencyDistributionElementDAO = null;
+	private AttributeValuesFrequencyDAO frequencyDistributionElementDAO = null;
+	
+	private AttributeValuesFrequencyDataDAO frequencyDistributionElementAttributeValueDAO = null;
 	
 	private FrequencyDistributionGenerationRuleDAO frequencyDistributionGenerationRuleDAO = null; 
 	
@@ -197,9 +200,16 @@ public class DerbyGenstarDAOFactory extends GenstarDAOFactory {
 	}
 
 	@Override
-	public FrequencyDistributionElementDAO getFrequencyDistributionElementDAO() throws GenstarDAOException {
-		if (frequencyDistributionElementDAO == null) { frequencyDistributionElementDAO = new DerbyFrequencyDistributionElementDAO(this); }
+	public AttributeValuesFrequencyDAO getAttributeValuesFrequencyDAO() throws GenstarDAOException {
+		if (frequencyDistributionElementDAO == null) { frequencyDistributionElementDAO = new DerbyAttributeValuesFrequencyDAO(this); }
 		
 		return frequencyDistributionElementDAO;
+	}
+
+	@Override
+	public AttributeValuesFrequencyDataDAO getAttributeValuesFrequencyDataDAO() throws GenstarDAOException {
+		if (frequencyDistributionElementAttributeValueDAO == null) { frequencyDistributionElementAttributeValueDAO = new DerbyAttributeValuesFrequencyDataDAO(this); }
+		
+		return frequencyDistributionElementAttributeValueDAO;
 	}
 }

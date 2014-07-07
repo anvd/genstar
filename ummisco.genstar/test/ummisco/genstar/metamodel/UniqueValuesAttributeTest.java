@@ -14,7 +14,7 @@ import org.junit.runners.JUnit4;
 import ummisco.genstar.exception.GenstarException;
 
 @RunWith(JUnit4.class)
-public class EnumerationOfValuesAttributeTest {
+public class UniqueValuesAttributeTest {
 	
 	@Rule public ExpectedException exception = ExpectedException.none();
 	
@@ -114,28 +114,59 @@ public class EnumerationOfValuesAttributeTest {
 		
 	}
 	
-	@Test public void testContains() throws GenstarException {
+	@Test public void testContainsValueOfAttributeValue() throws GenstarException {
 		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		attr.add(new UniqueValue(DataType.INTEGER, "1"));
 		
-		assertTrue(attr.contains(new UniqueValue(DataType.INTEGER, "1")));
-		assertTrue(attr.contains(new UniqueValue(DataType.FLOAT, "1")));
-		assertTrue(attr.contains(new UniqueValue(DataType.DOUBLE, "1")));
+		assertTrue(attr.containsValueOfAttributeValue(new UniqueValue(DataType.INTEGER, "1")));
+//		assertTrue(attr.containsValueOfAttributeValue(new UniqueValue(DataType.FLOAT, "1")));
+//		assertTrue(attr.containsValueOfAttributeValue(new UniqueValue(DataType.DOUBLE, "1")));
+		
+		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
+		assertTrue(attr.containsValueOfAttributeValue(testValue));
 	}
 	
-	@Test public void tesAddDuplicatedValues1() {
-		fail("not yet implemented");
+	@Test public void testConstainsInstanceOfAttributeValue() throws GenstarException {
+		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		
+		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
+		attr.add(testValue);
+		
+		assertFalse(attr.containsInstanceOfAttributeValue(new UniqueValue(DataType.INTEGER, "1")));		
+		assertTrue(attr.containsInstanceOfAttributeValue(testValue));
 	}
 	
-	@Test public void testAddDuplicatedValues2() {
-		fail("not yet implemented");
+	@Test public void testAddDuplicatedValues1() throws GenstarException {
+		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		
+		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
+		assertTrue(attr.add(testValue));
+		
+		assertFalse(attr.add(testValue));
+		
+		UniqueValue testValue1 = new UniqueValue(DataType.INTEGER, "1");
+		assertFalse(attr.add(testValue1));
 	}
 	
-	@Test public void testIncoherentValueAttribute() {
-		fail("not yet implemented");
+	@Test public void testGetInstanceOfValue() throws GenstarException {
+		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		
+		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
+		
+		assertTrue(attr.getInstanceOfAttributeValue(testValue) == null);
+		
+		attr.add(testValue);
+		assertTrue(attr.getInstanceOfAttributeValue(testValue) != null);
+		
+		UniqueValue testValue1 = new UniqueValue(DataType.INTEGER, "1");
+		assertTrue(attr.getInstanceOfAttributeValue(testValue1).equals(testValue));
 	}
+	
 	
 	@Test public void testDefaultAttributeValue() throws GenstarException {
 		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);

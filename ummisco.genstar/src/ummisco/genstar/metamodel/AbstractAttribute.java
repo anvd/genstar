@@ -2,7 +2,6 @@ package ummisco.genstar.metamodel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 
@@ -95,7 +94,7 @@ public abstract class AbstractAttribute implements AttributeValueSet {
 	public abstract AttributeValue valueFromString(final List<String> stringValue) throws GenstarException;
 
 	@Override public String toString() {
-		return this.getClass().getSimpleName() + " with valueType : " + dataType.getName() + "; dataAttributeName : " + this.nameOnData + "; entityAttributeName : " + this.nameOnEntity;
+		return this.getClass().getSimpleName() + " with dataType : " + dataType.getName() + "; nameOnData : " + this.nameOnData + "; nameOnEntity : " + this.nameOnEntity;
 	}
 	
 

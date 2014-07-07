@@ -21,4 +21,6 @@ public interface AttributeDAO {
 	public abstract void createAttributes(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;
 	
 	public abstract void updateAttributes(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;
+
+	public abstract void populateAttributes(final ISyntheticPopulationGenerator populationGenerator) throws GenstarDAOException;
 }

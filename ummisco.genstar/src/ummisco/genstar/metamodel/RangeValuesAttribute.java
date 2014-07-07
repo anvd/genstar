@@ -45,8 +45,7 @@ public class RangeValuesAttribute extends AbstractAttribute {
 		
 		if (!this.dataType.equals(rangeValue.dataType)) { throw new GenstarException("Incompatible valueType between rangeValue and attribute : " + rangeValue.dataType.getName() + " v.s. " + this.dataType.getName()); }
 		
-		if (this.contains(rangeValue)) { return false; }
-		
+		if (this.containsInstanceOfAttributeValue(rangeValue) || this.containsValueOfAttributeValue(rangeValue)) { return false; }
 		
 		rangeValues.add((RangeValue) rangeValue);
 
@@ -92,20 +91,28 @@ public class RangeValuesAttribute extends AbstractAttribute {
 		return false;
 	}
 	
-	@Override public boolean contains(final AttributeValue value) {
-		
+	@Override public boolean containsInstanceOfAttributeValue(final AttributeValue value) {
 		return rangeValues.contains(value);
-		
-//		if (value == null) { return false; }
-//		if (!(value instanceof RangeValue)) { return false; }
-//		
-//		for (AttributeValue v : rangeValues) {
-//			if (v.compareTo(value) == 0) { return true; }
-//		}
-//		
-//		return false;
 	}
 	
+	@Override
+	public boolean containsValueOfAttributeValue(final AttributeValue value) {
+		if (this.containsInstanceOfAttributeValue(value)) { return true; }
+		
+		for (AttributeValue v : rangeValues) { if (v.compareTo(value) == 0) return true; }
+		
+		return false;
+	}
+	
+	@Override
+	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {
+		if (rangeValues.contains(value)) { return value; }
+		
+		for (AttributeValue v : rangeValues) { if (v.compareTo(value) == 0) return v; }
+		
+		return null;
+	}
+
 	@Override public void clear() {
 		rangeValues.clear();
 	}

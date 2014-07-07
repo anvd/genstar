@@ -1,14 +1,16 @@
 package ummisco.genstar.dao.derby;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 import ummisco.genstar.dao.AttributeInferenceDataDAO;
-import ummisco.genstar.dao.derby.DBMS_Tables.INFERENCE_RANGE_ATTRIBUTE_DATA1_TABLE;
-import ummisco.genstar.dao.derby.DBMS_Tables.INFERENCE_RANGE_ATTRIBUTE_DATA2_TABLE;
-import ummisco.genstar.dao.derby.DBMS_Tables.INFERENCE_VALUE_ATTRIBUTE_DATA1_TABLE;
-import ummisco.genstar.dao.derby.DBMS_Tables.INFERENCE_VALUE_ATTRIBUTE_DATA2_TABLE;
+import ummisco.genstar.dao.derby.DBMS_Tables.INFERENCE_DATA_RANGE_INFER_RANGE_TABLE;
+import ummisco.genstar.dao.derby.DBMS_Tables.INFERENCE_DATA_RANGE_INFER_UNIQUE_TABLE;
+import ummisco.genstar.dao.derby.DBMS_Tables.INFERENCE_DATA_UNIQUE_INFER_RANGE_TABLE;
+import ummisco.genstar.dao.derby.DBMS_Tables.INFERENCE_DATA_UNIQUE_INFER_UNIQUE_TABLE;
 import ummisco.genstar.exception.GenstarDAOException;
 import ummisco.genstar.metamodel.AbstractAttribute;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
@@ -17,18 +19,18 @@ import ummisco.genstar.metamodel.UniqueValuesAttribute;
 
 public class DerbyAttributeInferenceDataDAO extends AbstractDerbyDAO implements AttributeInferenceDataDAO {
 	
-	private DerbyInferenceRangeAttributeData1DAO helperDAO1;
-	private DerbyInferenceRangeAttributeData2DAO helperDAO2;
-	private DerbyInferenceValueAttributeData1DAO helperDAO3;
-	private DerbyInferenceValueAttributeData2DAO helperDAO4;
+	private UniqueInferRangeInferenceDataDAO uniqueInferRangeInferenceDataDAO;
+	private RangeInferRangeInferenceDataDAO rangeInferRangeInferenceDataDAO;
+	private UniqueInferUniqueInferenceDataDAO uniqueInferUniqueInferenceDataDAO;
+	private RangeInferUniqueInferenceDataDAO rangeInferUniqueInferenceDataDAO;
 
 	public DerbyAttributeInferenceDataDAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
 		super(daoFactory, "");
 		
-		helperDAO1 = new DerbyInferenceRangeAttributeData1DAO(daoFactory);
-		helperDAO2 = new DerbyInferenceRangeAttributeData2DAO(daoFactory);
-		helperDAO3 = new DerbyInferenceValueAttributeData1DAO(daoFactory);
-		helperDAO4 = new DerbyInferenceValueAttributeData2DAO(daoFactory);
+		uniqueInferRangeInferenceDataDAO = new UniqueInferRangeInferenceDataDAO(daoFactory);
+		rangeInferRangeInferenceDataDAO = new RangeInferRangeInferenceDataDAO(daoFactory);
+		uniqueInferUniqueInferenceDataDAO = new UniqueInferUniqueInferenceDataDAO(daoFactory);
+		rangeInferUniqueInferenceDataDAO = new RangeInferUniqueInferenceDataDAO(daoFactory);
 	}
 
 	@Override
@@ -40,35 +42,37 @@ public class DerbyAttributeInferenceDataDAO extends AbstractDerbyDAO implements 
 		
 		if (inferringAttribute instanceof UniqueValuesAttribute) {
 			if (inferredAttribute instanceof UniqueValuesAttribute) {
-				helperDAO1.createInferenceData(attributeInferenceGenerationRule);
+				uniqueInferUniqueInferenceDataDAO.createInferenceData(attributeInferenceGenerationRule);
 			} else { // inferedAttribute instanceof RangeValuesAttribute
-				helperDAO3.createInferenceData(attributeInferenceGenerationRule);
+				uniqueInferRangeInferenceDataDAO.createInferenceData(attributeInferenceGenerationRule);
 			}
 		} else { // inferringAttribute instanceof RangeValuesAttribute
 			if (inferredAttribute instanceof UniqueValuesAttribute) {
-				helperDAO2.createInferenceData(attributeInferenceGenerationRule);
+				rangeInferUniqueInferenceDataDAO.createInferenceData(attributeInferenceGenerationRule);
 			} else { // inferedAttribute instanceof RangeValuesAttribute
-				helperDAO4.createInferenceData(attributeInferenceGenerationRule);
+				rangeInferRangeInferenceDataDAO.createInferenceData(attributeInferenceGenerationRule);
 			}
 		}
 	}
 
 	
-	private class DerbyInferenceRangeAttributeData1DAO extends AbstractDerbyDAO implements AttributeInferenceDataDAO {
+	private class UniqueInferRangeInferenceDataDAO extends AbstractDerbyDAO implements AttributeInferenceDataDAO {
 		
-		private PreparedStatement createInferenceRangeAttributeData1Stmt;
+		private PreparedStatement createUniqueInferRangeInferenceDataStmt, populateInferenceDataStmt;
 		
 
-		public DerbyInferenceRangeAttributeData1DAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
-			super(daoFactory, DBMS_Tables.INFERENCE_RANGE_ATTRIBUTE_DATA1_TABLE.TABLE_NAME);
+		public UniqueInferRangeInferenceDataDAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
+			super(daoFactory, DBMS_Tables.INFERENCE_DATA_UNIQUE_INFER_RANGE_TABLE.TABLE_NAME);
 			
 			try {
-				createInferenceRangeAttributeData1Stmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " ("
-						+ INFERENCE_RANGE_ATTRIBUTE_DATA1_TABLE.GENERATION_RULE_ID_COLUMN_NAME + ", "
-						+ INFERENCE_RANGE_ATTRIBUTE_DATA1_TABLE.INFERRING_UNIQUE_VALUE_ID_COLUMN_NAME + ", "
-						+ INFERENCE_RANGE_ATTRIBUTE_DATA1_TABLE.INFERRED_RANGE_VALUE_ID_COLUMN_NAME
-						+ ") VALUES (?, ?, ?)");
+				createUniqueInferRangeInferenceDataStmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " ("
+					+ INFERENCE_DATA_UNIQUE_INFER_RANGE_TABLE.GENERATION_RULE_ID_COLUMN_NAME + ", "
+					+ INFERENCE_DATA_UNIQUE_INFER_RANGE_TABLE.INFERRING_UNIQUE_VALUE_ID_COLUMN_NAME + ", "
+					+ INFERENCE_DATA_UNIQUE_INFER_RANGE_TABLE.INFERRED_RANGE_VALUE_ID_COLUMN_NAME
+					+ ") VALUES (?, ?, ?)");
 				
+				populateInferenceDataStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE "
+						+ INFERENCE_DATA_UNIQUE_INFER_RANGE_TABLE.GENERATION_RULE_ID_COLUMN_NAME + " = ?");
 			} catch (SQLException e) {
 				throw new GenstarDAOException(e);
 			}
@@ -79,37 +83,88 @@ public class DerbyAttributeInferenceDataDAO extends AbstractDerbyDAO implements 
 			
 			// create the inference data
 			try {
-				createInferenceRangeAttributeData1Stmt.setInt(1, attributeInferenceGenerationRule.getGenerationRuleID());
+				createUniqueInferRangeInferenceDataStmt.setInt(1, attributeInferenceGenerationRule.getGenerationRuleID());
 				
 				Map<AttributeValue, AttributeValue> inferenceData = attributeInferenceGenerationRule.getInferenceData();
 				for (AttributeValue inferringValue : inferenceData.keySet()) {
-						createInferenceRangeAttributeData1Stmt.setInt(2, inferringValue.getAttributeValueID());
-						createInferenceRangeAttributeData1Stmt.setInt(3, inferenceData.get(inferringValue).getAttributeValueID());
-						createInferenceRangeAttributeData1Stmt.executeUpdate();
+					createUniqueInferRangeInferenceDataStmt.setInt(2, inferringValue.getAttributeValueID());
+					createUniqueInferRangeInferenceDataStmt.setInt(3, inferenceData.get(inferringValue).getAttributeValueID());
+					createUniqueInferRangeInferenceDataStmt.executeUpdate();
 				}
 			} catch (SQLException e) {
 				throw new GenstarDAOException(e);
 			}
+		}
+
+		@Override
+		public void populateInferenceData(final AttributeInferenceGenerationRule rule) throws GenstarDAOException {
+			
+			try {
+				Map<AttributeValue, AttributeValue> inferenceData = new HashMap<AttributeValue, AttributeValue>();
+				Map<AttributeValue, AttributeValue> tmpInferenceData = new HashMap<AttributeValue, AttributeValue>(rule.getInferenceData());
+				
+				int inferringUniqueValueID;
+				int inferredRangeValueID;
+				AttributeValue inferringUniqueValue, inferredRangeValue;
+				
+				populateInferenceDataStmt.setInt(1, rule.getGenerationRuleID());
+				ResultSet resultSet = populateInferenceDataStmt.executeQuery();
+				while (resultSet.next()) {
+					inferringUniqueValueID = resultSet.getInt(INFERENCE_DATA_UNIQUE_INFER_RANGE_TABLE.INFERRING_UNIQUE_VALUE_ID_COLUMN_NAME);
+					inferredRangeValueID = resultSet.getInt(INFERENCE_DATA_UNIQUE_INFER_RANGE_TABLE.INFERRED_RANGE_VALUE_ID_COLUMN_NAME);
+					inferringUniqueValue = null;
+					inferredRangeValue = null;
+					
+					for (AttributeValue inferringValue : tmpInferenceData.keySet()) {
+						if (inferringValue.getAttributeValueID() == inferringUniqueValueID) {
+							inferringUniqueValue = inferringValue;
+							break;
+						}
+					}
+					
+					for (AttributeValue inferredValue : tmpInferenceData.values()) {
+						if (inferredValue.getAttributeValueID() == inferredRangeValueID) {
+							inferredRangeValue = inferredValue;
+							break;
+						}
+					}
+					
+//					if (inferringUniqueValue == null || inferredRangeValue == null) { // this (should) never happens actually!
+//					}
+					
+					inferenceData.put(inferringUniqueValue, inferredRangeValue);
+				}
+				rule.setInferenceData(inferenceData);
+				
+				resultSet.close();
+				resultSet = null;
+			} catch (Exception e) {
+				throw new GenstarDAOException(e);
+			} 
+			
 		}
 	}	
 	
 	
-	private class DerbyInferenceRangeAttributeData2DAO extends AbstractDerbyDAO implements AttributeInferenceDataDAO {
+	private class RangeInferRangeInferenceDataDAO extends AbstractDerbyDAO implements AttributeInferenceDataDAO {
 		
-		private PreparedStatement createInferenceRangeAttributeData2Stmt;
+		private PreparedStatement createRangeInferRangeInferenceDataStmt, populateInferenceDataStmt;
 		
 		
-		public DerbyInferenceRangeAttributeData2DAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
-			super(daoFactory, DBMS_Tables.INFERENCE_RANGE_ATTRIBUTE_DATA2_TABLE.TABLE_NAME);
+		public RangeInferRangeInferenceDataDAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
+			super(daoFactory, DBMS_Tables.INFERENCE_DATA_RANGE_INFER_RANGE_TABLE.TABLE_NAME);
 			
 			
 			try {
-				createInferenceRangeAttributeData2Stmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " ("
-						+ INFERENCE_RANGE_ATTRIBUTE_DATA2_TABLE.GENERATION_RULE_ID_COLUMN_NAME + ", "
-						+ INFERENCE_RANGE_ATTRIBUTE_DATA2_TABLE.INFERRING_RANGE_VALUE_ID_COLUMN_NAME + ", "
-						+ INFERENCE_RANGE_ATTRIBUTE_DATA2_TABLE.INFERRED_RANGE_VALUE_ID_COLUMN_NAME
-						+ ") VALUES (?, ?, ?)");
+				createRangeInferRangeInferenceDataStmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " ("
+					+ INFERENCE_DATA_RANGE_INFER_RANGE_TABLE.GENERATION_RULE_ID_COLUMN_NAME + ", "
+					+ INFERENCE_DATA_RANGE_INFER_RANGE_TABLE.INFERRING_RANGE_VALUE_ID_COLUMN_NAME + ", "
+					+ INFERENCE_DATA_RANGE_INFER_RANGE_TABLE.INFERRED_RANGE_VALUE_ID_COLUMN_NAME
+					+ ") VALUES (?, ?, ?)");
 				
+				populateInferenceDataStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE "
+						+ INFERENCE_DATA_RANGE_INFER_RANGE_TABLE.GENERATION_RULE_ID_COLUMN_NAME + " = ?");
+
 			} catch (SQLException e) {
 				throw new GenstarDAOException(e);
 			}
@@ -120,36 +175,85 @@ public class DerbyAttributeInferenceDataDAO extends AbstractDerbyDAO implements 
 			
 			// create the inference data
 			try {
-				createInferenceRangeAttributeData2Stmt.setInt(1, attributeInferenceGenerationRule.getGenerationRuleID());
+				createRangeInferRangeInferenceDataStmt.setInt(1, attributeInferenceGenerationRule.getGenerationRuleID());
 	
 				Map<AttributeValue, AttributeValue> inferenceData = attributeInferenceGenerationRule.getInferenceData();
 				for (AttributeValue inferringValue : inferenceData.keySet()) {
-						createInferenceRangeAttributeData2Stmt.setInt(2, inferringValue.getAttributeValueID());
-						createInferenceRangeAttributeData2Stmt.setInt(3, inferenceData.get(inferringValue).getAttributeValueID());
-						createInferenceRangeAttributeData2Stmt.executeUpdate();
+					createRangeInferRangeInferenceDataStmt.setInt(2, inferringValue.getAttributeValueID());
+					createRangeInferRangeInferenceDataStmt.setInt(3, inferenceData.get(inferringValue).getAttributeValueID());
+					createRangeInferRangeInferenceDataStmt.executeUpdate();
 				}
 			} catch (SQLException e) {
 				throw new GenstarDAOException(e);
 			}
 		}
+
+		@Override
+		public void populateInferenceData(final AttributeInferenceGenerationRule rule) throws GenstarDAOException {
+			try {
+				Map<AttributeValue, AttributeValue> inferenceData = new HashMap<AttributeValue, AttributeValue>();
+				Map<AttributeValue, AttributeValue> tmpInferenceData = new HashMap<AttributeValue, AttributeValue>(rule.getInferenceData());
+				
+				int inferringRangeValueID;
+				int inferredRangeValueID;
+				AttributeValue inferringRangeValue, inferredRangeValue;
+				
+				populateInferenceDataStmt.setInt(1, rule.getGenerationRuleID());
+				ResultSet resultSet = populateInferenceDataStmt.executeQuery();
+				while (resultSet.next()) {
+					inferringRangeValueID = resultSet.getInt(INFERENCE_DATA_RANGE_INFER_RANGE_TABLE.INFERRING_RANGE_VALUE_ID_COLUMN_NAME);
+					inferredRangeValueID = resultSet.getInt(INFERENCE_DATA_RANGE_INFER_RANGE_TABLE.INFERRED_RANGE_VALUE_ID_COLUMN_NAME);
+					inferringRangeValue = null;
+					inferredRangeValue = null;
+					
+					for (AttributeValue inferringValue : tmpInferenceData.keySet()) {
+						if (inferringValue.getAttributeValueID() == inferringRangeValueID) {
+							inferringRangeValue = inferringValue;
+							break;
+						}
+					}
+					
+					for (AttributeValue inferredValue : tmpInferenceData.values()) {
+						if (inferredValue.getAttributeValueID() == inferredRangeValueID) {
+							inferredRangeValue = inferredValue;
+							break;
+						}
+					}
+					
+//					if (inferringRangeValue == null || inferredRangeValue == null) { // this (should) never happens actually!
+//					}
+					
+					inferenceData.put(inferringRangeValue, inferredRangeValue);
+				}
+				rule.setInferenceData(inferenceData);
+				
+				resultSet.close();
+				resultSet = null;
+			} catch (Exception e) {
+				throw new GenstarDAOException(e);
+			}
+		}  
 	}
 	
 
-	private class DerbyInferenceValueAttributeData1DAO extends AbstractDerbyDAO implements AttributeInferenceDataDAO {
+	private class UniqueInferUniqueInferenceDataDAO extends AbstractDerbyDAO implements AttributeInferenceDataDAO {
 
-		private PreparedStatement createInferenceValueAttributeData1Stmt;
+		private PreparedStatement createUniqueInferUniqueInferenceDataStmt, populateInferenceDataStmt;
 		 
 		
-		public DerbyInferenceValueAttributeData1DAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
-			super(daoFactory, DBMS_Tables.INFERENCE_VALUE_ATTRIBUTE_DATA1_TABLE.TABLE_NAME);
+		public UniqueInferUniqueInferenceDataDAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
+			super(daoFactory, DBMS_Tables.INFERENCE_DATA_UNIQUE_INFER_UNIQUE_TABLE.TABLE_NAME);
 			
 			try {
-				createInferenceValueAttributeData1Stmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " ("
-						+ INFERENCE_VALUE_ATTRIBUTE_DATA1_TABLE.GENERATION_RULE_ID_COLUMN_NAME + ", "
-						+ INFERENCE_VALUE_ATTRIBUTE_DATA1_TABLE.INFERRING_UNIQUE_VALUE_ID_COLUMN_NAME + ", "
-						+ INFERENCE_VALUE_ATTRIBUTE_DATA1_TABLE.INFERRED_UNIQUE_VALUE_ID_COLUMN_NAME
-						+ ") VALUES (?, ?, ?)");
+				createUniqueInferUniqueInferenceDataStmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " ("
+					+ INFERENCE_DATA_UNIQUE_INFER_UNIQUE_TABLE.GENERATION_RULE_ID_COLUMN_NAME + ", "
+					+ INFERENCE_DATA_UNIQUE_INFER_UNIQUE_TABLE.INFERRING_UNIQUE_VALUE_ID_COLUMN_NAME + ", "
+					+ INFERENCE_DATA_UNIQUE_INFER_UNIQUE_TABLE.INFERRED_UNIQUE_VALUE_ID_COLUMN_NAME
+					+ ") VALUES (?, ?, ?)");
 				
+				populateInferenceDataStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE "
+						+ INFERENCE_DATA_UNIQUE_INFER_UNIQUE_TABLE.GENERATION_RULE_ID_COLUMN_NAME + " = ?");
+								
 			} catch (SQLException e) {
 				throw new GenstarDAOException(e);
 			}
@@ -160,35 +264,85 @@ public class DerbyAttributeInferenceDataDAO extends AbstractDerbyDAO implements 
 			
 			try {
 				// create the inference data
-				createInferenceValueAttributeData1Stmt.setInt(1, attributeInferenceGenerationRule.getGenerationRuleID());
+				createUniqueInferUniqueInferenceDataStmt.setInt(1, attributeInferenceGenerationRule.getGenerationRuleID());
 				
 				Map<AttributeValue, AttributeValue> inferenceData = attributeInferenceGenerationRule.getInferenceData();
 				for (AttributeValue inferringValue : inferenceData.keySet()) {
-						createInferenceValueAttributeData1Stmt.setInt(2, inferringValue.getAttributeValueID());
-						createInferenceValueAttributeData1Stmt.setInt(3, inferenceData.get(inferringValue).getAttributeValueID());
-						createInferenceValueAttributeData1Stmt.executeUpdate();
+					createUniqueInferUniqueInferenceDataStmt.setInt(2, inferringValue.getAttributeValueID());
+					createUniqueInferUniqueInferenceDataStmt.setInt(3, inferenceData.get(inferringValue).getAttributeValueID());
+					createUniqueInferUniqueInferenceDataStmt.executeUpdate();
 				}
 			} catch (SQLException e) {
 				throw new GenstarDAOException(e);
 			}
 		}
+
+		@Override
+		public void populateInferenceData(final AttributeInferenceGenerationRule rule) throws GenstarDAOException {
+			
+			try {
+				Map<AttributeValue, AttributeValue> inferenceData = new HashMap<AttributeValue, AttributeValue>();
+				Map<AttributeValue, AttributeValue> tmpInferenceData = new HashMap<AttributeValue, AttributeValue>(rule.getInferenceData());
+				
+				int inferringUniqueValueID;
+				int inferredUniqueValueID;
+				AttributeValue inferringUniqueValue, inferredUniqueValue;
+				
+				populateInferenceDataStmt.setInt(1, rule.getGenerationRuleID());
+				ResultSet resultSet = populateInferenceDataStmt.executeQuery();
+				while (resultSet.next()) {
+					inferringUniqueValueID = resultSet.getInt(INFERENCE_DATA_UNIQUE_INFER_UNIQUE_TABLE.INFERRING_UNIQUE_VALUE_ID_COLUMN_NAME);
+					inferredUniqueValueID = resultSet.getInt(INFERENCE_DATA_UNIQUE_INFER_UNIQUE_TABLE.INFERRED_UNIQUE_VALUE_ID_COLUMN_NAME);
+					inferringUniqueValue = null;
+					inferredUniqueValue = null;
+					
+					for (AttributeValue inferringValue : tmpInferenceData.keySet()) {
+						if (inferringValue.getAttributeValueID() == inferringUniqueValueID) {
+							inferringUniqueValue = inferringValue;
+							break;
+						}
+					}
+					
+					for (AttributeValue inferredValue : tmpInferenceData.values()) {
+						if (inferredValue.getAttributeValueID() == inferredUniqueValueID) {
+							inferredUniqueValue = inferredValue;
+							break;
+						}
+					}
+					
+//					if (inferringUniqueValue == null || inferredUniqueValue == null) { // this (should) never happens actually!
+//					}
+					
+					inferenceData.put(inferringUniqueValue, inferredUniqueValue);
+				}
+				rule.setInferenceData(inferenceData);
+				
+				resultSet.close();
+				resultSet = null;
+			} catch (Exception e) {
+				throw new GenstarDAOException(e);
+			}
+		} 
 	}
 	
 
-	private class DerbyInferenceValueAttributeData2DAO extends AbstractDerbyDAO implements AttributeInferenceDataDAO {
+	private class RangeInferUniqueInferenceDataDAO extends AbstractDerbyDAO implements AttributeInferenceDataDAO {
 		
-		private PreparedStatement createInferenceValueAttributeData2Stmt;
+		private PreparedStatement createRangeInferUniqueInferenceDataStmt, populateInferenceDataStmt;
 		
 		
-		public DerbyInferenceValueAttributeData2DAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
-			super(daoFactory, DBMS_Tables.INFERENCE_VALUE_ATTRIBUTE_DATA2_TABLE.TABLE_NAME);
+		public RangeInferUniqueInferenceDataDAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
+			super(daoFactory, DBMS_Tables.INFERENCE_DATA_RANGE_INFER_UNIQUE_TABLE.TABLE_NAME);
 			
 			try {
-				createInferenceValueAttributeData2Stmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " ("
-						+ INFERENCE_VALUE_ATTRIBUTE_DATA2_TABLE.GENERATION_RULE_ID_COLUMN_NAME + ", "
-						+ INFERENCE_VALUE_ATTRIBUTE_DATA2_TABLE.INFERRING_RANGE_VALUE_ID_COLUMN_NAME + ", "
-						+ INFERENCE_VALUE_ATTRIBUTE_DATA2_TABLE.INFERRED_UNIQUE_VALUE_ID_COLUMN_NAME
+				createRangeInferUniqueInferenceDataStmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " ("
+						+ INFERENCE_DATA_RANGE_INFER_UNIQUE_TABLE.GENERATION_RULE_ID_COLUMN_NAME + ", "
+						+ INFERENCE_DATA_RANGE_INFER_UNIQUE_TABLE.INFERRING_RANGE_VALUE_ID_COLUMN_NAME + ", "
+						+ INFERENCE_DATA_RANGE_INFER_UNIQUE_TABLE.INFERRED_UNIQUE_VALUE_ID_COLUMN_NAME
 						+ ") VALUES (?, ?, ?)");
+				
+				populateInferenceDataStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE "
+						+ INFERENCE_DATA_RANGE_INFER_UNIQUE_TABLE.GENERATION_RULE_ID_COLUMN_NAME + " = ?");
 				
 			} catch (SQLException e) {
 				throw new GenstarDAOException(e);
@@ -200,18 +354,88 @@ public class DerbyAttributeInferenceDataDAO extends AbstractDerbyDAO implements 
 			
 			try {
 				// create the inference data
-				createInferenceValueAttributeData2Stmt.setInt(1, attributeInferenceGenerationRule.getGenerationRuleID());
+				createRangeInferUniqueInferenceDataStmt.setInt(1, attributeInferenceGenerationRule.getGenerationRuleID());
 				
 				Map<AttributeValue, AttributeValue> inferenceData = attributeInferenceGenerationRule.getInferenceData();
 				for (AttributeValue inferringValue : inferenceData.keySet()) {
-						createInferenceValueAttributeData2Stmt.setInt(2, inferringValue.getAttributeValueID());
-						createInferenceValueAttributeData2Stmt.setInt(3, inferenceData.get(inferringValue).getAttributeValueID());
-						createInferenceValueAttributeData2Stmt.executeUpdate();
+					createRangeInferUniqueInferenceDataStmt.setInt(2, inferringValue.getAttributeValueID());
+					createRangeInferUniqueInferenceDataStmt.setInt(3, inferenceData.get(inferringValue).getAttributeValueID());
+					createRangeInferUniqueInferenceDataStmt.executeUpdate();
 				}
 			} catch (SQLException e) {
 				throw new GenstarDAOException(e);
 			}
 		}
+
+		@Override
+		public void populateInferenceData(final AttributeInferenceGenerationRule rule) throws GenstarDAOException {
+			
+			try {
+				Map<AttributeValue, AttributeValue> inferenceData = new HashMap<AttributeValue, AttributeValue>();
+				Map<AttributeValue, AttributeValue> tmpInferenceData = new HashMap<AttributeValue, AttributeValue>(rule.getInferenceData());
+				
+				int inferringRangeValueID;
+				int inferredUniqueValueID;
+				AttributeValue inferringRangeValue, inferredUniqueValue;
+				
+				populateInferenceDataStmt.setInt(1, rule.getGenerationRuleID());
+				ResultSet resultSet = populateInferenceDataStmt.executeQuery();
+				while (resultSet.next()) {
+					inferringRangeValueID = resultSet.getInt(INFERENCE_DATA_RANGE_INFER_UNIQUE_TABLE.INFERRING_RANGE_VALUE_ID_COLUMN_NAME);
+					inferredUniqueValueID = resultSet.getInt(INFERENCE_DATA_RANGE_INFER_UNIQUE_TABLE.INFERRED_UNIQUE_VALUE_ID_COLUMN_NAME);
+					inferringRangeValue = null;
+					inferredUniqueValue = null;
+					
+					for (AttributeValue inferringValue : tmpInferenceData.keySet()) {
+						if (inferringValue.getAttributeValueID() == inferringRangeValueID) {
+							inferringRangeValue = inferringValue;
+							break;
+						}
+					}
+					
+					for (AttributeValue inferredValue : tmpInferenceData.values()) {
+						if (inferredValue.getAttributeValueID() == inferredUniqueValueID) {
+							inferredUniqueValue = inferredValue;
+							break;
+						}
+					}
+					
+//					if (inferringRangeValue == null || inferredUniqueValue == null) { // this (should) never happens actually!
+//					}
+					
+					inferenceData.put(inferringRangeValue, inferredUniqueValue);
+				}
+				rule.setInferenceData(inferenceData);
+				
+				resultSet.close();
+				resultSet = null;
+			} catch (Exception e) {
+				throw new GenstarDAOException(e);
+			}
+			
+		}
+	}
+
+
+	@Override
+	public void populateInferenceData(final AttributeInferenceGenerationRule rule) throws GenstarDAOException {
+		
+		AbstractAttribute inferringAttribute = rule.getInferringAttribute();
+		AbstractAttribute inferredAttribute = rule.getInferredAttribute();
+		
+		if (inferringAttribute instanceof UniqueValuesAttribute) {
+			if (inferredAttribute instanceof UniqueValuesAttribute) {
+				uniqueInferUniqueInferenceDataDAO.populateInferenceData(rule);
+			} else { // inferedAttribute instanceof RangeValuesAttribute
+				uniqueInferRangeInferenceDataDAO.populateInferenceData(rule);
+			}
+		} else { // inferringAttribute instanceof RangeValuesAttribute
+			if (inferredAttribute instanceof UniqueValuesAttribute) {
+				rangeInferUniqueInferenceDataDAO.populateInferenceData(rule);
+			} else { // inferedAttribute instanceof RangeValuesAttribute
+				rangeInferRangeInferenceDataDAO.populateInferenceData(rule);
+			}
+		} 
 	}
 	
 }

@@ -14,6 +14,4 @@ public interface SyntheticPopulationGeneratorDAO {
 	public abstract void updateSyntheticPopulationGenerator(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;
 	
 	public abstract void deleteSyntheticPopulationGenerator(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;
-
-	public abstract void deleteSyntheticPopulationGenerator(final int populationGeneratorID) throws GenstarDAOException;
 }

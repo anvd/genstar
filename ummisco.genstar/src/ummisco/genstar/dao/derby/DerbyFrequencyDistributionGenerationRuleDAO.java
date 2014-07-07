@@ -1,19 +1,28 @@
 package ummisco.genstar.dao.derby;
 
-import ummisco.genstar.dao.FrequencyDistributionElementDAO;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import ummisco.genstar.dao.AttributeValuesFrequencyDAO;
 import ummisco.genstar.dao.FrequencyDistributionGenerationRuleDAO;
+import ummisco.genstar.dao.InputOutputAttributeDAO;
 import ummisco.genstar.exception.GenstarDAOException;
+import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
+import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 
 public class DerbyFrequencyDistributionGenerationRuleDAO extends AbstractDerbyDAO implements FrequencyDistributionGenerationRuleDAO {
 	
-	private FrequencyDistributionElementDAO frequencyDistributionElementDAO;
+	private InputOutputAttributeDAO inputOutputAttributeDAO;
+
+	private AttributeValuesFrequencyDAO attributeValuesFrequencyDAO;
 	
 
 	public DerbyFrequencyDistributionGenerationRuleDAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
 		super(daoFactory, "");
 		
-		frequencyDistributionElementDAO = daoFactory.getFrequencyDistributionElementDAO();
+		inputOutputAttributeDAO = daoFactory.getInputOutputAttributeDAO();
+		attributeValuesFrequencyDAO = daoFactory.getAttributeValuesFrequencyDAO();
 	}
 
 	@Override
@@ -28,7 +37,8 @@ public class DerbyFrequencyDistributionGenerationRuleDAO extends AbstractDerbyDA
 
 	@Override
 	public void createFrequencyDistributionGenerationRule(final FrequencyDistributionGenerationRule frequencyDistributionGenerationRule) throws GenstarDAOException {
-		frequencyDistributionElementDAO.createFrequencyDistributionElements(frequencyDistributionGenerationRule);
+		inputOutputAttributeDAO.createInputOutputAttributes(frequencyDistributionGenerationRule);
+		attributeValuesFrequencyDAO.createAttributeValuesFrequecies(frequencyDistributionGenerationRule);
 	}
 
 	@Override
@@ -44,6 +54,27 @@ public class DerbyFrequencyDistributionGenerationRuleDAO extends AbstractDerbyDA
 	@Override
 	public void deleteFrequencyDistributionGenerationRule(final int frequencyDistributionGenerationRuleID) throws GenstarDAOException {
 		throw new UnsupportedOperationException("Not yet implemented");
+	}
+
+	@Override
+	public FrequencyDistributionGenerationRule findRule(final ISyntheticPopulationGenerator populationGenerator,
+			final int generationRuleID, final String name) throws GenstarDAOException {
+		
+		try {
+			FrequencyDistributionGenerationRule rule = new FrequencyDistributionGenerationRule(populationGenerator, name);
+			rule.setGenerationRuleID(generationRuleID);
+			
+			// populate input & output attributes
+			inputOutputAttributeDAO.populateInputOutputAttributes(rule);
+			rule.generateAttributeValuesFrequencies();
+			
+			// populate frequency distribution elements
+			attributeValuesFrequencyDAO.populateAttributeValuesFrequencies(rule);
+
+			return rule;
+		} catch (GenstarException e) {
+			throw new GenstarDAOException(e);
+		}
 	}
 
 }
