@@ -72,22 +72,11 @@ public class RangeValue extends AttributeValue {
 	}
 	
 	@Override
-	public boolean equals(final Object other) {
-		if (other instanceof RangeValue) {
-			RangeValue otherRange = (RangeValue) other;
-			return this.dataType.equals(((RangeValue) other).dataType) 
-					&& minStringValue.equals(otherRange.minStringValue) && maxStringValue.equals(otherRange.maxStringValue);
-		}
-		
-		return super.equals(other);
-	}
-
-	@Override
 	public int compareTo(final AttributeValue other) {
 		if (other instanceof RangeValue) {
 			RangeValue otherRangeValue = (RangeValue) other;
 			if (!dataType.equals(otherRangeValue.dataType)) {
-				throw new IllegalArgumentException("Can not compare two instances of RangeValue  having different valueTypes : " + dataType.getName() + " v.s. " + otherRangeValue.dataType.getName());
+				throw new IllegalArgumentException("Can not compare two instances of RangeValue having different valueTypes : " + dataType.getName() + " v.s. " + otherRangeValue.dataType.getName());
 			}
 			
 			// compare the maxValues

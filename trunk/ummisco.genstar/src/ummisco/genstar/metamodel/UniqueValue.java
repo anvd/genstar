@@ -51,21 +51,10 @@ public class UniqueValue extends AttributeValue {
 	}
 	
 	@Override
-	public boolean equals(final Object other) {
-		if (other instanceof UniqueValue) {
-			UniqueValue otherValue = (UniqueValue) other;
-			return this.dataType.equals(((UniqueValue) other).dataType) 
-					&& this.stringValue.equals(otherValue.stringValue);
-		}
-		
-		return super.equals(other);
-	}
-
-	@Override
 	public int compareTo(final AttributeValue other) {
 		if (other instanceof UniqueValue) {
 			UniqueValue otherValue = (UniqueValue) other;
-			if (!this.dataType.equals(otherValue.dataType)) { 
+			if ( !this.dataType.equals(otherValue.dataType) ) { 
 				throw new IllegalArgumentException("Can not compare two instances of UniqueValue having different valueTypes : " + dataType.getName() + " v.s. " + otherValue.dataType.getName());
 			}
 			

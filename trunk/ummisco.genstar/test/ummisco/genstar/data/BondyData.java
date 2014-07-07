@@ -217,6 +217,25 @@ public final class BondyData {
 		createHouseholdPopGenerator();
 	}
 	
+	
+	public static final String RULE1_NAME = "Total population by sex and age group";
+	
+	public static final String RULE2_NAME = "Population from 15 years old by sex, age and socio-profession category";
+	
+	public static final String RULE3_NAME = "Hourly net wage by socio-profession category";
+	
+	public static final String RULE4_NAME = "Household by size, sex and age of household's head";
+	
+	public static final String RULE5_NAME = "Household by type and age of household's head";
+	
+	public static final String RULE6_NAME = "Housing by number of rooms and household size";
+	
+	public static final String RULE7_NAME = "Housing by number of rooms and area";
+	
+	public static final String RULE8_NAME = "Number of housings by type";
+
+	
+	
 	private void createInhabitantPopGenerator() throws GenstarException {
 
 		bondyInhabitantPopGenerator = new SyntheticPopulationGenerator("Population of Bondy's Inhabitants", 51000);
@@ -250,23 +269,22 @@ public final class BondyData {
 			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2])));
 		}
 		bondyInhabitantPopGenerator.addAttribute(hourlyNetWageAttr);
-		
-		
-		
 		// create attributes -
+
 		
 		// create generation rules +
 		
 		// rule 1
-		generationRule1 = new FrequencyDistributionGenerationRule(bondyInhabitantPopGenerator, "Total population by sex and age group");
+		generationRule1 = new FrequencyDistributionGenerationRule(bondyInhabitantPopGenerator, RULE1_NAME);
 		generationRule1.appendOutputAttribute(ageRangesAttr1);
 		generationRule1.appendOutputAttribute(sexAttr);
+		
+		generationRule1.generateAttributeValuesFrequencies();
+		
 		bondyInhabitantPopGenerator.appendGenerationRule(generationRule1);
 		
-		generationRule1.generateFrequencyElements();
-		
-		AbstractAttribute ageRangeAttrBiz = generationRule1.getAttributeByDataAttributeName("age_range_1");
-		AbstractAttribute sexAttrBiz = generationRule1.getAttributeByDataAttributeName("sex");
+		AbstractAttribute ageRangeAttrBiz = generationRule1.findAttributeByNameOnData("age_range_1");
+		AbstractAttribute sexAttrBiz = generationRule1.findAttributeByNameOnData("sex");
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		AttributeValue sexAttrValueBiz;
 		for (int[] range : BondyData.age_ranges_1) {
@@ -286,17 +304,18 @@ public final class BondyData {
 		
 		
 		// rule 2
-		generationRule2 = new FrequencyDistributionGenerationRule(bondyInhabitantPopGenerator, "Population from 15 years old by sex, age and socio-profession category");
+		generationRule2 = new FrequencyDistributionGenerationRule(bondyInhabitantPopGenerator, RULE2_NAME);
 		generationRule2.appendInputAttribute(ageRangesAttr2);
 		generationRule2.appendInputAttribute(sexAttr);
 		generationRule2.appendOutputAttribute(pcsAttr);
+		
+		generationRule2.generateAttributeValuesFrequencies();
+
 		bondyInhabitantPopGenerator.appendGenerationRule(generationRule2);
 		
-		generationRule2.generateFrequencyElements();
-		
-		AbstractAttribute ageRangeAttrBiz1 = generationRule2.getAttributeByDataAttributeName("age_range_2");
-		AbstractAttribute sexAttrBiz1 = generationRule2.getAttributeByDataAttributeName("sex");
-		AbstractAttribute pcsAttrBiz1 = generationRule2.getAttributeByDataAttributeName("pcs");
+		AbstractAttribute ageRangeAttrBiz1 = generationRule2.findAttributeByNameOnData("age_range_2");
+		AbstractAttribute sexAttrBiz1 = generationRule2.findAttributeByNameOnData("sex");
+		AbstractAttribute pcsAttrBiz1 = generationRule2.findAttributeByNameOnData("pcs");
 		AttributeValue sexAttrBiz1Value, malePcsValue, femalePcsValue;
 		for (int[] range : age_ranges_2) {
 			attributeValues.clear();
@@ -325,18 +344,23 @@ public final class BondyData {
 		
 
 		// rule 3
-		generationRule3 = new AttributeInferenceGenerationRule(bondyInhabitantPopGenerator, "Hourly net wage by socio-profession category", pcsAttr, hourlyNetWageAttr);
+		generationRule3 = new AttributeInferenceGenerationRule(bondyInhabitantPopGenerator, RULE3_NAME, pcsAttr, hourlyNetWageAttr);
 		bondyInhabitantPopGenerator.appendGenerationRule(generationRule3);
 		
 		Map<AttributeValue, AttributeValue> pcsInferenceData = new HashMap<AttributeValue, AttributeValue>();
+		AttributeValue inferringValue, inferredValue;
 		for (double[] net_wage : hourly_net_wages) {
-			pcsInferenceData.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0])), 
-					new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2])));
+			
+			inferringValue = pcsAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0])));
+			inferredValue = hourlyNetWageAttr.getInstanceOfAttributeValue(new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2])));
+			
+			if (inferringValue == null || inferredValue == null) {
+				throw new GenstarException("Some attribute values are not contained in either inferring attribute or inferred attribute");
+			}
+			
+			pcsInferenceData.put(inferringValue, inferredValue);
 		}
 		generationRule3.setInferenceData(pcsInferenceData);
-		
-		throw new GenstarException("BUG here : FIXME");
-		// FIXME --> BUG : different instances compared to values in the attributes!
 		
 		// create generation rule -
 	}
@@ -403,12 +427,15 @@ public final class BondyData {
 		
 		// create generation rules +
 		// Rule 4
-		generationRule4 = new FrequencyDistributionGenerationRule(bondyHouseholdPopGenerator, "Household by size, sex and age of household's head");
+		generationRule4 = new FrequencyDistributionGenerationRule(bondyHouseholdPopGenerator, RULE4_NAME);
 		generationRule4.appendOutputAttribute(householdSizeAttr);
 		generationRule4.appendOutputAttribute(sexAttr);
 		generationRule4.appendOutputAttribute(ageRangeAttr3);
+
+		generationRule4.generateAttributeValuesFrequencies();
+
 		bondyHouseholdPopGenerator.appendGenerationRule(generationRule4);
-		generationRule4.generateFrequencyElements();
+		
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		UniqueValue sexValue;
 		UniqueValue hhSizeValue;
@@ -432,7 +459,7 @@ public final class BondyData {
 			attributeValues.put(sexAttr, sexValue);
 			for (int hhSize = 0; hhSize < 6; hhSize++) {
 				hhSizeValue = new UniqueValue(DataType.INTEGER, Integer.toString(hhSize +1));
-				attributeValues.put(sexAttr, hhSizeValue);
+				attributeValues.put(householdSizeAttr, hhSizeValue);
 				
 				generationRule4.setFrequency(attributeValues, sizes[hhSize + 6 + 2]);
 			}
@@ -440,11 +467,14 @@ public final class BondyData {
 		
 		
 		// Rule 5 : Household by type and age of household's head
-		generationRule5 = new FrequencyDistributionGenerationRule(bondyHouseholdPopGenerator, "Household by type and age of household's head");
+		generationRule5 = new FrequencyDistributionGenerationRule(bondyHouseholdPopGenerator, RULE5_NAME);
 		generationRule5.appendInputAttribute(ageRangeAttr3);
 		generationRule5.appendOutputAttribute(householdTypeAttr);
+
+		generationRule5.generateAttributeValuesFrequencies();
+
 		bondyHouseholdPopGenerator.appendGenerationRule(generationRule5);
-		generationRule5.generateFrequencyElements();
+		
 		UniqueValue hhTypeValue;
 		for (int[] types : household_types) {
 			attributeValues.clear();
@@ -460,11 +490,14 @@ public final class BondyData {
 		
 
 		// Rule 6 : Housing by number of rooms and household size
-		generationRule6 = new FrequencyDistributionGenerationRule(bondyHouseholdPopGenerator, "Housing by number of rooms and household size");
+		generationRule6 = new FrequencyDistributionGenerationRule(bondyHouseholdPopGenerator, RULE6_NAME);
 		generationRule6.appendInputAttribute(householdSizeAttr);
 		generationRule6.appendOutputAttribute(roomsAttr);
+
+		generationRule6.generateAttributeValuesFrequencies();
+
 		bondyHouseholdPopGenerator.appendGenerationRule(generationRule6);
-		generationRule6.generateFrequencyElements();
+		
 		UniqueValue roomAttrValue;
 		for (int[] r : housing_rooms) {
 			attributeValues.clear();
@@ -480,11 +513,14 @@ public final class BondyData {
 		
 		
 		// Rule 7 : Housing by number of rooms and area
-		generationRule7 = new FrequencyDistributionGenerationRule(bondyHouseholdPopGenerator, "Housing by number of rooms and area");
+		generationRule7 = new FrequencyDistributionGenerationRule(bondyHouseholdPopGenerator, RULE7_NAME);
 		generationRule7.appendInputAttribute(roomsAttr);
 		generationRule7.appendOutputAttribute(housingAreaAttr);
+
+		generationRule7.generateAttributeValuesFrequencies();
+
 		bondyHouseholdPopGenerator.appendGenerationRule(generationRule7);
-		generationRule7.generateFrequencyElements();
+		
 		RangeValue housingAreaTypeValue;
 		int area_index;
 		for (int[] areas : housing_areas) {
@@ -503,10 +539,13 @@ public final class BondyData {
 		
 		
 		// Rule 8 : Number of housings by type
-		generationRule8 = new FrequencyDistributionGenerationRule(bondyHouseholdPopGenerator, "Number of housings by type");
+		generationRule8 = new FrequencyDistributionGenerationRule(bondyHouseholdPopGenerator, RULE8_NAME);
 		generationRule8.appendOutputAttribute(housingTypeAttr);
+
+		generationRule8.generateAttributeValuesFrequencies();
+
 		bondyHouseholdPopGenerator.appendGenerationRule(generationRule8);
-		generationRule8.generateFrequencyElements();
+
 		for (int type=1; type<=3; type++) {
 			attributeValues.clear();
 			attributeValues.put(housingTypeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(type)));

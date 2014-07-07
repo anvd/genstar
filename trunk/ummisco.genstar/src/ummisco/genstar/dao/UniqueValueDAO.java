@@ -6,4 +6,6 @@ import ummisco.genstar.metamodel.UniqueValuesAttribute;
 public interface UniqueValueDAO {
 
 	public abstract void createUniqueValues(final UniqueValuesAttribute uniqueValueAttribute) throws GenstarDAOException;
+
+	public abstract void populateUniqueValues(final UniqueValuesAttribute uniqueValuesAttribute) throws GenstarDAOException;
 }

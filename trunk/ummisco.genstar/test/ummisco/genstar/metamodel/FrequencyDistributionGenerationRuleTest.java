@@ -1,13 +1,12 @@
 package ummisco.genstar.metamodel;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,9 +35,9 @@ public class FrequencyDistributionGenerationRuleTest {
 		
 		assertEquals(d.getName(), "Distribution of household size, sex and age of head");
 		assertEquals(d.getGenerator(), p);
-		assertTrue(d.getDistributionElements().isEmpty());
-		assertTrue(d.getInputAttributes().isEmpty());
-		assertTrue(d.getOutputAttributes().isEmpty());
+		assertTrue(d.getAttributeValuesFrequencies().isEmpty());
+		assertTrue(d.getOrderedInputAttributes().isEmpty());
+		assertTrue(d.getOrderedOutputAttributes().isEmpty());
 	}
 
 	@Test public void testAppendInvalidInputAttributes1() throws GenstarException {
@@ -51,26 +50,26 @@ public class FrequencyDistributionGenerationRuleTest {
 		exception.expect(GenstarException.class);
 		d.appendInputAttribute(attr1);
 		
-		assertTrue(d.getInputAttributes().size() == 0);
+		assertTrue(d.getOrderedInputAttributes().size() == 0);
 	}
 	
 	@Test public void testAppendValidInputAttributes() throws GenstarException {
 		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
-		assertTrue(d.getInputAttributes().size() == 0);
+		assertTrue(d.getOrderedInputAttributes().size() == 0);
 
 		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.appendInputAttribute(attr1);
 		
-		assertTrue(d.getInputAttributes().size() == 1);
+		assertTrue(d.getOrderedInputAttributes().size() == 1);
 		
 		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.appendInputAttribute(attr2);
 
-		assertTrue(d.getInputAttributes().size() == 2);
+		assertTrue(d.getOrderedInputAttributes().size() == 2);
 	}
 	
 	@Test public void testAppendInvalidInputAttribute2() throws GenstarException {
@@ -78,13 +77,13 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
-		assertTrue(d.getInputAttributes().size() == 0);
+		assertTrue(d.getOrderedInputAttributes().size() == 0);
 
 		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.appendInputAttribute(attr1);
 		
-		assertTrue(d.getInputAttributes().size() == 1);
+		assertTrue(d.getOrderedInputAttributes().size() == 1);
 		
 		exception.expect(GenstarException.class);
 		d.appendInputAttribute(attr1);
@@ -119,13 +118,13 @@ public class FrequencyDistributionGenerationRuleTest {
 		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.insertInputAttribute(attr1, 0);
-		assertTrue(d.getInputAttributes().size() == 1);
+		assertTrue(d.getOrderedInputAttributes().size() == 1);
 		assertTrue(d.getInputAttributeAtOrder(0).equals(attr1));
 
 		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.insertInputAttribute(attr2, 0);
-		assertTrue(d.getInputAttributes().size() == 2);
+		assertTrue(d.getOrderedInputAttributes().size() == 2);
 		assertTrue(d.getInputAttributeAtOrder(0).equals(attr2));
 	}
 	
@@ -147,7 +146,7 @@ public class FrequencyDistributionGenerationRuleTest {
 		d.insertInputAttribute(attr3, 0);
 		
 		
-		List<AbstractAttribute> inputAttributes = d.getInputAttributes();
+		List<AbstractAttribute> inputAttributes = d.getOrderedInputAttributes();
 		assertTrue(inputAttributes.size() == 3);
 		assertTrue(inputAttributes.get(0).equals(attr3));
 		assertTrue(inputAttributes.get(1).equals(attr2));
@@ -173,23 +172,23 @@ public class FrequencyDistributionGenerationRuleTest {
 		d.appendInputAttribute(attr3);
 		
 		
-		assertTrue(d.getInputAttributes().size() == 3);
+		assertTrue(d.getOrderedInputAttributes().size() == 3);
 		d.removeInputAttribute(attr1);
 
-		assertTrue(d.getInputAttributes().size() == 2);
+		assertTrue(d.getOrderedInputAttributes().size() == 2);
 		d.removeInputAttribute(attr1);
-		assertTrue(d.getInputAttributes().size() == 2);
+		assertTrue(d.getOrderedInputAttributes().size() == 2);
 		assertTrue(d.getInputAttributeAtOrder(0).equals(attr2));
 		assertTrue(d.getInputAttributeAtOrder(1).equals(attr3));
 	
 		d.removeInputAttribute(attr2);
-		assertTrue(d.getInputAttributes().size() == 1);
+		assertTrue(d.getOrderedInputAttributes().size() == 1);
 
 		d.removeInputAttribute(null);
-		assertTrue(d.getInputAttributes().size() == 1);
+		assertTrue(d.getOrderedInputAttributes().size() == 1);
 
 		d.removeInputAttribute(attr3);
-		assertTrue(d.getInputAttributes().size() == 0);
+		assertTrue(d.getOrderedInputAttributes().size() == 0);
 	
 	}
 	
@@ -247,7 +246,7 @@ public class FrequencyDistributionGenerationRuleTest {
 		exception.expect(GenstarException.class);
 		d.appendOutputAttribute(attr1);
 		
-		assertTrue(d.getOutputAttributes().size() == 0);
+		assertTrue(d.getOrderedOutputAttributes().size() == 0);
 	}
 	
 	@Test public void testAppendInvalidOutputAttribute2() throws GenstarException {
@@ -259,7 +258,7 @@ public class FrequencyDistributionGenerationRuleTest {
 		p.addAttribute(attr1);
 		d.appendOutputAttribute(attr1);
 		
-		assertTrue(d.getOutputAttributes().size() == 1);
+		assertTrue(d.getOrderedOutputAttributes().size() == 1);
 		
 		exception.expect(GenstarException.class);
 		d.appendOutputAttribute(attr1);		
@@ -273,12 +272,12 @@ public class FrequencyDistributionGenerationRuleTest {
 		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.appendOutputAttribute(attr1);
-		assertTrue(d.getOutputAttributes().size() == 1);
+		assertTrue(d.getOrderedOutputAttributes().size() == 1);
 		
 		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.appendOutputAttribute(attr2);
-		assertTrue(d.getOutputAttributes().size() == 2);
+		assertTrue(d.getOrderedOutputAttributes().size() == 2);
 	}
 	
 	@Test public void testInsertInvalidOutputAttribute1() throws GenstarException {
@@ -310,13 +309,13 @@ public class FrequencyDistributionGenerationRuleTest {
 		RangeValuesAttribute attr1 = new RangeValuesAttribute(p, "attribute 1", DataType.INTEGER);
 		p.addAttribute(attr1);
 		d.insertOutputAttribute(attr1, 0);
-		assertTrue(d.getOutputAttributes().size() == 1);
+		assertTrue(d.getOrderedOutputAttributes().size() == 1);
 		assertTrue(d.getOutputAttributeAtOrder(0).equals(attr1));
 
 		RangeValuesAttribute attr2 = new RangeValuesAttribute(p, "attribute 2", DataType.INTEGER);
 		p.addAttribute(attr2);
 		d.insertOutputAttribute(attr2, 0);
-		assertTrue(d.getOutputAttributes().size() == 2);
+		assertTrue(d.getOrderedOutputAttributes().size() == 2);
 		assertTrue(d.getOutputAttributeAtOrder(0).equals(attr2));
 	}
 	
@@ -338,7 +337,7 @@ public class FrequencyDistributionGenerationRuleTest {
 		d.insertOutputAttribute(attr3, 0);
 		
 		
-		List<AbstractAttribute> outputAttributes = d.getOutputAttributes();
+		List<AbstractAttribute> outputAttributes = d.getOrderedOutputAttributes();
 		assertTrue(outputAttributes.size() == 3);
 		assertTrue(outputAttributes.get(0).equals(attr3));
 		assertTrue(outputAttributes.get(1).equals(attr2));
@@ -363,23 +362,23 @@ public class FrequencyDistributionGenerationRuleTest {
 		d.appendOutputAttribute(attr3);
 		
 		
-		assertTrue(d.getOutputAttributes().size() == 3);
+		assertTrue(d.getOrderedOutputAttributes().size() == 3);
 		d.removeOutputAttribute(attr1);
 
-		assertTrue(d.getOutputAttributes().size() == 2);
+		assertTrue(d.getOrderedOutputAttributes().size() == 2);
 		d.removeOutputAttribute(attr1);
-		assertTrue(d.getOutputAttributes().size() == 2);
+		assertTrue(d.getOrderedOutputAttributes().size() == 2);
 		assertTrue(d.getOutputAttributeAtOrder(0).equals(attr2));
 		assertTrue(d.getOutputAttributeAtOrder(1).equals(attr3));
 	
 		d.removeOutputAttribute(attr2);
-		assertTrue(d.getOutputAttributes().size() == 1);
+		assertTrue(d.getOrderedOutputAttributes().size() == 1);
 
 		d.removeOutputAttribute(null);
-		assertTrue(d.getOutputAttributes().size() == 1);
+		assertTrue(d.getOrderedOutputAttributes().size() == 1);
 
 		d.removeOutputAttribute(attr3);
-		assertTrue(d.getOutputAttributes().size() == 0);
+		assertTrue(d.getOrderedOutputAttributes().size() == 0);
 	}
 	
 	@Test public void testChangeOutputAttributeOrder() throws GenstarException {
@@ -429,19 +428,12 @@ public class FrequencyDistributionGenerationRuleTest {
 	
 	@Test public void testGenerateDistributionElements1() throws GenstarException {
 		FrequencyDistributionGenerationRule distribution1 = (FrequencyDistributionGenerationRule) new BondyData().getRule1();
-		distribution1.generateFrequencyElements();
-		assertTrue(distribution1.getDistributionElements().size() == 20);
+		assertTrue(distribution1.getAttributeValuesFrequencies().size() == 20);
 	}
 	
 	@Test public void testGenerateDistributionElements2() throws GenstarException {
 		FrequencyDistributionGenerationRule distribution2 = (FrequencyDistributionGenerationRule) new BondyData().getRule2();
-		distribution2.generateFrequencyElements();
-		assertTrue(distribution2.getDistributionElements().size() == 96);
-	}
-	
-	private void printDistributionElements(final FrequencyDistributionGenerationRule d) {
-		System.out.println("Distribution elements of '" + d.getName() + "' distribution : ");
-		for (FrequencyDistributionElement e : d.getDistributionElements()) { System.out.println(e); }
+		assertTrue(distribution2.getAttributeValuesFrequencies().size() == 96);
 	}
 	
 	@Test public void testSetFrequencyValue() throws GenstarException {
@@ -464,10 +456,10 @@ public class FrequencyDistributionGenerationRuleTest {
 		distribution1.appendOutputAttribute(sexAttr);
 		bondyPopulation.appendGenerationRule(distribution1);
 		
-		distribution1.generateFrequencyElements();
+		distribution1.generateAttributeValuesFrequencies();
 		
-		AbstractAttribute ageRangeAttrBiz = distribution1.getAttributeByDataAttributeName("age_range_1");
-		AbstractAttribute sexAttrBiz = distribution1.getAttributeByDataAttributeName("sex");
+		AbstractAttribute ageRangeAttrBiz = distribution1.findAttributeByNameOnData("age_range_1");
+		AbstractAttribute sexAttrBiz = distribution1.findAttributeByNameOnData("sex");
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		AttributeValue sexAttrValueBiz;
 		for (int[] range : BondyData.age_ranges_1) {
@@ -482,36 +474,35 @@ public class FrequencyDistributionGenerationRuleTest {
 			
 			
 			// female
-//			attributeValues.remove(sexAttrValueBiz);
 			attributeValues.put((AbstractAttribute) sexAttrBiz, new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0])));
 			distribution1.setFrequency(attributeValues, range[3]);
 		}
 
 		
-		List<FrequencyDistributionElement> matches;
+		List<AttributeValuesFrequency> matches;
 		AttributeValue ageRangeAttrValueBiz;
 		for (int[] range : BondyData.age_ranges_1) {
 			attributeValues.clear();
 			
 			ageRangeAttrValueBiz = new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]));
 			attributeValues.put((AbstractAttribute) ageRangeAttrBiz, ageRangeAttrValueBiz);
-			assertTrue(distribution1.findDistributionElements(attributeValues).size() == 2);
+			assertTrue(distribution1.findAttributeValuesFrequencies(attributeValues).size() == 2);
 			
 			// male
 			sexAttrValueBiz = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1]));
 			attributeValues.put((AbstractAttribute) sexAttrBiz, sexAttrValueBiz);
 
 			// assertion
-			matches = distribution1.findDistributionElements(attributeValues);
-			assertTrue(distribution1.findDistributionElements(attributeValues).size() == 1);
+			matches = distribution1.findAttributeValuesFrequencies(attributeValues);
+			assertTrue(distribution1.findAttributeValuesFrequencies(attributeValues).size() == 1);
 			assertTrue(matches.get(0).getFrequency() == range[2]);
 			
 			// female
 			attributeValues.put((AbstractAttribute) sexAttrBiz, new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0])));
 
 			// assertion
-			matches = distribution1.findDistributionElements(attributeValues);
-			assertTrue(distribution1.findDistributionElements(attributeValues).size() == 1);
+			matches = distribution1.findAttributeValuesFrequencies(attributeValues);
+			assertTrue(distribution1.findAttributeValuesFrequencies(attributeValues).size() == 1);
 			assertTrue(matches.get(0).getFrequency() == range[3]);
 		}
 	}
@@ -526,11 +517,11 @@ public class FrequencyDistributionGenerationRuleTest {
 		// rule1
 		FrequencyDistributionGenerationRule rule1 = (FrequencyDistributionGenerationRule) bondyData.getRule1();
 		
-		for (AbstractAttribute attr : rule1.getOutputAttributes()) {
+		for (AbstractAttribute attr : rule1.getOrderedOutputAttributes()) {
 			assertFalse(entity.containAttribute(attr.getNameOnEntity()));
 		}
 		rule1.generate(entity);
-		for (AbstractAttribute attr : rule1.getOutputAttributes()) {
+		for (AbstractAttribute attr : rule1.getOrderedOutputAttributes()) {
 			assertTrue(entity.containAttribute(attr.getNameOnEntity()));
 		}
 		

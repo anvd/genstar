@@ -8,13 +8,15 @@ import java.sql.Statement;
 import ummisco.genstar.dao.RangeValueDAO;
 import ummisco.genstar.dao.derby.DBMS_Tables.RANGE_VALUE_TABLE;
 import ummisco.genstar.exception.GenstarDAOException;
+import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AttributeValue;
+import ummisco.genstar.metamodel.DataType;
 import ummisco.genstar.metamodel.RangeValue;
 import ummisco.genstar.metamodel.RangeValuesAttribute;
 
 public class DerbyRangeValueDAO extends AbstractDerbyDAO implements RangeValueDAO {
 	
-	private PreparedStatement createRangeValuesStmt;
+	private PreparedStatement createRangeValuesStmt, populateRangeValuesStmt;
 	
 
 	public DerbyRangeValueDAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
@@ -26,6 +28,9 @@ public class DerbyRangeValueDAO extends AbstractDerbyDAO implements RangeValueDA
 					+ RANGE_VALUE_TABLE.MIN_STRING_VALUE_COLUMN_NAME + ", "
 					+ RANGE_VALUE_TABLE.MAX_STRING_VALUE_COLUMN_NAME
 					+ " ) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			
+			populateRangeValuesStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE "
+					+ RANGE_VALUE_TABLE.ATTRIBUTE_ID_COLUMN_NAME + " = ?");
 		} catch (SQLException e) {
 			throw new GenstarDAOException(e);
 		}
@@ -49,6 +54,34 @@ public class DerbyRangeValueDAO extends AbstractDerbyDAO implements RangeValueDA
 				generatedKeySet = null;
 			}
 		} catch (SQLException e) {
+			throw new GenstarDAOException(e);
+		}
+	}
+
+	@Override
+	public void populateRangeValues(final RangeValuesAttribute rangeValuesAttribute) throws GenstarDAOException {
+		try {
+			DataType dataType = rangeValuesAttribute.getDataType();
+			int rangeValueID;
+			String minStringValue, maxStringValue; 
+			RangeValue rangeValue;
+			
+			populateRangeValuesStmt.setInt(1, rangeValuesAttribute.getAttributeID());
+			ResultSet resultSet = populateRangeValuesStmt.executeQuery();
+			while (resultSet.next()) {
+				rangeValueID = resultSet.getInt(RANGE_VALUE_TABLE.RANGE_VALUE_ID_COLUMN_NAME);
+				minStringValue = resultSet.getString(RANGE_VALUE_TABLE.MIN_STRING_VALUE_COLUMN_NAME);
+				maxStringValue = resultSet.getString(RANGE_VALUE_TABLE.MAX_STRING_VALUE_COLUMN_NAME);
+				
+				rangeValue = new RangeValue(dataType, minStringValue, maxStringValue);
+				rangeValue.setAttributeValueID(rangeValueID);
+				
+				rangeValuesAttribute.add(rangeValue);
+			}
+			
+			resultSet.close();
+			resultSet = null;
+		} catch (final Exception e) {
 			throw new GenstarDAOException(e);
 		}
 	}

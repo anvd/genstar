@@ -51,7 +51,9 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		if (!(value.getClass().equals(valueClassOnData))) { throw new GenstarException("value must be an instance of " + valueClassOnData.getName()); }
 		if (!this.dataType.equals(value.dataType)) { throw new GenstarException("Incompatible valueType"); }
 		
-		if (this.contains(value)) { return false; }
+		if (this.containsInstanceOfAttributeValue(value) || this.containsValueOfAttributeValue(value)) { return false; }
+		
+		// FIXME containsValue
 		
 		values.add((UniqueValue)value);
 
@@ -96,9 +98,28 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		return false;
 	}
 
-	@Override public boolean contains(final AttributeValue value) {
+	@Override public boolean containsInstanceOfAttributeValue(final AttributeValue value) {
 		return values.contains(value);
 	}
+
+	@Override
+	public boolean containsValueOfAttributeValue(final AttributeValue value) {
+		if (this.containsInstanceOfAttributeValue(value)) { return true; }
+		
+		for (AttributeValue v : values) { if (v.compareTo(value) == 0) return true; }
+		
+		return false;
+	}
+	
+	@Override
+	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {
+		if (values.contains(value)) { return value; }
+		
+		for (AttributeValue v : values) { if (v.compareTo(value) == 0) return v; }
+		
+		return null;
+	}
+	
 
 	@Override public void clear() {
 		values.clear();

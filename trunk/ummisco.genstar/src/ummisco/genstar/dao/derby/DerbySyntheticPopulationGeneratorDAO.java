@@ -9,15 +9,15 @@ import ummisco.genstar.dao.AttributeDAO;
 import ummisco.genstar.dao.GenerationRuleDAO;
 import ummisco.genstar.dao.SyntheticPopulationGeneratorDAO;
 import ummisco.genstar.dao.derby.DBMS_Tables.SYNTHETIC_POPULATION_GENERATOR_TABLE;
-import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarDAOException;
-import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.SyntheticPopulationGenerator;
 
 public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO implements SyntheticPopulationGeneratorDAO {
 	
 	private PreparedStatement findSyntheticPopulationGeneratorByNameStmt;
 	private PreparedStatement createSyntheticPopulationGeneratorStmt;
+	private PreparedStatement deleteSyntheticPopulationGeneratorStmt;
 	
 	
 	private AttributeDAO attributeDAO;
@@ -34,6 +34,8 @@ public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO imple
 			createSyntheticPopulationGeneratorStmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " (" + SYNTHETIC_POPULATION_GENERATOR_TABLE.NAME_COLUMN_NAME + ", " 
 					+ SYNTHETIC_POPULATION_GENERATOR_TABLE.INITIAL_NUMBER_OF_ENTITIES_COLUMN_NAME + ") VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
+			deleteSyntheticPopulationGeneratorStmt = connection.prepareStatement("DELETE FROM " + TABLE_NAME + " WHERE " + SYNTHETIC_POPULATION_GENERATOR_TABLE.POPULATION_GENERATOR_ID_COLUMN_NAME + " = ?");
+			
 			
 			attributeDAO = daoFactory.getAttributeDAO();
 			generationRuleDAO = daoFactory.getGenerationRuleDAO();
@@ -44,19 +46,33 @@ public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO imple
 
 	@Override
 	public ISyntheticPopulationGenerator findSyntheticPopulationGeneratorByName(final String populationGeneratorName) throws GenstarDAOException {
+		if (populationGeneratorName == null || populationGeneratorName.trim().length() == 0) { return null; }
 		
-		// mockup for testing
+		ISyntheticPopulationGenerator populationGenerator = null;
 		try {
-			BondyData bondyData = new BondyData();
-			return bondyData.getHouseholdPopGenerator();
-		} catch (GenstarException e) {
+			findSyntheticPopulationGeneratorByNameStmt.setString(1, populationGeneratorName);
+			ResultSet resultSet = findSyntheticPopulationGeneratorByNameStmt.executeQuery();
+			if (resultSet.next()) {
+				String name = resultSet.getString(SYNTHETIC_POPULATION_GENERATOR_TABLE.NAME_COLUMN_NAME);
+				int nbOfEntities = resultSet.getInt(SYNTHETIC_POPULATION_GENERATOR_TABLE.INITIAL_NUMBER_OF_ENTITIES_COLUMN_NAME);
+				int id = resultSet.getInt(SYNTHETIC_POPULATION_GENERATOR_TABLE.POPULATION_GENERATOR_ID_COLUMN_NAME);
+						
+				populationGenerator = new SyntheticPopulationGenerator(name, nbOfEntities);
+				populationGenerator.setID(id);
+				
+				resultSet.close();
+				resultSet = null;
+				
+				// populate attributes & generation rules
+				attributeDAO.populateAttributes(populationGenerator);
+				generationRuleDAO.populateGenerationRules(populationGenerator);
+			}
+		} catch (Exception e) {
+			if (e instanceof GenstarDAOException) { throw (GenstarDAOException)e; }
 			throw new GenstarDAOException(e);
 		}
 		
-		
-		
-		// TODO make a "real" implementation
-		
+		return populationGenerator;
 	}
 
 	@Override
@@ -89,13 +105,14 @@ public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO imple
 			
 			// TODO fire event?
 			
-		} catch (final SQLException e) {
+		} catch (final Exception e) {
 			try {
 				connection.rollback();
 			} catch (SQLException e1) {
 				throw new GenstarDAOException(e1);
 			}
 			
+			if (e instanceof GenstarDAOException) { throw (GenstarDAOException)e; }
 			throw new GenstarDAOException(e);
 		} finally {
 			try {
@@ -113,12 +130,12 @@ public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO imple
 
 	@Override
 	public void deleteSyntheticPopulationGenerator(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException {
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
-
-	@Override
-	public void deleteSyntheticPopulationGenerator(final int populationGeneratorID) throws GenstarDAOException {
-		throw new UnsupportedOperationException("Not yet implemented");
+		try {
+			deleteSyntheticPopulationGeneratorStmt.setInt(1, syntheticPopulationGenerator.getID());
+			deleteSyntheticPopulationGeneratorStmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new GenstarDAOException(e);
+		}
 	}
 
 }

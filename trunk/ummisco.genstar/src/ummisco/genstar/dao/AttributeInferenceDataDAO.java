@@ -6,4 +6,6 @@ import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
 public interface AttributeInferenceDataDAO {
 
 	public abstract void createInferenceData(final AttributeInferenceGenerationRule attributeInferenceGenerationRule) throws GenstarDAOException;
+
+	public abstract void populateInferenceData(final AttributeInferenceGenerationRule rule) throws GenstarDAOException;
 }

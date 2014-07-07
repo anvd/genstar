@@ -14,8 +14,11 @@ public interface AttributeValueSet {
 	
 	public abstract boolean remove(final AttributeValue value);
 	
-	public abstract boolean contains(final AttributeValue value);
+	public abstract boolean containsInstanceOfAttributeValue(final AttributeValue value);
+	
+	public abstract boolean containsValueOfAttributeValue(final AttributeValue value);
+	
+	public abstract AttributeValue getInstanceOfAttributeValue(final AttributeValue value);
 
 	public abstract void clear();
-
 }

@@ -10,6 +10,8 @@ import ummisco.genstar.dao.FrequencyDistributionGenerationRuleDAO;
 import ummisco.genstar.dao.GenerationRuleDAO;
 import ummisco.genstar.dao.derby.DBMS_Tables.GENERATION_RULE_TABLE;
 import ummisco.genstar.exception.GenstarDAOException;
+import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.AbstractAttribute;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 import ummisco.genstar.metamodel.GenerationRule;
@@ -17,7 +19,7 @@ import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 
 public class DerbyGenerationRuleDAO extends AbstractDerbyDAO implements GenerationRuleDAO {
 	
-	private PreparedStatement createGenerationRulesStmt;
+	private PreparedStatement createGenerationRulesStmt, populateGenerationRulesStmt;
 	
 	
 	private AttributeInferenceGenerationRuleDAO attributeInferenceGenerationRuleDAO;
@@ -34,6 +36,9 @@ public class DerbyGenerationRuleDAO extends AbstractDerbyDAO implements Generati
 					+ GENERATION_RULE_TABLE.RULE_ORDER_COLUMN_NAME + ", "
 					+ GENERATION_RULE_TABLE.RULE_TYPE_COLUMN_NAME
 					+ ") VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			
+			populateGenerationRulesStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE "
+					+ GENERATION_RULE_TABLE.POPULATION_GENERATOR_ID_COLUMN_NAME + " = ? ORDER BY " + GENERATION_RULE_TABLE.RULE_ORDER_COLUMN_NAME);
 			
 		} catch (SQLException e) {
 			throw new GenstarDAOException(e);
@@ -67,7 +72,7 @@ public class DerbyGenerationRuleDAO extends AbstractDerbyDAO implements Generati
 	
 	@Override
 	public void createGenerationRules(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException {
-		// TODO
+		
 		// 1. insert data to the GenerationRule table
 		// 2. delegate the sub-sequence "insert" task to the sub-DAO classes according to the type of GenerationRule
 		try {
@@ -75,7 +80,7 @@ public class DerbyGenerationRuleDAO extends AbstractDerbyDAO implements Generati
 				createGenerationRulesStmt.setInt(1, rule.getGenerator().getID());
 				createGenerationRulesStmt.setString(2, rule.getName());
 				createGenerationRulesStmt.setInt(3, rule.getOrder());
-				createGenerationRulesStmt.setInt(4, rule.getRuleType());
+				createGenerationRulesStmt.setInt(4, rule.getRuleTypeID());
 				
 				createGenerationRulesStmt.executeUpdate();
 				
@@ -85,13 +90,14 @@ public class DerbyGenerationRuleDAO extends AbstractDerbyDAO implements Generati
 				generatedKeySet.close();
 				generatedKeySet = null;
 				
-				if (rule.getRuleType() == AttributeInferenceGenerationRule.ATTRIBUTE_INFERENCE_GENERATION_RULE_ID) {
+				if (rule.getRuleTypeID() == AttributeInferenceGenerationRule.ATTRIBUTE_INFERENCE_GENERATION_RULE_ID) {
 					attributeInferenceGenerationRuleDAO.createAttributeInferenceGenerationRule( (AttributeInferenceGenerationRule) rule); 
 				} else {
 					frequencyDistributionGenerationRuleDAO.createFrequencyDistributionGenerationRule( (FrequencyDistributionGenerationRule) rule);
 				}
 			}
 		} catch (final Exception e) {
+			if (e instanceof GenstarDAOException) { throw (GenstarDAOException)e; }
 			throw new GenstarDAOException(e);
 		}
 	}
@@ -99,6 +105,43 @@ public class DerbyGenerationRuleDAO extends AbstractDerbyDAO implements Generati
 	@Override
 	public void udateGenerationRules(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException {
 		throw new UnsupportedOperationException("Not yet implemented");
+	}
+
+
+	@Override
+	public void populateGenerationRules(final ISyntheticPopulationGenerator populationGenerator) throws GenstarDAOException {
+		try {
+			int generationRuleID;
+			String name;
+			int ruleOrder;
+			int ruleType;
+			
+			populateGenerationRulesStmt.setInt(1, populationGenerator.getID());
+			ResultSet resultSet = populateGenerationRulesStmt.executeQuery();
+			while (resultSet.next()) {
+				generationRuleID = resultSet.getInt(GENERATION_RULE_TABLE.GENERATION_RULE_ID_COLUMN_NAME);
+				name = resultSet.getString(GENERATION_RULE_TABLE.NAME_COLUMN_NAME);
+				ruleOrder = resultSet.getInt(GENERATION_RULE_TABLE.RULE_ORDER_COLUMN_NAME);
+				ruleType = resultSet.getInt(GENERATION_RULE_TABLE.RULE_TYPE_COLUMN_NAME);
+				
+				if (ruleType == FrequencyDistributionGenerationRule.FREQUENCY_DISTRIBUTION_GENERATION_RULE_ID) {
+					
+					FrequencyDistributionGenerationRule rule = frequencyDistributionGenerationRuleDAO.findRule(populationGenerator, generationRuleID, name);
+					populationGenerator.appendGenerationRule(rule);
+				} else { // AttributeInferenceGenerationRule
+					
+					 AttributeInferenceGenerationRule rule = attributeInferenceGenerationRuleDAO.findRule(populationGenerator, generationRuleID, name);
+					 populationGenerator.appendGenerationRule(rule);
+				}
+			}
+			
+			// TODO populate generation rules
+			
+			resultSet.close();
+			resultSet = null;
+		} catch (Exception e) {
+			throw new GenstarDAOException(e);
+		}
 	}
 
 }

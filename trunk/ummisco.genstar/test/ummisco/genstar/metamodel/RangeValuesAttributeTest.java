@@ -11,7 +11,7 @@ import org.junit.rules.ExpectedException;
 
 import ummisco.genstar.exception.GenstarException;
 
-public class EnumerationOfRangesAttributeTest {
+public class RangeValuesAttributeTest {
 
 	@Rule public ExpectedException exception = ExpectedException.none();
 	
@@ -68,6 +68,23 @@ public class EnumerationOfRangesAttributeTest {
 		attr.addAll(null);
 	}
 	
+	@Test public void testConstainsInstanceOfAttributeValue() throws GenstarException {
+		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		
+		List<String> list1 = new ArrayList<String>();
+		list1.add("1");
+		list1.add("2");
+		AttributeValue rangeValue = attr.valueFromString(list1);
+		
+		assertTrue(attr.containsInstanceOfAttributeValue(rangeValue) == false);
+		
+		attr.add(rangeValue);
+		assertTrue(attr.containsInstanceOfAttributeValue(rangeValue));
+		
+		
+	}
+
 	@Test public void testCreateValue() throws GenstarException {
 		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
@@ -79,7 +96,7 @@ public class EnumerationOfRangesAttributeTest {
 		
 		RangeValue anotherRange = new RangeValue(DataType.INTEGER, "1", "2");
 		
-		assertTrue(rangeValue.equals(anotherRange));
+		assertTrue(rangeValue.compareTo(anotherRange) == 0);
 		
 		exception.expect(IllegalArgumentException.class);
 		list1.remove(0);

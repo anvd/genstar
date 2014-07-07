@@ -2,6 +2,7 @@ package ummisco.genstar.dao;
 
 import ummisco.genstar.exception.GenstarDAOException;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
+import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 
 public interface AttributeInferenceGenerationRuleDAO {
 
@@ -16,4 +17,6 @@ public interface AttributeInferenceGenerationRuleDAO {
 	public abstract void deleteAttributeInferenceGenerationRule(final AttributeInferenceGenerationRule attributeInferenceGenerationRule) throws GenstarDAOException;
 
 	public abstract void deleteAttributeInferenceGenerationRule(final int attributeInferenceGenerationRuleID) throws GenstarDAOException;
+
+	public abstract AttributeInferenceGenerationRule findRule(final ISyntheticPopulationGenerator populationGenerator, final int generationRuleID, final String name) throws GenstarDAOException;
 }
