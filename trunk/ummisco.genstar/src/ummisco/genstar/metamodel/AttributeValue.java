@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.util.PersistentObject;
 
 public abstract class AttributeValue implements Comparable<AttributeValue> {
 	
@@ -18,7 +19,7 @@ public abstract class AttributeValue implements Comparable<AttributeValue> {
 	
 	
 
-	protected int attributeValueID = -1;
+	protected int attributeValueID = PersistentObject.NEW_OBJECT_ID;
 	
 	protected DataType dataType;
 	

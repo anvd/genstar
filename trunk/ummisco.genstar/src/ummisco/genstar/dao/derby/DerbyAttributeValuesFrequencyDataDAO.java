@@ -19,53 +19,66 @@ import ummisco.genstar.metamodel.UniqueValue;
 
 public class DerbyAttributeValuesFrequencyDataDAO extends AbstractDerbyDAO implements AttributeValuesFrequencyDataDAO {
 
-	private PreparedStatement createAttributeValuesFrequencyStmt, setAttributeValuesFrequencyStmt;
+	private PreparedStatement createAttributeValuesFrequencyDataStmt, populateAttributeValuesFrequencyDataStmt,
+		updateAttributeValuesFrequencyDataStmt, deleteAttributeValuesFrequencyDataStmt;
 
 	
 	public DerbyAttributeValuesFrequencyDataDAO(final DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
 		super(daoFactory, DBMS_Tables.ATTRIBUTE_VALUES_FREQUENCY_DATA_TABLE.TABLE_NAME);
 		
 		try {
-			createAttributeValuesFrequencyStmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME
+			createAttributeValuesFrequencyDataStmt = connection.prepareStatement("INSERT INTO " + TABLE_NAME
 					+ " (" + ATTRIBUTE_VALUES_FREQUENCY_DATA_TABLE.ATTRIBUTE_VALUES_FREQUENCY_ID_COLUMN_NAME + ", "
 					+ ATTRIBUTE_VALUES_FREQUENCY_DATA_TABLE.ATTRIBUTE_ID_COLUMN_NAME + ", "
 					+ ATTRIBUTE_VALUES_FREQUENCY_DATA_TABLE.UNIQUE_VALUE_ID_COLUMN_NAME + ", "
 					+ ATTRIBUTE_VALUES_FREQUENCY_DATA_TABLE.RANGE_VALUE_ID_COLUMN_NAME
 					+ ") VALUES (?, ?, ?, ?)");
 			
-			setAttributeValuesFrequencyStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " 
+			populateAttributeValuesFrequencyDataStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " 
 					+ ATTRIBUTE_VALUES_FREQUENCY_DATA_TABLE.ATTRIBUTE_VALUES_FREQUENCY_ID_COLUMN_NAME + " = ?");
+			
+			updateAttributeValuesFrequencyDataStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME
+					+ " WHERE " + ATTRIBUTE_VALUES_FREQUENCY_DATA_TABLE.ATTRIBUTE_VALUES_FREQUENCY_ID_COLUMN_NAME + " = ? FOR UPDATE"
+					, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE); // TODO remove
+			
+			deleteAttributeValuesFrequencyDataStmt = connection.prepareStatement("DELETE FROM " + TABLE_NAME + " WHERE "
+					+ ATTRIBUTE_VALUES_FREQUENCY_DATA_TABLE.ATTRIBUTE_ID_COLUMN_NAME + " = ?");
+			 
+			
 		} catch (SQLException e) {
 			throw new GenstarDAOException(e);
 		}
 	}
 
 	@Override
-	public void createAttributeValuesFrequency(final AttributeValuesFrequency distributionElement) throws GenstarDAOException {
+	public void createAttributeValuesFrequencyData(final AttributeValuesFrequency attributeValuesFrequency) throws GenstarDAOException {
+		internalCreateAttributeValuesFrequencyData(attributeValuesFrequency);
+	}
+	
+	private void internalCreateAttributeValuesFrequencyData(final AttributeValuesFrequency attributeValuesFrequency) throws GenstarDAOException {
 		try {
-			createAttributeValuesFrequencyStmt.setInt(1, distributionElement.getID());
-			Map<AbstractAttribute, AttributeValue> attributeValues = distributionElement.getAttributeValues(); 
+			createAttributeValuesFrequencyDataStmt.setInt(1, attributeValuesFrequency.getID());
+			Map<AbstractAttribute, AttributeValue> attributeValues = attributeValuesFrequency.getAttributeValues(); 
 			for (AbstractAttribute attribute : attributeValues.keySet()) {
-				createAttributeValuesFrequencyStmt.setInt(2, attribute.getAttributeID());
+				createAttributeValuesFrequencyDataStmt.setInt(2, attribute.getAttributeID());
 				
 				if (attribute.getValueClassOnData().equals(UniqueValue.class)) {
-					createAttributeValuesFrequencyStmt.setInt(3, attributeValues.get(attribute).getAttributeValueID());
-					createAttributeValuesFrequencyStmt.setNull(4, Types.INTEGER);
+					createAttributeValuesFrequencyDataStmt.setInt(3, attributeValues.get(attribute).getAttributeValueID());
+					createAttributeValuesFrequencyDataStmt.setNull(4, Types.INTEGER);
 				} else { // RangeValue.class
-					createAttributeValuesFrequencyStmt.setNull(3, Types.INTEGER);
-					createAttributeValuesFrequencyStmt.setInt(4, attributeValues.get(attribute).getAttributeValueID());
+					createAttributeValuesFrequencyDataStmt.setNull(3, Types.INTEGER);
+					createAttributeValuesFrequencyDataStmt.setInt(4, attributeValues.get(attribute).getAttributeValueID());
 				}
 				
-				createAttributeValuesFrequencyStmt.executeUpdate();
+				createAttributeValuesFrequencyDataStmt.executeUpdate();
 			}
 		} catch (SQLException e) {
 			throw new GenstarDAOException(e);
 		}
-		
 	}
 
 	@Override
-	public void populateAttributeValuesFrequency(final FrequencyDistributionGenerationRule rule,
+	public void populateAttributeValuesFrequencyData(final FrequencyDistributionGenerationRule rule,
 			final int attributeValuesFrequencyID, final int frequency) throws GenstarDAOException {
 		
 		try {
@@ -75,8 +88,8 @@ public class DerbyAttributeValuesFrequencyDataDAO extends AbstractDerbyDAO imple
 			int uniqueValueID, rangeValueID, attributeValueID;
 			
 			
-			setAttributeValuesFrequencyStmt.setInt(1, attributeValuesFrequencyID);
-			ResultSet resultSet = setAttributeValuesFrequencyStmt.executeQuery();
+			populateAttributeValuesFrequencyDataStmt.setInt(1, attributeValuesFrequencyID);
+			ResultSet resultSet = populateAttributeValuesFrequencyDataStmt.executeQuery();
 			Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 			while (resultSet.next()) {
 				attribute = null;
@@ -123,6 +136,22 @@ public class DerbyAttributeValuesFrequencyDataDAO extends AbstractDerbyDAO imple
 			resultSet = null;
 		} catch (Exception e) {
 			if (e instanceof GenstarDAOException) { throw (GenstarDAOException)e; }
+			throw new GenstarDAOException(e);
+		}
+	}
+
+	@Override
+	public void updateAttributeValuesFrequencyData(final AttributeValuesFrequency attributeValuesFrequency) throws GenstarDAOException {
+		
+		try {
+			// 1. delete data
+			deleteAttributeValuesFrequencyDataStmt.setInt(1, attributeValuesFrequency.getID());
+			deleteAttributeValuesFrequencyDataStmt.executeUpdate();
+
+			// 2. create data
+			internalCreateAttributeValuesFrequencyData(attributeValuesFrequency);
+			
+		} catch (SQLException e) {
 			throw new GenstarDAOException(e);
 		}
 	}

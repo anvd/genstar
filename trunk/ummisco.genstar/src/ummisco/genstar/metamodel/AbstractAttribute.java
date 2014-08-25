@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.util.PersistentObject;
 
 
 public abstract class AbstractAttribute implements AttributeValueSet {
 	
 	
-	protected int attributeID = -1;
+	protected int attributeID = PersistentObject.NEW_OBJECT_ID;
 	
 	protected ISyntheticPopulationGenerator populationGenerator;
 	

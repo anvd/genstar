@@ -5,7 +5,9 @@ import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 
 public interface AttributeValuesFrequencyDAO {
 
-	public abstract void createAttributeValuesFrequecies(final FrequencyDistributionGenerationRule generationRule) throws GenstarDAOException;
+	public abstract void createAttributeValuesFrequencies(final FrequencyDistributionGenerationRule generationRule) throws GenstarDAOException;
+	
+	public abstract void updateAttributeValuesFrequencies(final FrequencyDistributionGenerationRule generationRule) throws GenstarDAOException;
 
-	public abstract void populateAttributeValuesFrequencies(final FrequencyDistributionGenerationRule rule) throws GenstarDAOException;
+	public abstract void populateAttributeValuesFrequencies(final FrequencyDistributionGenerationRule generationRule) throws GenstarDAOException;
 }

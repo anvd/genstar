@@ -2,6 +2,7 @@ package ummisco.genstar.metamodel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +22,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 	
 	private SortedMap<Integer, AbstractAttribute> outputAttributes;
 	
-	private List<AttributeValuesFrequency> attributeValuesFrequencies;
+	private Set<AttributeValuesFrequency> attributeValuesFrequencies;
 	
 
 	// TODO table specification, should put in the UI class or here?
@@ -34,7 +35,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		this.inputAttributes = new TreeMap<Integer, AbstractAttribute>();
 		this.outputAttributes = new TreeMap<Integer, AbstractAttribute>();
-		this.attributeValuesFrequencies = new ArrayList<AttributeValuesFrequency>();
+		this.attributeValuesFrequencies = new HashSet<AttributeValuesFrequency>();
 	}
 	
 	public List<AbstractAttribute> getOrderedInputAttributes() {
@@ -74,8 +75,8 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		return null;
 	}
 	
-	public List<AttributeValuesFrequency> getAttributeValuesFrequencies() {
-		return new ArrayList<AttributeValuesFrequency>(attributeValuesFrequencies);
+	public Set<AttributeValuesFrequency> getAttributeValuesFrequencies() {
+		return new HashSet<AttributeValuesFrequency>(attributeValuesFrequencies);
 	}
 	
 	private void verifyAddedAttributeValidity(final AbstractAttribute attribute) throws GenstarException {
@@ -100,8 +101,6 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		int index = inputAttributes.size();
 		inputAttributes.put(index, inputAttribute);
-		
-//		generateAttributeValuesFrequencies();
 	}
 	
 	public void insertInputAttribute(final AbstractAttribute inputAttribute, final int order) throws GenstarException {
@@ -134,8 +133,6 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		inputAttributes.clear();
 		inputAttributes.putAll(newInputAttributes);
-
-//		generateAttributeValuesFrequencies();
 	}
 	
 	public void removeInputAttribute(final AbstractAttribute inputAttribute) throws GenstarException {
@@ -175,8 +172,6 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		inputAttributes.clear();
 		inputAttributes.putAll(newInputAttributes);
-		 
-//		generateAttributeValuesFrequencies();
 	}
 	
 	public void changeInputAttributeOrder(final AbstractAttribute inputAttribute, final int newOrder) throws GenstarException {
@@ -189,8 +184,6 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		removeInputAttribute(inputAttribute);
 		insertInputAttribute(inputAttribute, newOrder);
-
-//		generateAttributeValuesFrequencies(); // TODO verify the necessity of this statement!
 	}
 	
 	public int getInputAttributeOrder(final AbstractAttribute inputAttribute) {
@@ -216,8 +209,6 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 
 		int index = outputAttributes.size();
 		outputAttributes.put(index, outputAttribute);
-
-//		generateAttributeValuesFrequencies();
 	}
 	
 	public void insertOutputAttribute(final AbstractAttribute outputAttribute, final int order) throws GenstarException {
@@ -250,8 +241,6 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		outputAttributes.clear();
 		outputAttributes.putAll(newOutputAttributes);
-
-//		generateAttributeValuesFrequencies();
 	}
 	
 	public void removeOutputAttribute(final AbstractAttribute outputAttribute) throws GenstarException {
@@ -291,8 +280,6 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		outputAttributes.clear();
 		outputAttributes.putAll(newOutputAttributes);
-
-//		generateAttributeValuesFrequencies();
 	}
 	
 	public void changeOutputAttributeOrder(final AbstractAttribute outputAttribute, final int newOrder) throws GenstarException {
@@ -305,8 +292,6 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		removeOutputAttribute(outputAttribute);
 		insertOutputAttribute(outputAttribute, newOrder);
-
-//		generateAttributeValuesFrequencies(); // TODO verify the necessity of this statement
 	}
 	
 	public int getOutputAttributeOrder(final AbstractAttribute outputAttribute) {
@@ -367,14 +352,6 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 			attributeValuesFrequencies.add(new AttributeValuesFrequency(this, buildAttributeValueMap(allAttributes, catesian)));
 		}
 	}
-	
-//	public void addAttributeValuesFrequency(final AttributeValuesFrequency attributeValuesFrequency) throws GenstarException {
-//		if (attributeValuesFrequency == null) { throw new IllegalArgumentException("'attributeValuesFrequency' parameter can not be null"); }
-//		
-//		if (!attributeValuesFrequency.getGenerationRule().equals(this)) { throw new GenstarException("'attributeValuesFrequency' belongs to another FrequencyDistributionGenerationRule"); }
-//		
-//		if (!attributeValuesFrequencies.contains(attributeValuesFrequency)) { attributeValuesFrequencies.add(attributeValuesFrequency); }
-//	}
 	
 	public List<AttributeValuesFrequency> findAttributeValuesFrequencies(final Map<AbstractAttribute, AttributeValue> attributeValues) throws GenstarException {
 		if (attributeValues == null || attributeValues.isEmpty()) { throw new IllegalArgumentException("'attributeValues' parameter can not be null or empty"); }

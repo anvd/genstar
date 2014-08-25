@@ -17,7 +17,7 @@ public interface GenerationRuleDAO {
 	
 	public abstract void createGenerationRules(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;
 	
-	public abstract void udateGenerationRules(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;
+	public abstract void updateGenerationRules(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;
 
 	public abstract void populateGenerationRules(final ISyntheticPopulationGenerator populationGenerator) throws GenstarDAOException;
 

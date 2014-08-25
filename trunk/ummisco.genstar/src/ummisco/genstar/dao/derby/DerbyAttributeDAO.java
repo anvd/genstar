@@ -4,6 +4,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import ummisco.genstar.dao.AttributeDAO;
 import ummisco.genstar.dao.RangeValueDAO;
@@ -18,10 +24,11 @@ import ummisco.genstar.metamodel.RangeValue;
 import ummisco.genstar.metamodel.RangeValuesAttribute;
 import ummisco.genstar.metamodel.UniqueValue;
 import ummisco.genstar.metamodel.UniqueValuesAttribute;
+import ummisco.genstar.util.PersistentObject;
 
 public class DerbyAttributeDAO extends AbstractDerbyDAO implements AttributeDAO {
 	
-	private PreparedStatement createAttributeStmt, populateAttributesStmt;
+	private PreparedStatement createAttributeStmt, populateAttributesStmt, updateAttributesStmt;
 	
 	private RangeValueDAO rangeValueDAO;
 	
@@ -42,6 +49,10 @@ public class DerbyAttributeDAO extends AbstractDerbyDAO implements AttributeDAO 
 			
 			populateAttributesStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE "
 					+ ATTRIBUTE_TABLE.POPULATION_GENERATOR_ID_COLUMN_NAME + " = ?");
+			
+			updateAttributesStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE "
+					+ ATTRIBUTE_TABLE.POPULATION_GENERATOR_ID_COLUMN_NAME + " = ? FOR UPDATE", 
+					ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			
 		} catch (SQLException e) {
 			throw new GenstarDAOException(e);
@@ -65,42 +76,111 @@ public class DerbyAttributeDAO extends AbstractDerbyDAO implements AttributeDAO 
 	public void createAttributes(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException {
 		
 		try {
-			createAttributeStmt.setInt(1, syntheticPopulationGenerator.getID());
-
-			for (AbstractAttribute attribute : syntheticPopulationGenerator.getAttributes()) {
-				// firstly, save the information of AbstractAttribute
-				createAttributeStmt.setString(2, attribute.getNameOnData());
-				createAttributeStmt.setString(3, attribute.getNameOnEntity());
-				createAttributeStmt.setInt(4, attribute.getDataType().getID());
-				createAttributeStmt.setInt(5, AttributeValue.getIdByClass(attribute.getValueClassOnData()));
-				createAttributeStmt.setInt(6, AttributeValue.getIdByClass(attribute.getValueClassOnEntity()));
-				createAttributeStmt.executeUpdate();
-				
-				// retrieve the ID of the newly created AbstractAttribute
-				ResultSet generatedKeySet = createAttributeStmt.getGeneratedKeys();
-				if (generatedKeySet.next()) { attribute.setAttributeID(generatedKeySet.getInt(1)); }
-				generatedKeySet.close();
-				generatedKeySet = null;
-				 
-				
-				// secondly, ask the appropriate ValueDAO (UniqueValueDAO or RangeValueDAO) to save the attribute values
-				if (attribute instanceof RangeValuesAttribute) {
-					rangeValueDAO.createRangeValues((RangeValuesAttribute) attribute);
-				} else { // attribute instanceof UniqueValuesAttribute
-					uniqueValueDAO.createUniqueValues((UniqueValuesAttribute) attribute);
-				}
-			}
-		} catch (final Exception e) {
+			internalCreateAttributes(syntheticPopulationGenerator.getID(), syntheticPopulationGenerator.getAttributes());
+		} catch (Exception e) {
 			if (e instanceof GenstarDAOException) { throw (GenstarDAOException)e; }
 			throw new GenstarDAOException(e);
 		}
 		
 	}
 	
+	private void internalCreateAttributes(final int syntheticPopulationGeneratorID, final Set<AbstractAttribute> attributes) throws Exception {
+		createAttributeStmt.setInt(1, syntheticPopulationGeneratorID);
+		
+		for (AbstractAttribute attribute : attributes) {
+			// firstly, save the information of AbstractAttribute
+			createAttributeStmt.setString(2, attribute.getNameOnData());
+			createAttributeStmt.setString(3, attribute.getNameOnEntity());
+			createAttributeStmt.setInt(4, attribute.getDataType().getID());
+			createAttributeStmt.setInt(5, AttributeValue.getIdByClass(attribute.getValueClassOnData()));
+			createAttributeStmt.setInt(6, AttributeValue.getIdByClass(attribute.getValueClassOnEntity()));
+			createAttributeStmt.executeUpdate();
+			
+			// retrieve the ID of the newly created AbstractAttribute
+			ResultSet generatedKeySet = createAttributeStmt.getGeneratedKeys();
+			if (generatedKeySet.next()) { attribute.setAttributeID(generatedKeySet.getInt(1)); }
+			generatedKeySet.close();
+			generatedKeySet = null;
+			 
+			
+			// secondly, ask the appropriate ValueDAO (UniqueValueDAO or RangeValueDAO) to save the attribute values
+			if (attribute instanceof RangeValuesAttribute) {
+				rangeValueDAO.createRangeValues((RangeValuesAttribute) attribute);
+			} else { // attribute instanceof UniqueValuesAttribute
+				uniqueValueDAO.createUniqueValues((UniqueValuesAttribute) attribute);
+			}
+		}
+	}
+	
 	@Override
 	public void updateAttributes(final ISyntheticPopulationGenerator populationGenerator) throws GenstarDAOException {
-	}
+		
+		try {
+			updateAttributesStmt.setInt(1, populationGenerator.getID());
+			ResultSet resultSet = updateAttributesStmt.executeQuery();
 
+			int attributeID;
+			List<Integer> attributeIDsInDBMS = new ArrayList<Integer>();
+			while (resultSet.next()) { attributeIDsInDBMS.add(resultSet.getInt(ATTRIBUTE_TABLE.ATTRIBUTE_ID_COLUMN_NAME)); }
+			
+			// 1. build the list of attributeIDs to create, update and delete
+			Set<AbstractAttribute> attributesToCreate = new HashSet<AbstractAttribute>();
+			Map<Integer, AbstractAttribute> attributesToUpdate = new HashMap<Integer, AbstractAttribute>();
+			for (AbstractAttribute attr : populationGenerator.getAttributes()) {
+				attributeID = attr.getAttributeID();
+				
+				if (attributeID == PersistentObject.NEW_OBJECT_ID) {
+					attributesToCreate.add(attr);
+				} else {
+					attributesToUpdate.put(attributeID, attr);
+				}
+			}
+
+			
+			// 2. remove "deleted" attributes or update existing attributes
+			AbstractAttribute attribute;
+			resultSet.beforeFirst();
+			Set<Integer> attributeIDsToUpdate = new HashSet<Integer>(attributesToUpdate.keySet());
+			while (resultSet.next()) {
+				attributeID = resultSet.getInt(ATTRIBUTE_TABLE.ATTRIBUTE_ID_COLUMN_NAME);
+				
+				if (attributeIDsToUpdate.contains(attributeID)) { // update the attribute
+					attribute = attributesToUpdate.get(attributeID);
+					
+					// firstly, update the attribute
+					resultSet.updateString(ATTRIBUTE_TABLE.NAME_ON_DATA_COLUMN_NAME, attribute.getNameOnData());
+					resultSet.updateString(ATTRIBUTE_TABLE.NAME_ON_ENTITY_COLUMN_NAME, attribute.getNameOnEntity());
+					resultSet.updateInt(ATTRIBUTE_TABLE.DATA_TYPE_COLUMN_NAME, attribute.getDataType().getID());
+					// can not change valueClassOnData
+					resultSet.updateInt(ATTRIBUTE_TABLE.VALUE_TYPE_ON_ENTITY_COLUMN_NAME, AttributeValue.getIdByClass(attribute.getValueClassOnEntity()));
+					resultSet.updateRow();
+										
+					
+					// secondly, ask the appropriate ValueDAO (UniqueValueDAO or RangeValueDAO) to update the attribute values
+					if (attribute instanceof RangeValuesAttribute) {
+						rangeValueDAO.updateRangeValues((RangeValuesAttribute) attribute);
+					} else { // attribute instanceof UniqueValuesAttribute
+						uniqueValueDAO.updateUniqueValues((UniqueValuesAttribute) attribute);
+					}
+					
+				} else { // delete the attribute
+					resultSet.deleteRow();
+				}
+			}
+			
+			
+			// 3. create new attributes
+			this.internalCreateAttributes(populationGenerator.getID(), attributesToCreate);
+
+			
+			resultSet.close();
+			resultSet = null;
+		} catch (Exception e) {
+			if (e instanceof GenstarDAOException) { throw (GenstarDAOException)e; }
+			throw new GenstarDAOException(e);
+		}
+	}
+	
 	@Override
 	public void populateAttributes(final ISyntheticPopulationGenerator populationGenerator) throws GenstarDAOException {
 		try {
@@ -151,5 +231,4 @@ public class DerbyAttributeDAO extends AbstractDerbyDAO implements AttributeDAO 
 			throw new GenstarDAOException(e);
 		}
 	}
-
 }

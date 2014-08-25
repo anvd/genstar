@@ -11,27 +11,27 @@ public class RangeValuesAttribute extends AbstractAttribute {
 	private Set<RangeValue> rangeValues;
 	
 	
-	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType valueType) throws GenstarException {
-		this(populationGenerator, nameOnData, nameOnData, valueType, RangeValue.class);
+	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType dataType) throws GenstarException {
+		this(populationGenerator, nameOnData, nameOnData, dataType, RangeValue.class);
 	}
 
-	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType valueType, final Class<? extends AttributeValue> entityAttributeValueClass) throws GenstarException {
-		this(populationGenerator, nameOnData, nameOnData, valueType, entityAttributeValueClass);
+	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType dataType, final Class<? extends AttributeValue> entityAttributeValueClass) throws GenstarException {
+		this(populationGenerator, nameOnData, nameOnData, dataType, entityAttributeValueClass);
 	}
 
-	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final DataType valueType) throws GenstarException {
-		this(populationGenerator, nameOnData, nameOnEntity, valueType, RangeValue.class);
+	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final DataType dataType) throws GenstarException {
+		this(populationGenerator, nameOnData, nameOnEntity, dataType, RangeValue.class);
 	}
 
-	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final DataType valueType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		super(populationGenerator, nameOnData, nameOnEntity, valueType, valueClassOnEntity);
+	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
+		super(populationGenerator, nameOnData, nameOnEntity, dataType, valueClassOnEntity);
 
-		if (!valueType.isNumericValue()) { throw new IllegalArgumentException(this.getClass().getName() + " only supports Double, Float and Integer value."); }
+		if (!dataType.isNumericValue()) { throw new IllegalArgumentException(this.getClass().getName() + " only supports Double, Float and Integer value."); }
 		
 		this.valueClassOnData = RangeValue.class;
 		this.rangeValues = new HashSet<RangeValue>();
 		try {
-			this.setDefaultValue(valueClassOnData.getConstructor(DataType.class).newInstance(valueType));
+			this.setDefaultValue(valueClassOnData.getConstructor(DataType.class).newInstance(dataType));
 		} catch (Exception e) {
 			throw new GenstarException(e);
 		}

@@ -5,6 +5,8 @@ import java.util.Map;
 
 public interface ISyntheticPopulation {
 	
+	public abstract ISyntheticPopulationGenerator getGenerator();
+	
 	public abstract String getName();
 	
 	public abstract int getInitialNbOfEntities();

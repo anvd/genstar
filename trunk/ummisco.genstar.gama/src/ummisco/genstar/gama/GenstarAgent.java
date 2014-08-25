@@ -117,7 +117,7 @@ public class GenstarAgent extends GamlAgent {
 			Map<String, Object> map;
 			for (Entity entity : mockPopulation.getEntities()) {
 				map = new GamaMap<String, Object>();
-				for (Map.Entry<String, EntityAttributeValue> entry : entity.getAttributes().entrySet()) {
+				for (Map.Entry<String, EntityAttributeValue> entry : entity.getAttributeValues().entrySet()) {
 					map.put(entry.getKey(), Genstar2GamaTypeConversion.convertGenstar2GamaType(entry.getValue().getAttributeValueOnEntity()));
 				}
 				syntheticPopulation.add(map);
@@ -154,7 +154,7 @@ public class GenstarAgent extends GamlAgent {
 			Map<String, Object> map;
 			for (Entity entity : genstarPopulation.getEntities()) {
 				map = new GamaMap<String, Object>();
-				for (Map.Entry<String, EntityAttributeValue> entry : entity.getAttributes().entrySet()) {
+				for (Map.Entry<String, EntityAttributeValue> entry : entity.getAttributeValues().entrySet()) {
 					map.put(entry.getKey(), Genstar2GamaTypeConversion.convertGenstar2GamaType(entry.getValue().getAttributeValueOnEntity()));
 				}
 				gamaPopulation.add(map);

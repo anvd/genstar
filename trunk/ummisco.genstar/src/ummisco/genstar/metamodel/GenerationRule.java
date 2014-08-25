@@ -3,10 +3,11 @@ package ummisco.genstar.metamodel;
 import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.util.PersistentObject;
 
-public abstract class GenerationRule {
+public abstract class GenerationRule implements Comparable<GenerationRule> {
 	
-	protected int generationRuleID = -1;
+	protected int generationRuleID = PersistentObject.NEW_OBJECT_ID;
 	
 	protected ISyntheticPopulationGenerator populationGenerator;
 	
@@ -47,6 +48,11 @@ public abstract class GenerationRule {
 		return order;
 	}
 	
+	@Override public int compareTo(final GenerationRule other) {
+		return this.order - other.order;
+	}
+	
+//	public abstract Set<AbstractAttribute> getAttributes();
 	public abstract List<AbstractAttribute> getAttributes();
 
 	public abstract int getRuleTypeID();
