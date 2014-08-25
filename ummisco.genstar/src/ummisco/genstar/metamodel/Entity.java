@@ -11,15 +11,15 @@ public class Entity {
 
 	private ISyntheticPopulation population;
 
-	private Map<String, EntityAttributeValue> attributes; // <attribute name on entity, entity attribute value>
+	private Map<String, EntityAttributeValue> attributeValues; // <attribute name on entity, entity attribute value>
 	
-	private List<Entity> members;
+	private List<Entity> members; // ?
 	
 	public Entity(final ISyntheticPopulation population) {
 		if (population == null) { throw new IllegalArgumentException("Input parameter 'population' can not be null"); }
 		
 		this.population = population;
-		this.attributes = new HashMap<String, EntityAttributeValue>();
+		this.attributeValues = new HashMap<String, EntityAttributeValue>();
 		this.members = new ArrayList<Entity>();
 	}
 	
@@ -31,18 +31,18 @@ public class Entity {
 		return members;
 	}
 	
-	public Map<String, EntityAttributeValue> getAttributes() {
-		return attributes;
+	public Map<String, EntityAttributeValue> getAttributeValues() {
+		return attributeValues;
 	}
 	
 	public EntityAttributeValue getEntityAttributeValue(final String attributeNameOnEntity) {
 		if (attributeNameOnEntity == null) { throw new IllegalArgumentException("'attributeNameOnEntity' parameter can not be null"); }
 		
-		return attributes.get(attributeNameOnEntity);
+		return attributeValues.get(attributeNameOnEntity);
 	}
 	
 	public boolean containAttribute(final String attributeNameOnEntity) {
-		return attributes.get(attributeNameOnEntity) != null;
+		return attributeValues.get(attributeNameOnEntity) != null;
 	}
 	
 	public void putAttributeValue(final AbstractAttribute attribute, final AttributeValue attributeValue) throws GenstarException {
@@ -56,7 +56,7 @@ public class Entity {
 		String attributeNameOnEntity = entityAttributeValue.getAttribute().getNameOnEntity();
 		if (containAttribute(attributeNameOnEntity)) { throw new GenstarException("Entity " + population.getName() + " already contains '" + attributeNameOnEntity + "' attribute."); }
 		
-		attributes.put(entityAttributeValue.getAttribute().getNameOnEntity(), entityAttributeValue);
+		attributeValues.put(entityAttributeValue.getAttribute().getNameOnEntity(), entityAttributeValue);
 	}
 	
 	public void replaceAttributeValue(final AbstractAttribute attribute, final AttributeValue attributeValue) throws GenstarException {
@@ -66,7 +66,7 @@ public class Entity {
 	public void replaceAttributeValue(final EntityAttributeValue entityAttributeValue) throws GenstarException {
 		if (entityAttributeValue == null) { throw new IllegalArgumentException("'attributeValue' parameter can not be null"); }
 		
-		attributes.put(entityAttributeValue.getAttribute().getNameOnEntity(), entityAttributeValue);
+		attributeValues.put(entityAttributeValue.getAttribute().getNameOnEntity(), entityAttributeValue);
 	}
 	
 	public boolean isMatch(final Map<String, AttributeValue> matchingAttributeValues) { // <attribute name on entity, attribute value on entity>
@@ -74,7 +74,7 @@ public class Entity {
 
 		EntityAttributeValue entityAttrValue;
 		for (String attributeNameOnEntity : matchingAttributeValues.keySet()) {
-			entityAttrValue = attributes.get(attributeNameOnEntity);
+			entityAttrValue = attributeValues.get(attributeNameOnEntity);
 			
 			if (entityAttrValue == null) { return false; }
 			if (!entityAttrValue.isValueMatch(matchingAttributeValues.get(attributeNameOnEntity))) { return false; }
@@ -83,9 +83,9 @@ public class Entity {
 		return true;
 	}
 	
-	public void addMember(final Entity m) {
-		if (m == null) { throw new IllegalArgumentException("'member' parameter can not be null"); }
-		if (!members.contains(m)) { members.add(m); }
+	public void addMember(final Entity member) {
+		if (member == null) { throw new IllegalArgumentException("'member' parameter can not be null"); }
+		if (!members.contains(member)) { members.add(member); }
 	}
 	
 	public void addMembers(final List<Entity> members) {

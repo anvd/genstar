@@ -27,7 +27,7 @@ public final class BondyData {
 	 * Attributes : age, sex
 	 * 
 	 * Output attributes :
-	 * 	age : Enumeration of integer ranges
+	 * 	age : enumeration of integer ranges
 	 * 	sex : enumeration of boolean values (true : male, false : female)
 	 * 
 	 * Note :

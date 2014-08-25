@@ -1,7 +1,7 @@
 package ummisco.genstar.metamodel;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.NavigableSet;
+import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 
@@ -20,7 +20,7 @@ public interface ISyntheticPopulationGenerator { // FIXME change class name -> I
 
 	public abstract int getNbOfRules();
 
-	public abstract Collection<AbstractAttribute> getAttributes();
+	public abstract Set<AbstractAttribute> getAttributes();
 
 	public abstract boolean containAttribute(final AbstractAttribute attribute);
 
@@ -48,7 +48,7 @@ public interface ISyntheticPopulationGenerator { // FIXME change class name -> I
 
 	public abstract boolean containGenerationRuleName(final String ruleName);
 
-	public abstract List<GenerationRule> getGenerationRules();
+	public abstract NavigableSet<GenerationRule> getGenerationRules();
 
 	public abstract ISyntheticPopulation generate() throws GenstarException;
 }

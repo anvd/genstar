@@ -3,7 +3,10 @@ package ummisco.genstar.metamodel;
 import static org.junit.Assert.*;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NavigableSet;
+import java.util.SortedSet;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -116,7 +119,7 @@ public class PopulationTest_Elementary {
 		assertFalse(population.containAttribute(new String()));
 	}
 	
-	@Test public void testAppendValidDistributions() throws GenstarException {
+	@Test public void testAppendValidFrequencyGenerationRules() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 		
 		assertTrue(population.getGenerationRules().size() == 0);
@@ -132,7 +135,7 @@ public class PopulationTest_Elementary {
 		assertTrue(population.getGenerationRuleOrder(dis2) == 1);
 	}
 	
-	@Test public void testAppendInvalidDistribution1() throws GenstarException {
+	@Test public void testAppendInvalidGenerationRule1() throws GenstarException {
 		SyntheticPopulationGenerator population1 = new SyntheticPopulationGenerator("test population1", 1);
 		SyntheticPopulationGenerator population2 = new SyntheticPopulationGenerator("test population2", 1);
 		
@@ -141,7 +144,7 @@ public class PopulationTest_Elementary {
 		population2.appendGenerationRule(dis1);
 	}
 	
-	@Test public void testAppendInvalidDistribution2() throws GenstarException {
+	@Test public void testAppendInvalidGenerationRule2() throws GenstarException {
 		SyntheticPopulationGenerator population1 = new SyntheticPopulationGenerator("test population1", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population1, "distribution 1");
@@ -150,7 +153,7 @@ public class PopulationTest_Elementary {
 		population1.appendGenerationRule(dis1);
 	}
 	
-	@Test public void testAppendInvalidDistribution3() throws GenstarException {
+	@Test public void testAppendInvalidGenerationRule3() throws GenstarException {
 		SyntheticPopulationGenerator population1 = new SyntheticPopulationGenerator("test population1", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population1, "distribution 1");
@@ -160,7 +163,7 @@ public class PopulationTest_Elementary {
 		population1.appendGenerationRule(dis2);
 	}
 	
-	@Test public void testInsertValidDistributions() throws GenstarException {
+	@Test public void testInsertValidGenerationRules() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 		
 		assertTrue(population.getGenerationRules().size() == 0);
@@ -189,7 +192,7 @@ public class PopulationTest_Elementary {
 		assertTrue(population.getGenerationRuleOrder(dis4) == 3);
 	}
 	
-	@Test public void testInsertInvalidPositionDistributions() throws GenstarException {
+	@Test public void testInsertInvalidPositionGenerationRules() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
@@ -200,7 +203,7 @@ public class PopulationTest_Elementary {
 		assertTrue(population.getNbOfRules() == 0);
 	}
 	
-	@Test public void testRemoveValidDistribution() throws GenstarException {
+	@Test public void testRemoveValidGenerationRule() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 		
 		assertTrue(population.getNbOfRules() == 0);
@@ -237,7 +240,7 @@ public class PopulationTest_Elementary {
 		assertTrue(population.getNbOfRules() == 0);
 	}
 	
-	@Test public void testChangeDistributionOrder() throws GenstarException {
+	@Test public void testChangeGenerationRuleOrder() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
@@ -266,7 +269,7 @@ public class PopulationTest_Elementary {
 		assertTrue(population.getGenerationRuleOrder(dis3) == 3);
 	}
 	
-	@Test public void testGetDistributionAtOrder() throws GenstarException {
+	@Test public void testGetGenerationRuleAtOrder() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
@@ -289,7 +292,7 @@ public class PopulationTest_Elementary {
 		population.getGenerationRuleAtOrder(10);
 	}
 	
-	@Test public void testContainDistribution() throws GenstarException {
+	@Test public void testContainGenerationRule() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
@@ -299,7 +302,7 @@ public class PopulationTest_Elementary {
 		assertTrue(population.containGenerationRule(dis1));
 	}
 	
-	@Test public void testContainDistributionName() throws GenstarException {
+	@Test public void testContainGenerationRuleName() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
@@ -309,7 +312,7 @@ public class PopulationTest_Elementary {
 		assertTrue(population.containGenerationRuleName("distribution 1"));
 	}
 	
-	@Test public void testGetDistributions() throws GenstarException {
+	@Test public void testGetGenerationRules() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
@@ -324,14 +327,20 @@ public class PopulationTest_Elementary {
 		FrequencyDistributionGenerationRule dis4 = new FrequencyDistributionGenerationRule(population, "distribution 4");
 		population.appendGenerationRule(dis4);
 
+		GenerationRule[] ruleArray = new GenerationRule[4];
+		ruleArray[0] = dis1;
+		ruleArray[1] = dis2;
+		ruleArray[2] = dis3;
+		ruleArray[3] = dis4;
 		
-		List<GenerationRule> rules = population.getGenerationRules();
+		
+		NavigableSet<GenerationRule> rules = population.getGenerationRules();
 		assertTrue(rules.size() == 4);
-		assertTrue(rules.get(0).equals(dis1));
-		assertTrue(rules.get(1).equals(dis2));
-		assertTrue(rules.get(2).equals(dis3));
-		assertTrue(rules.get(3).equals(dis4));
-
-		assertFalse(rules.get(3).equals(dis2));
+		
+		int ruleIndex = 0;
+		for (GenerationRule rule : rules) {
+			rule.equals(ruleArray[ruleIndex]);
+			ruleIndex++;
+		}
 	}
 }

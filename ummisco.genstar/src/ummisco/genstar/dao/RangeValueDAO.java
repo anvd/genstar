@@ -8,4 +8,6 @@ public interface RangeValueDAO {
 	public abstract void createRangeValues(final RangeValuesAttribute rangeAttribute) throws GenstarDAOException;
 
 	public abstract void populateRangeValues(final RangeValuesAttribute rangeValuesAttribute) throws GenstarDAOException;
+	
+	public abstract void updateRangeValues(final RangeValuesAttribute rangeValuesAttribute) throws GenstarDAOException;
 }

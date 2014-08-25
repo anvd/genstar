@@ -6,8 +6,10 @@ import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 
 public interface AttributeValuesFrequencyDataDAO {
 
-	public abstract void createAttributeValuesFrequency(final AttributeValuesFrequency attributeValuesFrequency) throws GenstarDAOException;
+	public abstract void createAttributeValuesFrequencyData(final AttributeValuesFrequency attributeValuesFrequency) throws GenstarDAOException;
 
-	public abstract void populateAttributeValuesFrequency(final FrequencyDistributionGenerationRule rule,
+	public abstract void populateAttributeValuesFrequencyData(final FrequencyDistributionGenerationRule rule,
 			final int attributeValuesFrequencyID, final int frequency) throws GenstarDAOException;
+	
+	public abstract void updateAttributeValuesFrequencyData(final AttributeValuesFrequency attributeValuesFrequency) throws GenstarDAOException;
 }

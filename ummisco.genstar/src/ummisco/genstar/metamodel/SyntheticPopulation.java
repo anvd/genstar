@@ -8,6 +8,8 @@ import ummisco.genstar.util.SharedInstances;
 
 public class SyntheticPopulation implements ISyntheticPopulation {
 	
+	private ISyntheticPopulationGenerator generator;
+	
 	private String name;
 	
 	private List<Entity> entities;
@@ -15,10 +17,12 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 	private int initialNbOfEntities;
 	
 
-	public SyntheticPopulation(final String name, final int initialNbOfEntities) {
+	public SyntheticPopulation(final ISyntheticPopulationGenerator generator, final String name, final int initialNbOfEntities) {
+		if (generator == null) { throw new IllegalArgumentException("'generator' parameter can not be null"); }
 		if ( name == null ) { throw new IllegalArgumentException("'name' parameter can not be null"); }
 		if (initialNbOfEntities <= 0) { throw new IllegalArgumentException("'initialNbOfEntities' must be a positive integer"); }
 		
+		this.generator = generator;
 		this.name = name;
 		this.initialNbOfEntities = initialNbOfEntities;
 		
@@ -79,6 +83,10 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 
 	@Override public String getName() {
 		return name;
+	}
+
+	@Override public ISyntheticPopulationGenerator getGenerator() {
+		return generator;
 	}	
 	
 }

@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.util.PersistentObject;
 
 public class AttributeValuesFrequency {
 	
-	private int attributeValuesFrequencyID = -1;
+	private int attributeValuesFrequencyID = PersistentObject.NEW_OBJECT_ID;
 	
 	private FrequencyDistributionGenerationRule rule = null;
 

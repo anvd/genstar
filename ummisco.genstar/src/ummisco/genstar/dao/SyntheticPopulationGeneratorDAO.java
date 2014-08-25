@@ -7,8 +7,6 @@ public interface SyntheticPopulationGeneratorDAO {
 
 	public abstract ISyntheticPopulationGenerator findSyntheticPopulationGeneratorByName(final String populationGeneratorName) throws GenstarDAOException;
 	
-	public abstract ISyntheticPopulationGenerator findSyntheticPopulationGeneratorByID(final int populationGeneratorID) throws GenstarDAOException;
-	
 	public abstract void createSyntheticPopulationGenerator(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;
 	
 	public abstract void updateSyntheticPopulationGenerator(final ISyntheticPopulationGenerator syntheticPopulationGenerator) throws GenstarDAOException;

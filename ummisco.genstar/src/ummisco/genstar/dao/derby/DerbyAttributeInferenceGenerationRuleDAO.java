@@ -18,6 +18,8 @@ public class DerbyAttributeInferenceGenerationRuleDAO extends AbstractDerbyDAO i
 	
 	private PreparedStatement findRuleStmt;
 	
+	private PreparedStatement deleteRuleStmt;
+	
 	private AttributeInferenceDataDAO  attributeInferenceDataDAO;
 	
 	public DerbyAttributeInferenceGenerationRuleDAO(DerbyGenstarDAOFactory daoFactory) throws GenstarDAOException {
@@ -31,7 +33,9 @@ public class DerbyAttributeInferenceGenerationRuleDAO extends AbstractDerbyDAO i
 					+ ") VALUES (?, ?, ?)");
 			
 			
-			findRuleStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " + ATTRIBUTE_INFERENCE_GENERATION_RULE_TABLE.GENERATION_RULE_ID_COLUMN_NAME + " = ?"); 
+			findRuleStmt = connection.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE " + ATTRIBUTE_INFERENCE_GENERATION_RULE_TABLE.GENERATION_RULE_ID_COLUMN_NAME + " = ?");
+			
+			deleteRuleStmt = connection.prepareStatement("DELETE FROM " + TABLE_NAME + " WHERE " + ATTRIBUTE_INFERENCE_GENERATION_RULE_TABLE.GENERATION_RULE_ID_COLUMN_NAME + " = ?");
 			
 		} catch (SQLException e) {
 			throw new GenstarDAOException(e);
@@ -55,6 +59,10 @@ public class DerbyAttributeInferenceGenerationRuleDAO extends AbstractDerbyDAO i
 
 	@Override
 	public void createAttributeInferenceGenerationRule(final AttributeInferenceGenerationRule attributeInferenceGenerationRule) throws GenstarDAOException {
+		internalCreateAttributeInferenceGenerationRule(attributeInferenceGenerationRule);
+	}
+	
+	private void internalCreateAttributeInferenceGenerationRule(final AttributeInferenceGenerationRule attributeInferenceGenerationRule) throws GenstarDAOException {
 		try {
 			// firstly, create the attributeInferenceGenerationRule
 			createAttributeInferenceGenerationRuleStmt.setInt(1, attributeInferenceGenerationRule.getGenerationRuleID());
@@ -73,14 +81,26 @@ public class DerbyAttributeInferenceGenerationRuleDAO extends AbstractDerbyDAO i
 
 	@Override
 	public void updateAttributeInferenceGenerationRule(final AttributeInferenceGenerationRule attributeInferenceGenerationRule) throws GenstarDAOException {
-		// TODO Auto-generated method stub
 		
+		// 1. delete
+		internalDeleteRule(attributeInferenceGenerationRule);
+
+		// 2. create
+		internalCreateAttributeInferenceGenerationRule(attributeInferenceGenerationRule);
+	}
+	
+	private void internalDeleteRule(final AttributeInferenceGenerationRule attributeInferenceGenerationRule) throws GenstarDAOException {
+		try {
+			deleteRuleStmt.setInt(1, attributeInferenceGenerationRule.getGenerationRuleID());
+			deleteRuleStmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new GenstarDAOException(e);
+		}
 	}
 
 	@Override
 	public void deleteAttributeInferenceGenerationRule(final AttributeInferenceGenerationRule attributeInferenceGenerationRule) throws GenstarDAOException {
-		// TODO Auto-generated method stub
-		
+		internalDeleteRule(attributeInferenceGenerationRule);
 	}
 
 	@Override

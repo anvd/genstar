@@ -1,8 +1,5 @@
 package ummisco.genstar.dao.derby;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import ummisco.genstar.dao.AttributeValuesFrequencyDAO;
 import ummisco.genstar.dao.FrequencyDistributionGenerationRuleDAO;
 import ummisco.genstar.dao.InputOutputAttributeDAO;
@@ -38,12 +35,13 @@ public class DerbyFrequencyDistributionGenerationRuleDAO extends AbstractDerbyDA
 	@Override
 	public void createFrequencyDistributionGenerationRule(final FrequencyDistributionGenerationRule frequencyDistributionGenerationRule) throws GenstarDAOException {
 		inputOutputAttributeDAO.createInputOutputAttributes(frequencyDistributionGenerationRule);
-		attributeValuesFrequencyDAO.createAttributeValuesFrequecies(frequencyDistributionGenerationRule);
+		attributeValuesFrequencyDAO.createAttributeValuesFrequencies(frequencyDistributionGenerationRule);
 	}
 
 	@Override
 	public void updateFrequencyDistributionGenerationRule(final FrequencyDistributionGenerationRule frequencyDistributionGenerationRule) throws GenstarDAOException {
-		throw new UnsupportedOperationException("Not yet implemented");
+		inputOutputAttributeDAO.updateInputOutputAttributes(frequencyDistributionGenerationRule);
+		attributeValuesFrequencyDAO.updateAttributeValuesFrequencies(frequencyDistributionGenerationRule);
 	}
 
 	@Override

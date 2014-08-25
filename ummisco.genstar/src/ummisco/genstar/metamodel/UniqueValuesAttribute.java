@@ -11,25 +11,25 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 	
 	private Set<UniqueValue> values;
 
-	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String dataVarName, final DataType valueType) throws GenstarException {
-		this(populationGenerator, dataVarName, dataVarName, valueType, UniqueValue.class);
+	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType dataType) throws GenstarException {
+		this(populationGenerator, nameOnData, nameOnData, dataType, UniqueValue.class);
 	}
 
-	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String dataVarName, final DataType valueType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		this(populationGenerator, dataVarName, dataVarName, valueType, valueClassOnEntity);
+	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
+		this(populationGenerator, nameOnData, nameOnData, dataType, valueClassOnEntity);
 	}
 
-	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String dataVarName, final String entityVarName, final DataType valueType) throws GenstarException {
-		this(populationGenerator, dataVarName, entityVarName, valueType, UniqueValue.class);		
+	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final DataType dataType) throws GenstarException {
+		this(populationGenerator, nameOnData, nameOnEntity, dataType, UniqueValue.class);		
 	}
 
-	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String dataVarName, final String entityVarName, final DataType valueType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		super(populationGenerator, dataVarName, entityVarName, valueType, valueClassOnEntity);
+	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
+		super(populationGenerator, nameOnData, nameOnEntity, dataType, valueClassOnEntity);
 
 		this.valueClassOnData = UniqueValue.class;
 		this.values = new HashSet<UniqueValue>();
 		try {
-			this.setDefaultValue(valueClassOnData.getConstructor(DataType.class).newInstance(valueType));
+			this.setDefaultValue(valueClassOnData.getConstructor(DataType.class).newInstance(dataType));
 		} catch (final Exception e) {
 			throw new GenstarException(e);
 		}

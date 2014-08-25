@@ -2,16 +2,22 @@ package ummisco.genstar.metamodel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.NavigableSet;
+import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.util.PersistentObject;
 
 
 public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerator {
 	
-	private int id = -1;
+	private int id = PersistentObject.NEW_OBJECT_ID;
 	
 	private String name;
 	
@@ -57,8 +63,8 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 		return generationRules.size();
 	}
 
-	@Override public Collection<AbstractAttribute> getAttributes() {
-		return new ArrayList<AbstractAttribute>(attributes.values());
+	@Override public Set<AbstractAttribute> getAttributes() {
+		return new HashSet<AbstractAttribute>(attributes.values());
 	}
 	
 	@Override public boolean containAttribute(final AbstractAttribute attribute) {
@@ -241,15 +247,15 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 		return false;
 	}
 	
-	@Override public List<GenerationRule> getGenerationRules() {
-		List<GenerationRule> retVal = new ArrayList<GenerationRule>();
-		for (int order=0; order<generationRules.size(); order++) { retVal.add(generationRules.get(order)); }
+	@Override public NavigableSet<GenerationRule> getGenerationRules() {
+		NavigableSet<GenerationRule> retVal = new TreeSet<GenerationRule>();
+		retVal.addAll(generationRules.values());
 		
 		return retVal;
 	}
 
 	@Override public ISyntheticPopulation generate() throws GenstarException {
-		ISyntheticPopulation population = new SyntheticPopulation(name, nbOfEntities);
+		ISyntheticPopulation population = new SyntheticPopulation(this, name, nbOfEntities);
 		
 		for (Entity e : population.getEntities()) {
 			for (int order=0; order<generationRules.size(); order++) { generationRules.get(order).generate(e); }
