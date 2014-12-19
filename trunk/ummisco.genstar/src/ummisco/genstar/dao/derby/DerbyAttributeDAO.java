@@ -201,7 +201,7 @@ public class DerbyAttributeDAO extends AbstractDerbyDAO implements AttributeDAO 
 				valueTypeOnDataID = resultSet.getInt(ATTRIBUTE_TABLE.VALUE_TYPE_ON_DATA_COLUMN_NAME);
 				valueTypeOnEntityID = resultSet.getInt(ATTRIBUTE_TABLE.VALUE_TYPE_ON_ENTITY_COLUMN_NAME);
 				
-				DataType dataType = DataType.getDataTypeByID(dataTypeID);
+				DataType dataType = DataType.fromID(dataTypeID);
 				Class<? extends AttributeValue> valueClassOnEntity = (valueTypeOnEntityID == UniqueValue.UNIQUE_VALUE_TYPE) ? UniqueValue.class : RangeValue.class;
 				
 				// initialize the appropriate Attribute class
@@ -226,7 +226,7 @@ public class DerbyAttributeDAO extends AbstractDerbyDAO implements AttributeDAO 
 			resultSet.close();
 			resultSet = null;
 			
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			if (e instanceof GenstarDAOException) { throw (GenstarDAOException)e; }
 			throw new GenstarDAOException(e);
 		}

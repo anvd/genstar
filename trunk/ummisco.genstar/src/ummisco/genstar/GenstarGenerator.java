@@ -30,7 +30,7 @@ public class GenstarGenerator {
 		return totalRound;
 	}
 	
-	public void setPopulationsLiker(final IPopulationsLinker populationsLinker) {
+	public void setPopulationsLinker(final IPopulationsLinker populationsLinker) {
 		this.linker = populationsLinker;
 	}
 	

@@ -8,12 +8,12 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import ummisco.genstar.data.BondyData;
+import ummisco.genstar.data.SmachStupidPopLinker;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.ISyntheticPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.IPopulationsLinker;
-import ummisco.genstar.smach.SmachStupidPopLinker;
 
 public class GenstarGeneratorTest_Bondy {
 	
@@ -29,7 +29,7 @@ public class GenstarGeneratorTest_Bondy {
 		generator.addPopulationGenerator(inhabitantPopGenerator);
 		generator.addPopulationGenerator(householdPopGenerator);
 		
-		generator.setPopulationsLiker(smachStupidPopLinker);
+		generator.setPopulationsLinker(smachStupidPopLinker);
 		
 		long start = System.currentTimeMillis();
 		generator.run();
@@ -69,7 +69,7 @@ public class GenstarGeneratorTest_Bondy {
 		generator.addPopulationGenerator(inhabitantPopGenerator);
 		generator.addPopulationGenerator(householdPopGenerator);
 		
-		generator.setPopulationsLiker(smachStupidPopLinker);
+		generator.setPopulationsLinker(smachStupidPopLinker);
 		generator.setTotalRound(5);
 		
 		long start = System.currentTimeMillis();

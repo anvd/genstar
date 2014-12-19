@@ -1,13 +1,9 @@
 package ummisco.genstar.metamodel;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -19,7 +15,9 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 	
 	private int id = PersistentObject.NEW_OBJECT_ID;
 	
-	private String name;
+	private String generatorName;
+	
+	private String populationName;
 	
 	private SortedMap<String, AbstractAttribute> attributes; // <attribute name on data, attribute>
 	
@@ -28,16 +26,29 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 	private int nbOfEntities;
 	
 	
-	public SyntheticPopulationGenerator(final String name, final int nbOfEntities) throws GenstarException {
-		if (name == null || name.trim().length() == 0) { throw new GenstarException("'name' parameter can neither be null nor empty"); }
+	public SyntheticPopulationGenerator(final String generatorName, final int nbOfEntities) throws GenstarException {
+		if (generatorName == null || generatorName.trim().length() == 0) { throw new GenstarException("'generatorName' parameter can neither be null nor empty"); }
 		if (nbOfEntities <= 0) { throw new IllegalArgumentException("'nbOfEntities' must be a positive integer"); }
 		
-		this.name = name.trim();
+		this.generatorName = generatorName.trim();
+		this.populationName = this.generatorName;
 		this.nbOfEntities = nbOfEntities;
 		this.attributes = new TreeMap<String, AbstractAttribute>();
 		this.generationRules = new TreeMap<Integer, GenerationRule>();
 	}
 	
+	public SyntheticPopulationGenerator(final String generatorName, final int nbOfEntities, final String populationName) throws GenstarException {
+		if (generatorName == null || generatorName.trim().length() == 0) { throw new GenstarException("'generatorName' parameter can neither be null nor empty"); }
+		if (nbOfEntities <= 0) { throw new IllegalArgumentException("'nbOfEntities' must be a positive integer"); }
+		if (populationName == null || populationName.trim().length() == 0) { throw new GenstarException("'populationName' parameter can neither be null nor empty"); }
+		
+		this.generatorName = generatorName.trim();
+		this.populationName = populationName.trim();
+		this.nbOfEntities = nbOfEntities;
+		this.attributes = new TreeMap<String, AbstractAttribute>();
+		this.generationRules = new TreeMap<Integer, GenerationRule>();
+	}
+
 	@Override public void setID(final int id) {
 		this.id = id;
 	}
@@ -46,10 +57,19 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 		return id;
 	}
 	
-	@Override public String getName() {
-		return name;
+	@Override public String getGeneratorName() {
+		return generatorName;
 	}
 	
+	@Override public void setPopulationName(final String populationName) {
+		if (populationName == null || populationName.trim().length() == 0) { throw new IllegalArgumentException("'populationName' parameter can neither be null nor empty"); }
+		this.populationName = populationName;
+	}
+	
+	@Override public String getPopulationName() {
+		return populationName;
+	}
+
 	@Override public int getNbOfEntities() {
 		return nbOfEntities;
 	}
@@ -86,8 +106,8 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 	
 	@Override public void addAttribute(final AbstractAttribute attribute) throws GenstarException {
 		if (attribute == null) { throw new GenstarException("'attribute' parameter can not be null"); }
-		if (containAttribute(attribute.getNameOnData())) { throw new GenstarException("'" + name + "' population already contains '" + attribute.getNameOnData() + "' attribute."); }
-		if (!attribute.getPopulationGenerator().equals(this)) { throw new GenstarException("Can not add '" + attribute.getNameOnData() + "' attribute to '" + this.getName() + 
+		if (containAttribute(attribute.getNameOnData())) { throw new GenstarException("'" + generatorName + "' population already contains '" + attribute.getNameOnData() + "' attribute."); }
+		if (!attribute.getPopulationGenerator().equals(this)) { throw new GenstarException("Can not add '" + attribute.getNameOnData() + "' attribute to '" + this.getGeneratorName() + 
 				"' population. Because attribute's population is " + attribute.getPopulationGenerator() + " (different from " + this + " population)."); }
 		
 		
@@ -102,14 +122,14 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 	private void verifyRuleValidity(final GenerationRule rule) {
 		if (rule == null) { throw new IllegalArgumentException("'rule' parameter can not be null"); }
 
-		if (!this.equals(rule.getGenerator())) { throw new IllegalArgumentException("Can not add '" + rule.getName() + "' to '" + this.getName() + "' population."
+		if (!this.equals(rule.getGenerator())) { throw new IllegalArgumentException("Can not add '" + rule.getName() + "' to '" + this.getGeneratorName() + "' population."
 				+ " Because of population difference problem : rule's population is " + rule.getGenerator() + " is different from " + this); }
 		
-		if (generationRules.values().contains(rule)) { throw new IllegalArgumentException("Can not add '" + rule.getName() + "' to '" + this.getName() + "' population."
+		if (generationRules.values().contains(rule)) { throw new IllegalArgumentException("Can not add '" + rule.getName() + "' to '" + this.getGeneratorName() + "' population."
 				+ " Because this population has already contained the generation rule."); }
 
 		if (this.containGenerationRuleName(rule.getName())) {
-			throw new IllegalArgumentException("Can not add '" + rule.getName() + "' to '" + this.getName() + "' population."
+			throw new IllegalArgumentException("Can not add '" + rule.getName() + "' to '" + this.getGeneratorName() + "' population."
 					+ " Because this population has already contained a generation rule with '" + rule.getName() + "' as name.");
 		}
 	}
@@ -202,7 +222,7 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 	@Override public void changeGenerationRuleOrder(final GenerationRule rule, final int newOrder) {
 		if (rule == null) { throw new IllegalArgumentException("'rule' parameter must not be null"); }
 		int oldOrder = this.getGenerationRuleOrder(rule);
-		if (oldOrder == -1) { throw new IllegalArgumentException("'" + name + "' population doesn't contain '" + rule.getName() + "' generation rule"); }
+		if (oldOrder == -1) { throw new IllegalArgumentException("'" + generatorName + "' population doesn't contain '" + rule.getName() + "' generation rule"); }
 		if (newOrder < 0 || (newOrder > generationRules.size() - 1)) { throw new IllegalArgumentException("'newOrder' parameter must be in range[0" + "," + (generationRules.size() - 1)  + "]"); }
 		
 		if (newOrder == oldOrder) { return; }
@@ -255,15 +275,21 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 	}
 
 	@Override public ISyntheticPopulation generate() throws GenstarException {
-		ISyntheticPopulation population = new SyntheticPopulation(this, name, nbOfEntities);
+		ISyntheticPopulation population = new SyntheticPopulation(this, populationName, nbOfEntities);
 		
 		for (Entity e : population.getEntities()) {
 			for (int order=0; order<generationRules.size(); order++) { generationRules.get(order).generate(e); }
+			// FIXME optimization : 
+			// 		Hypothesis : 
+			//			if first rule is a FrequencyDistributionGenerationRule contains only output attributes
+			//				and if it AttributeValues mirrors exactly real data's value (i.e., the sum of AttributeValues == nbOfEntities)
+			//				then an optimization can be made to improve the exactness of the generation output
+			// 			The optimization is as follows : generate
 		}
 		
 		return population;
 	}
-	
+
 	private void setRuleOrder(final GenerationRule rule, final int order) {
 		rule.setOrder(order);
 	}

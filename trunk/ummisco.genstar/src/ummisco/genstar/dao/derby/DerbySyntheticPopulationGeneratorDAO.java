@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import ummisco.genstar.dao.AttributeDAO;
 import ummisco.genstar.dao.GenerationRuleDAO;
@@ -19,6 +21,7 @@ public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO imple
 	private PreparedStatement createSyntheticPopulationGeneratorStmt;
 	private PreparedStatement deleteSyntheticPopulationGeneratorStmt;
 	private PreparedStatement updateSyntheticPopulationGeneratorStmt;
+	private PreparedStatement getPopulationGeneratorNamesStmt;
 	
 	
 	private AttributeDAO attributeDAO;
@@ -40,6 +43,8 @@ public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO imple
 			updateSyntheticPopulationGeneratorStmt = connection.prepareStatement("UPDATE " + TABLE_NAME + " SET " + SYNTHETIC_POPULATION_GENERATOR_TABLE.NAME_COLUMN_NAME + " = ?, "
 					+ SYNTHETIC_POPULATION_GENERATOR_TABLE.INITIAL_NUMBER_OF_ENTITIES_COLUMN_NAME + " = ? WHERE "
 					+ SYNTHETIC_POPULATION_GENERATOR_TABLE.POPULATION_GENERATOR_ID_COLUMN_NAME + " = ?");
+			
+			getPopulationGeneratorNamesStmt = connection.prepareStatement("SELECT " + SYNTHETIC_POPULATION_GENERATOR_TABLE.NAME_COLUMN_NAME + " FROM " + TABLE_NAME);
 			
 			
 			attributeDAO = daoFactory.getAttributeDAO();
@@ -85,7 +90,7 @@ public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO imple
 		try {
 			connection.setAutoCommit(false);
 			
-			createSyntheticPopulationGeneratorStmt.setString(1, syntheticPopulationGenerator.getName());
+			createSyntheticPopulationGeneratorStmt.setString(1, syntheticPopulationGenerator.getGeneratorName());
 			createSyntheticPopulationGeneratorStmt.setInt(2, syntheticPopulationGenerator.getNbOfEntities());
 			createSyntheticPopulationGeneratorStmt.executeUpdate();
 			
@@ -127,7 +132,7 @@ public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO imple
 		try {
 			connection.setAutoCommit(false);
 			
-			updateSyntheticPopulationGeneratorStmt.setString(1, syntheticPopulationGenerator.getName());
+			updateSyntheticPopulationGeneratorStmt.setString(1, syntheticPopulationGenerator.getGeneratorName());
 			updateSyntheticPopulationGeneratorStmt.setInt(2, syntheticPopulationGenerator.getNbOfEntities());
 			updateSyntheticPopulationGeneratorStmt.setInt(3, syntheticPopulationGenerator.getID());
 			updateSyntheticPopulationGeneratorStmt.executeUpdate();
@@ -156,6 +161,23 @@ public class DerbySyntheticPopulationGeneratorDAO extends AbstractDerbyDAO imple
 		} catch (SQLException e) {
 			throw new GenstarDAOException(e);
 		}
+	}
+
+	@Override
+	public List<String> getPopulationGeneratorNames() throws GenstarDAOException {
+		
+		List<String> generatorNames = new ArrayList<String>();
+		try {
+			ResultSet resultSet = getPopulationGeneratorNamesStmt.executeQuery();
+			while (resultSet.next()) { generatorNames.add(resultSet.getString(1)); }
+			
+			resultSet.close();
+			resultSet = null;
+		} catch (final SQLException e) {
+			throw new GenstarDAOException(e);
+		}
+		
+		return generatorNames;
 	}
 
 }

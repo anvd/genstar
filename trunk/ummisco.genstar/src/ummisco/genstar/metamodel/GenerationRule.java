@@ -56,6 +56,8 @@ public abstract class GenerationRule implements Comparable<GenerationRule> {
 	public abstract List<AbstractAttribute> getAttributes();
 
 	public abstract int getRuleTypeID();
+	
+	public abstract String getRuleTypeName();
 
 	public abstract void generate(final Entity entity) throws GenstarException;
 

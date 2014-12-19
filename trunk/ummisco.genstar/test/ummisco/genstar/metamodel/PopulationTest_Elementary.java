@@ -39,7 +39,7 @@ public class PopulationTest_Elementary {
 	public void testGetNameAndNbOfEntities() throws GenstarException {
 		SyntheticPopulationGenerator population = new SyntheticPopulationGenerator("test population", 1);
 		
-		Assert.assertEquals(population.getName(), "test population");
+		Assert.assertEquals(population.getGeneratorName(), "test population");
 		Assert.assertEquals(population.getNbOfEntities(), 1);
 		
 	}

@@ -7,7 +7,9 @@ public class RangeValue extends AttributeValue {
 	
 	public static final int RANGE_VALUE_TYPE = 2;
 	
-	static { AttributeValue.registerValueTypeID(RangeValue.class, RANGE_VALUE_TYPE); }
+	public static final String RANGE_VALUE_NAME = "Range";
+	
+//	static { AttributeValue.registerValueTypeID(RangeValue.class, RANGE_VALUE_TYPE, RANGE_VALUE_NAME); }
 
 	private String minStringValue = "";
 	
@@ -230,5 +232,10 @@ public class RangeValue extends AttributeValue {
 	@Override
 	public int getValueTypeID() {
 		return RANGE_VALUE_TYPE;
+	}
+
+	@Override
+	public String getValueTypeName() {
+		return RANGE_VALUE_NAME;
 	}	
 }

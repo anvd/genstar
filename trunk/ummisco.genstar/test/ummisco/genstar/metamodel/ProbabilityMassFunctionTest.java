@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import ummisco.genstar.data.NationalLevelDistribution;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.smach.NationalLevelDistribution;
 
 public class ProbabilityMassFunctionTest {
 

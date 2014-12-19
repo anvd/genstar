@@ -11,6 +11,7 @@ import ummisco.genstar.exception.GenstarException;
 public class AttributeInferenceGenerationRule extends GenerationRule implements AttributeChangedListener {
 	
 	public static final int ATTRIBUTE_INFERENCE_GENERATION_RULE_ID = 1;
+	public static final String RULE_TYPE_NAME = "Attribute Inference";
 	
 	private AbstractAttribute inferringAttribute;
 	private AbstractAttribute inferredAttribute;
@@ -126,6 +127,11 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 		if (inferredAttribute.getNameOnData().equals(attributeNameOnData)) { return inferredAttribute; }
 		
 		return null;
+	}
+
+	@Override
+	public String getRuleTypeName() {
+		return RULE_TYPE_NAME;
 	}
 	
 }

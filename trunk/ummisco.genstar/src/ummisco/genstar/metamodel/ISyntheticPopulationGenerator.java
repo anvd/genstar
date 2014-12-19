@@ -12,7 +12,11 @@ public interface ISyntheticPopulationGenerator { // FIXME change class name -> I
 	
 	public abstract int getID();
 
-	public abstract String getName();
+	public abstract String getGeneratorName();
+	
+	public abstract void setPopulationName(final String populationName);
+	
+	public abstract String getPopulationName();
 	
 	public abstract int getNbOfEntities();
 	
