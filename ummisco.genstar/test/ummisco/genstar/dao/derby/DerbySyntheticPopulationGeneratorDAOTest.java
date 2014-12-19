@@ -79,7 +79,7 @@ public class DerbySyntheticPopulationGeneratorDAOTest {
 		BondyData bondyData = new BondyData();
 		syntheticPopulationGeneratorDAO.createSyntheticPopulationGenerator(bondyData.getInhabitantPopGenerator());
 		
-		ISyntheticPopulationGenerator bondyInhabitantPopulationGenerator = syntheticPopulationGeneratorDAO.findSyntheticPopulationGeneratorByName(bondyData.getInhabitantPopGenerator().getName());
+		ISyntheticPopulationGenerator bondyInhabitantPopulationGenerator = syntheticPopulationGeneratorDAO.findSyntheticPopulationGeneratorByName(bondyData.getInhabitantPopGenerator().getGeneratorName());
 		
 		//  assert that IDs correctly set
 		assertTrue(bondyInhabitantPopulationGenerator.getID() != -1);
@@ -147,7 +147,7 @@ public class DerbySyntheticPopulationGeneratorDAOTest {
 		
 		syntheticPopulationGeneratorDAO.deleteSyntheticPopulationGenerator(generator);
 		
-		generator = syntheticPopulationGeneratorDAO.findSyntheticPopulationGeneratorByName(bondyData.getHouseholdPopGenerator().getName());
+		generator = syntheticPopulationGeneratorDAO.findSyntheticPopulationGeneratorByName(bondyData.getHouseholdPopGenerator().getGeneratorName());
 		assertTrue(generator == null);
 
 	}

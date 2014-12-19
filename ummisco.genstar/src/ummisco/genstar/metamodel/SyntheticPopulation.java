@@ -47,7 +47,12 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 			}
 		}
 		
-		if (picked != null) { entities.remove(picked); }
+//		if (picked != null) { entities.remove(picked); }
+		if (picked != null) {
+			int index = entities.indexOf(picked);
+			entities.remove(index);
+		}
+		
 		return picked;
 	}
 	
@@ -56,13 +61,14 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 		
 		int randomIndex = SharedInstances.RandomNumberGenerator.nextInt(entities.size());
 		Entity pickedMember = entities.get(randomIndex);
-		entities.remove(pickedMember);
+		entities.remove(randomIndex);
 		return pickedMember;
 	}
 	
 	@Override public Entity pick(final Entity entity) {
-		if (entities.contains(entity)) {
-			entities.remove(entity);
+		int index = entities.indexOf(entity);
+		if (index >= 0) {
+			entities.remove(index);
 			return entity;
 		}
 		

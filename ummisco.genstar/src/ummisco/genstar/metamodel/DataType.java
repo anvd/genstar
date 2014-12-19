@@ -6,7 +6,7 @@ import java.util.Map;
 
 public enum DataType {
 
-	INTEGER("integer", 1, java.lang.Integer.class, "0"),
+	INTEGER("int", 1, java.lang.Integer.class, "0"),
 	FLOAT("float", 2, java.lang.Float.class, "0"),
 	DOUBLE("double", 3, java.lang.Double.class, "0"),
 	STRING("string", 4, java.lang.String.class, ""),
@@ -21,7 +21,15 @@ public enum DataType {
 		dataTypes.put(BOOL.id, BOOL);
 	}
 	
-	public static DataType getDataTypeByID(final int id) { return dataTypes.get(id); }
+	public static DataType fromID(final int id) { return dataTypes.get(id); }
+	
+	public static DataType fromName(final String name) {
+		for (DataType dt : dataTypes.values()) {
+			if (dt.name.equals(name)) { return dt; }
+		}
+		
+		return null;
+	}
 	
 	
 	private String name;

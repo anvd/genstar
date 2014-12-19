@@ -16,12 +16,9 @@ import java.util.TreeSet;
 import ummisco.genstar.dao.AttributeInferenceGenerationRuleDAO;
 import ummisco.genstar.dao.FrequencyDistributionGenerationRuleDAO;
 import ummisco.genstar.dao.GenerationRuleDAO;
-import ummisco.genstar.dao.derby.DBMS_Tables.ATTRIBUTE_TABLE;
 import ummisco.genstar.dao.derby.DBMS_Tables.GENERATION_RULE_TABLE;
 import ummisco.genstar.exception.GenstarDAOException;
-import ummisco.genstar.metamodel.AbstractAttribute;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
-import ummisco.genstar.metamodel.AttributeValue;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 import ummisco.genstar.metamodel.GenerationRule;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
@@ -95,11 +92,11 @@ public class DerbyGenerationRuleDAO extends AbstractDerbyDAO implements Generati
 		}
 	}
 	
-	private void internalCreateGenerationRules(final int generationID, final NavigableSet<GenerationRule> rules) throws Exception {
+	private void internalCreateGenerationRules(final int generatorID, final NavigableSet<GenerationRule> rules) throws Exception {
 		// 1. insert data to the GenerationRule table
 		// 2. delegate the sub-sequence "insert" task to the sub-DAO classes according to the type of GenerationRule
 
-		createGenerationRulesStmt.setInt(1, generationID);
+		createGenerationRulesStmt.setInt(1, generatorID);
 
 		for (GenerationRule rule : rules) {
 			createGenerationRulesStmt.setString(2, rule.getName());

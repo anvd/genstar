@@ -6,7 +6,9 @@ public class UniqueValue extends AttributeValue {
 	
 	public static final int UNIQUE_VALUE_TYPE = 1;
 	
-	static { AttributeValue.registerValueTypeID(UniqueValue.class, UNIQUE_VALUE_TYPE); }
+	public static final String UNIQUE_VALUE_NAME = "Unique";
+	
+//	static { AttributeValue.registerValueTypeID(UniqueValue.class, UNIQUE_VALUE_TYPE, UNIQUE_VALUE_NAME); }
 	
 	private String stringValue;
 
@@ -38,6 +40,18 @@ public class UniqueValue extends AttributeValue {
 		return stringValue;
 	}
 	
+	public int getIntValue() {
+		return Integer.parseInt(stringValue);
+	}
+	
+	public float getFloatValue() {
+		return Float.parseFloat(stringValue);
+	}
+	
+	public boolean getBooleanValue() {
+		return Boolean.parseBoolean(stringValue);
+	}
+	
 	public void setStringValue(final String stringValue) throws GenstarException {
 		if (stringValue == null) { throw new GenstarException("'stringValue' parameter can not be null"); }
 		verifyValueValidity(stringValue);
@@ -58,6 +72,7 @@ public class UniqueValue extends AttributeValue {
 				throw new IllegalArgumentException("Can not compare two instances of UniqueValue having different valueTypes : " + dataType.getName() + " v.s. " + otherValue.dataType.getName());
 			}
 			
+			// FIXME performance issue due to object creation!
 			Comparable thisComparableValue = dataType.getComparableValue(stringValue);
 			Comparable otherComparableValue = otherValue.dataType.getComparableValue(otherValue.stringValue);
 			return thisComparableValue.compareTo(otherComparableValue);
@@ -105,6 +120,11 @@ public class UniqueValue extends AttributeValue {
 	@Override
 	public int getValueTypeID() {
 		return UNIQUE_VALUE_TYPE;
+	}
+
+	@Override
+	public String getValueTypeName() {
+		return UNIQUE_VALUE_NAME;
 	}
 
 }

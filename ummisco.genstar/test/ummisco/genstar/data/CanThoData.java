@@ -20,7 +20,7 @@ public final class CanThoData {
 
 	private static final boolean[] sexes = { true, false };
 	
-	private static final class Scenario1 {
+	public static final class Scenario1 {
 		
 		// "Inhabitant" population +
 		// Rule 1 : Inhabitant population by sex and age group
@@ -65,7 +65,7 @@ public final class CanThoData {
 		
 
 		// "Household" population +
-		// Rule 2 : Household by size (number of members) and type (permanent, semi-permanent, less-permanent, simple, not stated)
+		// Rule 1 : Household by size (number of members) and type (permanent, semi-permanent, less-permanent, simple, not stated)
 		/**
 		 * Type : Frequency distribution
 		 * Attributes : 
@@ -144,7 +144,7 @@ public final class CanThoData {
 		
 		// "Household" population +
 		// Note : "city" in data is represented as "urban" here!
-		// Rule 2 : Household by size (number of members) and type (urban-permanent, urban-semi-permanent, urban-less-permanent, urban-simple, urban-not-stated, rural-permanent, rural-semi-permanent, rural-less-permanent, rural-simple, rural-not-stated)
+		// Rule 1 : Household by size (number of members) and type (urban-permanent, urban-semi-permanent, urban-less-permanent, urban-simple, urban-not-stated, rural-permanent, rural-semi-permanent, rural-less-permanent, rural-simple, rural-not-stated)
 		/**
 		 * Type : Frequency distribution
 		 * Attributes : 
@@ -177,18 +177,318 @@ public final class CanThoData {
 	
 	
 	public static final class Scenario3 {
+		// "Inhabitant" population +
+		// Rule 1 : Inhabitant population by sex and age group
+		/**
+		 * Type : Frequency distribution
+		 * Attributes : 
+		 * 	age : enumeration of integer ranges
+		 * 	sex : enumeration of boolean values (true : male, false : female)
+		 * 
+		 * Input attribute :
+		 * 	{}
+		 * 
+		 * Output attributes :
+		 * 	{ age, sex } 
+		 * 
+		 * Note :
+		 * 	an age_ranges_1 element = { min age, max age, male individuals, female individuals }
+		 */
+		public static final int[][] age_ranges_3 = {
+			{  0,  0,  9354,  8790 },
+			{  1,  4, 36413, 34162 },
+			{  5,  9, 44112, 41547 },
+			{ 10, 14, 43203, 40575 },
+			{ 15, 17, 31641, 29527 },
+			{ 18, 19, 28150, 27708 },
+			{ 20, 24, 66280, 63182 },
+			{ 25, 29, 61072, 58324 },
+			{ 30, 34, 53169, 51271 },
+			{ 35, 39, 50447, 48529 },
+			{ 40, 44, 44788, 44767 },
+			{ 45, 49, 35478, 38882 },
+			{ 50, 54, 26664, 33869 },
+			{ 55, 59, 19680, 24671 },
+			{ 60, 64, 11479, 13264 },
+			{ 65, 69,  7585, 11378 },
+			{ 70, 74,  6580, 10474 },
+			{ 75, 79,  6949,  8791 },
+			{ 80, 84,  4305,  5243 },
+			{ 85, 99,  2257,  3875 }
+		};
+		
+		
+		// Rule 2 : Inhabitant population by sex and location (i.e., district)
+		/**
+		 * Type : Frequency distribution
+		 * Attributes :
+		 * 	sex : enumeration of boolean values (true : male, false : female)
+		 * 	district : enumeration of string values
+		 * 
+		 * Input attributes :
+		 * 	{ sex }
+		 * 
+		 * Output attributes :
+		 * 	{ district }
+		 * 
+		 * Note :
+		 * 	a locations_3 element = { male individuals, female individuals }
+		 */
+		public static final int[][] locations_3 = {
+			{ 116700, 127365 },
+			{  65232,  65042 },
+			{  54314,  56992 },
+			{  42617,  43711 },
+			{  79932,  79529 },
+			{  57153,  55735 },
+			{  62996,  61269 },
+			{  61870,  59451 },
+			{  49928,  49739 },
+		};
+		
+		public static final String[] district_names = { "Ninh Kieu", "O Mon", "Binh Thuy", "Cai Rang", "Thot Not", "Vinh Thanh", "Co Do", "Thoi Lai", "Phong Dien" };
+		
+		public static int getDistrictIndex(final String districtName) {
+			for (int index=0; index<district_names.length; index++) {
+				if (districtName.equals(district_names[index])) { return index;}
+			}
+			
+			return -1;
+		}
+		
+		// "Inhabitant" population -
+		
+
+		// "Household" population +
+		// Rule 3 : Household by size (number of members) and type (permanent, semi-permanent, less-permanent, simple, not stated)
+		/**
+		 * Type : Frequency distribution
+		 * Attributes : 
+		 * 	size : enumeration of integers (1..9)
+		 * 	type : enumeration of string { "permanent", "semi-permanent", "less-permanent", "simple", "not-stated" }
+		 * 
+		 * Input attribute :
+		 * 	{}
+		 * 
+		 * Output attributes :
+		 * 	{ type, size }
+		 */
+		public static final int[][] household_size_by_types_3 = {
+			{ 1,  820, 10131,  1801,  2819,  5 }, // { size, permanent, semi-permanent, less-permanent, simple, not-stated }
+			{ 2, 1724, 21190,  3633,  4683, 11 },
+			{ 3, 3153, 37593,  8942, 12046, 15 },
+			{ 4, 4466, 46374, 13147, 16779,  9 },
+			{ 5, 3383, 26050,  7026,  8107,  8 },
+			{ 6, 2689, 17932,  4163,  4056,  4 },
+			{ 7, 1127,  6478,  1523,  1380,  4 },
+			{ 8,  648,  3849,   812,   787,  0 },
+			{ 9,  641,  4424,   862,   763,  0 },
+		};
+		
+		public static final String[] household_type3_values = { "permanent", "semi-permanent", "less-permanent", "simple", "not-stated" };
+		// "Household" population -		
+		
 		
 	}
 	
 	
-	
-	public static final String SCENARIO1_RULE1_NAME = "Inhabitant population by age and sex";
-	
-	public static final String SCENARIO1_RULE2_NAME = "Household population by size and type";
 
-	public static final String SCENARIO2_RULE1_NAME = "Inhabitant population by age and sex";
+	public static final class Scenario4 {
+		// "Inhabitant" population +
+		// Rule 1 : Inhabitant population by sex and age group
+		/**
+		 * Type : Frequency distribution
+		 * Attributes : 
+		 * 	age : enumeration of integer ranges
+		 * 	sex : enumeration of boolean values (true : male, false : female)
+		 * 
+		 * Input attribute :
+		 * 	{}
+		 * 
+		 * Output attributes :
+		 * 	{ age, sex } 
+		 * 
+		 * Note :
+		 * 	an age_ranges_1 element = { min age, max age, male individuals, female individuals }
+		 */
+		public static final int[][] age_ranges_4 = {
+			{  0,  0,  9354,  8790 },
+			{  1,  4, 36413, 34162 },
+			{  5,  9, 44112, 41547 },
+			{ 10, 14, 43203, 40575 },
+			{ 15, 17, 31641, 29527 },
+			{ 18, 19, 28150, 27708 },
+			{ 20, 24, 66280, 63182 },
+			{ 25, 29, 61072, 58324 },
+			{ 30, 34, 53169, 51271 },
+			{ 35, 39, 50447, 48529 },
+			{ 40, 44, 44788, 44767 },
+			{ 45, 49, 35478, 38882 },
+			{ 50, 54, 26664, 33869 },
+			{ 55, 59, 19680, 24671 },
+			{ 60, 64, 11479, 13264 },
+			{ 65, 69,  7585, 11378 },
+			{ 70, 74,  6580, 10474 },
+			{ 75, 79,  6949,  8791 },
+			{ 80, 84,  4305,  5243 },
+			{ 85, 99,  2257,  3875 }
+		};
+		
+		
+		// Rule 2 : Inhabitant population by sex and location (i.e., district)
+		/**
+		 * Type : Frequency distribution
+		 * Attributes :
+		 * 	sex : enumeration of boolean values (true : male, false : female)
+		 * 	district : enumeration of string values
+		 * 
+		 * Input attributes :
+		 * 	{ sex }
+		 * 
+		 * Output attributes :
+		 * 	{ district }
+		 * 
+		 * Note :
+		 * 	a locations_5 element = { male individuals, female individuals }
+		 */
+		public static final int[][] locations_4 = {
+			{ 115564, 127381 },
+			{  65232,  65042 },
+			{  54314,  56992 },
+			{  42617,  43711 },
+			{  79932,  79529 },
+			{  57153,  55735 },
+			{  62996,  61269 },
+			{  61870,  59451 },
+			{  49928,  49739 },
+		};
+		
+		public static final String[] district_names = { "Ninh Kieu", "O Mon", "Binh Thuy", "Cai Rang", "Thot Not", "Vinh Thanh", "Co Do", "Thoi Lai", "Phong Dien" };
+		
+		public static int getDistrictIndex(final String districtName) {
+			for (int index=0; index<district_names.length; index++) {
+				if (districtName.equals(district_names[index])) { return index;}
+			}
+			
+			return -1;
+		}
+		
+		// "Inhabitant" population -
+		
+	}
+
 	
-	public static final String SCENARIO2_RULE2_NAME = "Household population by size and type";
+	public static final class Scenario5 {
+		
+		// "Inhabitant" population +
+		// Rule 1 : Inhabitant population by sex and location (i.e., district)
+		/**
+		 * Type : Frequency distribution
+		 * Attributes :
+		 * 	sex : enumeration of boolean values (true : male, false : female)
+		 * 	district : enumeration of string values
+		 * 
+		 * Input attributes :
+		 * 	{ sex }
+		 * 
+		 * Output attributes :
+		 * 	{ district }
+		 * 
+		 * Note :
+		 * 	a locations_5 element = { male individuals, female individuals }
+		 */
+		public static final int[][] locations_5 = {
+			{ 115564, 127381 },
+			{  65232,  65042 },
+			{  54314,  56992 },
+			{  42617,  43711 },
+			{  79932,  79529 },
+			{  57153,  55735 },
+			{  62996,  61269 },
+			{  61870,  59451 },
+			{  49928,  49739 },
+		};
+		
+		public static final String[] district_names = { "Ninh Kieu", "O Mon", "Binh Thuy", "Cai Rang", "Thot Not", "Vinh Thanh", "Co Do", "Thoi Lai", "Phong Dien" };
+		
+		public static int getDistrictIndex(final String districtName) {
+			for (int index=0; index<district_names.length; index++) {
+				if (districtName.equals(district_names[index])) { return index;}
+			}
+			
+			return -1;
+		}
+		
+		
+		// Rule 2 : Inhabitant population by sex and age group
+		/**
+		 * Type : Frequency distribution
+		 * Attributes : 
+		 * 	age : enumeration of integer ranges
+		 * 	sex : enumeration of boolean values (true : male, false : female)
+		 * 
+		 * Input attribute :
+		 * 	{}
+		 * 
+		 * Output attributes :
+		 * 	{ age, sex } 
+		 * 
+		 * Note :
+		 * 	an age_ranges_5 element = { min age, max age, male individuals, female individuals }
+		 */
+		public static final int[][] age_ranges_5 = {
+			{  0,  0,  9354,  8790 },
+			{  1,  4, 36413, 34162 },
+			{  5,  9, 44112, 41547 },
+			{ 10, 14, 43203, 40575 },
+			{ 15, 17, 31641, 29527 },
+			{ 18, 19, 28150, 27708 },
+			{ 20, 24, 66280, 63182 },
+			{ 25, 29, 61072, 58324 },
+			{ 30, 34, 53169, 51271 },
+			{ 35, 39, 50447, 48529 },
+			{ 40, 44, 44788, 44767 },
+			{ 45, 49, 35478, 38882 },
+			{ 50, 54, 26664, 33869 },
+			{ 55, 59, 19680, 24671 },
+			{ 60, 64, 11479, 13264 },
+			{ 65, 69,  7585, 11378 },
+			{ 70, 74,  6580, 10474 },
+			{ 75, 79,  6949,  8791 },
+			{ 80, 84,  4305,  5243 },
+			{ 85, 99,  2257,  3875 }
+		};
+		
+		
+		// "Inhabitant" population -
+		
+	}	
+	
+	
+	
+	public static final String SCENARIO1_RULE1_NAME = "Inhabitant population by age and sex (Scenario 1)";
+	
+	public static final String SCENARIO1_RULE2_NAME = "Household population by size and type (Scenario 1)";
+
+	public static final String SCENARIO2_RULE1_NAME = "Inhabitant population by age and sex (Scenario 2)";
+	
+	public static final String SCENARIO2_RULE2_NAME = "Household population by size and type (Scenario 2)";
+	
+	public static final String SCENARIO3_RULE1_NAME = "Inhabitant population by age and sex (Scenario 3)";
+
+	public static final String SCENARIO3_RULE2_NAME = "Inhabitant population by sex and district/location (Scenario 3)";
+	
+	public static final String SCENARIO3_RULE3_NAME = "Household population by size and type (Scenario 3)";
+
+	public static final String SCENARIO4_RULE1_NAME = "Inhabitant population by age and sex (Scenario 4)";
+
+	public static final String SCENARIO4_RULE2_NAME = "Inhabitant population by sex and district/location (Scenario 4)";
+
+	public static final String SCENARIO5_RULE1_NAME = "Inhabitant population by sex and district/location (Scenario 5)";
+
+	public static final String SCENARIO5_RULE2_NAME = "Inhabitant population by age and sex (Scenario 5)";
+	
+	
 
 	private ISyntheticPopulationGenerator scenario1InhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule scenario1Rule1;
@@ -202,12 +502,61 @@ public final class CanThoData {
 	private ISyntheticPopulationGenerator scenario2HouseholdPopGenerator;
 	private FrequencyDistributionGenerationRule scenario2Rule2;
 	
+	private ISyntheticPopulationGenerator scenario3InhabitantPopGenerator;
+	private FrequencyDistributionGenerationRule scenario3Rule1, scenario3Rule2;
+	
+	private ISyntheticPopulationGenerator scenario3HouseholdPopGenerator;
+	private FrequencyDistributionGenerationRule scenario3Rule3;
+	
+	private ISyntheticPopulationGenerator scenario4InhabitantPopGenerator;
+	private FrequencyDistributionGenerationRule scenario4Rule1, scenario4Rule2;
+	
+	private ISyntheticPopulationGenerator scenario5InhabitantPopGenerator;
+	private FrequencyDistributionGenerationRule scenario5Rule1, scenario5Rule2;
+	
+	
 	
 	public CanThoData() throws GenstarException {
 		initializeScenario1Data();
 		initializeScenario2Data();
+		initializeScenario3Data();
+		initializeScenario4Data();
+		initializeScenario5Data();
 	}
 	
+	public ISyntheticPopulationGenerator getScenario1InhabitantGenerator() {
+		return scenario1InhabitantPopGenerator;
+	}
+	
+	public ISyntheticPopulationGenerator getScenario1HouseholdGenerator() {
+		return scenario1HouseholdPopGenerator;
+	}
+	
+	public ISyntheticPopulationGenerator getScenario2InhabitantGenerator() {
+		return scenario2InhabitantPopGenerator;
+	}
+	
+	public ISyntheticPopulationGenerator getScenario2HouseholdGenerator() {
+		return scenario2HouseholdPopGenerator;
+	}
+	
+	public ISyntheticPopulationGenerator getScenario3InhabitantGenerator() {
+		return scenario3InhabitantPopGenerator;
+	}
+	
+	public ISyntheticPopulationGenerator getScenario3HouseholdGenerator() {
+		return scenario3HouseholdPopGenerator;
+	}
+	
+	public ISyntheticPopulationGenerator getScenario4InhabitantGenerator() {
+		return scenario4InhabitantPopGenerator;
+	}
+	
+	public ISyntheticPopulationGenerator getScenario5InhabitantGenerator() {
+		return scenario5InhabitantPopGenerator;
+	}
+	
+
 	private void initializeScenario1Data() throws GenstarException {
 		scenario1InhabitantPopGenerator = new SyntheticPopulationGenerator("Scenario1's inhabitant population generator", 1188435);
 		
@@ -241,14 +590,14 @@ public final class CanThoData {
 			attributeValues.clear();
 			
 			attributeValues.put(ageRangesAttr1, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
-			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1]));
+			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]));
 			attributeValues.put(sexAttr, sexAttrValue);
 			
 			// male
 			scenario1Rule1.setFrequency(attributeValues, range[2]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1])));
 			scenario1Rule1.setFrequency(attributeValues, range[3]);
 		}
 		 
@@ -267,7 +616,7 @@ public final class CanThoData {
 		
 		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute(scenario1HouseholdPopGenerator, "type", DataType.STRING);
 		for (String type : Scenario1.household_type1_values) {
-			householdSizeAttr.add(new UniqueValue(DataType.STRING, type));
+			householdTypeAttr.add(new UniqueValue(DataType.STRING, type));
 		}
 		scenario1HouseholdPopGenerator.addAttribute(householdTypeAttr);
 		
@@ -358,7 +707,8 @@ public final class CanThoData {
 		// create generation rules -
 		
 		
-		scenario2HouseholdPopGenerator = new SyntheticPopulationGenerator("Scenario2's household population generator", 286057);
+//		scenario2HouseholdPopGenerator = new SyntheticPopulationGenerator("Scenario2's household population generator", 286057);
+		scenario2HouseholdPopGenerator = new SyntheticPopulationGenerator("Scenario2's household population generator", 286076); // data inconsistency?
 
 		// create attributes +
 		
@@ -374,10 +724,10 @@ public final class CanThoData {
 		}
 		scenario2HouseholdPopGenerator.addAttribute(householdTypeAttr);
 		
-		UniqueValuesAttribute householdLivingPlaceAttr = new UniqueValuesAttribute(scenario2InhabitantPopGenerator, "living_place", DataType.STRING);
+		UniqueValuesAttribute householdLivingPlaceAttr = new UniqueValuesAttribute(scenario2HouseholdPopGenerator, "living_place", DataType.STRING);
 		householdLivingPlaceAttr.add(urbanValue);
 		householdLivingPlaceAttr.add(ruralValue);
-		scenario2InhabitantPopGenerator.addAttribute(householdLivingPlaceAttr);
+		scenario2HouseholdPopGenerator.addAttribute(householdLivingPlaceAttr);
 		 
 		// create attributes -
 		
@@ -399,7 +749,7 @@ public final class CanThoData {
 			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0])));
 			
 			// urban living places
-			attributeValues.put(inhabitantLivingPlaceAttr, urbanValue);
+			attributeValues.put(householdLivingPlaceAttr, urbanValue);
 			for (int typeIndex=0; typeIndex<Scenario2.household_type2_values.length; typeIndex++) {
 				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, Scenario2.household_type2_values[typeIndex]));
 				
@@ -407,12 +757,299 @@ public final class CanThoData {
 			}
 			 
 			// rural living places
-			attributeValues.put(inhabitantLivingPlaceAttr, ruralValue);
+			attributeValues.put(householdLivingPlaceAttr, ruralValue);
 			for (int typeIndex=0; typeIndex<Scenario2.household_type2_values.length; typeIndex++) {
 				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, Scenario2.household_type2_values[typeIndex]));
 
 				scenario2Rule2.setFrequency(attributeValues, types[typeIndex+6]);
 			}
+		}
+		
+		// create generation rules -
+	}
+
+	private void initializeScenario3Data() throws GenstarException {
+		scenario3InhabitantPopGenerator = new SyntheticPopulationGenerator("Scenario3's inhabitant population generator", 1188435);
+		
+		// create attributes +
+		
+		RangeValuesAttribute ageRangesAttr3 = new RangeValuesAttribute(scenario3InhabitantPopGenerator, "age", DataType.INTEGER, UniqueValue.class);
+		for (int[] range : Scenario3.age_ranges_3) {
+			ageRangesAttr3.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+		}
+		scenario3InhabitantPopGenerator.addAttribute(ageRangesAttr3);
+		
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(scenario3InhabitantPopGenerator, "sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+		scenario3InhabitantPopGenerator.addAttribute(sexAttr);
+		
+		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute(scenario3InhabitantPopGenerator, "district", DataType.STRING);
+		for (String district : Scenario3.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district)); }
+		scenario3InhabitantPopGenerator.addAttribute(districtAttr);
+		
+		// create attributes -
+		
+		
+		
+		// create generation rules +
+		
+		// scenario3Rule1
+		scenario3Rule1 = new FrequencyDistributionGenerationRule(scenario3InhabitantPopGenerator, SCENARIO3_RULE1_NAME);
+		scenario3Rule1.appendOutputAttribute(ageRangesAttr3);
+		scenario3Rule1.appendOutputAttribute(sexAttr);
+		scenario3Rule1.generateAttributeValuesFrequencies();
+		scenario3InhabitantPopGenerator.appendGenerationRule(scenario3Rule1);
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
+		AttributeValue sexAttrValue;
+		for (int[] range : Scenario3.age_ranges_3) {
+			attributeValues.clear();
+			
+			attributeValues.put(ageRangesAttr3, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]));
+			attributeValues.put(sexAttr, sexAttrValue);
+			
+			// male
+			scenario3Rule1.setFrequency(attributeValues, range[2]);
+			
+			// female
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			scenario3Rule1.setFrequency(attributeValues, range[3]);
+		}
+		
+		
+		// scenario3Rule2
+		scenario3Rule2 = new FrequencyDistributionGenerationRule(scenario3InhabitantPopGenerator, SCENARIO3_RULE2_NAME);
+		scenario3Rule2.appendInputAttribute(sexAttr);
+		scenario3Rule2.appendOutputAttribute(districtAttr);
+		scenario3Rule2.generateAttributeValuesFrequencies();
+		scenario3InhabitantPopGenerator.appendGenerationRule(scenario3Rule2);
+		
+		// set frequencies
+		AttributeValue districtValue;
+		int districtIndex = 0;
+		for (int location[] : Scenario3.locations_3) {
+			attributeValues.clear();
+			
+			districtValue = new UniqueValue(DataType.STRING, Scenario3.district_names[districtIndex]);
+			attributeValues.put(districtAttr, districtValue);
+			
+			// male
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0])));
+			scenario3Rule2.setFrequency(attributeValues, location[0]);
+			
+			// female
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			scenario3Rule2.setFrequency(attributeValues, location[1]);
+		
+			
+			districtIndex++;
+		}		 
+		// create generation rules -
+		 
+		
+	
+		scenario3HouseholdPopGenerator = new SyntheticPopulationGenerator("Scenario3's household population generator", 286057);
+
+		// create attributes +
+		
+		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute(scenario3HouseholdPopGenerator, "size", DataType.INTEGER);
+		for (int size = 1; size < (Scenario3.household_size_by_types_3.length + 1); size++) {
+			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size)));
+		}
+		scenario3HouseholdPopGenerator.addAttribute(householdSizeAttr);
+		
+		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute(scenario3HouseholdPopGenerator, "type", DataType.STRING);
+		for (String type : Scenario3.household_type3_values) {
+			householdTypeAttr.add(new UniqueValue(DataType.STRING, type));
+		}
+		scenario3HouseholdPopGenerator.addAttribute(householdTypeAttr);
+		
+		// create attributes -
+		
+		// create generation rules +
+		// scenario3Rule3
+		scenario3Rule3 = new FrequencyDistributionGenerationRule(scenario3HouseholdPopGenerator, SCENARIO3_RULE3_NAME);
+		scenario3Rule3.appendOutputAttribute(householdSizeAttr);
+		scenario3Rule3.appendOutputAttribute(householdTypeAttr);
+		scenario3Rule3.generateAttributeValuesFrequencies();
+		scenario3HouseholdPopGenerator.appendGenerationRule(scenario3Rule3);
+		
+		UniqueValue hhTypeValue;
+		for (int[] types : Scenario3.household_size_by_types_3) {
+			attributeValues.clear();
+			
+			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0])));
+			for (int typeIndex=0; typeIndex<Scenario3.household_type3_values.length; typeIndex++) {
+				hhTypeValue = new UniqueValue(DataType.STRING, Scenario3.household_type3_values[typeIndex]);
+				attributeValues.put(householdTypeAttr, hhTypeValue);
+				
+				scenario3Rule3.setFrequency(attributeValues, types[typeIndex+1]);
+			}
+		}
+		
+		// create generation rules -
+	}
+
+	private void initializeScenario4Data() throws GenstarException {
+		scenario4InhabitantPopGenerator = new SyntheticPopulationGenerator("Scenario4's inhabitant population generator", 1188435);
+		
+		// create attributes +
+		
+		RangeValuesAttribute ageRangesAttr4 = new RangeValuesAttribute(scenario4InhabitantPopGenerator, "age", DataType.INTEGER, UniqueValue.class);
+		for (int[] range : Scenario4.age_ranges_4) {
+			ageRangesAttr4.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+		}
+		scenario4InhabitantPopGenerator.addAttribute(ageRangesAttr4);
+		
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(scenario4InhabitantPopGenerator, "sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+		scenario4InhabitantPopGenerator.addAttribute(sexAttr);
+		
+		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute(scenario4InhabitantPopGenerator, "district", DataType.STRING);
+		for (String district : Scenario4.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district)); }
+		scenario4InhabitantPopGenerator.addAttribute(districtAttr);
+		
+		// create attributes -
+		
+		
+		
+		// create generation rules +
+		
+		// scenario4Rule1
+		scenario4Rule1 = new FrequencyDistributionGenerationRule(scenario4InhabitantPopGenerator, SCENARIO4_RULE1_NAME);
+		scenario4Rule1.appendOutputAttribute(ageRangesAttr4);
+		scenario4Rule1.appendOutputAttribute(sexAttr);
+		scenario4Rule1.generateAttributeValuesFrequencies();
+		scenario4InhabitantPopGenerator.appendGenerationRule(scenario4Rule1);
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
+		AttributeValue sexAttrValue;
+		for (int[] range : Scenario4.age_ranges_4) {
+			attributeValues.clear();
+			
+			attributeValues.put(ageRangesAttr4, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]));
+			attributeValues.put(sexAttr, sexAttrValue);
+			
+			// male
+			scenario4Rule1.setFrequency(attributeValues, range[2]);
+			
+			// female
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			scenario4Rule1.setFrequency(attributeValues, range[3]);
+		}
+		
+		
+		// scenario4Rule2
+		scenario4Rule2 = new FrequencyDistributionGenerationRule(scenario4InhabitantPopGenerator, SCENARIO4_RULE2_NAME);
+		scenario4Rule2.appendInputAttribute(sexAttr);
+		scenario4Rule2.appendOutputAttribute(districtAttr);
+		scenario4Rule2.generateAttributeValuesFrequencies();
+		scenario4InhabitantPopGenerator.appendGenerationRule(scenario4Rule2);
+		
+		// set frequencies
+		AttributeValue districtValue;
+		int districtIndex = 0;
+		for (int location[] : Scenario4.locations_4) {
+			attributeValues.clear();
+			
+			districtValue = new UniqueValue(DataType.STRING, Scenario4.district_names[districtIndex]);
+			attributeValues.put(districtAttr, districtValue);
+			
+			// male
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0])));
+			scenario4Rule2.setFrequency(attributeValues, location[0]);
+			
+			// female
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			scenario4Rule2.setFrequency(attributeValues, location[1]);
+		
+			
+			districtIndex++;
+		}		 
+		// create generation rules -
+	}
+
+
+	private void initializeScenario5Data() throws GenstarException {
+		scenario5InhabitantPopGenerator = new SyntheticPopulationGenerator("Scenario5's inhabitant population generator", 1188435);
+		
+		// create attributes +
+		
+		RangeValuesAttribute ageRangesAttr5 = new RangeValuesAttribute(scenario5InhabitantPopGenerator, "age", DataType.INTEGER, UniqueValue.class);
+		for (int[] range : Scenario5.age_ranges_5) {
+			ageRangesAttr5.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+		}
+		scenario5InhabitantPopGenerator.addAttribute(ageRangesAttr5);
+		
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(scenario5InhabitantPopGenerator, "sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+		scenario5InhabitantPopGenerator.addAttribute(sexAttr);
+		
+		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute(scenario5InhabitantPopGenerator, "district", DataType.STRING);
+		for (String district : Scenario5.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district)); }
+		scenario5InhabitantPopGenerator.addAttribute(districtAttr);
+		
+		// create attributes -
+		
+		
+		// create generation rules +
+		
+		// scenario5Rule1
+		scenario5Rule1 = new FrequencyDistributionGenerationRule(scenario5InhabitantPopGenerator, SCENARIO5_RULE1_NAME);
+		scenario5Rule1.appendOutputAttribute(sexAttr);
+		scenario5Rule1.appendOutputAttribute(districtAttr);
+		scenario5Rule1.generateAttributeValuesFrequencies();
+		scenario5InhabitantPopGenerator.appendGenerationRule(scenario5Rule1);
+		
+		// set frequencies
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
+		AttributeValue districtValue;
+		int districtIndex = 0;
+		for (int location[] : Scenario5.locations_5) {
+			attributeValues.clear();
+			
+			districtValue = new UniqueValue(DataType.STRING, Scenario5.district_names[districtIndex]);
+			attributeValues.put(districtAttr, districtValue);
+			
+			// male
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0])));
+			scenario5Rule1.setFrequency(attributeValues, location[0]);
+			
+			// female
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			scenario5Rule1.setFrequency(attributeValues, location[1]);
+		
+			
+			districtIndex++;
+		}		 
+		
+		
+		// scenario5Rule2
+		scenario5Rule2 = new FrequencyDistributionGenerationRule(scenario5InhabitantPopGenerator, SCENARIO5_RULE2_NAME);
+		scenario5Rule2.appendInputAttribute(sexAttr);
+		scenario5Rule2.appendOutputAttribute(ageRangesAttr5);
+		scenario5Rule2.generateAttributeValuesFrequencies();
+		scenario5InhabitantPopGenerator.appendGenerationRule(scenario5Rule2);
+		
+		AttributeValue sexAttrValue;
+		for (int[] range : Scenario5.age_ranges_5) {
+			attributeValues.clear();
+			
+			attributeValues.put(ageRangesAttr5, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]));
+			attributeValues.put(sexAttr, sexAttrValue);
+			
+			// male
+			scenario5Rule2.setFrequency(attributeValues, range[2]);
+			
+			// female
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			scenario5Rule2.setFrequency(attributeValues, range[3]);
 		}
 		
 		// create generation rules -

@@ -1,6 +1,7 @@
 package ummisco.genstar.metamodel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,16 +12,15 @@ public class Entity {
 
 	private ISyntheticPopulation population;
 
-	private Map<String, EntityAttributeValue> attributeValues; // <attribute name on entity, entity attribute value>
+	private Map<String, EntityAttributeValue> attributeValues = Collections.EMPTY_MAP; // <attribute name on entity, entity attribute value>; lazy initialization
 	
-	private List<Entity> members; // ?
+	private List<Entity> members = Collections.EMPTY_LIST; // lazy initialization
+	
 	
 	public Entity(final ISyntheticPopulation population) {
 		if (population == null) { throw new IllegalArgumentException("Input parameter 'population' can not be null"); }
 		
 		this.population = population;
-		this.attributeValues = new HashMap<String, EntityAttributeValue>();
-		this.members = new ArrayList<Entity>();
 	}
 	
 	public ISyntheticPopulation getPopulation() {
@@ -56,6 +56,7 @@ public class Entity {
 		String attributeNameOnEntity = entityAttributeValue.getAttribute().getNameOnEntity();
 		if (containAttribute(attributeNameOnEntity)) { throw new GenstarException("Entity " + population.getName() + " already contains '" + attributeNameOnEntity + "' attribute."); }
 		
+		if (attributeValues == Collections.EMPTY_MAP) { attributeValues = new HashMap<String, EntityAttributeValue>(); }
 		attributeValues.put(entityAttributeValue.getAttribute().getNameOnEntity(), entityAttributeValue);
 	}
 	
@@ -65,6 +66,7 @@ public class Entity {
 
 	public void replaceAttributeValue(final EntityAttributeValue entityAttributeValue) throws GenstarException {
 		if (entityAttributeValue == null) { throw new IllegalArgumentException("'attributeValue' parameter can not be null"); }
+		if (attributeValues == Collections.EMPTY_MAP) { attributeValues = new HashMap<String, EntityAttributeValue>(); }
 		
 		attributeValues.put(entityAttributeValue.getAttribute().getNameOnEntity(), entityAttributeValue);
 	}
@@ -85,11 +87,13 @@ public class Entity {
 	
 	public void addMember(final Entity member) {
 		if (member == null) { throw new IllegalArgumentException("'member' parameter can not be null"); }
+		if (members == Collections.EMPTY_LIST) { members = new ArrayList<Entity>(5); }
 		if (!members.contains(member)) { members.add(member); }
 	}
 	
 	public void addMembers(final List<Entity> members) {
 		if (members == null) { throw new IllegalArgumentException("'members' parameter can not be null"); }
+		if (this.members == Collections.EMPTY_LIST) { this.members = new ArrayList<Entity>(members.size()); }
 		for (Entity m : members) { this.addMember(m); }
 	}
 }

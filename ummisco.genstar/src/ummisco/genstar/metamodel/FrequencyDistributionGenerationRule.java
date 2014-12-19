@@ -17,6 +17,8 @@ import com.google.common.collect.Sets;
 public class FrequencyDistributionGenerationRule extends GenerationRule { // TODO  implements AttributeChangedListener
 	
 	public static final int FREQUENCY_DISTRIBUTION_GENERATION_RULE_ID = 2;
+	
+	public static final String RULE_TYPE_NAME = "Frequency Distribution";
 
 	private SortedMap<Integer, AbstractAttribute> inputAttributes;
 	
@@ -375,6 +377,9 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 	}
 
 	public void generate(final Entity entity) throws GenstarException {
+		
+		// TODO if (order == 0) -> optimization to improve the exactness!!!
+		
 		if (entity == null) { throw new GenstarException("'entity' parameter can not be null"); }
 		
 		List<AttributeValuesFrequency> matchingAttributeValuesFrequencies = new ArrayList<AttributeValuesFrequency>();
@@ -419,5 +424,10 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 	@Override
 	public int getRuleTypeID() {
 		return FREQUENCY_DISTRIBUTION_GENERATION_RULE_ID;
+	}
+
+	@Override
+	public String getRuleTypeName() {
+		return RULE_TYPE_NAME;
 	}
 }

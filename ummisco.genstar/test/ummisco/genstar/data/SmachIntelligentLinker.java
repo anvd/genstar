@@ -1,4 +1,4 @@
-package ummisco.genstar.smach;
+package ummisco.genstar.data;
 
 import java.util.List;
 
