@@ -6,12 +6,15 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: UMMISCO
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: ummisco.genstar,
- ummisco.genstar.dao,
- ummisco.genstar.data,
+ ummisco.genstar.dao;uses:="ummisco.genstar.metamodel",
+ ummisco.genstar.data;uses:="ummisco.genstar.metamodel",
  ummisco.genstar.exception,
- ummisco.genstar.metamodel,
- ummisco.genstar.util
+ ummisco.genstar.metamodel;uses:="org.junit.rules",
+ ummisco.genstar.util;uses:="org.uncommons.maths.random,ummisco.genstar.metamodel"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/derby.jar,
  .,
  lib/guava-16.0.1.jar
+Require-Bundle: msi.gama.core;bundle-version="1.6.1",
+ msi.gama.processor;bundle-version="1.4.0"
+Import-Package: msi.gama.precompiler
