@@ -14,8 +14,11 @@ import ummisco.genstar.metamodel.EntityAttributeValue;
 import ummisco.genstar.metamodel.ISyntheticPopulation;
 import ummisco.genstar.metamodel.UniqueValue;
 
+import msi.gama.precompiler.GamlAnnotations.populations_linker;
+
 public class CanThoPopLinkers {
 
+	@populations_linker(name = "pops_linker2")
 	public class Scenario1PopLinker extends AbstractPopulationsLinker {
 		
 		private ISyntheticPopulation inhabitantPopulation, householdPopulation;

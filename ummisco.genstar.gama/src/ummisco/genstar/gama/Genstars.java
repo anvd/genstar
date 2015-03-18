@@ -1,11 +1,18 @@
 package ummisco.genstar.gama;
 
+import static msi.gama.common.interfaces.IKeyword.GENSTAR_ENTITY;
+import static msi.gama.common.interfaces.IKeyword.GENSTAR_POPULATION;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import msi.gama.common.interfaces.IKeyword;
+import msi.gama.metamodel.agent.IMacroAgent;
+import msi.gama.precompiler.GamlAnnotations.action;
+import msi.gama.precompiler.GamlAnnotations.arg;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.example;
 import msi.gama.precompiler.GamlAnnotations.operator;
@@ -15,12 +22,20 @@ import msi.gama.runtime.GAMA;
 import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
 import msi.gama.util.GamaList;
+import msi.gama.util.GamaListFactory;
 import msi.gama.util.GamaMap;
+import msi.gama.util.GamaMapFactory;
 import msi.gama.util.IList;
 import msi.gama.util.file.GamaCSVFile;
 import msi.gama.util.matrix.IMatrix;
+import msi.gaml.compilation.AbstractGamlAdditions;
+import msi.gaml.extensions.genstar.IGamaPopulationsLinker;
 import msi.gaml.operators.Cast;
-import msi.gaml.operators.Files;
+import msi.gaml.types.GamaListType;
+import msi.gaml.types.GamaMapType;
+import msi.gaml.types.GamaStringType;
+import msi.gaml.types.IType;
+import msi.gaml.types.Types;
 import ummisco.genstar.dao.GenstarDAOFactory;
 import ummisco.genstar.dao.SyntheticPopulationGeneratorDAO;
 import ummisco.genstar.exception.GenstarException;
@@ -31,6 +46,7 @@ import ummisco.genstar.metamodel.DataType;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.EntityAttributeValue;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
+import ummisco.genstar.metamodel.IPopulationsLinker;
 import ummisco.genstar.metamodel.ISyntheticPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.RangeValue;
@@ -42,14 +58,7 @@ import ummisco.genstar.metamodel.UniqueValuesAttribute;
 /**
  * A set of Genstar-related operators.
  */
-public abstract class Genstars {
-	
-	public static final String POPULATION_GENERATORS = "population_generators";
-	
-	public static final String SYNTHETIC_POPULATIONS = "synthetic_populations";
-	
-	public static final String GENSTAR_POPULATION = "genstar_population";
-	
+public abstract class Genstars {	
 	
 	
 	// 2. generates the population of a generator then returns the synthetic population
@@ -61,7 +70,7 @@ public abstract class Genstars {
 		see = {  })
 	public static List generatePopulation(final IScope scope, final String generatorName) {
 		try {
-			IList returnedPopulation = new GamaList();
+			IList returnedPopulation = GamaListFactory.create(Types.MAP);
 			returnedPopulation.add(GENSTAR_POPULATION); // TODO define constant and change name -> "synthetic_population". "genstar_population" is for "complex" population!
 
 			SyntheticPopulationGeneratorDAO syntheticPopulationGeneratorDAO = GenstarDAOFactory.getDAOFactory().getSyntheticPopulationGeneratorDAO();
@@ -76,7 +85,8 @@ public abstract class Genstars {
 			
 			Map<String, Object> map;
 			for (Entity entity : generatedPopulation.getEntities()) {
-				map = new GamaMap<String, Object>();
+//				map = new GamaMap<String, Object>();
+				map = GamaMapFactory.create(Types.STRING, Types.NO_TYPE);
 				for (Map.Entry<String, EntityAttributeValue> entry : entity.getAttributeValues().entrySet()) {
 					map.put(entry.getKey(), Genstar2GamaTypeConversion.convertGenstar2GamaType(entry.getValue().getAttributeValueOnEntity()));
 				}
@@ -86,7 +96,7 @@ public abstract class Genstars {
 			return returnedPopulation;
 		} catch (final Exception e) {
 			GamaRuntimeException.error(e.getMessage(), GAMA.getRuntimeScope());
-			return GamaList.EMPTY_LIST;
+			return GamaListFactory.EMPTY_LIST;
 		}
 	}
 	
@@ -229,7 +239,7 @@ public abstract class Genstars {
 
 		// 1. Parse the header
 		int headerIndex = 0;
-		IList<String> header = new GamaList<String>(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS);
+		IList<String> header = GamaListFactory.create(Types.STRING, CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS);
 		for ( Object obj : fileContent.getRow(scope, 0) ) {
 			header.add(Cast.asString(scope, obj));
 			
@@ -282,7 +292,7 @@ public abstract class Genstars {
 		//			1. The first part is all the elements in the header except for the last one. 
 		//				Each element is a pair denoting an attribute and whether the attribute is "input" or "output",
 		//			2. The second part is the last element of the header representing the frequency.
-		IList<String> header = new GamaList<String>();
+		IList<String> header = GamaListFactory.create(Types.STRING);
 		for ( Object obj : fileContent.getRow(scope, 0) ) { header.add(Cast.asString(scope, obj)); }
 		if (header.size() < 2) { throw new GenstarException("Invalid Frequency Distribution Generation Rule file format: invalid header"); }
 		
@@ -362,7 +372,7 @@ public abstract class Genstars {
 
 		// 1. Parse the header
 		int headerIndex = 0;
-		IList<String> header = new GamaList<String>(CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS);
+		IList<String> header = GamaListFactory.create(Types.STRING, CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS);
 		for ( Object obj : fileContent.getRow(scope, 0) ) {
 			header.add(Cast.asString(scope, obj));
 			
@@ -382,7 +392,8 @@ public abstract class Genstars {
 			String ruleName = (String)generationRuleInfo.get(0);
 			
 			String ruleDataFilePath = (String)generationRuleInfo.get(1);
-			GamaCSVFile ruleDataFile = (GamaCSVFile) Files.from(scope, ruleDataFilePath);
+//			GamaCSVFile ruleDataFile = (GamaCSVFile) Files.from(scope, ruleDataFilePath);
+			GamaCSVFile ruleDataFile = new GamaCSVFile(scope, ruleDataFilePath);
 			
 			String ruleTypeName = (String)generationRuleInfo.get(2);
 			
@@ -409,11 +420,11 @@ public abstract class Genstars {
 	public static List generatePopulationFromCSV_Data(final IScope scope, final String attributesCSVFilePath, final String generationRulesCSVFilePath, final int nbOfAgents) {
 		
 		// Verification of attributes
-		GamaCSVFile attributesCSVFile = (GamaCSVFile) Files.from(scope, attributesCSVFilePath);
-		GamaCSVFile generationRulesCSVFile = (GamaCSVFile) Files.from(scope, generationRulesCSVFilePath);
+		GamaCSVFile attributesCSVFile = new GamaCSVFile(scope, attributesCSVFilePath);
+		GamaCSVFile generationRulesCSVFile = new GamaCSVFile(scope, generationRulesCSVFilePath);
 		if (nbOfAgents <= 0) { GamaRuntimeException.error("Number of agents must be positive", scope); }
 		
-		IList returnedPopulation = new GamaList();
+		IList returnedPopulation = GamaListFactory.create(Types.MAP);
 		returnedPopulation.add(GENSTAR_POPULATION);
 		try {
 			// 1. Create the generator
@@ -427,10 +438,14 @@ public abstract class Genstars {
 			// 3. Convert generated "data" to "format" understood by GAML "create" statement
 			Map<String, Object> map;
 			for (Entity entity : generatedPopulation.getEntities()) {
-				map = new GamaMap<String, Object>();
+				
+				map = GamaMapFactory.create(Types.STRING, Types.NO_TYPE);
 				for (Map.Entry<String, EntityAttributeValue> entry : entity.getAttributeValues().entrySet()) {
 					map.put(entry.getKey(), Genstar2GamaTypeConversion.convertGenstar2GamaType(entry.getValue().getAttributeValueOnEntity()));
 				}
+				
+				map.put(GENSTAR_ENTITY, entity); // ... for traceback purpose
+				
 				returnedPopulation.add(map);
 			}
 		} catch (final GenstarException e) {
@@ -441,10 +456,30 @@ public abstract class Genstars {
 		return returnedPopulation;
 	}
 	
-	// 3. GenstarGenerator
-	//		+ member population generators
-	//		+ IPopulationLinkers
-	//		+ target GAMA species? 
+	
+	@operator(value = "link_populations", category = { IOperatorCategory.GENSTAR })
+	@doc(value = "Links populations",
+	returns = "",
+	special_cases = { "" },
+	comment = "",
+	examples = { @example(value = "",
+		equals = "",
+		test = false) }, see = {  })
+	public static boolean linkPopulations(final IScope scope, final String linkerName, final List<List<IMacroAgent>> populations) {
+		
+		// 1. search for the linker on the AbstractGamlAdditions
+		IGamaPopulationsLinker populationsLinker = AbstractGamlAdditions.POPULATIONS_LINKERS.get(linkerName);
+		
+		if (populationsLinker == null) {
+			GamaRuntimeException.error("Populations linker : " + linkerName + " does not exist.", scope);
+			return false;
+		}
+		
+		// 2. ask the linker to do the job
+		populationsLinker.establishRelationship(scope, populations);
+		
+		return true;
+	}
 	
 	
 }

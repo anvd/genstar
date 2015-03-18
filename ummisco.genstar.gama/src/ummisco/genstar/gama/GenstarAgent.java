@@ -3,6 +3,7 @@ package ummisco.genstar.gama;
 import java.util.Collections;
 import java.util.List;
 
+import msi.gama.common.interfaces.IKeyword;
 import msi.gama.metamodel.agent.GamlAgent;
 import msi.gama.metamodel.population.IPopulation;
 import msi.gama.precompiler.GamlAnnotations.getter;
@@ -11,7 +12,7 @@ import msi.gama.precompiler.GamlAnnotations.var;
 import msi.gama.precompiler.GamlAnnotations.vars;
 import msi.gama.runtime.GAMA;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
-import msi.gama.util.GamaList;
+import msi.gama.util.GamaListFactory;
 import msi.gaml.types.IType;
 import ummisco.genstar.dao.GenstarDAOFactory;
 import ummisco.genstar.dao.SyntheticPopulationGeneratorDAO;
@@ -22,14 +23,14 @@ import ummisco.genstar.exception.GenstarDAOException;
  */
 @species(name = "genstar")
 @vars({ 
-	@var(name = Genstars.POPULATION_GENERATORS, type = IType.LIST), 
-	@var(name = Genstars.SYNTHETIC_POPULATIONS, type = IType.LIST),
+	@var(name = IKeyword.POPULATION_GENERATORS, type = IType.LIST), 
+	@var(name = IKeyword.SYNTHETIC_POPULATIONS, type = IType.LIST),
 })
 public class GenstarAgent extends GamlAgent {
 
-	public static final String POPULATION_GENERATORS = "population_generators";
+//	public static final String POPULATION_GENERATORS = "population_generators";
 	
-	public static final String SYNTHETIC_POPULATIONS = "synthetic_populations";
+//	public static final String SYNTHETIC_POPULATIONS = "synthetic_populations";
 	
 	private SyntheticPopulationGeneratorDAO syntheticPopulationGeneratorDAO = null;
 	
@@ -49,13 +50,13 @@ public class GenstarAgent extends GamlAgent {
 	 * 
 	 * @return
 	 */
-	@getter(POPULATION_GENERATORS)
+	@getter(IKeyword.POPULATION_GENERATORS)
 	public List<String> getPopulationGenerators() {
 		try {
 			return syntheticPopulationGeneratorDAO.getPopulationGeneratorNames();
 		} catch (Exception e) {
 			GamaRuntimeException.error(e.getMessage(), GAMA.getRuntimeScope());
-			return GamaList.EMPTY_LIST;
+			return GamaListFactory.EMPTY_LIST;
 		}
 	}
 
@@ -63,7 +64,7 @@ public class GenstarAgent extends GamlAgent {
 	 * Returns a list of available synthetic population names available in the DBMS.
 	 * @return
 	 */
-	@getter(SYNTHETIC_POPULATIONS)
+	@getter(IKeyword.POPULATION_GENERATORS)
 	public List<String> getSyntheticPopulations() {
 		return Collections.EMPTY_LIST;
 	}
