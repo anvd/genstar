@@ -1,4 +1,4 @@
-package ummisco.genstar.gama;
+package ummisco.genstar.gama.populations_linker;
 
 import java.util.List;
 
@@ -6,10 +6,8 @@ import msi.gama.metamodel.agent.IMacroAgent;
 import msi.gama.precompiler.GamlAnnotations.populations_linker;
 import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
-import msi.gama.util.GamaList;
 import msi.gama.util.GamaListFactory;
 import msi.gaml.extensions.genstar.IGamaPopulationsLinker;
-import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 
 
@@ -65,8 +63,11 @@ public class MiroPopulationsLinker implements IGamaPopulationsLinker {
 		for (IMacroAgent household : householdPopulation) {
 			Integer householdSize = (Integer) household.getAttribute("householdSize");
 			
+			if (householdSize > 0) {
+				System.out.println("householdSize = " + householdSize);
+			}
+			
 			// GAML field name: "member_people"
-//			List<IMacroAgent> member_people = new GamaList<IMacroAgent>();
 			List<IMacroAgent> member_people = GamaListFactory.create(Types.AGENT);
 			
 			for (int peopleCurrentIndex = peoplePopulationIndex; peopleCurrentIndex < (peoplePopulationIndex + householdSize);  peopleCurrentIndex++) {

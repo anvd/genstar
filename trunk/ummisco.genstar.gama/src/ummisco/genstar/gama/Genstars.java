@@ -9,10 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import msi.gama.common.interfaces.IKeyword;
 import msi.gama.metamodel.agent.IMacroAgent;
-import msi.gama.precompiler.GamlAnnotations.action;
-import msi.gama.precompiler.GamlAnnotations.arg;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.example;
 import msi.gama.precompiler.GamlAnnotations.operator;
@@ -21,9 +18,7 @@ import msi.gama.precompiler.IOperatorCategory;
 import msi.gama.runtime.GAMA;
 import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
-import msi.gama.util.GamaList;
 import msi.gama.util.GamaListFactory;
-import msi.gama.util.GamaMap;
 import msi.gama.util.GamaMapFactory;
 import msi.gama.util.IList;
 import msi.gama.util.file.GamaCSVFile;
@@ -31,10 +26,6 @@ import msi.gama.util.matrix.IMatrix;
 import msi.gaml.compilation.AbstractGamlAdditions;
 import msi.gaml.extensions.genstar.IGamaPopulationsLinker;
 import msi.gaml.operators.Cast;
-import msi.gaml.types.GamaListType;
-import msi.gaml.types.GamaMapType;
-import msi.gaml.types.GamaStringType;
-import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 import ummisco.genstar.dao.GenstarDAOFactory;
 import ummisco.genstar.dao.SyntheticPopulationGeneratorDAO;
@@ -46,7 +37,6 @@ import ummisco.genstar.metamodel.DataType;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.EntityAttributeValue;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
-import ummisco.genstar.metamodel.IPopulationsLinker;
 import ummisco.genstar.metamodel.ISyntheticPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.RangeValue;
@@ -288,7 +278,7 @@ public abstract class Genstars {
 		
 		
 		// 1. Parse the header
-		// 		Header format is a list of element consisting of two parts delimited by a colon:
+		// 		Header format is a list of elements consisting of two parts delimited by a colon:
 		//			1. The first part is all the elements in the header except for the last one. 
 		//				Each element is a pair denoting an attribute and whether the attribute is "input" or "output",
 		//			2. The second part is the last element of the header representing the frequency.
@@ -296,19 +286,33 @@ public abstract class Genstars {
 		for ( Object obj : fileContent.getRow(scope, 0) ) { header.add(Cast.asString(scope, obj)); }
 		if (header.size() < 2) { throw new GenstarException("Invalid Frequency Distribution Generation Rule file format: invalid header"); }
 		
+//		System.out.println("Header of " + ruleDataFile.getName());
+//		for (String h : header) {
+//			System.out.print(h + ", ");
+//		}
+//		System.out.println();
+		
 		// 2. Create the rule then add attributes
 		FrequencyDistributionGenerationRule generationRule = new FrequencyDistributionGenerationRule(generator, ruleName);
 		List<AbstractAttribute> concerningAttributes = new ArrayList<AbstractAttribute>();
 		for (int headerIndex=0; headerIndex < (header.size() - 1); headerIndex++) {
 			StringTokenizer attributeToken = new StringTokenizer(header.get(headerIndex), CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE_METADATA.ATTRIBUTE_NAME_TYPE_DELIMITER);
-			if (attributeToken.countTokens() != 2) { throw new GenstarException("Invalid Frequency Distribution Generation Rule file format: invalid header format"); }
+			if (attributeToken.countTokens() != 2) {
+				StringBuffer invalidTokens = new StringBuffer();
+				while (attributeToken.hasMoreElements()) {
+					invalidTokens.append(attributeToken.nextToken());
+					invalidTokens.append(CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE_METADATA.ATTRIBUTE_NAME_TYPE_DELIMITER);
+				}
+				
+				throw new GenstarException("Invalid header format (" + invalidTokens.toString() + ") found in Frequency Distribution Generation Rule (file: " + ruleDataFile.getPath() + ")"); 
+			}
 			
 			String attributeName = attributeToken.nextToken();
 			String attributeType = attributeToken.nextToken();
 			
 			AbstractAttribute attribute = generator.getAttribute(attributeName);
 			if (attribute == null) { 
-				throw new GenstarException("Invalid Frequency Distribution Generation Rule file format: invalid attribute (" + attributeName + ")"); 
+				throw new GenstarException("Unknown attribute (" + attributeName + ") found in Frequency Distribution Generation Rule (file: " + ruleDataFile.getPath() + ")"); 
 			}
 			concerningAttributes.add(attribute);
 			
@@ -317,7 +321,7 @@ public abstract class Genstars {
 			} else if (attributeType.equals(CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE_METADATA.OUTPUT_ATTRIBUTE)) {
 				generationRule.appendOutputAttribute(attribute);
 			} else {
-				throw new GenstarException("Invalid Frequency Distribution Generation Rule file format: invalid attribute type (" + attributeType + ")");
+				throw new GenstarException("Invalid attribute type (" + attributeType + ") found in Frequency Distribution Generation Rule (file: " + ruleDataFile.getPath() + ")");
 			}
 		}
 		
@@ -449,7 +453,7 @@ public abstract class Genstars {
 				returnedPopulation.add(map);
 			}
 		} catch (final GenstarException e) {
-			GamaRuntimeException.error(e.getMessage(), scope);
+			throw GamaRuntimeException.error(e.getMessage(), scope);
 		}
 
 		// return the generated population
@@ -471,8 +475,7 @@ public abstract class Genstars {
 		IGamaPopulationsLinker populationsLinker = AbstractGamlAdditions.POPULATIONS_LINKERS.get(linkerName);
 		
 		if (populationsLinker == null) {
-			GamaRuntimeException.error("Populations linker : " + linkerName + " does not exist.", scope);
-			return false;
+			throw GamaRuntimeException.error("Populations linker : " + linkerName + " does not exist.", scope);
 		}
 		
 		// 2. ask the linker to do the job
