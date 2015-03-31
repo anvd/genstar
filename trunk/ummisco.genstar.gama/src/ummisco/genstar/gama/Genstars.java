@@ -26,6 +26,7 @@ import msi.gama.util.matrix.IMatrix;
 import msi.gaml.compilation.AbstractGamlAdditions;
 import msi.gaml.extensions.genstar.IGamaPopulationsLinker;
 import msi.gaml.operators.Cast;
+import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 import ummisco.genstar.dao.GenstarDAOFactory;
 import ummisco.genstar.dao.SyntheticPopulationGeneratorDAO;
@@ -75,7 +76,6 @@ public abstract class Genstars {
 			
 			Map<String, Object> map;
 			for (Entity entity : generatedPopulation.getEntities()) {
-//				map = new GamaMap<String, Object>();
 				map = GamaMapFactory.create(Types.STRING, Types.NO_TYPE);
 				for (Map.Entry<String, EntityAttributeValue> entry : entity.getAttributeValues().entrySet()) {
 					map.put(entry.getKey(), Genstar2GamaTypeConversion.convertGenstar2GamaType(entry.getValue().getAttributeValueOnEntity()));
@@ -94,12 +94,12 @@ public abstract class Genstars {
 	private static final class CSV_FILE_FORMATS {
 
 		static final class ATTRIBUTE_METADATA {
-			static final String ATTRIBUTE_VALUE_DELIMITER = ",";
+			static final String ATTRIBUTE_VALUE_DELIMITER = ";";
 			static final String MIN_MAX_VALUE_DELIMITER = ":";
 				
 			// Header of attribute meta-data file: 
-			//		“Name On Data”, “Name On Entity”, “Data Type”, “Value Type On Data”, “Values”, “Value Type On Entity”
-			static final String HEADER_STR = "\"Name On Data\", \"Name On Entity\", \"Data Type\", \"Value Type\", \"Values\", \"Value Type On Entity\"";
+			//		Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On Entity
+			static final String HEADER_STR = "Name On Data,Name On Entity, Data Type,Value Type,Values,Value Type On Entity";
 			static final int NB_OF_COLS = 6;
 			static String[] HEADERS = new String[NB_OF_COLS];
 			static {
@@ -121,7 +121,7 @@ public abstract class Genstars {
 			
 			// Header of Generation Rule meta-data file:
 			//		“Name”, “File”, “Type”
-			static final String HEADER_STR = "\"Name\", \"File\", \"Rule Type\"";
+			static final String HEADER_STR = "Name,File,Rule Type";
 			static final int NB_OF_COLS = 3;
 			static String[] HEADERS = new String[NB_OF_COLS];
 			static {
@@ -225,25 +225,27 @@ public abstract class Genstars {
 		if ( fileContent == null || fileContent.isEmpty(scope) ) { throw new GenstarException("Invalid attribute file: content is empty"); }
 		int rows = fileContent.getRows(scope);
 		
-		if (fileContent.getCols(scope) != CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS) { throw new GenstarException("CVS file must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns."); }
+		if (fileContent.getCols(scope) != CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS) { 
+			throw new GenstarException("CSV file must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns (file: " + attributesCSVFile.getPath() + ")."); 
+		}
 
 		// 1. Parse the header
-		int headerIndex = 0;
-		IList<String> header = GamaListFactory.create(Types.STRING, CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS);
-		for ( Object obj : fileContent.getRow(scope, 0) ) {
-			header.add(Cast.asString(scope, obj));
-			
-			if (!header.get(headerIndex).equals(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.HEADERS[headerIndex])) {
-				throw new GenstarException("Invalid attribute file format: Header must be " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.HEADER_STR);
+		List<String> fileHeader = attributesCSVFile.getAttributes(scope);
+		if (fileHeader.size() != CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS) {
+			throw new GenstarException("Invalid attribute file header format. Header must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns (file: " + attributesCSVFile.getPath() + ").");
+		}
+		for (int i=0; i<fileHeader.size(); i++) {
+			if (!fileHeader.get(i).equals(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.HEADERS[i])) {
+				throw new GenstarException("Invalid attribute file header format. Header must be " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.HEADER_STR + " (file: " + attributesCSVFile.getPath() + ").");
 			}
-			headerIndex++;
 		}
 		
+		
 		// 2. Parse and initialize attributes
-		for ( int rowIndex = 1; rowIndex < rows; rowIndex++ ) {
+		for ( int rowIndex = 0; rowIndex < rows; rowIndex++ ) {
 			
 			final IList attributeInfo = fileContent.getRow(scope, rowIndex);
-			if (attributeInfo.size() != CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS) { throw new GenstarException("Invalid attribute file format: each row must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns."); }
+			if (attributeInfo.size() != CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS) { throw new GenstarException("Invalid attribute file format: each row must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns (file: " + attributesCSVFile.getPath() + "."); }
 			
 			String attributeNameOnData = (String)attributeInfo.get(0);
 			String attributeNameOnEntity = (String)attributeInfo.get(1);
@@ -272,25 +274,14 @@ public abstract class Genstars {
 	private static void createFrequencyDistributionGenerationRule(final IScope scope, final ISyntheticPopulationGenerator generator, final String ruleName, GamaCSVFile ruleDataFile) throws GenstarException {
 		
 		IMatrix fileContent = ruleDataFile.getContents(scope);
-		if ( fileContent == null || fileContent.isEmpty(scope) ) { throw new GenstarException("Invalid Frequency Distribution Generation Rule file format: content is empty"); }
+		if ( fileContent == null || fileContent.isEmpty(scope) ) { throw new GenstarException("Frequency Distribution Generation Rule file is empty (file: " + ruleDataFile.getPath() + ")"); }
 		int rows = fileContent.getRows(scope);
 		
 		
-		
 		// 1. Parse the header
-		// 		Header format is a list of elements consisting of two parts delimited by a colon:
-		//			1. The first part is all the elements in the header except for the last one. 
-		//				Each element is a pair denoting an attribute and whether the attribute is "input" or "output",
-		//			2. The second part is the last element of the header representing the frequency.
-		IList<String> header = GamaListFactory.create(Types.STRING);
-		for ( Object obj : fileContent.getRow(scope, 0) ) { header.add(Cast.asString(scope, obj)); }
-		if (header.size() < 2) { throw new GenstarException("Invalid Frequency Distribution Generation Rule file format: invalid header"); }
+		List<String> header = ruleDataFile.getAttributes(scope);
+		if (header.size() < 2) { throw new GenstarException("Invalid Frequency Distribution Generation Rule file header : header must have at least 2 elements (file: " + ruleDataFile.getPath() + ")"); }
 		
-//		System.out.println("Header of " + ruleDataFile.getName());
-//		for (String h : header) {
-//			System.out.print(h + ", ");
-//		}
-//		System.out.println();
 		
 		// 2. Create the rule then add attributes
 		FrequencyDistributionGenerationRule generationRule = new FrequencyDistributionGenerationRule(generator, ruleName);
@@ -311,9 +302,7 @@ public abstract class Genstars {
 			String attributeType = attributeToken.nextToken();
 			
 			AbstractAttribute attribute = generator.getAttribute(attributeName);
-			if (attribute == null) { 
-				throw new GenstarException("Unknown attribute (" + attributeName + ") found in Frequency Distribution Generation Rule (file: " + ruleDataFile.getPath() + ")"); 
-			}
+			if (attribute == null) { throw new GenstarException("Unknown attribute (" + attributeName + ") found in Frequency Distribution Generation Rule (file: " + ruleDataFile.getPath() + ")"); }
 			concerningAttributes.add(attribute);
 			
 			if (attributeType.equals(CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE_METADATA.INPUT_ATTRIBUTE)) {
@@ -329,7 +318,7 @@ public abstract class Genstars {
 		
 		// 3. Set frequencies
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
-		for (int rowIndex=1; rowIndex<rows; rowIndex++) {
+		for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
 			attributeValues.clear();
 			IList frequencyInfo = fileContent.getRow(scope, rowIndex);
 			
@@ -372,33 +361,26 @@ public abstract class Genstars {
 		if ( fileContent == null || fileContent.isEmpty(scope) ) { throw new GenstarException("Invalid Generation Rule file: content is empty"); }
 		int rows = fileContent.getRows(scope);
 
-		if (fileContent.getCols(scope) != CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS) { throw new GenstarException("CVS file must have " + CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS + " columns."); }
+		if (fileContent.getCols(scope) != CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS) { throw new GenstarException("CVS file must have " + CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS + " columns, (file: " + distributionsCSVFile.getPath() + ")"); }
 
 		// 1. Parse the header
-		int headerIndex = 0;
-		IList<String> header = GamaListFactory.create(Types.STRING, CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS);
-		for ( Object obj : fileContent.getRow(scope, 0) ) {
-			header.add(Cast.asString(scope, obj));
-			
-			if (!header.get(headerIndex).equals(CSV_FILE_FORMATS.GENERATION_RULE_METADATA.HEADERS[headerIndex])) {
-				throw new GenstarException("Invalid Generation Rule file format: Header must be " + CSV_FILE_FORMATS.GENERATION_RULE_METADATA.HEADER_STR);
+		List<String> header = distributionsCSVFile.getAttributes(scope);
+		for (int i=0; i<header.size(); i++) {
+			if (!header.get(i).equals(CSV_FILE_FORMATS.GENERATION_RULE_METADATA.HEADERS[i])) {
+				throw new GenstarException("Invalid Generation Rule file header. Header must be " + CSV_FILE_FORMATS.GENERATION_RULE_METADATA.HEADER_STR + " (file: " + distributionsCSVFile.getPath() + ")");
 			}
-			headerIndex++;
 		}
 		
 		
 		// 2. Parse and initialize distributions
-		for ( int rowIndex = 1; rowIndex < rows; rowIndex++ ) {
+		for ( int rowIndex = 0; rowIndex < rows; rowIndex++ ) {
 			
 			final IList generationRuleInfo = fileContent.getRow(scope, rowIndex);
-			if (generationRuleInfo.size() != CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS) { throw new GenstarException("Invalid Generation Rule file format: each row must have " +  CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS  + " columns."); }
+			if (generationRuleInfo.size() != CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS) { throw new GenstarException("Invalid Generation Rule file format: each row must have " +  CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS + " columns, (file: " + distributionsCSVFile.getPath() + ")"); }
 			
 			String ruleName = (String)generationRuleInfo.get(0);
-			
 			String ruleDataFilePath = (String)generationRuleInfo.get(1);
-//			GamaCSVFile ruleDataFile = (GamaCSVFile) Files.from(scope, ruleDataFilePath);
-			GamaCSVFile ruleDataFile = new GamaCSVFile(scope, ruleDataFilePath);
-			
+			GamaCSVFile ruleDataFile = new GamaCSVFile(scope, ruleDataFilePath, ",", Types.STRING, true);
 			String ruleTypeName = (String)generationRuleInfo.get(2);
 			
 			
@@ -407,7 +389,7 @@ public abstract class Genstars {
 			} else if (ruleTypeName.equals(CSV_FILE_FORMATS.GENERATION_RULE_METADATA.ATTRIBUTE_INFERENCE_GENERATION_RULE)) {
 				createAttributeInferenceGenerationRule(scope, generator, ruleName, ruleDataFile);
 			} else {
-				throw new GenstarException("Invalid Generation Rule file format: unsupported generation rule (" + ruleTypeName + ")");
+				throw new GenstarException("Invalid Generation Rule file format: unsupported generation rule (" + ruleTypeName + "), file: " + distributionsCSVFile.getPath());
 			}
 		}
 	}
@@ -424,8 +406,8 @@ public abstract class Genstars {
 	public static List generatePopulationFromCSV_Data(final IScope scope, final String attributesCSVFilePath, final String generationRulesCSVFilePath, final int nbOfAgents) {
 		
 		// Verification of attributes
-		GamaCSVFile attributesCSVFile = new GamaCSVFile(scope, attributesCSVFilePath);
-		GamaCSVFile generationRulesCSVFile = new GamaCSVFile(scope, generationRulesCSVFilePath);
+		GamaCSVFile attributesCSVFile = new GamaCSVFile(scope, attributesCSVFilePath, ",", Types.STRING, true);
+		GamaCSVFile generationRulesCSVFile = new GamaCSVFile(scope, generationRulesCSVFilePath, ",", Types.STRING, true);
 		if (nbOfAgents <= 0) { GamaRuntimeException.error("Number of agents must be positive", scope); }
 		
 		IList returnedPopulation = GamaListFactory.create(Types.MAP);
@@ -474,9 +456,7 @@ public abstract class Genstars {
 		// 1. search for the linker on the AbstractGamlAdditions
 		IGamaPopulationsLinker populationsLinker = AbstractGamlAdditions.POPULATIONS_LINKERS.get(linkerName);
 		
-		if (populationsLinker == null) {
-			throw GamaRuntimeException.error("Populations linker : " + linkerName + " does not exist.", scope);
-		}
+		if (populationsLinker == null) { throw GamaRuntimeException.error("Populations linker : " + linkerName + " does not exist.", scope); }
 		
 		// 2. ask the linker to do the job
 		populationsLinker.establishRelationship(scope, populations);
