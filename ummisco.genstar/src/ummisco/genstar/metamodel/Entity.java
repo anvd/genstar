@@ -51,10 +51,11 @@ public class Entity {
 
 	public void putAttributeValue(final EntityAttributeValue entityAttributeValue) throws GenstarException {
 		
-		if (entityAttributeValue == null) { throw new IllegalArgumentException("'attributeValue' parameter can not be null"); }
+		if (entityAttributeValue == null) { throw new GenstarException("'attributeValue' parameter can not be null"); }
 		
 		String attributeNameOnEntity = entityAttributeValue.getAttribute().getNameOnEntity();
-		if (containAttribute(attributeNameOnEntity)) { throw new GenstarException("Entity " + population.getName() + " already contains '" + attributeNameOnEntity + "' attribute."); }
+		if (containAttribute(attributeNameOnEntity)) {  throw new GenstarException("Entity " + population.getName() + " has already contained '" + attributeNameOnEntity + "' attribute."); }
+		// TODO improve the clarity of the above error message (when invoked from GAMA, the "population.getName()" has no sense)
 		
 		if (attributeValues == Collections.EMPTY_MAP) { attributeValues = new HashMap<String, EntityAttributeValue>(); }
 		attributeValues.put(entityAttributeValue.getAttribute().getNameOnEntity(), entityAttributeValue);
