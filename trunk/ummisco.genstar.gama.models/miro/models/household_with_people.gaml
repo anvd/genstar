@@ -5,8 +5,6 @@
 
 model household_with_people
 
-/* Insert your model definition here */
-
 global {
 	
 	int nb_of_people <- 14821;

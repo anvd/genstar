@@ -25,41 +25,44 @@ global {
 		create road from: shape_file_roads ;
 		
 
-		list miro_people_population <- population_from_csv('../includes/population/People_Attributes.csv', '../includes/population/People_GenerationRules.csv', nb_of_people);
+		list miro_people_population <- population_from_csv('../includes/population/people/People_Attributes.csv', '../includes/population/people/People_GenerationRules.csv', nb_of_people);
 		create people from: miro_people_population {
 			location <- any_location_in(one_of(building)); 
 		}
 		
-		write 'Quick analyse of the generated people population:';
+		write 'Quick analysis of the generated people population:';
 		write 'Number of people: ' + string(length(miro_people_population) - 1);
 		
-		write '\tClassification of gender: ';
-		write '\t\tmale: ' + length(people where each.gender);
-		write '\t\tfemale: ' + length(people where !each.gender);
+		list<string> categories <- [ 'C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7' ];
+		map<int, int> age_ranges <- [ 0::4, 5::17, 18::24, 25::34, 35::49, 50::64, 65::100 ];
+		list<bool> genders <- [ true, false ];
 		
-		write '\tClassification of category: ';
-		write '\t\tC0: ' + length(people where (each.category = 'C0'));
-		write '\t\tC1: ' + length(people where (each.category = 'C1'));
-		write '\t\tC2: ' + length(people where (each.category = 'C2'));
-		write '\t\tC3: ' + length(people where (each.category = 'C3'));
-		write '\t\tC4: ' + length(people where (each.category = 'C4'));
-		write '\t\tC5: ' + length(people where (each.category = 'C5'));
-		write '\t\tC6: ' + length(people where (each.category = 'C6'));
-		write '\t\tC7: ' + length(people where (each.category = 'C7'));
+		matrix category_age_input_data <- csv_file('../includes/population/people/People_GenerationRule1_Data.csv');
+		list category_age_input_frequency <- category_age_input_data column_at 2;
+		int category_age_index <- 1;
+		write '\tClassification of category and age';
+		write '\t\tCategory, Age, Input Frequency, Generated Frequency';
+		loop ar_key over: age_ranges.keys {
+			loop c over: categories {
+				write '\t\t' + c + ', [' + ar_key + '::' + age_ranges[ar_key] + '], ' + (category_age_input_frequency at category_age_index) + ", "
+					+ length(people where ( (each.category = c) and (each.age >= ar_key ) and (each.age <= age_ranges[ar_key])) );
+				category_age_index <- category_age_index + 1;
+			}
+		}
 		
-		write '\tClassification of age:';
-		write '\t\t[0:4]: ' + length(people where ((each.age >= 0) and (each.age <= 4)));
-		write '\t\t[5:17]: ' + length(people where ((each.age >= 5) and (each.age <= 17)));
-		write '\t\t[18:24]: ' + length(people where ((each.age >= 18) and (each.age <= 24)));
-		write '\t\t[25:34]: ' + length(people where ((each.age >= 25) and (each.age <= 34)));
-		write '\t\t[34:49]: ' + length(people where ((each.age >= 34) and (each.age <= 49)));
-		write '\t\t[50:64]: ' + length(people where ((each.age >= 50) and (each.age <= 64)));
-		write '\t\t[65:100]: ' + length(people where (each.age >= 65));
 		
-		// save [name, location, host] to: "save_data.csv" type: "csv";
-//		ask people {
-//			save [gender, category, age] to: "people_detail_data.csv" type: "csv";
-//		}
+		matrix category_gender_input_data <- csv_file('../includes/population/people/People_GenerationRule2_Data.csv');
+		list category_gender_input_frequency <- category_gender_input_data column_at 2;
+		int category_index <- 1;
+		write '\n\tClassfication of category and gender';
+		write '\t\tCategory, Gender, Input Frequency, Generated Frequency';
+		loop g over: genders {
+			loop c over: categories {
+				write '\t\t' + c + ", " + g + ", " + (category_gender_input_frequency at category_index) + ', '
+					+ length (people where ( (each.gender = g) and (each.category = c) ));
+				category_index <- category_index + 1;
+			}
+		}
 	}
 }
 
