@@ -21,7 +21,7 @@ global {
 		create building from: grenoble_building_shape_file;
 
 		list miro_people_population <- population_from_csv('../includes/population/people_with_region_1/People_With_Region_Attributes.csv', '../includes/population/people_with_region_1/People_With_Region_GenerationRules.csv', nb_of_people);
-//		create people from: miro_people_population;	
+		create people from: miro_people_population;	
 		
 		// Analysis
 		// 		criteria : Category & Zone
