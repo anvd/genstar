@@ -7,6 +7,7 @@ import msi.gama.precompiler.GamlAnnotations.populations_linker;
 import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
 import msi.gama.util.GamaListFactory;
+import msi.gama.util.IList;
 import msi.gaml.extensions.genstar.IGamaPopulationsLinker;
 import msi.gaml.types.Types;
 
@@ -29,7 +30,7 @@ public class MiroPopulationsLinker implements IGamaPopulationsLinker {
 	}
 
 	@Override
-	public void establishRelationship(final IScope scope, final List<List<IMacroAgent>> populations) {
+	public void establishRelationship(final IScope scope, final IList<IList<IMacroAgent>> populations) {
 		if (populations.size() != 2) { GamaRuntimeException.error("'populations' must contain 2 populations.", scope); }
 		
 		List<IMacroAgent> firstPopulation = populations.get(0);

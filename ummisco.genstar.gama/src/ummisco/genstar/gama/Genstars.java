@@ -94,9 +94,9 @@ public abstract class Genstars {
 		returns = "a list of maps in which each map represents the information (i.e., pairs of [attribute name : attribute value]) of a generated agent",
 		special_cases = { "" },
 		comment = "",
-		examples = { @example(value = "population_from_csv('Attributes.csv', 'GenerationRules.csv', 14000)",
+		examples = { @example(value = "list synthetic_population <- population_from_csv('Attributes.csv', 'GenerationRules.csv', 14000)",
 			equals = "",
-			test = false) }, see = { "frequency_distribution_from_sample" })
+			test = false) }, see = { "frequency_distribution_from_sample", "link_populations" })
 	public static IList generatePopulationFromCSV_Data(final IScope scope, final String attributesCSVFilePath, final String generationRulesCSVFilePath, final int nbOfAgents) {
 		
 		// Verification of attributes
@@ -105,7 +105,7 @@ public abstract class Genstars {
 		if (nbOfAgents <= 0) { GamaRuntimeException.error("Number of agents must be positive", scope); }
 
 		IList returnedPopulation = GamaListFactory.create(Types.MAP);
-		returnedPopulation.add(GENSTAR_POPULATION); // first element is a String, instead of a map
+		returnedPopulation.add(GENSTAR_POPULATION); // first element is a String, instead of a map -> change first element to a map [GENSTAR_POPULATION::GENSTAR_POPULATION]
 		
 		try {
 			// 1. Create the generator
@@ -143,10 +143,10 @@ public abstract class Genstars {
 	returns = "",
 	special_cases = { "" },
 	comment = "",
-	examples = { @example(value = "",
-		equals = "",
-		test = false) }, see = {  })
-	public static boolean linkPopulations(final IScope scope, final String linkerName, final List<List<IMacroAgent>> populations) {
+	examples = { @example(value = "bool linking_result <- link_populations('household_inhabitant_linker', household_inhabitant_populations)",
+		equals = "a boolean value indicating where the linking process is successful or not",
+		test = false) }, see = { "population_from_csv", "frequency_distribution_from_sample" })
+	public static boolean linkPopulations(final IScope scope, final String linkerName, final IList<IList<IMacroAgent>> populations) {
 		
 		// 1. search for the linker on the AbstractGamlAdditions
 		IGamaPopulationsLinker populationsLinker = AbstractGamlAdditions.POPULATIONS_LINKERS.get(linkerName);
@@ -165,9 +165,9 @@ public abstract class Genstars {
 		returns = "a boolean value, indicating where the operator is successful or not",
 		special_cases = { "" },
 		comment = "",
-		examples = { @example(value = "generate_frequency_distribution('Attributes.csv', 'SampleData.csv', 'DistributionFormat.csv', 'ResultingDistribution.csv')",
-			equals = "a CSV file that contains the resulting frequency distribution generation rule, being saved in the 'ResultingDistribution.csv' file",
-			test = false) }, see = { "population_from_csv" })
+		examples = { @example(value = "string result_file <- generate_frequency_distribution('Attributes.csv', 'SampleData.csv', 'DistributionFormat.csv', 'ResultingDistribution.csv')",
+			equals = "a string representing the path to the 'ResultingDistribution.csv' CSV file that contains the resulting frequency distribution generation rule",
+			test = false) }, see = { "population_from_csv", "link_populations" })
 	public static IGamaFile<IMatrix<Object>, Object, ILocation, Object> generateFrequencyDistribution(final IScope scope, final String attributesCSVFilePath, 
 			final String sampleDataCSVFilePath, final String distributionFormatCSVFilePath, final String resultDistributionCSVFilePath) {
 		

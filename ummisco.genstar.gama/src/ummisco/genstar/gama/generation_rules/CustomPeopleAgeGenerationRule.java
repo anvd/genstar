@@ -55,13 +55,6 @@ public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
 		// 1. parse ruleDataCSVFile header
 		IList<String> attributes  = ruleDataCSVFile.getAttributes(scope);
 		if (attributes.size() != 2 || !attributes.get(0).equals("Age:Output") || !attributes.get(1).equals("Frequency")) {
-			
-			System.out.println("attributes.get(0).charAt(0) = " + attributes.get(0).charAt(0));
-			System.out.println("attributes.get(0).charAt(attributes.get(0).length() - 1) = " + attributes.get(0).charAt(attributes.get(0).length() - 1));
-			
-			System.out.println("attributes.get(1).charAt(0) = " + attributes.get(1).charAt(0));
-			System.out.println("attributes.get(1).charAt(attributes.get(1).length() - 1) = " + attributes.get(1).charAt(attributes.get(1).length() - 1));
-
 			throw new GenstarException("Invalid rule data file header. Expected header: " + "'Age:Output,Frequency'. File: " + ruleDataCSVFile.getPath());
 		}
 		
@@ -125,9 +118,7 @@ public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
 	}
 
 	@Override
-	public AbstractAttribute findAttributeByNameOnData(
-			String attributeNameOnData) {
-		// TODO Auto-generated method stub
+	public AbstractAttribute findAttributeByNameOnData(String attributeNameOnData) {
 		return null;
 	}
 
