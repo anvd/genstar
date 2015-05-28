@@ -36,7 +36,7 @@ global {
 		
 		matrix spatial_input_data <- csv_file('../includes/population/people_with_region_1/Grenoble_Spatial_Data.csv');
 		list frequency_data <- spatial_input_data column_at 2;
-		int data_index <- 1;
+		int data_index <- 0;
 		write 'Category,Zone,Original Frequency, Generated Frequency';
 		loop z over: zones {
 			loop c over: categories {

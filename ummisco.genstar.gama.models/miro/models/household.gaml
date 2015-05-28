@@ -19,7 +19,7 @@ global {
 		write 'Number of households: ' + string(length(miro_household_population) - 1);
 
 		write 'size, input frequency, generated frequency';
-		int input_frequency_index <- 1;
+		int input_frequency_index <- 0;
 		loop size from: 1 to: 9 {
 			write "" + size + ", " + (input_frequency at input_frequency_index) + ", " + length(household where (each.householdSize = size));
 			input_frequency_index <- input_frequency_index + 1;

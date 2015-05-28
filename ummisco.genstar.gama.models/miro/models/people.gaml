@@ -38,14 +38,23 @@ global {
 		list<bool> genders <- [ true, false ];
 		
 		matrix category_age_input_data <- csv_file('../includes/population/people/People_GenerationRule1_Data.csv');
+//		file category_age_input_data <- csv_file('../includes/population/people/People_GenerationRule1_Data.csv');
+
+//		loop aRow over: rows_list(category_age_input_data) {
+//			string str <- '';
+//			loop st over: aRow { str <- str + st + ', '; }
+//			
+//			write str;
+//		}
+
 		list category_age_input_frequency <- category_age_input_data column_at 2;
-		int category_age_index <- 1;
+		int category_age_index <- 0;
 		write '\tClassification of category and age';
 		write '\t\tCategory, Age, Input Frequency, Generated Frequency';
 		loop ar_key over: age_ranges.keys {
 			loop c over: categories {
-				write '\t\t' + c + ', [' + ar_key + '::' + age_ranges[ar_key] + '], ' + (category_age_input_frequency at category_age_index) + ", "
-					+ length(people where ( (each.category = c) and (each.age >= ar_key ) and (each.age <= age_ranges[ar_key])) );
+				write '\t\t' + c + ', [' + ar_key + '::' + age_ranges[ar_key] + '], ' + string(category_age_input_frequency at category_age_index) + ", "
+					+ length(people where ( (each.category = c) and (each.age >= ar_key ) and (each.age <= age_ranges[ar_key]) ) );
 				category_age_index <- category_age_index + 1;
 			}
 		}
@@ -53,7 +62,7 @@ global {
 		
 		matrix category_gender_input_data <- csv_file('../includes/population/people/People_GenerationRule2_Data.csv');
 		list category_gender_input_frequency <- category_gender_input_data column_at 2;
-		int category_index <- 1;
+		int category_index <- 0;
 		write '\n\tClassfication of category and gender';
 		write '\t\tCategory, Gender, Input Frequency, Generated Frequency';
 		loop g over: genders {
