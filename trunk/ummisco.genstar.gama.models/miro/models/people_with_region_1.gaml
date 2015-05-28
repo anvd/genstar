@@ -7,16 +7,21 @@ model people_with_region_1
 
 global {
 	int nb_of_people <- 14821;
-	file bordeaux_shape_file <- file('../includes/gis/bordeaux/Tirage_2010_L93_region.shp');
-	file bordeaux_bounds <- file('../includes/gis/bordeaux/Bordeaux_Bounds.shp');
+//	file grenoble_zone_shape_file <- file('../includes/gis/grenoble_less_detail/Tirage_2010_L93_region.shp');
+	file grenoble_zone_shape_file <- file('../includes/gis/grenoble_more_detail/OD_2010_OK_L93_region.shp');
 	
-	geometry shape <- envelope(bordeaux_bounds);
+	file grenoble_building_shape_file <- file('../includes/gis/grenoble_buildings/bati_categorieL93_region.shp');
+//	file grenoble_building_shape_file <- file('../includes/gis/grenoble_buildings_new/bati_zones.shp');
+	
+	file grenoble_bounds <- file('../includes/gis/grenoble_less_detail/Grenoble_Bounds.shp');
+	geometry shape <- envelope(grenoble_bounds);
 	
 	init {
-		create region from: bordeaux_shape_file with: [ regionID::int(read("2010")) ];
+		create region from: grenoble_zone_shape_file with: [ regionID::int(read("2010")) ];
+		create building from: grenoble_building_shape_file;
 
 		list miro_people_population <- population_from_csv('../includes/population/people_with_region_1/People_With_Region_Attributes.csv', '../includes/population/people_with_region_1/People_With_Region_GenerationRules.csv', nb_of_people);
-		create people from: miro_people_population;
+//		create people from: miro_people_population;	
 		
 		// Analysis
 		// 		criteria : Category & Zone
@@ -29,7 +34,7 @@ global {
 			516, 517, 518, 519, 601, 602, 603, 701, 801, 802, 803, 804, 805, 806, 901, 902, 903 // 17 zones
 		];
 		
-		matrix spatial_input_data <- csv_file('../includes/population/people_with_region_1/Bordeaux_Spatial_Data.csv');
+		matrix spatial_input_data <- csv_file('../includes/population/people_with_region_1/Grenoble_Spatial_Data.csv');
 		list frequency_data <- spatial_input_data column_at 2;
 		int data_index <- 1;
 		write 'Category,Zone,Original Frequency, Generated Frequency';
@@ -71,11 +76,19 @@ species people {
 	}
 }
 
+species building {
+	
+	aspect default {
+		draw shape color: #orchid;
+	}
+}
+
 experiment people_with_zone type: gui {
 	output {
 		display region_display {
 			species region aspect: default;
 			species people aspect: base;
+			species building;
 		}
 	}
 }
