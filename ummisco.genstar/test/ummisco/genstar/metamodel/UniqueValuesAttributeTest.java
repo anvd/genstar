@@ -100,18 +100,20 @@ public class UniqueValuesAttributeTest {
 		assertTrue(attr.values().size() == 1);
 	}
 	
-	@Test public void testCreateValue() throws GenstarException {
+	@Test public void testFindCorrespondingAttributeValue() throws GenstarException {
 		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
-
+		
 		List<String> list1 = new ArrayList<String>();
 		list1.add("1");
-		AttributeValue oneValue = attr.valueFromString(list1);
+		AttributeValue oneValue = attr.findCorrespondingAttributeValue(list1);
+		assertTrue(oneValue == null);
+
+		UniqueValue uniqueValue = new UniqueValue(DataType.INTEGER, "1");
+		attr.add(uniqueValue);
+
+		oneValue = attr.findCorrespondingAttributeValue(list1);
 		assertTrue( ((UniqueValue) oneValue).getStringValue().equals("1"));
-		
-		exception.expect(GenstarException.class);
-		attr.valueFromString(new ArrayList<String>());
-		
 	}
 	
 	@Test public void testContainsValueOfAttributeValue() throws GenstarException {
@@ -121,8 +123,6 @@ public class UniqueValuesAttributeTest {
 		attr.add(new UniqueValue(DataType.INTEGER, "1"));
 		
 		assertTrue(attr.containsValueOfAttributeValue(new UniqueValue(DataType.INTEGER, "1")));
-//		assertTrue(attr.containsValueOfAttributeValue(new UniqueValue(DataType.FLOAT, "1")));
-//		assertTrue(attr.containsValueOfAttributeValue(new UniqueValue(DataType.DOUBLE, "1")));
 		
 		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
 		assertTrue(attr.containsValueOfAttributeValue(testValue));

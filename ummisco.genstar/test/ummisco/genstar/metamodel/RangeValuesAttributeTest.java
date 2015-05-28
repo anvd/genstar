@@ -75,32 +75,12 @@ public class RangeValuesAttributeTest {
 		List<String> list1 = new ArrayList<String>();
 		list1.add("1");
 		list1.add("2");
-		AttributeValue rangeValue = attr.valueFromString(list1);
+		AttributeValue rangeValue = new RangeValue(DataType.INTEGER, "1", "2");
 		
 		assertTrue(attr.containsInstanceOfAttributeValue(rangeValue) == false);
 		
 		attr.add(rangeValue);
 		assertTrue(attr.containsInstanceOfAttributeValue(rangeValue));
-		
-		
-	}
-
-	@Test public void testCreateValue() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
-		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
-		
-		List<String> list1 = new ArrayList<String>();
-		list1.add("1");
-		list1.add("2");
-		AttributeValue rangeValue = attr.valueFromString(list1);
-		
-		RangeValue anotherRange = new RangeValue(DataType.INTEGER, "1", "2");
-		
-		assertTrue(rangeValue.compareTo(anotherRange) == 0);
-		
-		exception.expect(IllegalArgumentException.class);
-		list1.remove(0);
-		attr.valueFromString(list1);
 	}
 
 	@Test public void testCastDefaultValue() throws GenstarException {
@@ -109,6 +89,39 @@ public class RangeValuesAttributeTest {
 		
 		assertTrue(attr.getDefaultValue() instanceof UniqueValue);
 		assertTrue(attr.getDefaultValue().isValueMatch(new UniqueValue(DataType.INTEGER)));
-
 	}
+	
+	@Test public void testFindCorrespondingAttributeValue() throws GenstarException {
+		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		
+		List<String> list1 = new ArrayList<String>();
+		list1.add("1");
+		list1.add("2");
+		assertTrue(attr.findCorrespondingAttributeValue(list1) == null);
+
+		attr.add(new RangeValue(DataType.INTEGER, "1", "2"));
+		assertTrue(attr.findCorrespondingAttributeValue(list1) != null);
+		
+		
+		List<String> list2 = new ArrayList<String>();
+		list2.add("0");
+		assertTrue(attr.findCorrespondingAttributeValue(list2) == null);
+		
+		
+		List<String> list3 = new ArrayList<String>();
+		list3.add("1");
+		assertTrue(attr.findCorrespondingAttributeValue(list3) != null);
+		
+		
+		List<String> list4 = new ArrayList<String>();
+		list4.add("2");
+		assertTrue(attr.findCorrespondingAttributeValue(list4) != null);
+		
+		
+		List<String> list5 = new ArrayList<String>();
+		list5.add("3");
+		assertTrue(attr.findCorrespondingAttributeValue(list5) == null);
+	}
+
 }
