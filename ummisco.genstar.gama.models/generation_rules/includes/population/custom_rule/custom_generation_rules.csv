@@ -1,0 +1,2 @@
+Name,File,Rule Type
+Custom Generation Rule 1,ummisco.genstar.gama.generation_rules.CustomPeopleAgeGenerationRule?rule_data_file=../includes/population/custom_rule/generation_rules_2_data.csv,Custom Generation Rule

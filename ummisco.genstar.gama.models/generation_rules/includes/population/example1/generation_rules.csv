@@ -1,0 +1,3 @@
+Name,File,Rule Type
+Distribution 1,../includes/population/example1/Type_Data.csv,Frequency Distribution
+Distribution 2,../includes/population/example1/Salary_Data.csv,Attribute Inference

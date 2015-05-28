@@ -1,0 +1,10 @@
+type,salary
+doctor,4000:8000
+software engineer,3000:4000
+architect,8000:10000
+professor,2000:3000
+artist,10000:11000
+musician,11000:12000
+singer,12000:13000
+actor,15000:20000
+police,1000:2000
