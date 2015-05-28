@@ -1,0 +1,1 @@
+Generation of synthetic population, localized and socially structured for social simulation
