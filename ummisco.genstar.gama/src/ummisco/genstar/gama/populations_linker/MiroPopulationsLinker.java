@@ -69,7 +69,7 @@ public class MiroPopulationsLinker implements IGamaPopulationsLinker {
 			}
 			
 			// GAML field name: "member_people"
-			List<IMacroAgent> member_people = GamaListFactory.create(Types.AGENT);
+			IList<IMacroAgent> member_people = GamaListFactory.create(Types.AGENT);
 			
 			for (int peopleCurrentIndex = peoplePopulationIndex; peopleCurrentIndex < (peoplePopulationIndex + householdSize);  peopleCurrentIndex++) {
 				if (peopleCurrentIndex >= peoplePopulation.size()) { 
@@ -83,7 +83,5 @@ public class MiroPopulationsLinker implements IGamaPopulationsLinker {
 			household.setAttribute("member_people", member_people);
 			memberAttributeSet++;
 		}
-		
 	}
-
 }
