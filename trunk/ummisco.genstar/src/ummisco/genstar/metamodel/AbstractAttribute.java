@@ -92,7 +92,7 @@ public abstract class AbstractAttribute implements AttributeValueSet {
 		for (AttributeChangedListener l : attributeChangeListeners) { l.attributeChanged(event); }
 	}
 	
-	public abstract AttributeValue valueFromString(final List<String> stringValue) throws GenstarException;
+	public abstract AttributeValue findCorrespondingAttributeValue(final List<String> stringValue) throws GenstarException;
 
 	@Override public String toString() {
 		return this.getClass().getSimpleName() + " with dataType : " + dataType.getName() + "; nameOnData : " + this.nameOnData + "; nameOnEntity : " + this.nameOnEntity;

@@ -62,4 +62,6 @@ public abstract class AttributeValue implements Comparable<AttributeValue> {
 	public abstract int getValueTypeID();
 	
 	public abstract String getValueTypeName();
+	
+	public abstract String toCSVString();
 }

@@ -199,6 +199,8 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 	}
 	
 	public AbstractAttribute getInputAttributeAtOrder(final int order) throws GenstarException {
+		if (inputAttributes.isEmpty()) { return null; }
+		
 		if (order < 0 || order > (inputAttributes.size() - 1)) {
 			throw new GenstarException("'order' parameter must be in range[0, " + (inputAttributes.size() - 1) + "]");
 		}
@@ -307,6 +309,8 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 	}
 	
 	public AbstractAttribute getOutputAttributeAtOrder(final int order) {
+		if (outputAttributes.isEmpty()) { return null; }
+		
 		if (order < 0 || order > (outputAttributes.size() - 1)) {
 			throw new IllegalArgumentException("'order' parameter must be in range[0, " + (outputAttributes.size() - 1) + "]");
 		}

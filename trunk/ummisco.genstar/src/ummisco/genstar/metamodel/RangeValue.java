@@ -134,6 +134,10 @@ public class RangeValue extends AttributeValue {
 		
 		return false;
 	}
+	
+	public boolean cover(final String numericString) throws GenstarException {
+		return cover(new UniqueValue(dataType, numericString));
+	}
 
 	public boolean isInferior(final AttributeValue otherValue) {
 		if (otherValue == null) { throw new IllegalArgumentException("'otherValue' must not be null"); }
@@ -237,5 +241,10 @@ public class RangeValue extends AttributeValue {
 	@Override
 	public String getValueTypeName() {
 		return RANGE_VALUE_NAME;
+	}
+
+	@Override
+	public String toCSVString() {
+		return minStringValue + ":" + maxStringValue;
 	}	
 }

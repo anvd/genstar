@@ -126,10 +126,14 @@ public class RangeValuesAttribute extends AbstractAttribute {
 	}
 
 	@Override
-	public AttributeValue valueFromString(final List<String> stringValue) throws GenstarException {
+	public AttributeValue findCorrespondingAttributeValue(final List<String> stringValue) throws GenstarException {
 		if (stringValue == null || stringValue.isEmpty()) { throw new GenstarException("'stringValue' parameter can not be null"); }
-		if (stringValue.size() < 2) { throw new IllegalArgumentException("length of 'stringValue' must be at least 2"); }
 		
-		return new RangeValue(dataType, stringValue.get(0), stringValue.get(1));
+		if (stringValue.size() == 1) {
+			for (AttributeValue v : rangeValues) { if ( ((RangeValue) v).cover(stringValue.get(0)) ) return v; }
+			return null;
+		}
+		
+		return getInstanceOfAttributeValue(new RangeValue(dataType, stringValue.get(0), stringValue.get(1)));
 	}
 }

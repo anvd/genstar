@@ -134,10 +134,10 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 	}
 
 	@Override
-	public AttributeValue valueFromString(final List<String> stringValue) throws GenstarException {
+	public AttributeValue findCorrespondingAttributeValue(final List<String> stringValue) throws GenstarException {
 		if (stringValue == null || stringValue.isEmpty()) { throw new GenstarException("'stringValue' parameter can not be null"); }
 		
-		return new UniqueValue(dataType, stringValue.get(0));
+		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringValue.get(0)));
 	}
 	
 }
