@@ -1,0 +1,4 @@
+Name,File,Rule Type
+Distribution 1,../includes/population/people_with_region_1/People_GenerationRule1_Data.csv,Frequency Distribution
+Distribution 2,../includes/population/people_with_region_1/People_GenerationRule2_Data.csv,Frequency Distribution
+Distribution 3,../includes/population/people_with_region_1/Grenoble_Spatial_Data.csv,Frequency Distribution
