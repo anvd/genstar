@@ -11,9 +11,7 @@ model miro_genstar_csv
 global {
 	file shape_file_buildings <- file("../includes/grenoble/bati/bati_zones_elargies.shp");
 	file shape_file_roads <- file("../includes/grenoble/reseau_grenoble/ROUTE_ADRESSE.shp");
-	//file shape_file_bounds <- file("../includes/gis/bounds.shp");
 	matrix<int> fichier_liste <- matrix<int> (csv_file ("../includes/LISTE_ZONES_HORS_CHAMP.csv"));
-	//geometry shape <- envelope(shape_file_bounds);
 
 	graph the_graph;
 	list<people> liste_to_generate <- [] ;
@@ -21,122 +19,135 @@ global {
 	list<building> living_list ;
 	list<building>  working_list;
 	
+	bool DO_ANALYSIS <- false;
+	
 	init {
 			
-			create species: building from:shape_file_buildings with: [buildingUsage::string(read('fonction')), buildingId::int(read('ID_bati')),ao1::int(read('Ao1')),ao2::int(read('Ao2')),ac1::int(read('Ac1')),ac2::int(read('Ac2')), zoneB::int(string(read('2010'))) ]
-		{
-			if condition: buildingUsage in [ "Industriel ou commercial", "Industrielle", "Gestion des eaux"]  {
-				color <- rgb('blue') ;
-				buildingType <- 2;
-				buildingActivity <- "T";
-			} else
-				if condition: buildingUsage ="Administratif" {
-				color <- rgb('green') ;
-				buildingType <- 2;
-				buildingActivity <- "C";
-			} else	
-			if condition: buildingUsage ="Commerciale" {
-				color <- rgb('green') ;
-				buildingType <- 2;
-				buildingActivity <- "A";
-			} else			
-			if condition: buildingUsage ="Culture et loisirs" {
-				color <- rgb('green') ;
-				buildingType <- 3;
-				buildingActivity <- "L";
-			} else
-			if condition: buildingUsage="Enseignement" {
-				color <- rgb('red') ;
-				buildingType <- 3;
-				buildingActivity <- "E";
-			} else
-			if condition: buildingUsage in ["Sant" ] {
-				color <- rgb('pink') ;
-				buildingType <- 3;
-				buildingActivity <- "S";
-			} else
-			if condition: buildingUsage in ["Sport", "Sportive" ] {
-				color <- rgb('red') ;
-				buildingType <- 2;
-				buildingActivity <- "L";
-			} else
-			if condition: buildingUsage in ["Service" ] {
-				color <- rgb('red') ;
-				buildingType <- 2;
-				buildingActivity <- "R";
-			} else
-			 {
-				color <- rgb('gray') ;
-				buildingType <- 1;
-				buildingActivity <- "W";
-			} 
-			}
-		
-			create road from: shape_file_roads ;
-
-			list miro_population <- list<unknown>(population_from_csv('../includes/population_VP/MIRO_Attributes_MetaData.csv', '../includes/population_VP/MIRO_GenerationRules_MetaData.csv', nb_of_people));
-			living_list <-(building as list) where (each.buildingType = 1);
-			working_list <-(building as list) where (each.buildingType != 1);
+		create building from: shape_file_buildings with: [buildingUsage::string(read('fonction')), buildingId::int(read('ID_bati')),ao1::int(read('Ao1')),ao2::int(read('Ao2')),ac1::int(read('Ac1')),ac2::int(read('Ac2')), zoneB::int(string(read('2010'))) ] {
 			
-			create people from: miro_population {
+			switch buildingUsage {
+				match_one [ "Industriel ou commercial", "Industrielle", "Gestion des eaux" ] {
+					color <- rgb('blue') ;
+					buildingType <- 2;
+					buildingActivity <- "T";
+				}
+				
+				match "Administratif" {
+					color <- rgb('green') ;
+					buildingType <- 2;
+					buildingActivity <- "C";
+				}
+				
+				match "Commerciale" {
+					color <- rgb('green') ;
+					buildingType <- 2;
+					buildingActivity <- "A";
+				}
+				
+				match "Culture et loisirs" {
+					color <- rgb('green') ;
+					buildingType <- 3;
+					buildingActivity <- "L";
+				}
+				
+				match "Enseignement" {
+					color <- rgb('red') ;
+					buildingType <- 3;
+					buildingActivity <- "E";
+				}
+				
+				match "Sant" {
+					color <- rgb('pink') ;
+					buildingType <- 3;
+					buildingActivity <- "S";
+				}
+				
+				match_one [ "Sport", "Sportive" ] {
+					color <- rgb('red') ;
+					buildingType <- 2;
+					buildingActivity <- "L";
+				}
+				
+				match "Service" {
+					color <- rgb('red') ;
+					buildingType <- 2;
+					buildingActivity <- "R";
+				}
+				
+				default {
+					color <- rgb('gray') ;
+					buildingType <- 1;
+					buildingActivity <- "W";
+				}
+			}
+		}
+		
+		create road from: shape_file_roads ;
+
+		list miro_population <- list<unknown>(population_from_csv('../includes/population_VP/MIRO_Attributes_MetaData.csv', '../includes/population_VP/MIRO_GenerationRules_MetaData.csv', nb_of_people));
+		living_list <-(building as list) where (each.buildingType = 1);
+		working_list <-(building as list) where (each.buildingType != 1);
+			
+		create people from: miro_population {
 			int compteur <- 0;
 			ID_habitant <- list(people) index_of self;
 			
 			// Modification de la zone : correction par rapport aux données d'enquête *************
 			loop temp_col over: columns_list(fichier_liste) {
-			if ((zone in (temp_col)) and (compteur != 0))
-			{
-				if compteur = 1
-				{zone <- 513;}
-				if compteur =2
-				{zone <- 302;}
-				if compteur =3
-				{zone <- 403;}
-				if compteur =4
-				{zone <- 802;}
+				if ((zone in (temp_col)) and (compteur != 0)) {
+				
+					switch compteur {
+						match 1 { zone <- 513; }
+						match 2 { zone <- 302; }
+						match 3 { zone <- 403; }
+						match 4 { zone <- 802; }
+					}
+				}
+			
+				compteur <- compteur + 1 ;
 			}
-			compteur <- compteur + 1 ;
-			}
+			
 			// *************************************************************************************
 			
 			living_place <- one_of((living_list) where (each.zoneB = zone));
-			if actp = "W"
-			{working_place <-one_of(working_list where (each.buildingActivity = "L" or "E" or "S")) ;}
-			else
-			{working_place <- one_of(working_list where (each.buildingActivity = actp)) ;}
+			if actp = "W" { working_place <-one_of (working_list where (each.buildingActivity = "L" or "E" or "S")); }
+			else { working_place <- one_of(working_list where (each.buildingActivity = actp)); }
 			
 			location <- (living_place.shape).location;
 			homeID <- string(living_place.buildingId);
 			Activite_ID <- string(working_place.buildingId);
 			
-			}
+		}
 		
-				
-			write 'Quick analyse of the generation population:';
-			write 'Number of people: ' + string(length(miro_population) - 1);
-			
-			write '\tClassification of gender: ';
-			write '\t\tmale: ' + length(people where (each.gender=1));
-			write '\t\tfemale: ' + length(people where (each.gender = 2));
-			
-			write '\tClassification of category: ';
-			write '\t\tC0: ' + length(people where (each.category = 0));
-			write '\t\tC1: ' + length(people where (each.category = 1));
-			write '\t\tC2: ' + length(people where (each.category = 2));
-			write '\t\tC3: ' + length(people where (each.category = 3));
-			write '\t\tC4: ' + length(people where (each.category = 4));
-			write '\t\tC5: ' + length(people where (each.category = 5));
-			write '\t\tC6: ' + length(people where (each.category = 6));
-			write '\t\tC7: ' + length(people where (each.category = 7));
-			
-			write '\tClassification of age:';
-			write '\t\t[0:4]: ' + length(people where ((each.age >= 0) and (each.age <= 4)));
-			write '\t\t[5:17]: ' + length(people where ((each.age >= 5) and (each.age <= 17)));
-			write '\t\t[18:24]: ' + length(people where ((each.age >= 18) and (each.age <= 24)));
-			write '\t\t[25:34]: ' + length(people where ((each.age >= 25) and (each.age <= 34)));
-			write '\t\t[34:49]: ' + length(people where ((each.age >= 34) and (each.age <= 49)));
-			write '\t\t[50:64]: ' + length(people where ((each.age >= 50) and (each.age <= 64)));
-			write '\t\t[65:100]: ' + length(people where (each.age >= 65));
+		if DO_ANALYSIS { do analyse_population(miro_population); }	
+	}
+		
+	action analyse_population(list miro_population) {
+		write 'Quick analyse of the generation population:';
+		write 'Number of people: ' + string(length(miro_population) - 1);
+		
+		write '\tClassification of gender: ';
+		write '\t\tmale: ' + length(people where (each.gender=1));
+		write '\t\tfemale: ' + length(people where (each.gender = 2));
+		
+		write '\tClassification of category: ';
+		write '\t\tC0: ' + length(people where (each.category = 0));
+		write '\t\tC1: ' + length(people where (each.category = 1));
+		write '\t\tC2: ' + length(people where (each.category = 2));
+		write '\t\tC3: ' + length(people where (each.category = 3));
+		write '\t\tC4: ' + length(people where (each.category = 4));
+		write '\t\tC5: ' + length(people where (each.category = 5));
+		write '\t\tC6: ' + length(people where (each.category = 6));
+		write '\t\tC7: ' + length(people where (each.category = 7));
+		
+		write '\tClassification of age:';
+		write '\t\t[0:4]: ' + length(people where ((each.age >= 0) and (each.age <= 4)));
+		write '\t\t[5:17]: ' + length(people where ((each.age >= 5) and (each.age <= 17)));
+		write '\t\t[18:24]: ' + length(people where ((each.age >= 18) and (each.age <= 24)));
+		write '\t\t[25:34]: ' + length(people where ((each.age >= 25) and (each.age <= 34)));
+		write '\t\t[34:49]: ' + length(people where ((each.age >= 34) and (each.age <= 49)));
+		write '\t\t[50:64]: ' + length(people where ((each.age >= 50) and (each.age <= 64)));
+		write '\t\t[65:100]: ' + length(people where (each.age >= 65));
 
 //			
 //			set liste_to_generate <- (people as list) where (each.zone in(liste_zones)) ;
@@ -146,13 +157,10 @@ global {
 //				
 //			}
 			
-		   	ask people {
-         		save [ID_habitant, gender, category, age, zone, actp, homeID, Activite_ID, vtype ] to: "../includes/pop100.csv" type: "csv";
-  				}
-      
-		}
-	
-	
+		ask people {
+        	save [ID_habitant, gender, category, age, zone, actp, homeID, Activite_ID, vtype ] to: "../includes/pop100.csv" type: "csv";
+  		}
+	}
 }
 
 species building {
@@ -198,7 +206,9 @@ species people {
 		draw circle(10) color: #yellow;
 	}
 }
-environment  bounds: shape_file_roads; 
+
+environment  bounds: shape_file_roads;
+ 
 experiment test_miro type: gui {
 	output {
 		display miro_display {
