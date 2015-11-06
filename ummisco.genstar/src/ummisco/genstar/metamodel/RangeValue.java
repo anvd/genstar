@@ -102,7 +102,7 @@ public class RangeValue extends AttributeValue {
 				int maxIntValue = Integer.parseInt(maxStringValue);
 				if (minIntValue == 0 && maxIntValue == 0) { return "0"; }
 
-				return Integer.toString(minIntValue + SharedInstances.RandomNumberGenerator.nextInt(maxIntValue - minIntValue));
+				return Integer.toString(minIntValue + SharedInstances.RandomNumberGenerator.nextInt((maxIntValue + 1) - minIntValue));
 			
 			case FLOAT:
 				float minFloatValue = Float.parseFloat(minStringValue);
