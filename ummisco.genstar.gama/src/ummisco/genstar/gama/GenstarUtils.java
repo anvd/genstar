@@ -1,5 +1,9 @@
 package ummisco.genstar.gama;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -7,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.StringTokenizer;
@@ -14,11 +19,11 @@ import java.util.TreeMap;
 
 import msi.gama.runtime.IScope;
 import msi.gama.util.IList;
-import msi.gama.util.file.GamaCSVFile;
+import msi.gama.util.file.GamaCSVFile; // TODO change to GenstarCSVFile
 import msi.gama.util.matrix.IMatrix;
 import msi.gaml.types.Types;
-
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.ipf.SampleDataGenerationRule;
 import ummisco.genstar.metamodel.AbstractAttribute;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
 import ummisco.genstar.metamodel.AttributeValue;
@@ -31,8 +36,9 @@ import ummisco.genstar.metamodel.RangeValue;
 import ummisco.genstar.metamodel.RangeValuesAttribute;
 import ummisco.genstar.metamodel.UniqueValue;
 import ummisco.genstar.metamodel.UniqueValuesAttribute;
+import ummisco.genstar.util.GenstarCSVFile;
 
-public class GenstarUtils {
+public class GenstarUtils { // TODO move this class to "ummisco.genstar" project
 
 	static class AttributeValuesFrequencyComparator implements Comparator<AttributeValuesFrequency> {
 		
@@ -94,7 +100,7 @@ public class GenstarUtils {
 		public static final class GENERATION_RULE_METADATA {
 			
 			// Header of Generation Rule meta-data file:
-			//		ÒNameÓ, ÒFileÓ, ÒTypeÓ
+			//		ï¿½Nameï¿½, ï¿½Fileï¿½, ï¿½Typeï¿½
 			static final String HEADER_STR = "Name,File,Rule Type";
 			static final int NB_OF_COLS = 3;
 			static String[] HEADERS = new String[NB_OF_COLS];
@@ -116,6 +122,18 @@ public class GenstarUtils {
 			static final String OUTPUT_ATTRIBUTE = "Output";
 			static final String FREQUENCY = "Frequency";
 		}
+	}
+	
+	
+	public static final class SAMPLE_DATA_PROPERTIES_FILE_FORMAT {
+		
+		static final String SAMPLE_DATA_PROPERTY = "sample data";
+		
+		static final String CONTROLLED_ATTRIBUTES_PROPERTY = "controlled attributes";
+		
+		static final String CONTROLLED_TOTALS_PROPERTY = "controlled totals";
+		
+		static final String SUPPLEMENTARY_ATTRIBUTES_PROPERTY = "supplementary attributes"; 
 	}
 	
 	
@@ -391,6 +409,111 @@ public class GenstarUtils {
 		generator.appendGenerationRule(generationRule);		
 	}
 	
+	
+	
+	static void createSampleDataGenerationRule(final IScope scope, final ISyntheticPopulationGenerator generator, final String ruleName, Properties sampleDataPropeties) throws GenstarException {
+		
+		// Read the necessary data from the properties
+		
+		// SAMPLE_DATA_PROPERTY
+		String sampleDataFilePath = sampleDataPropeties.getProperty(SAMPLE_DATA_PROPERTIES_FILE_FORMAT.SAMPLE_DATA_PROPERTY);
+		if (sampleDataFilePath == null) { throw new GenstarException("'" + SAMPLE_DATA_PROPERTIES_FILE_FORMAT.SAMPLE_DATA_PROPERTY + "' not found"); }
+		GenstarCSVFile sampleCSVFile = new GenstarCSVFile(sampleDataFilePath, true);
+		
+		// CONTROLLED_ATTRIBUTES_PROPERTY 
+		String controlledAttributesFilePath = sampleDataPropeties.getProperty(SAMPLE_DATA_PROPERTIES_FILE_FORMAT.CONTROLLED_ATTRIBUTES_PROPERTY);
+		if (controlledAttributesFilePath == null) { throw new GenstarException("'" + SAMPLE_DATA_PROPERTIES_FILE_FORMAT.CONTROLLED_ATTRIBUTES_PROPERTY + "' not found"); }
+		GenstarCSVFile controlledAttributesCSVFile = new GenstarCSVFile(controlledAttributesFilePath, false);
+		List<AbstractAttribute> controlledAttributes = parseControlledAttributesCSVFile(generator, controlledAttributesCSVFile);
+		
+		// CONTROLLED_TOTALS_PROPERTY
+		String controlledTotalsFilePath = sampleDataPropeties.getProperty(SAMPLE_DATA_PROPERTIES_FILE_FORMAT.CONTROLLED_TOTALS_PROPERTY);
+		if (controlledTotalsFilePath == null) { throw new GenstarException("'" + SAMPLE_DATA_PROPERTIES_FILE_FORMAT.CONTROLLED_TOTALS_PROPERTY + "' not found"); }
+		GenstarCSVFile controlledTotalsCSVFile = new GenstarCSVFile(controlledTotalsFilePath, false);
+		
+		// SUPPLEMENTARY_ATTRIBUTES_PROPERTY
+		String supplementaryAttributesFilePath = sampleDataPropeties.getProperty(SAMPLE_DATA_PROPERTIES_FILE_FORMAT.SUPPLEMENTARY_ATTRIBUTES_PROPERTY);
+		if (supplementaryAttributesFilePath == null) { throw new GenstarException("'" + SAMPLE_DATA_PROPERTIES_FILE_FORMAT.SUPPLEMENTARY_ATTRIBUTES_PROPERTY + "' not found"); }
+		GenstarCSVFile supplementaryAttributesCSVFile = new GenstarCSVFile(supplementaryAttributesFilePath, false);
+		
+		
+		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, ruleName, sampleCSVFile, controlledAttributesCSVFile, controlledTotalsCSVFile, supplementaryAttributesCSVFile);
+	}
+
+	
+	static List<AbstractAttribute> parseControlledAttributesCSVFile(final ISyntheticPopulationGenerator generator, final GenstarCSVFile controlledAttributesCSVFile) throws GenstarException {
+		List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
+		
+		AbstractAttribute controlledAttr;
+		List<String> aRow;
+		for (int r=0; r<controlledAttributesCSVFile.getRows(); r++) {
+			aRow = controlledAttributesCSVFile.getRow(r);
+			if (aRow.size() != 1) { throw new GenstarException("Invalid control attribute file format: each row contains only one control attribute. File: " + controlledAttributesCSVFile.getFilePath()); }
+			
+			controlledAttr = generator.getAttribute(aRow.get(0));
+			if (controlledAttr == null) { throw new GenstarException("Attribute '" + aRow.get(0) + "' not found on the generator."); }
+			
+			controlledAttributes.add(controlledAttr);
+		}
+		
+		return controlledAttributes;
+	}
+	
+	static List<AttributeValuesFrequency> parseControlTotalsCSVFile(final ISyntheticPopulationGenerator generator, final List<AbstractAttribute> controlledAttributes, final GenstarCSVFile controlledTotalsCSVFile) throws GenstarException {
+		List<AttributeValuesFrequency> avFrequencies = new ArrayList<AttributeValuesFrequency>();
+		
+		AbstractAttribute attribute;
+		AttributeValue attributeValue;
+		List<String> avStrings = new ArrayList<String>();
+		int line = 1;
+		Map<AbstractAttribute, AttributeValue> attributeValues;
+		for (List<String> aRow : controlledTotalsCSVFile.getContent()) {
+			if (aRow.size() < 3 && (aRow.size() %2 != 1)) throw new GenstarException("Invalid control totals format. File: " + controlledTotalsCSVFile.getFilePath() + ", line: " + line);
+			line++;
+			
+			attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
+			for (int col=0; col<(aRow.size() - 1); col+=2) { // Parse each line of the file
+				// 1. parse the attribute name column
+				attribute = generator.getAttribute(aRow.get(col));
+				if (attribute == null) { throw new GenstarException("'" + aRow.get(col) + "' is not a valid attribute."); }
+				if (!controlledAttributes.contains(attribute)) { throw new GenstarException("'" + aRow.get(col) + "' is not a controlled attribute."); }
+				if (attributeValues.containsKey(attribute)) { throw new GenstarException("Duplicated attribute : '" + attribute.getNameOnData() + "'"); }
+				
+				// 2. parse the attribute value column
+				avStrings.clear();
+				avStrings.add(aRow.get(col+1));
+				attributeValue = attribute.findCorrespondingAttributeValue(avStrings);
+				if (attributeValue == null) { throw new GenstarException("Attribute value '" + aRow.get(col+1) + "' not found."); }
+				
+				attributeValues.put(attribute, attributeValue);
+			}
+			
+			// "frequency" is the last column
+			int frequency = Integer.parseInt(aRow.get(aRow.size() - 1));
+			avFrequencies.add(new AttributeValuesFrequency(attributeValues, frequency));
+		}
+		
+		return avFrequencies;
+	}
+	
+	static List<AbstractAttribute> parseSupplementaryAttributesCSVFile(final ISyntheticPopulationGenerator generator, final GenstarCSVFile supplementaryAttributesCSVFile) throws GenstarException {
+		List<AbstractAttribute> supplementaryAttributes = new ArrayList<AbstractAttribute>();
+		
+		AbstractAttribute supplementaryAttr;
+		List<String> aRow;
+		for (int r=0; r<supplementaryAttributesCSVFile.getRows(); r++) {
+			aRow = supplementaryAttributesCSVFile.getRow(r);
+			if (aRow.size() != 1) { throw new GenstarException("Invalid supplementary attribute file format: each row contains only one supplementary attribute. File: " + supplementaryAttributesCSVFile.getFilePath()); }
+			
+			supplementaryAttr = generator.getAttribute(aRow.get(0));
+			if (supplementaryAttr == null) { throw new GenstarException("Attribute '" + aRow.get(0) + "' not found on the generator."); }
+			
+			supplementaryAttributes.add(supplementaryAttr);
+		}
+		
+		return supplementaryAttributes;
+	}
+	
 	static void createCustomGenerationRule(final IScope scope, final ISyntheticPopulationGenerator generator, final String ruleName, final String ruleJavaClass) throws GenstarException {
 		try {
 			StringTokenizer ruleJavaClassTokenizer = new StringTokenizer(ruleJavaClass, CSV_FILE_FORMATS.GENERATION_RULE_METADATA.JAVA_CLASS_PARAMETER_DELIMITER);
@@ -440,8 +563,24 @@ public class GenstarUtils {
 			String ruleDataFilePathOrJavaClass = (String)generationRuleInfo.get(1);
 			String ruleTypeName = (String)generationRuleInfo.get(2);
 			GamaCSVFile ruleDataFile = null;
+			Properties properties = null;
 			if (!ruleTypeName.equals(CustomGenerationRule.RULE_TYPE_NAME)) {
-				ruleDataFile = new GamaCSVFile(scope, ruleDataFilePathOrJavaClass, ",", Types.STRING, true);
+				if (ruleTypeName.equals(SampleDataGenerationRule.RULE_TYPE_NAME)) { // Sample Data Configuration is a property file
+					File sampleDataPropertyFile = new File(ruleDataFilePathOrJavaClass);
+					try {
+						FileInputStream propertyInputStream = new FileInputStream(sampleDataPropertyFile);
+						properties = new Properties();
+						properties.load(propertyInputStream);
+						
+						
+					} catch (FileNotFoundException e) {
+						throw new GenstarException(e);
+					} catch (IOException e) {
+						throw new GenstarException(e);
+					}
+				} else { // Frequency Distribution or Attribute Inference
+					ruleDataFile = new GamaCSVFile(scope, ruleDataFilePathOrJavaClass, ",", Types.STRING, true);
+				}
 			}
 			
 			
@@ -449,11 +588,15 @@ public class GenstarUtils {
 				createFrequencyDistributionGenerationRule(scope, generator, ruleName, ruleDataFile);
 			} else if (ruleTypeName.equals(AttributeInferenceGenerationRule.RULE_TYPE_NAME)) {
 				createAttributeInferenceGenerationRule(scope, generator, ruleName, ruleDataFile);
+			} else if (ruleName.equals(SampleDataGenerationRule.RULE_TYPE_NAME)) {
+				createSampleDataGenerationRule(scope, generator, ruleName, properties);
 			} else if (ruleTypeName.equals(CustomGenerationRule.RULE_TYPE_NAME)) { 
 				createCustomGenerationRule(scope, generator, ruleName, ruleDataFilePathOrJavaClass);
 			} else {
 				throw new GenstarException("Invalid Generation Rule file format: unsupported generation rule (" + ruleTypeName + "), file: " + distributionsCSVFile.getPath());
 			}
+			
+			// TODO create SampleDataGenerationRule
 		}
 	}
 
@@ -547,5 +690,14 @@ public class GenstarUtils {
 		}
 		 
 		return generationRule;
+	}
+	
+	static SampleDataGenerationRule createSampleDataGenerationRule(final IScope scope, final ISyntheticPopulationGenerator generator, 
+			final GamaCSVFile attributes, final GamaCSVFile controlledAttributes, final GamaCSVFile controlTotals, 
+			final GamaCSVFile supplementaryAttributes, final GamaCSVFile sampleData) {
+		
+		// TODO convert GamaCSVFile -> GenstarCSVFile
+		
+		return null;
 	}
 }

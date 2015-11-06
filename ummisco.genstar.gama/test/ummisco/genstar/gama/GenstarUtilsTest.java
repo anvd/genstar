@@ -1,6 +1,6 @@
 package ummisco.genstar.gama;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 import msi.gama.common.util.GuiUtils;
 import msi.gama.kernel.experiment.IExperimentAgent;
 import msi.gama.runtime.IScope;
@@ -52,6 +53,7 @@ import msi.gaml.types.Types;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AbstractAttribute;
@@ -66,6 +68,7 @@ import ummisco.genstar.metamodel.SyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.UniqueValue;
 import ummisco.genstar.metamodel.UniqueValuesAttribute;
 
+@RunWith(JMockit.class)
 public class GenstarUtilsTest {
 	
 	static { // init GAMLTypes
@@ -346,4 +349,19 @@ public class GenstarUtilsTest {
 		if (!isMatchMap2) { Assert.fail("No attributeValue is matched (map2)"); }
 	}	
 	
+	@Test public void testCreateSampleDataGenerationRule() {
+		fail("Not yet implemented");
+	}
+	
+	@Test public void testParseSampleDataFile() throws GenstarException {
+		fail("Not yet implemented");
+	}
+	
+	@Test public void testParseControlledAttributesTextFile() throws GenstarException {
+		fail("Not yet implemented");
+	}
+
+	@Test public void testParseControlTotalsCSVFile() throws GenstarException {
+		fail("Not yet implemented");
+	}
 }

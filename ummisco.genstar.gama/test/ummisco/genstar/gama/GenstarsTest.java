@@ -1,6 +1,5 @@
 package ummisco.genstar.gama;
 
-import static org.junit.Assert.assertTrue;
 import mockit.Delegate;
 import mockit.Expectations;
 import mockit.Mock;
@@ -17,7 +16,6 @@ import msi.gama.util.file.IFileMetaDataProvider;
 import msi.gama.util.matrix.GamaFloatMatrix;
 import msi.gama.util.matrix.GamaIntMatrix;
 import msi.gama.util.matrix.GamaObjectMatrix;
-import msi.gama.util.matrix.IMatrix;
 import msi.gama.util.path.GamaPath;
 import msi.gaml.compilation.AbstractGamlAdditions;
 import msi.gaml.compilation.IGamlAdditions;
@@ -44,7 +42,6 @@ import msi.gaml.types.GamaTopologyType;
 import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 
-import msi.gama.common.util.FileUtils;
 import org.junit.Test;
 
 import ummisco.genstar.exception.GenstarException;
