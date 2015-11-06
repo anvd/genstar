@@ -2,7 +2,9 @@ package ummisco.genstar.metamodel;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.util.PersistentObject;
@@ -11,40 +13,39 @@ public class AttributeValuesFrequency {
 	
 	private int attributeValuesFrequencyID = PersistentObject.NEW_OBJECT_ID;
 	
-	private FrequencyDistributionGenerationRule rule = null;
-
 	private Map<AbstractAttribute, AttributeValue> attributeValues;
 	
 	private int frequency = 0;
 	
 	
-	public AttributeValuesFrequency(final FrequencyDistributionGenerationRule generationRule, final Map<AbstractAttribute, AttributeValue> attributeValues) 
+	public AttributeValuesFrequency(final Map<AbstractAttribute, AttributeValue> attributeValues, final int frequency) throws GenstarException {
+		this(attributeValues);
+		setFrequency(frequency);
+	}
+	
+	public AttributeValuesFrequency(final Map<AbstractAttribute, AttributeValue> attributeValues) 
 		throws GenstarException {
-		if (generationRule == null) { throw new IllegalArgumentException("'generationRule' can not be null"); }
 		if (attributeValues == null || attributeValues.size() == 0) { throw new IllegalArgumentException("'data' parameter can not be null or empty"); }
 		
 		for (AbstractAttribute attribute : attributeValues.keySet()) {
-			if (!generationRule.containAttribute(attribute)) {
-				throw new GenstarException("'generationRule' doesn't contain one or some attributes of 'data'");
-			}
-			
 			if (!attribute.containsInstanceOfAttributeValue(attributeValues.get(attribute))) {
 				throw new GenstarException("Some attribute values don't belong to the corresponding attributes.");
 			}
 		}
 		
-		
 		this.attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		this.attributeValues.putAll(attributeValues);
 	}
-	
 	
 	public AttributeValue getAttributeValue(final AbstractAttribute attribute) {
 		return attributeValues.get(attribute);
 	}
 	
 	public Map<AbstractAttribute, AttributeValue> getAttributeValues() {
-		return attributeValues;
+		Map<AbstractAttribute, AttributeValue> copy = new HashMap<AbstractAttribute, AttributeValue>();
+		copy.putAll(attributeValues);
+		
+		return copy;
 	}
 
 	public int getFrequency() {
@@ -107,16 +108,9 @@ public class AttributeValuesFrequency {
 		return attributeValuesFrequencyID;
 	}
 
-
 	public void setID(final int attributeValuesFrequencyID) {
 		this.attributeValuesFrequencyID = attributeValuesFrequencyID;
 	}
-
-
-	public FrequencyDistributionGenerationRule getGenerationRule() {
-		return rule;
-	}
-
 
 	@Override
 	public String toString() {
@@ -125,6 +119,12 @@ public class AttributeValuesFrequency {
 			retVal.append("[ attribute : " + attr.getNameOnData() + ", value : " + attributeValues.get(attr) + "], ");
 		}
 		
+		retVal.append("; frequency = " + frequency);
+		
 		return retVal.toString();
+	}
+	
+	public Set<AbstractAttribute> getAttributes() {
+		return new HashSet<AbstractAttribute>(attributeValues.keySet());
 	}
 }

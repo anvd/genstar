@@ -48,6 +48,8 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	}
 	
 	public void setInferenceData(final Map<AttributeValue, AttributeValue> inferenceData) throws GenstarException { // FIXME find a better way to set the inference data!
+		if (inferenceData == null) { throw new GenstarException("'inferenceData' parameter can not be null"); }
+		
 		if (inferenceData.size() != inferringAttribute.values().size()) { throw new GenstarException("'inferenceData' contains different number of members than inferringAttribute.values"); }
 		
 		Set<AttributeValue> inferringAttributeValues = inferringAttribute.values();

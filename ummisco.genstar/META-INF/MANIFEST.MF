@@ -9,6 +9,7 @@ Export-Package: ummisco.genstar,
  ummisco.genstar.dao;uses:="ummisco.genstar.metamodel",
  ummisco.genstar.data;uses:="ummisco.genstar.metamodel",
  ummisco.genstar.exception,
+ ummisco.genstar.ipf,
  ummisco.genstar.metamodel;uses:="org.junit.rules",
  ummisco.genstar.util;uses:="org.uncommons.maths.random"
 Bundle-ActivationPolicy: lazy

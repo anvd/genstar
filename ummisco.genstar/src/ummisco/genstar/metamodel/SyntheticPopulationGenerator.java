@@ -17,24 +17,31 @@ public class SyntheticPopulationGenerator implements ISyntheticPopulationGenerat
 	
 	private String generatorName;
 	
-	private String populationName;
+	private String populationName = "no population name";
 	
 	private SortedMap<String, AbstractAttribute> attributes; // <attribute name on data, attribute>
 	
 	private SortedMap<Integer, GenerationRule> generationRules; // rule order begins by 0
 	
-	private int nbOfEntities;
+	private int nbOfEntities = 100;
 	
+	
+	public SyntheticPopulationGenerator(final String generatorName) throws GenstarException {
+		this(generatorName, 100);
+	}
 	
 	public SyntheticPopulationGenerator(final String generatorName, final int nbOfEntities) throws GenstarException {
-		if (generatorName == null || generatorName.trim().length() == 0) { throw new GenstarException("'generatorName' parameter can neither be null nor empty"); }
-		if (nbOfEntities <= 0) { throw new IllegalArgumentException("'nbOfEntities' must be a positive integer"); }
 		
-		this.generatorName = generatorName.trim();
-		this.populationName = this.generatorName;
-		this.nbOfEntities = nbOfEntities;
-		this.attributes = new TreeMap<String, AbstractAttribute>();
-		this.generationRules = new TreeMap<Integer, GenerationRule>();
+		this(generatorName, nbOfEntities, "no population name");
+		
+//		if (generatorName == null || generatorName.trim().length() == 0) { throw new GenstarException("'generatorName' parameter can neither be null nor empty"); }
+//		if (nbOfEntities <= 0) { throw new IllegalArgumentException("'nbOfEntities' must be a positive integer"); }
+//		
+//		this.generatorName = generatorName.trim();
+//		this.populationName = this.generatorName;
+//		this.nbOfEntities = nbOfEntities;
+//		this.attributes = new TreeMap<String, AbstractAttribute>();
+//		this.generationRules = new TreeMap<Integer, GenerationRule>();
 	}
 	
 	public SyntheticPopulationGenerator(final String generatorName, final int nbOfEntities, final String populationName) throws GenstarException {

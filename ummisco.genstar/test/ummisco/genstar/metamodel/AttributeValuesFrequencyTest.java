@@ -1,13 +1,12 @@
 package ummisco.genstar.metamodel;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -44,7 +43,7 @@ public class AttributeValuesFrequencyTest {
 		Map<AbstractAttribute, AttributeValue> catersian1 = new HashMap<AbstractAttribute, AttributeValue>();
 		catersian1.put(ageRangesAttr1, ageRange1);
 		catersian1.put(sexAttr, maleValueOrigin);
-		AttributeValuesFrequency element = new AttributeValuesFrequency(generationRule, catersian1);
+		AttributeValuesFrequency element = new AttributeValuesFrequency(catersian1);
 		
 		
 		Map<AbstractAttribute, AttributeValue> dataSet1 = new HashMap<AbstractAttribute, AttributeValue>();
@@ -105,7 +104,7 @@ public class AttributeValuesFrequencyTest {
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValues.put(ageRangesAttr1, ageRange1);
 		attributeValues.put(sexAttr, maleValueOrigin);
-		AttributeValuesFrequency element = new AttributeValuesFrequency(generationRule, attributeValues);
+		AttributeValuesFrequency element = new AttributeValuesFrequency(attributeValues);
 		
 		List<AbstractAttribute> inputAttributes1 = new ArrayList<AbstractAttribute>();
 		assertTrue(element.isMatchEntity(inputAttributes1, entity1));
@@ -120,7 +119,7 @@ public class AttributeValuesFrequencyTest {
 		Map<AbstractAttribute, AttributeValue> attributeValues1 = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValues1.put(ageRangesAttr1, ageRange2);
 		attributeValues1.put(sexAttr, maleValueOrigin);
-		AttributeValuesFrequency element1 = new AttributeValuesFrequency(generationRule, attributeValues1);
+		AttributeValuesFrequency element1 = new AttributeValuesFrequency(attributeValues1);
 		
 		assertFalse(element1.isMatchEntity(inputAttributes1, entity1));
 		
@@ -128,7 +127,7 @@ public class AttributeValuesFrequencyTest {
 		
 		Map<AbstractAttribute, AttributeValue> attributeValues2 = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValues2.put(ageRangesAttr1, ageRange2);
-		AttributeValuesFrequency element2 = new AttributeValuesFrequency(generationRule, attributeValues2);
+		AttributeValuesFrequency element2 = new AttributeValuesFrequency(attributeValues2);
 		 
 		assertFalse(element2.isMatchEntity(inputAttributes1, entity1));
 		

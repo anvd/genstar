@@ -31,7 +31,7 @@ public abstract class AttributeValue implements Comparable<AttributeValue> {
 	protected DataType dataType;
 	
 	public AttributeValue(final DataType dataType) throws GenstarException {
-		if (dataType == null) { throw new GenstarException("'valueType' parameter can not be null"); }
+		if (dataType == null) { throw new GenstarException("'dataType' parameter can not be null"); }
 		
 		this.dataType = dataType;
 	}

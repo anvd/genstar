@@ -12,7 +12,7 @@ public class EntityAttributeValue {
 	
 	
 	public EntityAttributeValue(final AbstractAttribute attribute, final AttributeValue attributeValueOnData) throws GenstarException {
-		if (attribute == null || attributeValueOnData == null) { throw new IllegalArgumentException("Neither 'attribute' nor 'attributeValueOnData' parameter can not be null"); }
+		if (attribute == null || attributeValueOnData == null) { throw new IllegalArgumentException("Neither 'attribute' nor 'attributeValueOnData' parameter can be null"); }
 		
 		// FIXME validation : attribute can accept attributeValueOnData
 		

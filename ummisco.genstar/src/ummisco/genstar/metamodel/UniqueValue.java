@@ -116,6 +116,16 @@ public class UniqueValue extends AttributeValue {
 		
 		return false;
 	}
+	
+	// TODO remove
+//	public boolean isValueMatch(final String otherValueStr) {
+//		try {
+//			return isValueMatch(new UniqueValue(dataType, otherValueStr));
+//		} catch (GenstarException e) {
+//			e.printStackTrace();
+//			return false;
+//		}
+//	}
 
 	@Override
 	public int getValueTypeID() {

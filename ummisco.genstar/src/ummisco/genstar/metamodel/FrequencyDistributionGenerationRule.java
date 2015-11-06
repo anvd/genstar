@@ -355,7 +355,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		allAttributes.addAll(outputAttributes.values());
 		Set<List<AttributeValue>> cartesianSet = Sets.cartesianProduct(attributesPossibleValues);
 		for (List<AttributeValue> catesian : cartesianSet) {
-			attributeValuesFrequencies.add(new AttributeValuesFrequency(this, buildAttributeValueMap(allAttributes, catesian)));
+			attributeValuesFrequencies.add(new AttributeValuesFrequency(buildAttributeValueMap(allAttributes, catesian)));
 		}
 	}
 	
