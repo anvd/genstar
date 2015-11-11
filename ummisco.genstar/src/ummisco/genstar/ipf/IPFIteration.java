@@ -2,11 +2,13 @@ package ummisco.genstar.ipf;
 
 import ummisco.genstar.exception.GenstarException;
 
-public abstract class IPFIteration<T> {
+public abstract class IPFIteration {
 
 	protected int iteration;
 	
 	protected IPF ipf;
+	
+	protected int entitiesToGenerate = -1;
 	
 	
 	protected IPFIteration(final IPF ipf, final int iteration) throws GenstarException {
@@ -27,5 +29,9 @@ public abstract class IPFIteration<T> {
 	
 	public abstract <T> T getData();
 	
+	public abstract <K> K getMarginals(final int dimension) throws GenstarException;
+	
 	public abstract IPFIteration nextIteration() throws GenstarException;
+	
+	public abstract int getNbOfEntitiesToGenerate();
 }

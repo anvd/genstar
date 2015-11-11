@@ -144,4 +144,47 @@ public class TwoWayIterationTest {
 			}
 		}
 	}
+
+	@Test public void testGetNbOfEntitiesToGenerate(@Mocked final TwoWayIPF ipf) throws GenstarException {
+		final double[][] data = {
+				{ 1, 2 },
+				{ 3, 4 },
+				{ 5, 6 }
+		};
+		
+		final int[] rowControls = { 10, 20, 30 };
+		
+		final int[] columnControls = { 30, 40 };
+		
+		new Expectations() {{
+			ipf.getData(); result = data;
+			ipf.getControls(0); result = rowControls;
+			ipf.getControls(1); result = columnControls;
+		}};
+		
+		TwoWayIteration iteration0 = new TwoWayIteration(ipf);
+		TwoWayIteration iteration1 = iteration0.nextIteration();
+
+		
+		// data0
+		double[][] data0 = iteration0.getData();
+		int sumData0 = 0;
+		for (int row=0; row<data0.length; row++) {
+			for (int column=0; column<data0[0].length; column++) {
+				sumData0 += Math.round(data0[row][column]);
+			}
+		}
+		assertTrue(sumData0 == iteration0.getNbOfEntitiesToGenerate());
+		
+		
+		// data1
+		double[][] data1 = iteration1.getData();
+		int sumData1 = 0;
+		for (int row=0; row<data1.length; row++) {
+			for (int column=0; column<data1[0].length; column++) {
+				sumData1 += Math.round(data1[row][column]);
+			}
+		}
+		assertTrue(sumData1 == iteration1.getNbOfEntitiesToGenerate());
+	}
 }

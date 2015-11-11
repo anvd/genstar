@@ -1,6 +1,6 @@
 package ummisco.genstar.ipf;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
@@ -166,7 +166,75 @@ public class ThreeWayIterationTest {
 				for (int layer=0; layer<data[0][0].length; layer++) { data0[row][col][layer] = data1[row][col][layer];}
 			}
 		}
-		
 	}
 	
+	
+	@Test public void testGetNbOfEntitiesToGenerate(@Mocked final ThreeWayIPF ipf) throws GenstarException {
+		// data[2][3][4]
+		final double[][][] data = {
+			{
+				{ 1, 2, 3, 5 },
+				{ 5, 6, 7, 8 },
+				{ 9, 10, 11, 12 }
+			},
+			{
+				{ 13, 14, 15, 16 },
+				{ 17, 18, 19, 20 },
+				{ 21, 22, 23, 24 }
+			}
+		};
+		
+		final int[][] rowControls = { // [3][4]
+			{ 10, 20, 30, 40 },
+			{ 50, 60, 70, 80 },
+			{ 90, 100, 110, 120 },
+		};
+		
+		final int[][] columnControls = { // [2][4] 
+			{ 10, 20, 30, 40 },
+			{ 50, 60, 70, 80 }
+		};
+		
+		final int[][] layerControls = { // [2][3]
+			{ 10, 20, 30 },
+			{ 40, 50, 60 }
+		};
+		
+		
+		new Expectations() {{
+			ipf.getData(); result = data;
+			ipf.getControls(0); result = rowControls;
+			ipf.getControls(1); result = columnControls;
+			ipf.getControls(2); result = layerControls;
+		}};
+		
+		ThreeWayIteration iteration0 = new ThreeWayIteration(ipf);
+		ThreeWayIteration iteration1 = iteration0.nextIteration();
+		
+		
+		// data0
+		double[][][] data0 = iteration0.getData();
+		int sumData0 = 0;
+		for (int row=0; row<data0.length; row++) {
+			for (int column=0; column<data0[0].length; column++) {
+				for (int layer=0; layer<data0[0][0].length; layer++) {
+					sumData0 += Math.round(data0[row][column][layer]);
+				}
+			}
+		}
+		assertTrue(sumData0 == iteration0.getNbOfEntitiesToGenerate());
+		
+		
+		// data1
+		double[][][] data1 = iteration1.getData();
+		int sumData1 = 0;
+		for (int row=0; row<data0.length; row++) {
+			for (int column=0; column<data1[0].length; column++) {
+				for (int layer=0; layer<data1[0][0].length; layer++) {
+					sumData1 += Math.round(data1[row][column][layer]);
+				}
+			}
+		}
+		assertTrue(sumData1 == iteration1.getNbOfEntitiesToGenerate());
+	}
 }

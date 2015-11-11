@@ -13,7 +13,7 @@ import ummisco.genstar.metamodel.AbstractAttribute;
 import ummisco.genstar.metamodel.AttributeValue;
 import ummisco.genstar.metamodel.AttributeValuesFrequency;
 
-public class ThreeWayIPF extends IPF<double[][][], int[][]> {
+public class ThreeWayIPF extends IPF {
 
 	private AbstractAttribute rowAttribute, columnAttribute, layerAttribute;
 	
@@ -156,7 +156,7 @@ public class ThreeWayIPF extends IPF<double[][][], int[][]> {
 			selectionProbabilities = null;
 		}
 		
-		ThreeWayIteration iteration = new ThreeWayIteration(this);
+		IPFIteration iteration = new ThreeWayIteration(this);
 		iterations.add(iteration);
 		for (int iter=0; iter<maxIteration; iter++) {
 			iteration = iteration.nextIteration();
@@ -165,6 +165,7 @@ public class ThreeWayIPF extends IPF<double[][][], int[][]> {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public int[][] getControls(int dimension) throws GenstarException {
 		if (dimension == 0) { return rowControls; }
@@ -175,6 +176,7 @@ public class ThreeWayIPF extends IPF<double[][][], int[][]> {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public double[][][] getData() {
 		double[][][] copy = new double[data.length][data[0].length][data[0][0].length];
@@ -189,7 +191,7 @@ public class ThreeWayIPF extends IPF<double[][][], int[][]> {
 
 
 	@Override
-	public List<AttributeValuesFrequency> getSelectionProbabilities() throws GenstarException {
+	public List<AttributeValuesFrequency> getSelectionProbabilitiesOfLastIPFIteration() throws GenstarException {
 		if (iterations == null) { fit(); }
 		
 		if (selectionProbabilities == null) {
@@ -208,7 +210,7 @@ public class ThreeWayIPF extends IPF<double[][][], int[][]> {
 					for (int layer=0; layer<iterationData[0][0].length; layer++) {
 						attributeValues.put(layerAttribute,  layerAttributeValues.get(layer));
 						
-						int selectionProba = (int) Math.round(data[row][column][layer]);
+						int selectionProba = (int) Math.round(iterationData[row][column][layer]);
 						selectionProbabilities.add(new AttributeValuesFrequency(attributeValues, selectionProba));
 					}
 				}
@@ -219,5 +221,118 @@ public class ThreeWayIPF extends IPF<double[][][], int[][]> {
 		return copy;
 	}
 	
-	
+	@Override
+	public void printDebug() throws GenstarException {
+		if (iterations == null) { fit(); }
+		
+		System.out.println("ThreeWayIPF with");
+		System.out.println("\tNumber of entities to generate = " + this.getNbOfEntitiesToGenerate());
+		System.out.println("\trowAttributeValues.size() = " + rowAttributeValues.size());
+		System.out.println("\tcolumnAttributeValues.size() = " + columnAttributeValues.size());
+		System.out.println("\tlayerAttributeValues.size() = " + layerAttributeValues.size());
+		System.out.println();
+
+		// 1. rowControls
+		System.out.println("rowControls: ");
+		for (int dim1=0; dim1<rowControls.length; dim1++) {
+			for (int dim2=0; dim2<rowControls[0].length; dim2++) {
+				System.out.print((dim2 == 0 ? "\t" : "") + rowControls[dim1][dim2]);
+				
+				if (dim2 < rowControls[0].length - 1) System.out.print(", ");
+				else { System.out.println(); }
+			}
+		}
+		System.out.println();
+		
+		// 2. columnControls
+		System.out.println("columnControls: ");
+		for (int dim1=0; dim1<columnControls.length; dim1++) {
+			for (int dim2=0; dim2<columnControls[0].length; dim2++) {
+				System.out.print((dim2 == 0 ? "\t" : "") + columnControls[dim1][dim2]);
+				
+				if (dim2 < columnControls[0].length - 1) System.out.print(", ");
+				else { System.out.println(); }
+			}
+		}
+		System.out.println();
+		
+		// 3.layerControls
+		System.out.println("layerControls: ");
+		for (int dim1=0; dim1<layerControls.length; dim1++) {
+			for (int dim2=0; dim2<layerControls[0].length; dim2++) {
+				System.out.print((dim2 == 0 ? "\t" : "") + layerControls[dim1][dim2]);
+
+				if (dim2 < layerControls[0].length - 1) System.out.print(", ");
+				else { System.out.println(); }
+			}
+		}
+		System.out.println();
+
+		// IPFIterations
+		int iterationNo = 0;
+		System.out.println("Data of ThreeWayIteration: ");
+		for (IPFIteration iter : iterations) {
+			System.out.println("\tIteration: " + iterationNo);
+			
+			// data
+			double[][][] iterationData = iter.getData();
+			for (int layer=0; layer<layerAttributeValues.size(); layer++) {
+				System.out.println("\t\tLayer : " + layer);
+				
+				for (int row=0; row<rowAttributeValues.size(); row++) {
+					for (int column=0; column<columnAttributeValues.size(); column++) {
+						System.out.print((column == 0 ? "\t\t\t" : "") + iterationData[row][column][layer]);
+						if (column < columnAttributeValues.size() - 1) System.out.print(", ");
+					}
+					
+					System.out.println();
+				}
+				System.out.println();
+			}
+			
+			
+			// rowMarginals
+			System.out.println("\t\trowMarginals:");
+			double[][] rowMarginals = iter.getMarginals(0);
+			for (int dim1=0; dim1<rowMarginals.length; dim1++) {
+				for (int dim2=0; dim2<rowMarginals[0].length; dim2++) {
+					System.out.print((dim2 == 0 ? "\t\t\t" : "") + rowMarginals[dim1][dim2]);
+					
+					if (dim2 < rowMarginals[0].length - 1) System.out.print(", ");
+					else { System.out.println(); }
+				}
+			}
+			System.out.println();
+			
+			
+			// columnMarginals
+			System.out.println("\t\tcolumnMarginals:");
+			double[][] columnMarginals = iter.getMarginals(1);
+			for (int dim1=0; dim1<columnMarginals.length; dim1++) {
+				for (int dim2=0; dim2<columnMarginals[0].length; dim2++) {
+					System.out.print((dim2 == 0 ? "\t\t\t" : "") + columnMarginals[dim1][dim2]);
+					
+					if (dim2 < columnMarginals[0].length - 1) System.out.print(", ");
+					else { System.out.println(); }
+				}
+			}
+			System.out.println();
+			
+			
+			// layerMarginals
+			System.out.println("\t\tlayerMarginals:");
+			double[][] layerMarginals = iter.getMarginals(2);
+			for (int dim1=0; dim1<layerMarginals.length; dim1++) {
+				for (int dim2=0; dim2<layerMarginals[0].length; dim2++) {
+					System.out.print((dim2 == 0 ? "\t\t\t" : "") + layerMarginals[dim1][dim2]);
+					
+					if (dim2 < layerMarginals[0].length - 1) System.out.print(", ");
+					else { System.out.println(); }
+				}
+			}
+			System.out.println();
+			
+			iterationNo++;
+		}
+	}
 }

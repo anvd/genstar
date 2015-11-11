@@ -1,13 +1,12 @@
 package ummisco.genstar.ipf;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AttributeValue;
 import ummisco.genstar.metamodel.AttributeValuesFrequency;
 
-public abstract class IPF<T,K> {
+public abstract class IPF {
 	
 	protected int maxIteration = 3;
 	
@@ -16,10 +15,7 @@ public abstract class IPF<T,K> {
 	protected List<IPFIteration> iterations;
 	
 	protected List<AttributeValuesFrequency> selectionProbabilities;
-	
-	protected int entitiesToGenerate = -1;
 
-	
 	
 	protected IPF(final SampleDataGenerationRule generationRule) throws GenstarException {
 		if (generationRule == null) { throw new GenstarException("'generationRule' can not be null"); }
@@ -48,16 +44,13 @@ public abstract class IPF<T,K> {
 	
 	public abstract void fit() throws GenstarException;
 
-	public abstract List<AttributeValuesFrequency> getSelectionProbabilities() throws GenstarException;
+	public abstract List<AttributeValuesFrequency> getSelectionProbabilitiesOfLastIPFIteration() throws GenstarException;
 	
 	public int getNbOfEntitiesToGenerate() throws GenstarException {
-		if (entitiesToGenerate == -1) { 
-			getSelectionProbabilities();
-			entitiesToGenerate = 0;
-			for (AttributeValuesFrequency selectProba : selectionProbabilities) { entitiesToGenerate += selectProba.getFrequency(); }
-		}
-		
-		return entitiesToGenerate;
+		if (iterations == null) { fit(); }
+		return iterations.get(iterations.size() - 1).getNbOfEntitiesToGenerate();
 	}
+
+	public abstract void printDebug() throws GenstarException;
 	
 }

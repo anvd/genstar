@@ -44,9 +44,8 @@ public class SampleDataGenerationRule extends GenerationRule {
 	
 	private Map<AttributeValuesFrequency, List<SampleEntity>> sampleEntityCategories;
 	
-	private int totalEntitiesToGenerate = 0;
+	private List<SampleEntity> internalSampleEntities;
 	
-	private int alreadyGeneratedEntities = 0;
 
 	
 	public SampleDataGenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String name, final GenstarCSVFile sampleDataFile,
@@ -99,6 +98,20 @@ public class SampleDataGenerationRule extends GenerationRule {
 			sampleEntityCategories.put(selectProba, sampleData.getMatchingEntities(selectProba.getAttributeValues()));
 		}
 	}
+	
+	private void internalGenerate() {
+		internalSampleEntities = new ArrayList<SampleEntity>();
+		
+		for (AttributeValuesFrequency selectProba : selectionProbabilities) {
+			
+			List<SampleEntity> selectedSampleCategory = sampleEntityCategories.get(selectProba);
+			
+			for (int agentNo=0; agentNo<selectProba.getFrequency(); agentNo++) {
+				int selectedSampleEntityIndex = SharedInstances.RandomNumberGenerator.nextInt(selectedSampleCategory.size());
+				internalSampleEntities.add(selectedSampleCategory.get(selectedSampleEntityIndex));
+			}
+		}
+	}
 
 	/**
 	 * TODO describe how the method works
@@ -107,36 +120,21 @@ public class SampleDataGenerationRule extends GenerationRule {
 	public void generate(Entity entity) throws GenstarException {
 		if (!ipfRun) { // run the fitting if necessary
 			ipf.fit();
-			selectionProbabilities = ipf.getSelectionProbabilities();
+			selectionProbabilities = ipf.getSelectionProbabilitiesOfLastIPFIteration();
 			buildSampleEntityCategories();
-			for (AttributeValuesFrequency selectProba : selectionProbabilities) { totalEntitiesToGenerate += selectProba.getFrequency(); }
-			alreadyGeneratedEntities = 0;
+			internalGenerate();
 
 			ipfRun = true;
 		}
 		
-		// recycling
-		if (alreadyGeneratedEntities == totalEntitiesToGenerate) { alreadyGeneratedEntities = 0; }
-		
-		int accumulatedFrequency = 0;
-		AttributeValuesFrequency choosenProba = null;
-		for (AttributeValuesFrequency selectProba : selectionProbabilities) {
-			choosenProba = selectProba;
-			if (accumulatedFrequency >= alreadyGeneratedEntities) { break; }
-			accumulatedFrequency += selectProba.getFrequency();
-		}
-		
-		List<SampleEntity> selectedSampleCategory = sampleEntityCategories.get(choosenProba);
-		int selectedSampleEntityIndex = SharedInstances.RandomNumberGenerator.nextInt(selectedSampleCategory.size());
-		SampleEntity pickedSampleEntity = selectedSampleCategory.get(selectedSampleEntityIndex);
+		if (internalSampleEntities.isEmpty()) { throw new GenstarException("Out of sample entities"); }
 		
 		// transfer attribute values from SampleEntity to Entity
+		SampleEntity pickedSampleEntity = internalSampleEntities.remove(0);
 		Map<AbstractAttribute, AttributeValue> attributeValues = pickedSampleEntity.getAttributeValues();
 		for (AbstractAttribute attribute : attributeValues.keySet()) {
 			entity.putAttributeValue(new EntityAttributeValue(attribute, attributeValues.get(attribute)));
 		}
-		
-		alreadyGeneratedEntities++;
 	}
 
 	@Override

@@ -246,6 +246,9 @@ public class ThreeWayIPFTest {
 		iterations0 = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations0.size() == ipf1.getMaxIteration() + 1);
 		
+		
+		// DEBUG
+		ipf1.printDebug();
 	}
 	
 	@Test public void testGetSelectionProbabilities() throws GenstarException {
@@ -254,7 +257,7 @@ public class ThreeWayIPFTest {
 		List<IPFIteration> iterations = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations == null);
 		
-		List<AttributeValuesFrequency> selectionProbabilities = ipf1.getSelectionProbabilities();
+		List<AttributeValuesFrequency> selectionProbabilities = ipf1.getSelectionProbabilitiesOfLastIPFIteration();
 		iterations = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations.size() == ipf1.getMaxIteration() + 1);
 		assertTrue(selectionProbabilities.size() == rowAttributeValues.size() * columnAttributeValues.size() * layerAttributeValues.size());
@@ -281,4 +284,6 @@ public class ThreeWayIPFTest {
 			assertTrue(allAttributeValues.contains(selectProba.getAttributeValues()));
 		}
 	}
+	
+	
 }

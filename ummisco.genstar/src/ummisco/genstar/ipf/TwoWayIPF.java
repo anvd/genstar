@@ -13,7 +13,7 @@ import ummisco.genstar.metamodel.AbstractAttribute;
 import ummisco.genstar.metamodel.AttributeValue;
 import ummisco.genstar.metamodel.AttributeValuesFrequency;
 
-public class TwoWayIPF extends IPF<double[][], int[]> {
+public class TwoWayIPF extends IPF {
 	
 	private AbstractAttribute rowAttribute, columnAttribute;
 	
@@ -146,7 +146,7 @@ public class TwoWayIPF extends IPF<double[][], int[]> {
 
 
 	@Override
-	public List<AttributeValuesFrequency> getSelectionProbabilities() throws GenstarException {
+	public List<AttributeValuesFrequency> getSelectionProbabilitiesOfLastIPFIteration() throws GenstarException {
 		if (iterations == null) { fit(); }
 		
 		if (selectionProbabilities == null) {
@@ -162,7 +162,7 @@ public class TwoWayIPF extends IPF<double[][], int[]> {
 				for (int column=0; column<iterationData[0].length; column++) {
 					attributeValues.put(columnAttribute, columnAttributeValues.get(column));
 					
-					int selectionProba = (int) Math.round(data[row][column]);
+					int selectionProba = (int) Math.round(iterationData[row][column]);
 					selectionProbabilities.add(new AttributeValuesFrequency(attributeValues, selectionProba));
 				}
 			}
@@ -170,5 +170,72 @@ public class TwoWayIPF extends IPF<double[][], int[]> {
 
 		List<AttributeValuesFrequency> copy = new ArrayList<AttributeValuesFrequency>(selectionProbabilities);
 		return copy;
+	}
+	
+	@Override
+	public void printDebug() throws GenstarException {
+		if (iterations == null) { fit(); }
+		
+		System.out.println("TwoWayIPF with");
+		System.out.println("\tNumber of entities to generate = " + this.getNbOfEntitiesToGenerate());
+		System.out.println("\trowAttributeValues.size() = " + rowAttributeValues.size());
+		System.out.println("\tcolumnAttributeValues.size() = " + columnAttributeValues.size());
+		
+		// 1. rowControls
+		System.out.print("\trowControls: ");
+		for (int row=0; row<rowControls.length; row++) {
+			System.out.print(rowControls[row]);
+			if (row < rowControls.length - 1) System.out.print(", ");
+		}
+		System.out.println();
+		
+		// 2. columnControls
+		System.out.print("\tcolumnControls: ");
+		for (int column=0; column<columnControls.length; column++) {
+			System.out.print(columnControls[column]);
+			if (column < columnControls.length - 1) System.out.print(", ");
+		}
+		System.out.println();
+		System.out.println();
+		
+		// IPFIterations
+		int iterationNo = 0;
+		System.out.println("\tTwoWayIterations: ");
+		for (IPFIteration iter : iterations) {
+			
+			System.out.println("\t\tIteration: " + iterationNo);
+			
+			// data
+			double[][] iterationData = iter.getData();
+			System.out.println("\t\t\tData:");
+			for (int row=0; row<rowControls.length; row++) {
+				for (int column=0; column<columnControls.length; column++) {
+					System.out.print((column == 0 ? "\t\t\t\t" : "") + iterationData[row][column]);
+					if (column < columnControls.length - 1) System.out.print(", ");
+				}
+				
+				System.out.println();
+			}
+			
+			// rowMarginals
+			System.out.print("\t\t\trowMarginals: ");
+			double[] rowMarginals = iter.getMarginals(0);
+			for (int row=0; row<rowMarginals.length; row++) {
+				System.out.print(rowMarginals[row]);
+				if (row < rowControls.length - 1) System.out.print(", ");
+			}
+			System.out.println();
+			
+			// columnMarginals
+			System.out.print("\t\t\tcolumnMarginals: ");
+			double[] columnMarginals = iter.getMarginals(1);
+			for (int column=0; column<columnMarginals.length; column++) {
+				System.out.print(columnMarginals[column]);
+				if (column < columnControls.length - 1) System.out.print(", ");
+			}
+			System.out.println();	
+			
+			iterationNo++;
+		}
 	}
 }

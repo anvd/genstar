@@ -1,6 +1,6 @@
 package ummisco.genstar.ipf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,6 @@ import mockit.Delegate;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
-import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
 
 import org.junit.Before;
@@ -181,6 +180,9 @@ public class TwoWayIPFTest {
 		ipf1.fit();
 		iterations0 = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations0.size() == ipf1.getMaxIteration() + 1);
+
+		// DEBUG
+		//ipf1.printDebug();
 	}
 	
 	@Test public void testGetSelectionProbabilities() throws GenstarException {
@@ -189,7 +191,7 @@ public class TwoWayIPFTest {
 		List<IPFIteration> iterations = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations == null);
 		
-		List<AttributeValuesFrequency> selectionProbabilities = ipf1.getSelectionProbabilities();
+		List<AttributeValuesFrequency> selectionProbabilities = ipf1.getSelectionProbabilitiesOfLastIPFIteration();
 		iterations = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations.size() == ipf1.getMaxIteration() + 1);
 		assertTrue(selectionProbabilities.size() == rowAttributeValues.size() * colAttributeValues.size());

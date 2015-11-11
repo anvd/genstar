@@ -119,7 +119,7 @@ public class AttributeValuesFrequency {
 			retVal.append("[ attribute : " + attr.getNameOnData() + ", value : " + attributeValues.get(attr) + "], ");
 		}
 		
-		retVal.append("; frequency = " + frequency);
+		retVal.append("WITH frequency = " + frequency);
 		
 		return retVal.toString();
 	}

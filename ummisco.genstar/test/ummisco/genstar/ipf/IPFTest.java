@@ -41,9 +41,15 @@ public class IPFTest {
 		}
 
 		@Override
-		public List getSelectionProbabilities() throws GenstarException {
+		public List getSelectionProbabilitiesOfLastIPFIteration() throws GenstarException {
 			// TODO Auto-generated method stub
 			return null;
+		}
+
+		@Override
+		public void printDebug() throws GenstarException {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 

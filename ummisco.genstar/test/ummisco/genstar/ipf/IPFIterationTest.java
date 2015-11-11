@@ -27,6 +27,18 @@ public class IPFIterationTest {
 		public double[][] getData() {
 			return null;
 		}
+
+		@Override
+		public Object getMarginals(int dimension) throws GenstarException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public int getNbOfEntitiesToGenerate() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
 	}
 	
 	
