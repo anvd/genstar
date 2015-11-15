@@ -98,7 +98,7 @@ public class GenstarCSVFile {
 		return fileContent;
 	}
 	
-	public String getFilePath() {
+	public String getPath() {
 		return csvFilePath;
 	}
 }

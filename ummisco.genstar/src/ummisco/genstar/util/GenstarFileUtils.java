@@ -9,9 +9,9 @@ import java.util.List;
 import au.com.bytecode.opencsv.CSVWriter;
 import ummisco.genstar.exception.GenstarException;
 
-public class GenstarFileUtil {
+public class GenstarFileUtils {
 	public static String csvSeparator = ",";
-
+	
 	public static void writeCSVFile(final String fileName, final List<String[]> allLines) throws GenstarException {
 
 		try {
@@ -69,6 +69,6 @@ public class GenstarFileUtil {
 			lines.add(line);
 		} 
 		
-		GenstarFileUtil.writeCSVFile("test.csv", lines);
+		GenstarFileUtils.writeCSVFile("test.csv", lines);
 	}
 }

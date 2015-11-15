@@ -15,7 +15,7 @@ import ummisco.genstar.data.CanThoPopLinkers;
 import ummisco.genstar.data.CanThoPopLinkers.Scenario1PopLinker;
 import ummisco.genstar.data.CanThoPopLinkers.Scenario2PopLinker;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.util.GenstarFileUtil;
+import ummisco.genstar.util.GenstarFileUtils;
 
 public class GenstarGeneratorTest_CanTho {
 	
@@ -913,7 +913,7 @@ public class GenstarGeneratorTest_CanTho {
 	
 				lines1.add(line);
 			} 
-			GenstarFileUtil.writeCSVFile("Scenario1_test" + Integer.toString(currentIteration) + "_age_sex.csv", lines1);
+			GenstarFileUtils.writeCSVFile("Scenario1_test" + Integer.toString(currentIteration) + "_age_sex.csv", lines1);
 			 
 			
 			
@@ -933,7 +933,7 @@ public class GenstarGeneratorTest_CanTho {
 	
 				lines2.add(line);
 			} 
-			GenstarFileUtil.writeCSVFile("Scenario1_test" + Integer.toString(currentIteration) + "_district_sex.csv", lines2);
+			GenstarFileUtils.writeCSVFile("Scenario1_test" + Integer.toString(currentIteration) + "_district_sex.csv", lines2);
 			 
 			
 			System.out.println("Finished iteration : " + currentIteration);
@@ -1026,7 +1026,7 @@ public class GenstarGeneratorTest_CanTho {
 	
 				lines1.add(line);
 			} 
-			GenstarFileUtil.writeCSVFile("Scenario2_test" + Integer.toString(currentIteration) + "_age_sex.csv", lines1);
+			GenstarFileUtils.writeCSVFile("Scenario2_test" + Integer.toString(currentIteration) + "_age_sex.csv", lines1);
 			 
 			
 			
@@ -1046,7 +1046,7 @@ public class GenstarGeneratorTest_CanTho {
 	
 				lines2.add(line);
 			} 
-			GenstarFileUtil.writeCSVFile("Scenario2_test" + Integer.toString(currentIteration) + "_district_sex.csv", lines2);
+			GenstarFileUtils.writeCSVFile("Scenario2_test" + Integer.toString(currentIteration) + "_district_sex.csv", lines2);
 			
 			
 			System.out.println("Finished iteration : " + currentIteration);

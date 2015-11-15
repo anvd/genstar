@@ -38,7 +38,7 @@ import ummisco.genstar.metamodel.UniqueValue;
 import ummisco.genstar.metamodel.UniqueValuesAttribute;
 import ummisco.genstar.util.GenstarCSVFile;
 
-public class GenstarUtils { // TODO move this class to "ummisco.genstar" project
+public class GenstarUtilsDeprecated { // TODO move this class to "ummisco.genstar" project
 
 	static class AttributeValuesFrequencyComparator implements Comparator<AttributeValuesFrequency> {
 		
@@ -410,7 +410,6 @@ public class GenstarUtils { // TODO move this class to "ummisco.genstar" project
 	}
 	
 	
-	
 	static void createSampleDataGenerationRule(final IScope scope, final ISyntheticPopulationGenerator generator, final String ruleName, Properties sampleDataPropeties) throws GenstarException {
 		
 		// Read the necessary data from the properties
@@ -448,7 +447,7 @@ public class GenstarUtils { // TODO move this class to "ummisco.genstar" project
 		List<String> aRow;
 		for (int r=0; r<controlledAttributesCSVFile.getRows(); r++) {
 			aRow = controlledAttributesCSVFile.getRow(r);
-			if (aRow.size() != 1) { throw new GenstarException("Invalid control attribute file format: each row contains only one control attribute. File: " + controlledAttributesCSVFile.getFilePath()); }
+			if (aRow.size() != 1) { throw new GenstarException("Invalid control attribute file format: each row contains only one control attribute. File: " + controlledAttributesCSVFile.getPath()); }
 			
 			controlledAttr = generator.getAttribute(aRow.get(0));
 			if (controlledAttr == null) { throw new GenstarException("Attribute '" + aRow.get(0) + "' not found on the generator."); }
@@ -468,7 +467,7 @@ public class GenstarUtils { // TODO move this class to "ummisco.genstar" project
 		int line = 1;
 		Map<AbstractAttribute, AttributeValue> attributeValues;
 		for (List<String> aRow : controlledTotalsCSVFile.getContent()) {
-			if (aRow.size() < 3 && (aRow.size() %2 != 1)) throw new GenstarException("Invalid control totals format. File: " + controlledTotalsCSVFile.getFilePath() + ", line: " + line);
+			if (aRow.size() < 3 && (aRow.size() %2 != 1)) throw new GenstarException("Invalid control totals format. File: " + controlledTotalsCSVFile.getPath() + ", line: " + line);
 			line++;
 			
 			attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
@@ -503,7 +502,7 @@ public class GenstarUtils { // TODO move this class to "ummisco.genstar" project
 		List<String> aRow;
 		for (int r=0; r<supplementaryAttributesCSVFile.getRows(); r++) {
 			aRow = supplementaryAttributesCSVFile.getRow(r);
-			if (aRow.size() != 1) { throw new GenstarException("Invalid supplementary attribute file format: each row contains only one supplementary attribute. File: " + supplementaryAttributesCSVFile.getFilePath()); }
+			if (aRow.size() != 1) { throw new GenstarException("Invalid supplementary attribute file format: each row contains only one supplementary attribute. File: " + supplementaryAttributesCSVFile.getPath()); }
 			
 			supplementaryAttr = generator.getAttribute(aRow.get(0));
 			if (supplementaryAttr == null) { throw new GenstarException("Attribute '" + aRow.get(0) + "' not found on the generator."); }
@@ -665,8 +664,8 @@ public class GenstarUtils { // TODO move this class to "ummisco.genstar" project
 				String attributeValueString = (String) contents.get(scope, col, row);
 				List<String> valueList = new ArrayList<String>();
 				
-				if (attributeValueString.contains(GenstarUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER)) { // range value
-					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, GenstarUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER);
+				if (attributeValueString.contains(GenstarUtilsDeprecated.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER)) { // range value
+					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, GenstarUtilsDeprecated.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER);
 					if (rangeValueToken.countTokens() != 2) { throw new GenstarException("Invalid range attribute value: '" + attributeValueString + "'. File: " + sampleDataCSVFile.getPath()); }
 					valueList.add(rangeValueToken.nextToken());
 					valueList.add(rangeValueToken.nextToken());
@@ -692,12 +691,4 @@ public class GenstarUtils { // TODO move this class to "ummisco.genstar" project
 		return generationRule;
 	}
 	
-	static SampleDataGenerationRule createSampleDataGenerationRule(final IScope scope, final ISyntheticPopulationGenerator generator, 
-			final GamaCSVFile attributes, final GamaCSVFile controlledAttributes, final GamaCSVFile controlTotals, 
-			final GamaCSVFile supplementaryAttributes, final GamaCSVFile sampleData) {
-		
-		// TODO convert GamaCSVFile -> GenstarCSVFile
-		
-		return null;
-	}
 }

@@ -13,7 +13,7 @@ import org.junit.Test;
 import ummisco.genstar.data.CanThoData;
 import ummisco.genstar.data.CanThoData.Scenario4;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.util.GenstarFileUtil;
+import ummisco.genstar.util.GenstarFileUtils;
 
 public class GenstarGeneratorTest_CanTho1 {
 	
@@ -412,7 +412,7 @@ public class GenstarGeneratorTest_CanTho1 {
 		
 					lines1.add(line);
 				} 
-				GenstarFileUtil.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_age_sex_Iteration" + Integer.toString(currentIteration) + ".csv", lines1);
+				GenstarFileUtils.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_age_sex_Iteration" + Integer.toString(currentIteration) + ".csv", lines1);
 				 
 				
 				
@@ -432,7 +432,7 @@ public class GenstarGeneratorTest_CanTho1 {
 		
 					lines2.add(line);
 				} 
-				GenstarFileUtil.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_district_sex_Iteration" + Integer.toString(currentIteration) + ".csv", lines2);
+				GenstarFileUtils.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_district_sex_Iteration" + Integer.toString(currentIteration) + ".csv", lines2);
 				
 				
 				System.out.println("Finished iteration : " + currentIteration);
@@ -553,7 +553,7 @@ public class GenstarGeneratorTest_CanTho1 {
 		
 					lines1.add(line);
 				} 
-				GenstarFileUtil.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_age_sex_Iteration" + Integer.toString(currentIteration) + ".csv", lines1);
+				GenstarFileUtils.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_age_sex_Iteration" + Integer.toString(currentIteration) + ".csv", lines1);
 				 
 				
 				
@@ -573,7 +573,7 @@ public class GenstarGeneratorTest_CanTho1 {
 		
 					lines2.add(line);
 				} 
-				GenstarFileUtil.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_district_sex_Iteration" + Integer.toString(currentIteration) + ".csv", lines2);
+				GenstarFileUtils.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_district_sex_Iteration" + Integer.toString(currentIteration) + ".csv", lines2);
 				
 				
 				System.out.println("Finished iteration : " + currentIteration);

@@ -62,7 +62,7 @@ public class SampleData {
 				valueStrList.add(valueStr);
 				value = attribute.findCorrespondingAttributeValue(valueStrList);
 				
-				if (value == null) { throw new GenstarException("'" + valueStr + "' defined in the sample data is not recognized. File: " + data.getFilePath() + " at row: " + (row + 1) + ", column: " + (attributeColumn) + "."); }
+				if (value == null) { throw new GenstarException("'" + valueStr + "' defined in the sample data is not recognized. File: " + data.getPath() + " at row: " + (row + 1) + ", column: " + (attributeColumn) + "."); }
 				sampleAttributes.put(attributeIndexes.get(attributeColumn), value);
 			}
 			sampleEntities.add(new SampleEntity(sampleAttributes));

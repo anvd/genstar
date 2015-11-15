@@ -69,7 +69,7 @@ import ummisco.genstar.metamodel.UniqueValue;
 import ummisco.genstar.metamodel.UniqueValuesAttribute;
 
 @RunWith(JMockit.class)
-public class GenstarUtilsTest {
+public class GenstarUtilsDeprecatedTest {
 	
 	static { // init GAMLTypes
 		AbstractGamlAdditions.initType("container",new GamaContainerType(),16,102,IGamlAdditions.IC);
@@ -110,7 +110,7 @@ public class GenstarUtilsTest {
 		
 		
 		// replay
-		GenstarUtils.createUniqueValueAttributePublicProxy(mockedGenerator, "Category", "category", DataType.STRING, "C0; C1; C2; C3; C4; C5; C6; C7", UniqueValue.class, "dummyAttributesFile.csv");
+		GenstarUtilsDeprecated.createUniqueValueAttributePublicProxy(mockedGenerator, "Category", "category", DataType.STRING, "C0; C1; C2; C3; C4; C5; C6; C7", UniqueValue.class, "dummyAttributesFile.csv");
 		
 		// verify
 	}
@@ -128,7 +128,7 @@ public class GenstarUtilsTest {
 
 		ISyntheticPopulationGenerator mockedGenerator = new SyntheticPopulationGenerator("dummy generator", 10);
 		assertTrue(mockedGenerator.getAttributes().isEmpty());
-		GenstarUtils.createUniqueValueAttributePublicProxy(mockedGenerator, "Category", "category", DataType.STRING, "C0; C1; C2; C3; C4; C5; C6; C7", UniqueValue.class, "dummyAttributesFile.csv");
+		GenstarUtilsDeprecated.createUniqueValueAttributePublicProxy(mockedGenerator, "Category", "category", DataType.STRING, "C0; C1; C2; C3; C4; C5; C6; C7", UniqueValue.class, "dummyAttributesFile.csv");
 		assertTrue(mockedGenerator.getAttributes().size() == 1);
 		
 		List<AbstractAttribute> attributes = new ArrayList<AbstractAttribute>(mockedGenerator.getAttributes());
@@ -158,7 +158,7 @@ public class GenstarUtilsTest {
 		}};
 		
 		// replay
-		GenstarUtils.createRangeValueAttributePublicProxy(mockedGenerator, "Age", "age", DataType.INTEGER, "0:4; 5:17; 18:24; 25:34; 35:49; 50:64; 65:100", 
+		GenstarUtilsDeprecated.createRangeValueAttributePublicProxy(mockedGenerator, "Age", "age", DataType.INTEGER, "0:4; 5:17; 18:24; 25:34; 35:49; 50:64; 65:100", 
 				UniqueValue.class, "Dummy CSV attribute file");
 	}
 	
@@ -248,7 +248,7 @@ public class GenstarUtilsTest {
 		
 		assertTrue(generator.getAttributes().size() == 0);
 		
-		Deencapsulation.invoke(GenstarUtils.class, "createAttributesFromCSVFile", scope, generator, mockedAttributesCSVFile);
+		Deencapsulation.invoke(GenstarUtilsDeprecated.class, "createAttributesFromCSVFile", scope, generator, mockedAttributesCSVFile);
 		
 		assertTrue(generator.getAttributes().size() == 3);
 		assertTrue(generator.getAttribute("Category") != null);
@@ -275,12 +275,12 @@ public class GenstarUtilsTest {
 		
 		ISyntheticPopulationGenerator generator = new SyntheticPopulationGenerator("dummy generator", 10);
 		GamaCSVFile attributesCSVFile = new GamaCSVFile(scope, "test/data/attributes.csv", ",", Types.STRING, true);
-		Deencapsulation.invoke(GenstarUtils.class, "createAttributesFromCSVFile", scope, generator, attributesCSVFile);
+		Deencapsulation.invoke(GenstarUtilsDeprecated.class, "createAttributesFromCSVFile", scope, generator, attributesCSVFile);
 		
 		
 		GamaCSVFile distributionFormatCSVFile = new GamaCSVFile(scope, "test/data/distributionFormat.csv", ",", Types.STRING, true);
 		GamaCSVFile sampleDataCSVFile = new GamaCSVFile(scope, "test/data/sampleData.csv", ",", Types.STRING, true);
-		FrequencyDistributionGenerationRule rule = (FrequencyDistributionGenerationRule) Deencapsulation.invoke(GenstarUtils.class, "createFrequencyDistributionFromSampleData", scope, generator, distributionFormatCSVFile, sampleDataCSVFile);
+		FrequencyDistributionGenerationRule rule = (FrequencyDistributionGenerationRule) Deencapsulation.invoke(GenstarUtilsDeprecated.class, "createFrequencyDistributionFromSampleData", scope, generator, distributionFormatCSVFile, sampleDataCSVFile);
 		assertTrue(rule.getAttributes().size() == 2);
 		assertTrue(rule.getInputAttributeAtOrder(0) == null);
 		assertTrue(rule.getOutputAttributeAtOrder(0).getNameOnData().equals("Category"));

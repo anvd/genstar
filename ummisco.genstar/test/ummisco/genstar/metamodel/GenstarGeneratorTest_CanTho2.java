@@ -11,7 +11,7 @@ import org.junit.Test;
 import ummisco.genstar.data.CanThoData;
 import ummisco.genstar.data.CanThoData.Scenario2;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.util.GenstarFileUtil;
+import ummisco.genstar.util.GenstarFileUtils;
 
 public class GenstarGeneratorTest_CanTho2 {
 
@@ -249,10 +249,10 @@ public class GenstarGeneratorTest_CanTho2 {
 				}
 				
 				// urban file
-				GenstarFileUtil.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_urban_household_size_type_Iteration" + Integer.toString(currentIteration) + ".csv", urbanLines);
+				GenstarFileUtils.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_urban_household_size_type_Iteration" + Integer.toString(currentIteration) + ".csv", urbanLines);
 				
 				// rural file
-				GenstarFileUtil.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_rural_household_size_type_Iteration" + Integer.toString(currentIteration) + ".csv", ruralLines);
+				GenstarFileUtils.writeCSVFile(basePath + "/" + subFolderName + "/" + percentageName + "_rural_household_size_type_Iteration" + Integer.toString(currentIteration) + ".csv", ruralLines);
 				
 				
 				System.out.println("Finished iteration : " + currentIteration);

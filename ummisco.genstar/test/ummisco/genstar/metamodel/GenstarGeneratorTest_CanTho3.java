@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.util.GenstarFileUtil;
+import ummisco.genstar.util.GenstarFileUtils;
 
 public class GenstarGeneratorTest_CanTho3 {
 
@@ -490,7 +490,7 @@ public class GenstarGeneratorTest_CanTho3 {
 
 			lines1.add(line);
 		} 
-		GenstarFileUtil.writeCSVFile(basePath + "/Inhabitant_age_sex_livingPlace_" + percentageName +" _Iteration" + Integer.toString(iteration) + ".csv", lines1);
+		GenstarFileUtils.writeCSVFile(basePath + "/Inhabitant_age_sex_livingPlace_" + percentageName +" _Iteration" + Integer.toString(iteration) + ".csv", lines1);
 		 
 		
 		
@@ -510,7 +510,7 @@ public class GenstarGeneratorTest_CanTho3 {
 
 			lines2.add(line);
 		} 
-		GenstarFileUtil.writeCSVFile(basePath + "/Inhabitant_district_sex_" + percentageName + "_Iteration" + Integer.toString(iteration) + ".csv", lines2);
+		GenstarFileUtils.writeCSVFile(basePath + "/Inhabitant_district_sex_" + percentageName + "_Iteration" + Integer.toString(iteration) + ".csv", lines2);
 		 
 		return inhabitantPopulation;
 	}
@@ -592,10 +592,10 @@ public class GenstarGeneratorTest_CanTho3 {
 		}
 		
 		// urban file
-		GenstarFileUtil.writeCSVFile(basePath + "/Household_urban_size_type_" + percentageName + "_Iteration" + Integer.toString(iteration) + ".csv", urbanLines);
+		GenstarFileUtils.writeCSVFile(basePath + "/Household_urban_size_type_" + percentageName + "_Iteration" + Integer.toString(iteration) + ".csv", urbanLines);
 		
 		// rural file
-		GenstarFileUtil.writeCSVFile(basePath + "/Household_rural_size_type_" + percentageName + "_Iteration" + Integer.toString(iteration) + ".csv", ruralLines);
+		GenstarFileUtils.writeCSVFile(basePath + "/Household_rural_size_type_" + percentageName + "_Iteration" + Integer.toString(iteration) + ".csv", ruralLines);
 		
 		return householdPopulation;
 	}

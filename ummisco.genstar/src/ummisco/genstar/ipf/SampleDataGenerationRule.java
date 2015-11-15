@@ -45,26 +45,25 @@ public class SampleDataGenerationRule extends GenerationRule {
 	private Map<AttributeValuesFrequency, List<SampleEntity>> sampleEntityCategories;
 	
 	private List<SampleEntity> internalSampleEntities;
-	
 
 	
 	public SampleDataGenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String name, final GenstarCSVFile sampleDataFile,
-			final GenstarCSVFile controlledAttributesFile, final GenstarCSVFile controlsFile, final GenstarCSVFile supplementaryAttributesFile) throws GenstarException {
+			final GenstarCSVFile controlledAttributesFile, final GenstarCSVFile controlTotalsFile, final GenstarCSVFile supplementaryAttributesFile) throws GenstarException {
 		
 		super(populationGenerator, name);
 		
 		if (sampleDataFile == null) { throw new GenstarException("'sampleDataFile' can not be null"); }
 		if (controlledAttributesFile == null) { throw new GenstarException("'controlledAttributesFile' can not be null"); }
-		if (controlsFile == null) { throw new GenstarException("'controlsFile' can not be null"); }
+		if (controlTotalsFile == null) { throw new GenstarException("'controlsFile' can not be null"); }
 		if (supplementaryAttributesFile == null) { throw new GenstarException("'supplementaryAttributesFile' can not be null"); }
 		
 		this.sampleDataFile = sampleDataFile;
 		this.controlledAttributesFile = controlledAttributesFile;
-		this.controlTotalsFile = controlsFile;
+		this.controlTotalsFile = controlTotalsFile;
 		this.supplementaryAttributesFile = supplementaryAttributesFile;
 		
-		this.controlTotals = new ControlTotals(this);
 		this.controlledAndSupplementaryAttributes = new ControlledAndSupplementaryAttributes(this);
+		this.controlTotals = new ControlTotals(this);
 		this.sampleData = new SampleData(this);
 		this.ipf = IPFFactory.createIPF(this);
 	}

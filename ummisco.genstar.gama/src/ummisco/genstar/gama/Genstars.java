@@ -43,6 +43,8 @@ import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 import ummisco.genstar.metamodel.ISyntheticPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.SyntheticPopulationGenerator;
+import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarFactoryUtils;
 
 /**
  * A set of Genstar-related operators.
@@ -99,19 +101,22 @@ public abstract class Genstars {
 			test = false) }, see = { "frequency_distribution_from_sample", "link_populations" })
 	public static IList generatePopulationFromCSV_Data(final IScope scope, final String attributesCSVFilePath, final String generationRulesCSVFilePath, final int nbOfAgents) {
 		
-		// Verification of attributes
-		GamaCSVFile attributesCSVFile = new GamaCSVFile(scope, attributesCSVFilePath, ",", Types.STRING, true);
-		GamaCSVFile generationRulesCSVFile = new GamaCSVFile(scope, generationRulesCSVFilePath, ",", Types.STRING, true);
-		if (nbOfAgents <= 0) { GamaRuntimeException.error("Number of agents must be positive", scope); }
-
 		IList returnedPopulation = GamaListFactory.create(Types.MAP);
 		returnedPopulation.add(GENSTAR_POPULATION); // first element is a String, instead of a map -> change first element to a map [GENSTAR_POPULATION::GENSTAR_POPULATION]
-		
+
 		try {
+			// Verification of attributes
+//			GamaCSVFile attributesCSVFile = new GamaCSVFile(scope, attributesCSVFilePath, ",", Types.STRING, true);
+//			GamaCSVFile generationRulesCSVFile = new GamaCSVFile(scope, generationRulesCSVFilePath, ",", Types.STRING, true);
+			GenstarCSVFile attributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
+			GenstarCSVFile generationRulesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, generationRulesCSVFilePath, true), true);
+			if (nbOfAgents <= 0) { GamaRuntimeException.error("Number of agents must be positive", scope); }
+
+			
 			// 1. Create the generator
 			ISyntheticPopulationGenerator generator = new SyntheticPopulationGenerator("Population Generator", nbOfAgents);
-			GenstarUtils.createAttributesFromCSVFile(scope,generator, attributesCSVFile);
-			GenstarUtils.createGenerationRulesFromCSVFile(scope, generator, generationRulesCSVFile);
+			GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+			GamaGenstarFactoryUtils.createGenerationRulesFromCSVFile(scope, generator, generationRulesCSVFile);
 			
 			// 2. Generate the population
 			ISyntheticPopulation generatedPopulation = generator.generate();
@@ -173,13 +178,13 @@ public abstract class Genstars {
 		
 		try {
 			// initialize CSV files
-			GamaCSVFile attributesCSVFile = new GamaCSVFile(scope, attributesCSVFilePath, GenstarUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.FIELD_DELIMITER, Types.STRING, true);
-			GamaCSVFile sampleDataCSVFile = new GamaCSVFile(scope, sampleDataCSVFilePath, GenstarUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.FIELD_DELIMITER, Types.STRING, true);
-			GamaCSVFile distributionFormatCSVFile = new GamaCSVFile(scope, distributionFormatCSVFilePath, GenstarUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.FIELD_DELIMITER, Types.STRING, true);
+			GamaCSVFile attributesCSVFile = new GamaCSVFile(scope, attributesCSVFilePath, GenstarUtilsDeprecated.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.FIELD_DELIMITER, Types.STRING, true);
+			GamaCSVFile sampleDataCSVFile = new GamaCSVFile(scope, sampleDataCSVFilePath, GenstarUtilsDeprecated.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.FIELD_DELIMITER, Types.STRING, true);
+			GamaCSVFile distributionFormatCSVFile = new GamaCSVFile(scope, distributionFormatCSVFilePath, GenstarUtilsDeprecated.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.FIELD_DELIMITER, Types.STRING, true);
 			
 			// 1. create the generator then add attributes
 			ISyntheticPopulationGenerator generator = new SyntheticPopulationGenerator("dummy generator", 10);
-			GenstarUtils.createAttributesFromCSVFile(scope, generator, attributesCSVFile);
+			GenstarUtilsDeprecated.createAttributesFromCSVFile(scope, generator, attributesCSVFile);
 			
 			// 2. read the distribution file format to know the input and output attributes
 			IList<String> attributeNames = distributionFormatCSVFile.getAttributes(scope);
@@ -187,7 +192,7 @@ public abstract class Genstars {
 			if (attributeNames.size() < 1) { throw new GenstarException("First line of distribution format file must contain at least 2 elements. File: " + distributionFormatCSVFile.getPath() + "."); }
 			for (int index=0; index < attributeNames.size(); index++) {
 				String attribute = attributeNames.get(index);
-				StringTokenizer t = new StringTokenizer(attribute, GenstarUtils.CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE_METADATA.ATTRIBUTE_NAME_TYPE_DELIMITER);
+				StringTokenizer t = new StringTokenizer(attribute, GenstarUtilsDeprecated.CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE_METADATA.ATTRIBUTE_NAME_TYPE_DELIMITER);
 				if (t.countTokens() != 2) { throw new GenstarException("Element must have format attribute_name:Input or attribute_name:Output. File: " + distributionFormatCSVFile.getPath() + "."); }
 				
 				String attributeName = t.nextToken();
@@ -195,13 +200,13 @@ public abstract class Genstars {
 				attributeNamesWithoutInputOutput.add(attributeName);
 				
 				String attributeType = t.nextToken();
-				if (!attributeType.equals(GenstarUtils.CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE_METADATA.INPUT_ATTRIBUTE) && !attributeType.equals(GenstarUtils.CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE_METADATA.OUTPUT_ATTRIBUTE)) {
+				if (!attributeType.equals(GenstarUtilsDeprecated.CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE_METADATA.INPUT_ATTRIBUTE) && !attributeType.equals(GenstarUtilsDeprecated.CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE_METADATA.OUTPUT_ATTRIBUTE)) {
 					throw new GenstarException("Attribute " + attributeName + " must either be Input or Output. File: " + distributionFormatCSVFile.getPath() + ".");
 				}
 			}
 			
 			// 3. create a frequency generation rule from the sample data then write the generation rule to file.
-			FrequencyDistributionGenerationRule fdGenerationRule = GenstarUtils.createFrequencyDistributionFromSampleData(scope, generator, distributionFormatCSVFile, sampleDataCSVFile);
+			FrequencyDistributionGenerationRule fdGenerationRule = GenstarUtilsDeprecated.createFrequencyDistributionFromSampleData(scope, generator, distributionFormatCSVFile, sampleDataCSVFile);
 			
 			List<String[]> contents = new ArrayList<String[]>();
 			
@@ -217,7 +222,7 @@ public abstract class Genstars {
 			
 			// sort the attributeValueFrequencies
 			List<AttributeValuesFrequency> sortedAttributeValueFrequencies = new ArrayList<AttributeValuesFrequency>(fdGenerationRule.getAttributeValuesFrequencies());
-			Collections.sort(sortedAttributeValueFrequencies, new GenstarUtils.AttributeValuesFrequencyComparator(generationRuleAttributes));
+			Collections.sort(sortedAttributeValueFrequencies, new GenstarUtilsDeprecated.AttributeValuesFrequencyComparator(generationRuleAttributes));
 			
 			for (AttributeValuesFrequency avf : sortedAttributeValueFrequencies) {
 			String[] row = new String[attributeNames.size() + 1];
@@ -238,7 +243,7 @@ public abstract class Genstars {
 			for ( String[] ss : contents ) { writer.writeRecord(ss); }
 			writer.close();
 			
-			return new GamaCSVFile(scope, exportFileName, GenstarUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.FIELD_DELIMITER, Types.STRING, true);
+			return new GamaCSVFile(scope, exportFileName, GenstarUtilsDeprecated.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.FIELD_DELIMITER, Types.STRING, true);
 		} catch (final Exception e) {
 			if (e instanceof GamaRuntimeException) { throw (GamaRuntimeException) e; }
 			else { throw GamaRuntimeException.create(e, scope); }
