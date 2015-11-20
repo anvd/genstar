@@ -13,6 +13,13 @@ import org.junit.Test;
 import ummisco.genstar.data.CanThoData;
 import ummisco.genstar.data.CanThoData.Scenario4;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 import ummisco.genstar.util.GenstarFileUtils;
 
 public class GenstarGeneratorTest_CanTho1 {
@@ -115,10 +122,10 @@ public class GenstarGeneratorTest_CanTho1 {
 	public static final String ORDER2_GENERATOR_RULE2_NAME = "Inhabitant population by age and sex (Order 1 Generator)";
 	
 	
-	private ISyntheticPopulationGenerator rulesOrder1InhabitantPopGenerator;
+	private IMultipleRulesGenerator rulesOrder1InhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule order1Rule1, order1Rule2;
 	
-	private ISyntheticPopulationGenerator rulesOrder2InhabitantPopGenerator;
+	private IMultipleRulesGenerator rulesOrder2InhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule order2Rule1, order2Rule2;
 	
 	
@@ -143,7 +150,7 @@ public class GenstarGeneratorTest_CanTho1 {
 	
 	private void initializeRulesOrder1Generator() throws GenstarException {
 		
-		rulesOrder1InhabitantPopGenerator = new SyntheticPopulationGenerator("Inhabitant population generator (Rules Order 1)", 1188435);
+		rulesOrder1InhabitantPopGenerator = new MultipleRulesGenerator("Inhabitant population generator (Rules Order 1)", 1188435);
 		
 		// create attributes +
 		
@@ -226,7 +233,7 @@ public class GenstarGeneratorTest_CanTho1 {
 	
 	private void initializeRulesOrder2Generator() throws GenstarException {
 		
-		rulesOrder2InhabitantPopGenerator = new SyntheticPopulationGenerator("Inhabitant population generator (Rules Order 2)", 1188435);
+		rulesOrder2InhabitantPopGenerator = new MultipleRulesGenerator("Inhabitant population generator (Rules Order 2)", 1188435);
 		
 		// create attributes +
 		

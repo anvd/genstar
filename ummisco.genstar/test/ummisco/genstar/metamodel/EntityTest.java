@@ -12,13 +12,19 @@ import org.junit.rules.ExpectedException;
 
 import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
 public class EntityTest {
 
 	@Rule public ExpectedException exception = ExpectedException.none();
 
 	@Test public void testValidParamConstructor() throws GenstarException {
-		ISyntheticPopulationGenerator bondyPopulation = new SyntheticPopulationGenerator("Population of Bondy", 100);
+		ISyntheticPopulationGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		new Entity(bondyPopulation.generate());
 	}
@@ -30,7 +36,7 @@ public class EntityTest {
 	
 	@Test public void testPutAttributeValue() throws GenstarException {
 		
-		ISyntheticPopulationGenerator bondyPopulation = new SyntheticPopulationGenerator("Population of Bondy", 100);
+		ISyntheticPopulationGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
@@ -61,7 +67,7 @@ public class EntityTest {
 	
 	@Test public void testPutDuplicatedAttribute() throws GenstarException  {
 
-		SyntheticPopulationGenerator bondyPopulation = new SyntheticPopulationGenerator("Population of Bondy", 100);
+		MultipleRulesGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
@@ -83,7 +89,7 @@ public class EntityTest {
 	}
 	
 	@Test public void testReplaceAttributeValue() throws GenstarException {
-		SyntheticPopulationGenerator bondyPopulation = new SyntheticPopulationGenerator("Population of Bondy", 100);
+		MultipleRulesGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
@@ -106,7 +112,7 @@ public class EntityTest {
 	}
 	
 	@Test public void testIsMatch() throws GenstarException {
-		SyntheticPopulationGenerator bondyPopulation = new SyntheticPopulationGenerator("Population of Bondy", 100);
+		MultipleRulesGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);

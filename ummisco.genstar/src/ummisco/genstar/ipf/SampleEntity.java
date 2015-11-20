@@ -3,8 +3,8 @@ package ummisco.genstar.ipf;
 import java.util.HashMap;
 import java.util.Map;
 
-import ummisco.genstar.metamodel.AbstractAttribute;
-import ummisco.genstar.metamodel.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
 
 public class SampleEntity {
 

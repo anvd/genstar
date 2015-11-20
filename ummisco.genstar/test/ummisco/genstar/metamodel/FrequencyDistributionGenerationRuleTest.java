@@ -16,6 +16,15 @@ import org.junit.runners.JUnit4;
 
 import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
 @RunWith(JUnit4.class)
 public class FrequencyDistributionGenerationRuleTest {
@@ -30,7 +39,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	
 	@Test
 	public void testValidParametersConstructor() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		
 		assertEquals(d.getName(), "Distribution of household size, sex and age of head");
@@ -41,7 +50,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 
 	@Test public void testAppendInvalidInputAttributes1() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
@@ -54,7 +63,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testAppendValidInputAttributes() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		assertTrue(d.getOrderedInputAttributes().size() == 0);
@@ -73,7 +82,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testAppendInvalidInputAttribute2() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
@@ -90,7 +99,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertInvalidInputAttribute1() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -100,7 +109,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertInvalidInputAttribute2() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -111,7 +120,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertValidInputAttributes() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -129,7 +138,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testGetInputAttributes() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -155,7 +164,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testRemoveInputAttributes() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -193,7 +202,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testChangeInputAttributeOrder() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -237,7 +246,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testAppendInvalidOutputAttribute1() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
@@ -250,7 +259,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testAppendInvalidOutputAttribute2() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
@@ -265,7 +274,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testAppendValidOutputAttributes() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
@@ -281,7 +290,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertInvalidOutputAttribute1() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -291,7 +300,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertInvalidOutputAttribute2() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -302,7 +311,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertValidOutputAttributes() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -320,7 +329,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testGetOutputAttributes() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -345,7 +354,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testRemoveOutputAttributes() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -383,7 +392,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	
 	@Test public void testChangeOutputAttributeOrder() throws GenstarException {
 		
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("Household population", 10);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -437,7 +446,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testSetFrequencyValue() throws GenstarException {
-		SyntheticPopulationGenerator bondyPopulation = new SyntheticPopulationGenerator("Population of Bondy", 100);
+		MultipleRulesGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
 		for (int[] range : BondyData.age_ranges_1) {

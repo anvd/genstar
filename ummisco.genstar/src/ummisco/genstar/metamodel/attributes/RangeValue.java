@@ -1,4 +1,4 @@
-package ummisco.genstar.metamodel;
+package ummisco.genstar.metamodel.attributes;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.util.SharedInstances;

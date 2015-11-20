@@ -3,6 +3,7 @@ package ummisco.genstar.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,27 +14,60 @@ import java.util.TreeMap;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.SampleDataGenerationRule;
-import ummisco.genstar.metamodel.AbstractAttribute;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
-import ummisco.genstar.metamodel.AttributeValue;
-import ummisco.genstar.metamodel.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.CustomGenerationRule;
-import ummisco.genstar.metamodel.DataType;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
+import ummisco.genstar.metamodel.IMultipleRulesGenerator;
+import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.RangeValue;
-import ummisco.genstar.metamodel.RangeValuesAttribute;
-import ummisco.genstar.metamodel.UniqueValue;
-import ummisco.genstar.metamodel.UniqueValuesAttribute;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
 public class GenstarFactoryUtils {
 
+	public static class AttributeValuesFrequencyComparator implements Comparator<AttributeValuesFrequency> {
+		
+		List<AbstractAttribute> sortingAttributes = null;
+		
+		public AttributeValuesFrequencyComparator(final List<AbstractAttribute> sortingAttributes) throws GenstarException {
+			if (sortingAttributes == null || sortingAttributes.isEmpty()) { throw new GenstarException("'sortingAttributes' parameter can be neither null nor empty"); }
+			
+			this.sortingAttributes = new ArrayList<AbstractAttribute>(sortingAttributes);
+		}
+
+		@Override
+		public int compare(final AttributeValuesFrequency valueFrequency1, final AttributeValuesFrequency valueFrequency2) {
+			if (valueFrequency1 == null || valueFrequency2 == null) { throw new IllegalArgumentException("Input parameters can not be null"); }
+			
+			for (AbstractAttribute sAttribute : sortingAttributes) {
+				AttributeValue value1 = valueFrequency1.getAttributeValue(sAttribute);
+				AttributeValue value2 = valueFrequency2.getAttributeValue(sAttribute);
+
+				if (value1 == null) { throw new IllegalArgumentException("'valueFrequency1' AttributeValuesFrequency doesn't contain " + sAttribute.getNameOnData() + " attribute."); }
+				if (value2 == null) { throw new IllegalArgumentException("'valueFrequency2' AttributeValuesFrequency doesn't contain " + sAttribute.getNameOnData() + " attribute."); }
+				
+				int retVal = value1.compareTo(value2);
+				if (retVal != 0) { return retVal; }
+			}
+			
+			return 0;
+		}
+		
+	}	
+	
+	
 	public static final class CSV_FILE_FORMATS {
 
 		public static final class ATTRIBUTE_METADATA {
 			static final String ATTRIBUTE_VALUE_DELIMITER = ";";
 			public static final String MIN_MAX_VALUE_DELIMITER = ":";
-			static final String FIELD_DELIMITER = ",";
+			public static final String FIELD_DELIMITER = ",";
 				
 			// Header of attribute meta-data file: 
 			//		Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On Entity
@@ -219,11 +253,10 @@ public class GenstarFactoryUtils {
 		}
 	}
 	
-	public static void createFrequencyDistributionGenerationRule(final ISyntheticPopulationGenerator generator, final String ruleName, GenstarCSVFile ruleDataFile) throws GenstarException {
+	public static void createFrequencyDistributionGenerationRule(final IMultipleRulesGenerator generator, final String ruleName, GenstarCSVFile ruleDataFile) throws GenstarException {
 		
 		List<List<String>> fileContent = ruleDataFile.getContent();
 		if ( fileContent == null || fileContent.isEmpty() ) { throw new GenstarException("Frequency Distribution Generation Rule file is empty (file: " + ruleDataFile.getPath() + ")"); }
-		int rows = ruleDataFile.getRows();
 		
 		
 		// 1. Parse the header
@@ -266,7 +299,7 @@ public class GenstarFactoryUtils {
 		
 		// 3. Set frequencies
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
-		for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
+		for (int rowIndex = 0; rowIndex < fileContent.size(); rowIndex++) {
 			attributeValues.clear();
 			// IList frequencyInfo = fileContent.getRow(scope, rowIndex);
 			List<String> frequencyInfo = fileContent.get(rowIndex);
@@ -301,7 +334,7 @@ public class GenstarFactoryUtils {
 	}	
 	
 	
-	public static void createAttributeInferenceGenerationRule(final ISyntheticPopulationGenerator generator, final String ruleName, GenstarCSVFile ruleDataFile) throws GenstarException {
+	public static void createAttributeInferenceGenerationRule(final IMultipleRulesGenerator generator, final String ruleName, GenstarCSVFile ruleDataFile) throws GenstarException {
 		
 		List<List<String>> fileContent = ruleDataFile.getContent();
 		if ( fileContent == null || fileContent.isEmpty() ) { throw new GenstarException("Attribute Inference Generation Rule file is empty (file: " + ruleDataFile.getPath() + ")"); }
@@ -365,14 +398,15 @@ public class GenstarFactoryUtils {
 	}	
 	
 	
-	public static void createSampleDataGenerationRule(final ISyntheticPopulationGenerator generator, final String ruleName, final GenstarCSVFile sampleCSVFile,
+	public static void createSampleDataGenerationRule(final ISingleRuleGenerator generator, final String ruleName, final GenstarCSVFile sampleCSVFile,
 			final GenstarCSVFile controlledAttributesCSVFile, final GenstarCSVFile controlledTotalsCSVFile,
 			final GenstarCSVFile supplementaryAttributesCSVFile) throws GenstarException {
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, ruleName, sampleCSVFile, controlledAttributesCSVFile, controlledTotalsCSVFile, supplementaryAttributesCSVFile);
 		
 		// add the rule to the generator
-		generator.appendGenerationRule(rule);
+		generator.setGenerationRule(rule);
+		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
 	}
 
 		
@@ -394,7 +428,7 @@ public class GenstarFactoryUtils {
 		return supplementaryAttributes;
 	}
 	
-	public static void createCustomGenerationRule(final ISyntheticPopulationGenerator generator, final String ruleName, final String ruleJavaClass) throws GenstarException {
+	public static void createCustomGenerationRule(final IMultipleRulesGenerator generator, final String ruleName, final String ruleJavaClass) throws GenstarException {
 		try {
 			StringTokenizer ruleJavaClassTokenizer = new StringTokenizer(ruleJavaClass, CSV_FILE_FORMATS.GENERATION_RULE_METADATA.JAVA_CLASS_PARAMETER_DELIMITER);
 			int tokens = ruleJavaClassTokenizer.countTokens();
@@ -416,10 +450,9 @@ public class GenstarFactoryUtils {
 			else throw new GenstarException(e.getMessage());
 		}
 	}	
-
 	
 	
-	static FrequencyDistributionGenerationRule createFrequencyDistributionFromSampleData(final ISyntheticPopulationGenerator generator, 
+	public static FrequencyDistributionGenerationRule createFrequencyDistributionFromSampleData(final ISyntheticPopulationGenerator generator, 
 			final GenstarCSVFile distributionFormatCSVFile, final GenstarCSVFile sampleDataCSVFile) throws GenstarException {
 		
 		// 1. Parse the header

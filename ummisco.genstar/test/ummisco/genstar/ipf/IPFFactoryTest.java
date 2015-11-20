@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 
 @RunWith(JMockit.class)
 public class IPFFactoryTest {

@@ -11,6 +11,11 @@ import org.junit.Test;
 import ummisco.genstar.data.CanThoData;
 import ummisco.genstar.data.CanThoData.Scenario2;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 import ummisco.genstar.util.GenstarFileUtils;
 
 public class GenstarGeneratorTest_CanTho2 {
@@ -54,7 +59,7 @@ public class GenstarGeneratorTest_CanTho2 {
 	}
 	
 	
-	private ISyntheticPopulationGenerator householdPopGenerator1;
+	private IMultipleRulesGenerator householdPopGenerator1;
 	private FrequencyDistributionGenerationRule generator1Rule1;
 	
 	public static final String GENERATOR1_RULE1_NAME = "Household population by size, type and living_place";
@@ -78,7 +83,7 @@ public class GenstarGeneratorTest_CanTho2 {
 	
 	private void initializeHouseholdPopGenerator1() throws GenstarException {
 		
-		householdPopGenerator1 = new SyntheticPopulationGenerator("Household population generator 1", 286058); // data inconsistency?
+		householdPopGenerator1 = new MultipleRulesGenerator("Household population generator 1", 286058); // data inconsistency?
 
 		// create attributes +
 		

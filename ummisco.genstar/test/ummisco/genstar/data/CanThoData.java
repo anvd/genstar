@@ -4,16 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
-import ummisco.genstar.metamodel.AttributeValue;
-import ummisco.genstar.metamodel.DataType;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
+import ummisco.genstar.metamodel.IMultipleRulesGenerator;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.RangeValue;
-import ummisco.genstar.metamodel.RangeValuesAttribute;
-import ummisco.genstar.metamodel.SyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.UniqueValue;
-import ummisco.genstar.metamodel.UniqueValuesAttribute;
+import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
 public final class CanThoData {
 	
@@ -490,28 +491,28 @@ public final class CanThoData {
 	
 	
 
-	private ISyntheticPopulationGenerator scenario1InhabitantPopGenerator;
+	private IMultipleRulesGenerator scenario1InhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule scenario1Rule1;
 	
-	private ISyntheticPopulationGenerator scenario1HouseholdPopGenerator;
+	private IMultipleRulesGenerator scenario1HouseholdPopGenerator;
 	private FrequencyDistributionGenerationRule scenario1Rule2;
 	
-	private ISyntheticPopulationGenerator scenario2InhabitantPopGenerator;
+	private IMultipleRulesGenerator scenario2InhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule scenario2Rule1;
 	
-	private ISyntheticPopulationGenerator scenario2HouseholdPopGenerator;
+	private IMultipleRulesGenerator scenario2HouseholdPopGenerator;
 	private FrequencyDistributionGenerationRule scenario2Rule2;
 	
-	private ISyntheticPopulationGenerator scenario3InhabitantPopGenerator;
+	private IMultipleRulesGenerator scenario3InhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule scenario3Rule1, scenario3Rule2;
 	
-	private ISyntheticPopulationGenerator scenario3HouseholdPopGenerator;
+	private IMultipleRulesGenerator scenario3HouseholdPopGenerator;
 	private FrequencyDistributionGenerationRule scenario3Rule3;
 	
-	private ISyntheticPopulationGenerator scenario4InhabitantPopGenerator;
+	private IMultipleRulesGenerator scenario4InhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule scenario4Rule1, scenario4Rule2;
 	
-	private ISyntheticPopulationGenerator scenario5InhabitantPopGenerator;
+	private IMultipleRulesGenerator scenario5InhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule scenario5Rule1, scenario5Rule2;
 	
 	
@@ -558,7 +559,7 @@ public final class CanThoData {
 	
 
 	private void initializeScenario1Data() throws GenstarException {
-		scenario1InhabitantPopGenerator = new SyntheticPopulationGenerator("Scenario1's inhabitant population generator", 1188435);
+		scenario1InhabitantPopGenerator = new MultipleRulesGenerator("Scenario1's inhabitant population generator", 1188435);
 		
 		// create attributes +
 		
@@ -604,7 +605,7 @@ public final class CanThoData {
 		// create generation rules -
 		
 		
-		scenario1HouseholdPopGenerator = new SyntheticPopulationGenerator("Scenario1's household population generator", 286057);
+		scenario1HouseholdPopGenerator = new MultipleRulesGenerator("Scenario1's household population generator", 286057);
 
 		// create attributes +
 		
@@ -647,7 +648,7 @@ public final class CanThoData {
 	}
 	
 	private void initializeScenario2Data() throws GenstarException {
-		scenario2InhabitantPopGenerator = new SyntheticPopulationGenerator("Scenario2's inhabitant population generator", 1188435);
+		scenario2InhabitantPopGenerator = new MultipleRulesGenerator("Scenario2's inhabitant population generator", 1188435);
 		
 		// create attributes +
 		
@@ -708,7 +709,7 @@ public final class CanThoData {
 		
 		
 //		scenario2HouseholdPopGenerator = new SyntheticPopulationGenerator("Scenario2's household population generator", 286057);
-		scenario2HouseholdPopGenerator = new SyntheticPopulationGenerator("Scenario2's household population generator", 286076); // data inconsistency?
+		scenario2HouseholdPopGenerator = new MultipleRulesGenerator("Scenario2's household population generator", 286076); // data inconsistency?
 
 		// create attributes +
 		
@@ -769,7 +770,7 @@ public final class CanThoData {
 	}
 
 	private void initializeScenario3Data() throws GenstarException {
-		scenario3InhabitantPopGenerator = new SyntheticPopulationGenerator("Scenario3's inhabitant population generator", 1188435);
+		scenario3InhabitantPopGenerator = new MultipleRulesGenerator("Scenario3's inhabitant population generator", 1188435);
 		
 		// create attributes +
 		
@@ -850,7 +851,7 @@ public final class CanThoData {
 		 
 		
 	
-		scenario3HouseholdPopGenerator = new SyntheticPopulationGenerator("Scenario3's household population generator", 286057);
+		scenario3HouseholdPopGenerator = new MultipleRulesGenerator("Scenario3's household population generator", 286057);
 
 		// create attributes +
 		
@@ -893,7 +894,7 @@ public final class CanThoData {
 	}
 
 	private void initializeScenario4Data() throws GenstarException {
-		scenario4InhabitantPopGenerator = new SyntheticPopulationGenerator("Scenario4's inhabitant population generator", 1188435);
+		scenario4InhabitantPopGenerator = new MultipleRulesGenerator("Scenario4's inhabitant population generator", 1188435);
 		
 		// create attributes +
 		
@@ -975,7 +976,7 @@ public final class CanThoData {
 
 
 	private void initializeScenario5Data() throws GenstarException {
-		scenario5InhabitantPopGenerator = new SyntheticPopulationGenerator("Scenario5's inhabitant population generator", 1188435);
+		scenario5InhabitantPopGenerator = new MultipleRulesGenerator("Scenario5's inhabitant population generator", 1188435);
 		
 		// create attributes +
 		

@@ -14,11 +14,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
-import ummisco.genstar.metamodel.AttributeValue;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.UniqueValue;
+import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarFactoryUtils;
 
@@ -27,7 +27,7 @@ public class SampleDataTest {
 
 	@Test
 	public void testGetSampleEntities(@Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
-		final ISyntheticPopulationGenerator generator = new SyntheticPopulationGenerator("generator", 10);
+		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 10);
 		
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
@@ -50,7 +50,7 @@ public class SampleDataTest {
 	}
 	
 	@Test public void testCountMatchingEntities(@Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
-		final ISyntheticPopulationGenerator generator = new SyntheticPopulationGenerator("generator", 10);
+		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 10);
 		
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);

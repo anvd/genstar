@@ -7,6 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeChangedEvent;
+import ummisco.genstar.metamodel.attributes.AttributeChangedListener;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 
 public class AttributeInferenceGenerationRule extends GenerationRule implements AttributeChangedListener {
 	

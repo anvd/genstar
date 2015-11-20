@@ -1,4 +1,4 @@
-package ummisco.genstar.metamodel;
+package ummisco.genstar.metamodel.attributes;
 
 import static org.junit.Assert.*;
 

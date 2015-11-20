@@ -9,6 +9,11 @@ import org.junit.Test;
 
 import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
 
 public class SyntheticPopulationTest_Bondy {
 

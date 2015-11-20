@@ -3,6 +3,8 @@ package ummisco.genstar.metamodel;
 import java.util.List;
 import java.util.Map;
 
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+
 public interface ISyntheticPopulation {
 	
 	public abstract ISyntheticPopulationGenerator getGenerator();

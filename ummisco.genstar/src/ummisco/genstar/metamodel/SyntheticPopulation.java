@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.util.SharedInstances;
 
 public class SyntheticPopulation implements ISyntheticPopulation {

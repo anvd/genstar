@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
-import ummisco.genstar.metamodel.AttributeValue;
-import ummisco.genstar.metamodel.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 
 public class ThreeWayIPF extends IPF {
 

@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
-import ummisco.genstar.metamodel.AttributeValue;
-import ummisco.genstar.metamodel.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarFactoryUtils.CSV_FILE_FORMATS;
 

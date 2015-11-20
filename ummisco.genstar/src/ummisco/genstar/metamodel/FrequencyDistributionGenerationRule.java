@@ -10,6 +10,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.util.SharedInstances;
 
 import com.google.common.collect.Sets;

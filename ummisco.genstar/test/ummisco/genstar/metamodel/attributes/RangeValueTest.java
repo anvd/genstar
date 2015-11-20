@@ -1,4 +1,4 @@
-package ummisco.genstar.metamodel;
+package ummisco.genstar.metamodel.attributes;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +9,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.RangeValue;
 
 @RunWith(JUnit4.class)
 public class RangeValueTest {

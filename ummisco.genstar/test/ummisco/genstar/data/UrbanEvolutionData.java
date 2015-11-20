@@ -4,15 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
-import ummisco.genstar.metamodel.AttributeValue;
-import ummisco.genstar.metamodel.DataType;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
+import ummisco.genstar.metamodel.IMultipleRulesGenerator;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.UniqueValue;
-import ummisco.genstar.metamodel.UniqueValuesAttribute;
+import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
 public class UrbanEvolutionData {
 
@@ -59,12 +60,12 @@ public class UrbanEvolutionData {
 	private float[] building_height_values = { 5.0f, 8.0f, 20.0f, 7.0f };
 	
 	// create rules
-	private ISyntheticPopulationGenerator buildingPopulationGenerator;
+	private IMultipleRulesGenerator buildingPopulationGenerator;
 	private FrequencyDistributionGenerationRule generationRule1;
 	private AttributeInferenceGenerationRule generationRule2, generationRule3, generationRule4;
 	
 	public UrbanEvolutionData() throws GenstarException {
-		buildingPopulationGenerator = new SyntheticPopulationGenerator("Building population", 120);
+		buildingPopulationGenerator = new MultipleRulesGenerator("Building population", 120);
 		
 		// create attributes +
 		UniqueValuesAttribute buildingTypeAttr = new UniqueValuesAttribute(buildingPopulationGenerator, "type", DataType.STRING);

@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
-import ummisco.genstar.metamodel.AttributeValue;
-import ummisco.genstar.metamodel.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.EntityAttributeValue;
 import ummisco.genstar.metamodel.GenerationRule;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.ISingleRuleGenerator;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.SharedInstances;
 
@@ -47,7 +47,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 	private List<SampleEntity> internalSampleEntities;
 
 	
-	public SampleDataGenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String name, final GenstarCSVFile sampleDataFile,
+	public SampleDataGenerationRule(final ISingleRuleGenerator populationGenerator, final String name, final GenstarCSVFile sampleDataFile,
 			final GenstarCSVFile controlledAttributesFile, final GenstarCSVFile controlTotalsFile, final GenstarCSVFile supplementaryAttributesFile) throws GenstarException {
 		
 		super(populationGenerator, name);
@@ -180,6 +180,10 @@ public class SampleDataGenerationRule extends GenerationRule {
 	
 	public List<AbstractAttribute> getSupplementaryAttributes() {
 		return controlledAndSupplementaryAttributes.getSupplementaryAttributes();
+	}
+	
+	@Override public ISingleRuleGenerator getGenerator() {
+		return (ISingleRuleGenerator) populationGenerator;
 	}
 	
 }

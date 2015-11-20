@@ -3,8 +3,8 @@ package ummisco.genstar.ipf;
 import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AttributeValue;
-import ummisco.genstar.metamodel.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 
 public abstract class IPF {
 	

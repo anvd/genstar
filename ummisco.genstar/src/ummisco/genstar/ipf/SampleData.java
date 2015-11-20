@@ -8,8 +8,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
-import ummisco.genstar.metamodel.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.util.GenstarCSVFile;
 
 public class SampleData {

@@ -1,9 +1,10 @@
-package ummisco.genstar.metamodel;
+package ummisco.genstar.metamodel.attributes;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.util.PersistentObject;
 
 

@@ -13,16 +13,15 @@ import msi.gama.util.IList;
 import msi.gama.util.file.GamaCSVFile;
 import msi.gama.util.matrix.IMatrix;
 import msi.gaml.types.Types;
-
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
 import ummisco.genstar.metamodel.CustomGenerationRule;
-import ummisco.genstar.metamodel.DataType;
 import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.EntityAttributeValue;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.RangeValue;
-import ummisco.genstar.metamodel.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.util.SharedInstances;
 
 public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {

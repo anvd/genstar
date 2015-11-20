@@ -10,14 +10,14 @@ import java.util.TreeMap;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AbstractPopulationsLinker;
-import ummisco.genstar.metamodel.AttributeValue;
 import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.EntityAttributeValue;
 import ummisco.genstar.metamodel.ISyntheticPopulation;
-import ummisco.genstar.metamodel.ProbabilityMassFunction;
-import ummisco.genstar.metamodel.RangeValue;
-import ummisco.genstar.metamodel.UniqueValue;
-import ummisco.genstar.metamodel.DataType;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
+import ummisco.genstar.metamodel.attributes.ProbabilityMassFunction;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.util.SharedInstances;
 
 

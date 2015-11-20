@@ -1,4 +1,4 @@
-package ummisco.genstar.metamodel;
+package ummisco.genstar.metamodel.attributes;
 
 import static org.junit.Assert.*;
 
@@ -10,6 +10,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
 
 public class UniqueValueTest {
 

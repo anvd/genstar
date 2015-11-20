@@ -1,4 +1,4 @@
-package ummisco.genstar.metamodel;
+package ummisco.genstar.metamodel.attributes;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.util.PersistentObject;
 
 public class AttributeValuesFrequency {

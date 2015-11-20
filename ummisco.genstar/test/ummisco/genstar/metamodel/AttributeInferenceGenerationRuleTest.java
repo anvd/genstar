@@ -14,6 +14,13 @@ import org.junit.runners.JUnit4;
 
 import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
 @RunWith(JUnit4.class)
 public class AttributeInferenceGenerationRuleTest {
@@ -27,21 +34,21 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 	
 	@Test public void testInvalidParamConstructor2() throws GenstarException { // null "name"
-		SyntheticPopulationGenerator dummyPopulation = new SyntheticPopulationGenerator("dummy population", 1);
+		MultipleRulesGenerator dummyPopulation = new MultipleRulesGenerator("dummy population", 1);
 
 		exception.expect(GenstarException.class);
 		new AttributeInferenceGenerationRule(dummyPopulation, null, null, null);
 	}
 	
 	@Test public void testInvalidParamConstructor3() throws GenstarException {
-		SyntheticPopulationGenerator dummyPopulation = new SyntheticPopulationGenerator("dummy population", 1);
+		MultipleRulesGenerator dummyPopulation = new MultipleRulesGenerator("dummy population", 1);
 
 		exception.expect(GenstarException.class);
 		new AttributeInferenceGenerationRule(dummyPopulation, "attribute inference generation rule", null, null);
 	}
 	
 	@Test public void testValidParamConstructor1() throws GenstarException {
-		SyntheticPopulationGenerator bondyInhabitantPopGenerator = new SyntheticPopulationGenerator("Population of Bondy's Inhabitants", 51000);
+		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -61,7 +68,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 	
 	@Test public void testSetValidInferenceData1() throws GenstarException {
-		SyntheticPopulationGenerator bondyInhabitantPopGenerator = new SyntheticPopulationGenerator("Population of Bondy's Inhabitants", 51000);
+		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -91,7 +98,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 	
 	@Test public void testSetInvalidInferenceData1() throws GenstarException { // null inference data
-		SyntheticPopulationGenerator bondyInhabitantPopGenerator = new SyntheticPopulationGenerator("Population of Bondy's Inhabitants", 51000);
+		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -115,7 +122,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 	
 	@Test public void testInvalidSetInferenceData2() throws GenstarException { // length(inferring attribute values) != length(rule.inferringAttribute.values)
-		SyntheticPopulationGenerator bondyInhabitantPopGenerator = new SyntheticPopulationGenerator("Population of Bondy's Inhabitants", 51000);
+		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -139,7 +146,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 
 	@Test public void testInvalidSetInferenceData3() throws GenstarException { // some inferring attributes values don't belong to (rule.inferringAttribute.values)
-		SyntheticPopulationGenerator bondyInhabitantPopGenerator = new SyntheticPopulationGenerator("Population of Bondy's Inhabitants", 51000);
+		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -170,7 +177,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 
 	@Test public void testInvalidSetInferenceData4() throws GenstarException { // some inferred attributes values don't belong to (rule.inferredAttribute.values)
-		SyntheticPopulationGenerator bondyInhabitantPopGenerator = new SyntheticPopulationGenerator("Population of Bondy's Inhabitants", 51000);
+		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -201,7 +208,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 
 	@Test public void testGetInferenceData() throws GenstarException {
-		SyntheticPopulationGenerator bondyInhabitantPopGenerator = new SyntheticPopulationGenerator("Population of Bondy's Inhabitants", 51000);
+		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -246,11 +253,11 @@ public class AttributeInferenceGenerationRuleTest {
 			entity = new Entity(generator.generate());
 			entity.putAttributeValue(inferringAttribute, new UniqueValue(DataType.INTEGER, Integer.toString((int) wage[0])));
 			
-			assertTrue(entity.getEntityAttributeValue(inferredAttribute.nameOnEntity) == null);
+			assertTrue(entity.getEntityAttributeValue(inferredAttribute.getNameOnEntity()) == null);
 			rule3.generate(entity);
 			
-			assertTrue(entity.getEntityAttributeValue(inferredAttribute.nameOnEntity).getAttributeValueOnData().equals(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]))));
-			assertTrue(entity.getEntityAttributeValue(inferredAttribute.nameOnEntity).getAttributeValueOnEntity().isValueMatch(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]))));
+			assertTrue(entity.getEntityAttributeValue(inferredAttribute.getNameOnEntity()).getAttributeValueOnData().equals(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]))));
+			assertTrue(entity.getEntityAttributeValue(inferredAttribute.getNameOnEntity()).getAttributeValueOnEntity().isValueMatch(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]))));
 		}
 	}
 }

@@ -9,6 +9,14 @@ import java.util.Map;
 import org.junit.Test;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 import ummisco.genstar.util.GenstarFileUtils;
 
 public class GenstarGeneratorTest_CanTho3 {
@@ -142,10 +150,10 @@ public class GenstarGeneratorTest_CanTho3 {
 	
 	public static final String HOUSEHOLD_POPULATION_NAME = "Household population";
 	
-	private ISyntheticPopulationGenerator inhabitantPopGenerator;
+	private IMultipleRulesGenerator inhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule inhabitantPopRule1, inhabitantPopRule2;
 	
-	private ISyntheticPopulationGenerator householdPopGenerator;
+	private IMultipleRulesGenerator householdPopGenerator;
 	private FrequencyDistributionGenerationRule householdPopRule1;
 	
 	// percentages of inhabitant population to generate
@@ -174,7 +182,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		// inhabitantGenerator +
 		
 		
-		inhabitantPopGenerator = new SyntheticPopulationGenerator("Inhabitant population generator", (int)TOTAL_INHABITANTS);
+		inhabitantPopGenerator = new MultipleRulesGenerator("Inhabitant population generator", (int)TOTAL_INHABITANTS);
 		inhabitantPopGenerator.setPopulationName(INHABITANT_POPULATION_NAME);
 		
 		// create attributes +
@@ -268,7 +276,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		
 		
 		// householdGenerator +
-		householdPopGenerator = new SyntheticPopulationGenerator("Household population generator", (int)TOTAL_HOUSEHOLDS); // data inconsistency?
+		householdPopGenerator = new MultipleRulesGenerator("Household population generator", (int)TOTAL_HOUSEHOLDS); // data inconsistency?
 		householdPopGenerator.setPopulationName(HOUSEHOLD_POPULATION_NAME);
 
 		// create attributes +

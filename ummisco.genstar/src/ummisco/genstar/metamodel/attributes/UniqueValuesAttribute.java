@@ -1,10 +1,11 @@
-package ummisco.genstar.metamodel;
+package ummisco.genstar.metamodel.attributes;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 
 public class UniqueValuesAttribute extends AbstractAttribute {
 		

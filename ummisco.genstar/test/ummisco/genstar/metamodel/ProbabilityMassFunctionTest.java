@@ -9,6 +9,9 @@ import org.junit.Test;
 
 import ummisco.genstar.data.NationalLevelDistribution;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.ProbabilityMassFunction;
+import ummisco.genstar.metamodel.attributes.RangeValue;
 
 public class ProbabilityMassFunctionTest {
 

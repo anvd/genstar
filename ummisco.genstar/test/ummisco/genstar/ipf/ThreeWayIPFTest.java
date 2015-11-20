@@ -19,11 +19,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
-import ummisco.genstar.metamodel.AttributeValue;
-import ummisco.genstar.metamodel.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarFactoryUtils;
 
@@ -41,7 +41,7 @@ public class ThreeWayIPFTest {
 	
 	@Before public void init() throws GenstarException {
 		
-		generator = new SyntheticPopulationGenerator("generator", 100);
+		generator = new MultipleRulesGenerator("generator", 100);
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		

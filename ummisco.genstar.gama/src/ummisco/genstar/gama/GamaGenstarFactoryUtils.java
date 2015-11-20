@@ -14,13 +14,14 @@ import ummisco.genstar.ipf.SampleDataGenerationRule;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
 import ummisco.genstar.metamodel.CustomGenerationRule;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.IMultipleRulesGenerator;
+import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarFactoryUtils;
 
 public class GamaGenstarFactoryUtils {
 
-	static void createSampleDataGenerationRule(final IScope scope, final ISyntheticPopulationGenerator generator, final String ruleName, final Properties sampleDataPropeties) throws GenstarException {
+	static void createSampleDataGenerationRule(final IScope scope, final ISingleRuleGenerator generator, final String ruleName, final Properties sampleDataPropeties) throws GenstarException {
 		
 		// Read the necessary data from the properties
 		
@@ -47,7 +48,7 @@ public class GamaGenstarFactoryUtils {
 		GenstarFactoryUtils.createSampleDataGenerationRule(generator, ruleName, sampleCSVFile, controlledAttributesCSVFile, controlledTotalsCSVFile, supplementaryAttributesCSVFile);
 	}
 
-	public static void createGenerationRulesFromCSVFile(final IScope scope, final ISyntheticPopulationGenerator generator, final GenstarCSVFile distributionsCSVFile) throws GenstarException {
+	public static void createGenerationRulesFromCSVFile(final IScope scope, final IMultipleRulesGenerator generator, final GenstarCSVFile distributionsCSVFile) throws GenstarException {
 		List<List<String>> fileContent = distributionsCSVFile.getContent();
 		if ( fileContent == null || fileContent.isEmpty() ) { throw new GenstarException("Invalid Generation Rule file: content is empty (file: " + distributionsCSVFile.getPath()  + ")"); }
 		int rows = fileContent.size();
@@ -97,7 +98,8 @@ public class GamaGenstarFactoryUtils {
 			} else if (ruleTypeName.equals(AttributeInferenceGenerationRule.RULE_TYPE_NAME)) {
 				GenstarFactoryUtils.createAttributeInferenceGenerationRule(generator, ruleName, ruleDataFile);
 			} else if (ruleTypeName.equals(SampleDataGenerationRule.RULE_TYPE_NAME)) {
-				createSampleDataGenerationRule(scope, generator, ruleName, properties);
+				throw new GenstarException("Unsupported generation rule type: " + SampleDataGenerationRule.RULE_TYPE_NAME);
+				//createSampleDataGenerationRule(scope, generator, ruleName, properties);
 			} else if (ruleTypeName.equals(CustomGenerationRule.RULE_TYPE_NAME)) { 
 				GenstarFactoryUtils.createCustomGenerationRule(generator, ruleName, ruleDataFilePathOrJavaClass);
 			} else {

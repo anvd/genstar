@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 
 public class Entity {
 

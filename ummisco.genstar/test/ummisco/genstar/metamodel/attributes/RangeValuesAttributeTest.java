@@ -1,4 +1,4 @@
-package ummisco.genstar.metamodel;
+package ummisco.genstar.metamodel.attributes;
 
 import static org.junit.Assert.*;
 
@@ -10,6 +10,12 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
 
 public class RangeValuesAttributeTest {
 
@@ -23,7 +29,7 @@ public class RangeValuesAttributeTest {
 	
 	@Test
 	public void testNullNameParamConstructor() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 		
 		exception.expect(GenstarException.class);
 		new RangeValuesAttribute(p, null, null, DataType.BOOL);
@@ -31,7 +37,7 @@ public class RangeValuesAttributeTest {
 	
 	@Test
 	public void testNullValueTypeConstructor() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 
 		exception.expect(GenstarException.class);
 		new RangeValuesAttribute(p, null, null, (Class)null);
@@ -39,7 +45,7 @@ public class RangeValuesAttributeTest {
 	
 	@Test
 	public void testAddRangeValue() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		assertTrue(attr.values().isEmpty());
@@ -52,7 +58,7 @@ public class RangeValuesAttributeTest {
 	
 	@Test
 	public void testAddNullRangeValue() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 
 		exception.expect(GenstarException.class);
@@ -61,7 +67,7 @@ public class RangeValuesAttributeTest {
 	
 	@Test
 	public void testAddNullRangeValues() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		exception.expect(GenstarException.class);
@@ -69,7 +75,7 @@ public class RangeValuesAttributeTest {
 	}
 	
 	@Test public void testConstainsInstanceOfAttributeValue() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		List<String> list1 = new ArrayList<String>();
@@ -84,7 +90,7 @@ public class RangeValuesAttributeTest {
 	}
 
 	@Test public void testCastDefaultValue() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER, UniqueValue.class);
 		
 		assertTrue(attr.getDefaultValue() instanceof UniqueValue);
@@ -92,7 +98,7 @@ public class RangeValuesAttributeTest {
 	}
 	
 	@Test public void testFindCorrespondingAttributeValue() throws GenstarException {
-		SyntheticPopulationGenerator p = new SyntheticPopulationGenerator("test population", 100);
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		List<String> list1 = new ArrayList<String>();

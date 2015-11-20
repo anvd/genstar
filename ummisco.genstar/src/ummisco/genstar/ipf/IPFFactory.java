@@ -3,7 +3,7 @@ package ummisco.genstar.ipf;
 import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 
 public class IPFFactory {
 	

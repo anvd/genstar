@@ -1,6 +1,6 @@
 package ummisco.genstar.ipf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +11,19 @@ import mockit.Deencapsulation;
 import org.junit.Test;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
-import ummisco.genstar.metamodel.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.ISingleRuleGenerator;
+import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.SyntheticPopulation;
-import ummisco.genstar.metamodel.SyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarFactoryUtils;
 
 public class SampleDataGenerationRuleTest {
 
 	@Test public void initializeSampleDataGenerationRuleSuccessfully() throws GenstarException {
-		ISyntheticPopulationGenerator generator = new SyntheticPopulationGenerator("generator", 100); 
+		ISingleRuleGenerator generator = new SingleRuleGenerator("generator"); 
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -41,7 +41,7 @@ public class SampleDataGenerationRuleTest {
 	}
 	
 	@Test public void testGenerate() throws GenstarException {
-		ISyntheticPopulationGenerator generator = new SyntheticPopulationGenerator("generator"); 
+		ISingleRuleGenerator generator = new SingleRuleGenerator("generator"); 
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -87,7 +87,7 @@ public class SampleDataGenerationRuleTest {
 	}
 	
 	@Test(expected = GenstarException.class) public void testGenerateFailed() throws GenstarException {
-		ISyntheticPopulationGenerator generator = new SyntheticPopulationGenerator("generator"); 
+		ISingleRuleGenerator generator = new SingleRuleGenerator("generator"); 
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -108,7 +108,7 @@ public class SampleDataGenerationRuleTest {
 	
 	@Test public void testBuildSampleEntityCategories() throws GenstarException {
 		
-		ISyntheticPopulationGenerator generator = new SyntheticPopulationGenerator("generator"); 
+		ISingleRuleGenerator generator = new SingleRuleGenerator("generator"); 
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		

@@ -15,17 +15,17 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.AbstractAttribute;
-import ummisco.genstar.metamodel.AttributeValue;
-import ummisco.genstar.metamodel.AttributeValuesFrequency;
-import ummisco.genstar.metamodel.DataType;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.RangeValue;
-import ummisco.genstar.metamodel.RangeValuesAttribute;
-import ummisco.genstar.metamodel.SyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.UniqueValue;
-import ummisco.genstar.metamodel.UniqueValuesAttribute;
+import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
 public class GenstarFactoryUtilsTest {
 
@@ -142,7 +142,7 @@ public class GenstarFactoryUtilsTest {
 		// input: distributionFormatCSVFile & sampleDataCSVFile
 		// output: the newly created FrequencyDistributionGenerationRule
 		
-		ISyntheticPopulationGenerator generator = new SyntheticPopulationGenerator("dummy generator", 10);
+		ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("dummy generator", 10);
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateFrequencyDistributionGenerationFromSampleData/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		

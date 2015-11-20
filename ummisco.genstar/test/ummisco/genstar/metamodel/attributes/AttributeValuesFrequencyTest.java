@@ -1,4 +1,4 @@
-package ummisco.genstar.metamodel;
+package ummisco.genstar.metamodel.attributes;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -12,11 +12,23 @@ import org.junit.Test;
 
 import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.Entity;
+import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
+import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
 public class AttributeValuesFrequencyTest {
 
 	@Test public void testIsMatchDataSet() throws GenstarException {
-		SyntheticPopulationGenerator bondyPopulationGenerator = new SyntheticPopulationGenerator("Population of Bondy", 100);
+		MultipleRulesGenerator bondyPopulationGenerator = new MultipleRulesGenerator("Population of Bondy", 100);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulationGenerator, "age_range_1", "age", DataType.INTEGER);
 		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
@@ -77,7 +89,7 @@ public class AttributeValuesFrequencyTest {
 	}
 	
 	@Test public void testIsMatchEntity() throws GenstarException {
-		ISyntheticPopulationGenerator bondyPopulationGenerator = new SyntheticPopulationGenerator("Population of Bondy", 100);
+		ISyntheticPopulationGenerator bondyPopulationGenerator = new MultipleRulesGenerator("Population of Bondy", 100);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulationGenerator, "age_range_1", "age", DataType.INTEGER);
 		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
