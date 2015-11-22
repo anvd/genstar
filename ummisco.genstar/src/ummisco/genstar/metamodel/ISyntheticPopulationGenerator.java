@@ -1,6 +1,6 @@
 package ummisco.genstar.metamodel;
 
-import java.util.Set;
+import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -22,7 +22,7 @@ public interface ISyntheticPopulationGenerator { // FIXME change class name -> I
 	
 	public abstract void setNbOfEntities(final int nbOfEntities);
 
-	public abstract Set<AbstractAttribute> getAttributes();
+	public abstract List<AbstractAttribute> getAttributes();
 
 	public abstract boolean containAttribute(final AbstractAttribute attribute);
 

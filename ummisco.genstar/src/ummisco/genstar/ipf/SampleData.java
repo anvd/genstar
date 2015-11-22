@@ -68,7 +68,6 @@ public class SampleData {
 			sampleEntities.add(new SampleEntity(sampleAttributes));
 		}
 	}
-
 	
 	public int countMatchingEntities(final Map<AbstractAttribute, AttributeValue> matchingCriteria) {
 		int matchingIndividuals = 0;
@@ -83,7 +82,6 @@ public class SampleData {
 		
 		return matchings;
 	}
-		
 	
 	public List<SampleEntity> getSampleEntities() {
 		return sampleEntities;

@@ -1,6 +1,8 @@
 package ummisco.genstar.metamodel;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -17,7 +19,8 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 	
 	protected String populationName = "no-name population";
 	
-	protected SortedMap<String, AbstractAttribute> attributes; // <attribute name on data, attribute>
+//	protected SortedMap<String, AbstractAttribute> attributes; // <attribute name on data, attribute>
+	protected List<AbstractAttribute> attributes;
 
 	protected int nbOfEntities = 100;
 
@@ -26,7 +29,8 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 		if (generatorName == null || generatorName.trim().length() == 0) { throw new GenstarException("'generatorName' parameter can neither be null nor empty"); }
 		
 		this.generatorName = generatorName;
-		this.attributes = new TreeMap<String, AbstractAttribute>();
+//		this.attributes = new TreeMap<String, AbstractAttribute>();
+		this.attributes = new ArrayList<AbstractAttribute>();
 	}
 
 	@Override public void setID(final int id) {
@@ -59,25 +63,28 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 		this.nbOfEntities = nbOfEntities;
 	}
 
-	@Override public Set<AbstractAttribute> getAttributes() {
-		return new HashSet<AbstractAttribute>(attributes.values());
+	@Override public List<AbstractAttribute> getAttributes() {
+		return new ArrayList<AbstractAttribute>(attributes);
 	}
 	
 	@Override public boolean containAttribute(final AbstractAttribute attribute) {
 		if (attribute == null) { return false; }
 		
-		return attributes.containsValue(attribute);
+		return attributes.contains(attribute);
 	}
 	
 	@Override public boolean containAttribute(final String dataAttributeName) {
 		if (dataAttributeName == null) { return false; }
 		
-		return attributes.keySet().contains(dataAttributeName);
+		for (AbstractAttribute attr : attributes) { if (attr.getNameOnData().equals(dataAttributeName)) return true; }
+		return false;
 	}
 	
 	@Override public AbstractAttribute getAttribute(final String attributeNameOnData) {
 		if (attributeNameOnData == null) { throw new IllegalArgumentException("'dataAttributeName' parameter can not be null"); }
-		return attributes.get(attributeNameOnData);
+
+		for (AbstractAttribute attr : attributes) { if (attr.getNameOnData().equals(attributeNameOnData)) return attr; }
+		return null;
 	}
 	
 	@Override public void addAttribute(final AbstractAttribute attribute) throws GenstarException {
@@ -87,7 +94,7 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 				"' population. Because attribute's population is " + attribute.getPopulationGenerator() + " (different from " + this + " population)."); }
 		
 		
-		attributes.put(attribute.getNameOnData(), attribute);
+		attributes.add(attribute);
 	}
 	
 	@Override public void removeAttribute(final AbstractAttribute attribute) {

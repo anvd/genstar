@@ -11,10 +11,6 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 	
 	protected SortedMap<Integer, GenerationRule> generationRules; // rule order begins by 0
 
-//	public MultipleRulesGenerator(final String generatorName) throws GenstarException {
-//		this(generatorName, 100);
-//	}
-//	
 	public MultipleRulesGenerator(final String generatorName, final int nbOfEntities) throws GenstarException {
 		this(generatorName, nbOfEntities, "no-name population");
 	}
