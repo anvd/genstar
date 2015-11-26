@@ -50,7 +50,7 @@ public class TwoWayIPF extends IPF {
 	
 	
 	private void initializeData() throws GenstarException {
-		SampleData sampleData = generationRule.getSampleData();
+		ISampleData sampleData = generationRule.getSampleData();
 		
 		data = new double[rowAttributeValues.size()][columnAttributeValues.size()];
 

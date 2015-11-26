@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
@@ -39,7 +40,7 @@ public class TwoWayIPFTest {
 	TwoWayIPF ipf;
 	
 	@Before public void init() throws GenstarException {
-		generator = new MultipleRulesGenerator("generator", 100);
+		generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/two_way/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -53,20 +54,17 @@ public class TwoWayIPFTest {
 			generationRule.getGenerator(); result = generator;
 			generationRule.getControlledAttributes(); result = controlledAttributes;
 			
-			generationRule.findAttributeByNameOnData(anyString);
+			generationRule.getAttribute(anyString);
 			result = new Delegate() {
 				AbstractAttribute delegateMethod(final String attributeName) {
 					return generator.getAttribute(attributeName);
 				}
 			};
 			
-			generationRule.getSampleDataFile();
-			result = sampleDataFile;
-			
 			generationRule.getSampleData();
 			result = new Delegate() {
 				SampleData getSampleDataDelegate() throws GenstarException {
-					return new SampleData(generationRule);
+					return new SampleData(generationRule, sampleDataFile);
 				}
 			};
 			
@@ -110,7 +108,7 @@ public class TwoWayIPFTest {
 		assertTrue(data.length == rowAttributeValues.size());
 		assertTrue(data[0].length == colAttributeValues.size());
 		
-		SampleData sampleData = generationRule.getSampleData();
+		ISampleData sampleData = generationRule.getSampleData();
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		int row=0, col=0;
 		for (AttributeValue rowValue : ipf.getAttributeValues(0)) {

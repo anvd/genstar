@@ -129,7 +129,7 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	}
 
 	@Override
-	public AbstractAttribute findAttributeByNameOnData(final String attributeNameOnData) {
+	public AbstractAttribute getAttribute(final String attributeNameOnData) {
 		if (inferringAttribute.getNameOnData().equals(attributeNameOnData)) { return inferringAttribute; }
 		if (inferredAttribute.getNameOnData().equals(attributeNameOnData)) { return inferredAttribute; }
 		

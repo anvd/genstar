@@ -35,9 +35,7 @@ public class SampleDataTest {
 		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/people_sample.csv", true);
 		
 		new Expectations() {{
-			generationRule.getSampleDataFile(); result = sampleDataCSVFile;
-			
-			generationRule.findAttributeByNameOnData(anyString);
+			generationRule.getAttribute(anyString);
 			result = new Delegate() {
 				AbstractAttribute delegateMethod(final String attributeName) {
 					return generator.getAttribute(attributeName);
@@ -45,7 +43,7 @@ public class SampleDataTest {
 			};
 		}};
 		
-		SampleData sampleData = new SampleData(generationRule);
+		SampleData sampleData = new SampleData(generationRule, sampleDataCSVFile);
 		assertTrue(sampleData.getSampleEntities().size() == 4);
 	}
 	
@@ -58,9 +56,7 @@ public class SampleDataTest {
 		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/people_sample.csv", true);
 		
 		new Expectations() {{
-			generationRule.getSampleDataFile(); result = sampleDataCSVFile;
-			
-			generationRule.findAttributeByNameOnData(anyString);
+			generationRule.getAttribute(anyString);
 			result = new Delegate() {
 				AbstractAttribute delegateMethod(final String attributeName) {
 					return generator.getAttribute(attributeName);
@@ -68,7 +64,7 @@ public class SampleDataTest {
 			};
 		}};
 		
-		SampleData sampleData = new SampleData(generationRule);
+		SampleData sampleData = new SampleData(generationRule, sampleDataCSVFile);
 		/*
 			Household Size,Household Income,Household Type,Number Of Cars
 			1,High,type1,1

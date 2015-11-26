@@ -467,8 +467,8 @@ public class FrequencyDistributionGenerationRuleTest {
 		
 		distribution1.generateAttributeValuesFrequencies();
 		
-		AbstractAttribute ageRangeAttrBiz = distribution1.findAttributeByNameOnData("age_range_1");
-		AbstractAttribute sexAttrBiz = distribution1.findAttributeByNameOnData("sex");
+		AbstractAttribute ageRangeAttrBiz = distribution1.getAttribute("age_range_1");
+		AbstractAttribute sexAttrBiz = distribution1.getAttribute("sex");
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		AttributeValue sexAttrValueBiz;
 		for (int[] range : BondyData.age_ranges_1) {

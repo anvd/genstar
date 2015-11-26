@@ -1,6 +1,6 @@
 package ummisco.genstar.util;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,12 +12,18 @@ import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
+import msi.gama.common.util.FileUtils;
+import msi.gama.util.file.CsvWriter;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.ipf.GroupComponentSampleData;
+import ummisco.genstar.ipf.SampleData;
+import ummisco.genstar.ipf.SampleDataGenerationRule;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
@@ -263,13 +269,17 @@ public class GenstarFactoryUtilsTest {
 		String[] header = generatedGroups.get(0);
 		assertTrue(header.length == groupAttributes.size());
 		for (int i=0; i<header.length; i++) { assertTrue(header[i].equals(groupAttributes.get(i).getNameOnData())); }
+		
+		// write to CSV file
+//		try {
+//			CsvWriter writer = new CsvWriter("test_data/ummisco/genstar/util/testGenerateGroupEntities/generated_groups.csv");
+//			for ( String[] ss : generatedGroups ) { writer.writeRecord(ss); }
+//			writer.close();
+//		} catch (Exception e) {
+//			throw new GenstarException(e);
+//		}
 	}
 	
-	/*
-	private static List<String[]> generateComponentEntities(final List<AbstractAttribute> componentAttributes, 
-			final AbstractAttribute groupIdAttributeOnComponentEntity, final List<String[]> groupEntities, 
-			final int groupIdAttributeIndexOnGroupEntity, final int groupSizeAttributeIndex) {
-	 */
 	@Test public void testGenerateComponentEntities() throws GenstarException {
 		
 		// generate group entities
@@ -316,11 +326,7 @@ public class GenstarFactoryUtilsTest {
 	}
 	
 	
-	/*
-generateComplexSampleData(final GenstarCSVFile groupAttributesFile, final GenstarCSVFile componentAttributesFile,
-			final String groupIdAttributeNameOnGroupEntity, final String groupIdAttributeNameOnComponentEntity, final String groupSizeAttributeName, 
-			final int nbOfGroupEntities, final String groupOutputCSVFilePath, final String componentOutputCSVFilePath)	 */
-	@Test public void testGenerateComplexSampleData() throws GenstarException {
+	@Test public void testGenerateGroupComponentSampleData() throws GenstarException {
 
 		GenstarCSVFile groupAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateComplexSampleData/group_attributes.csv", true);
 		GenstarCSVFile componentAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateComplexSampleData/component_attributes.csv", true);
@@ -333,7 +339,7 @@ generateComplexSampleData(final GenstarCSVFile groupAttributesFile, final Gensta
 		String groupOutputCSVFilePath = "test_data/ummisco/genstar/util/testGenerateComplexSampleData/generated_group_sample.csv";
 		String componentOutputCSVFilePath = "test_data/ummisco/genstar/util/testGenerateComplexSampleData/generated_component_sample.csv";
 		
-		GenstarFactoryUtils.generateComplexSampleData(groupAttributesFile, componentAttributesFile, groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities, groupOutputCSVFilePath, componentOutputCSVFilePath);
+		GenstarFactoryUtils.generateGroupComponentSampleData(groupAttributesFile, componentAttributesFile, groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities, groupOutputCSVFilePath, componentOutputCSVFilePath);
 		
 		
 		GenstarCSVFile groupOutputCSVFile = new GenstarCSVFile(groupOutputCSVFilePath, true);
@@ -342,5 +348,56 @@ generateComplexSampleData(final GenstarCSVFile groupAttributesFile, final Gensta
 		assertTrue(groupOutputCSVFile.getRows() == nbOfGroupEntities + 1);
 		assertTrue(groupOutputCSVFile.getColumns() == (groupAttributesFile.getRows() - 1));
 		assertTrue(componentOutputCSVFile.getColumns() == (componentAttributesFile.getRows() - 1));
+	}
+	
+	
+	@Test public void testCreateSampleDataGenerationRule() throws GenstarException {
+		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateSampleDataGenerationRule/attributes.csv", true);
+		
+		ISingleRuleGenerator generator = new SingleRuleGenerator("single rule generator");
+		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesFile);
+		
+		GenstarCSVFile sampleFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateSampleDataGenerationRule/sample_data.csv", true);
+		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateSampleDataGenerationRule/controlled_attributes.csv", false);
+		GenstarCSVFile controlledTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateSampleDataGenerationRule/control_totals.csv", false);
+		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateSampleDataGenerationRule/supplementary_attributes.csv", false);
+		
+		GenstarFactoryUtils.createSampleDataGenerationRule(generator, "sample data generation rule", sampleFile, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile);
+		
+		SampleDataGenerationRule rule = (SampleDataGenerationRule) generator.getGenerationRule();
+		assertTrue(rule.getSampleData() instanceof SampleData);
+		assertTrue(generator.getNbOfEntities() == rule.getIPF().getNbOfEntitiesToGenerate());
+	}
+	
+	
+	/*
+	public static void createGroupComponentSampleDataGenerationRule(final ISingleRuleGenerator groupGenerator, final String ruleName, final GenstarCSVFile groupSampleFile,
+			final GenstarCSVFile groupControlledAttributesFile, final GenstarCSVFile groupControlledTotalsFile, final GenstarCSVFile groupSupplementaryAttributesFile,
+			final GenstarCSVFile componentSampleDataFile, final GenstarCSVFile componentAttributesFile, final String groupIdAttributeNameOnGroup,
+			final String groupIdAttributeNameOnComponent) throws GenstarException {
+	 */
+	@Test public void testCreateGroupComponentSampleDataGenerationRule() throws GenstarException {
+		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateGroupComponentSampleDataGenerationRule/group_attributes.csv", true);
+		
+		SingleRuleGenerator groupGenerator = new SingleRuleGenerator("group rule generator");
+		GenstarFactoryUtils.createAttributesFromCSVFile(groupGenerator, attributesFile);
+		
+		
+		GenstarCSVFile groupSampleFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateGroupComponentSampleDataGenerationRule/group_sample.csv", true);
+		GenstarCSVFile groupControlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateGroupComponentSampleDataGenerationRule/group_controlled_attributes.csv", false);
+		GenstarCSVFile groupControlledTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateGroupComponentSampleDataGenerationRule/group_control_totals.csv", false);
+		GenstarCSVFile groupSupplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateGroupComponentSampleDataGenerationRule/group_supplementary_attributes.csv", false);
+		
+		GenstarCSVFile componentSampleFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateGroupComponentSampleDataGenerationRule/component_sample.csv", true);
+		GenstarCSVFile componentAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateGroupComponentSampleDataGenerationRule/component_attributes.csv", true);
+		
+		String groupIdAttributeNameOnGroup = "Household ID";
+		String groupIdAttributeNameOnComponent = "Household ID";
+		
+		GenstarFactoryUtils.createGroupComponentSampleDataGenerationRule(groupGenerator, "group component sample data generation rule", groupSampleFile, groupControlledAttributesFile, groupControlledTotalsFile, groupSupplementaryAttributesFile, componentSampleFile, componentAttributesFile, groupIdAttributeNameOnGroup, groupIdAttributeNameOnComponent);
+		
+		SampleDataGenerationRule rule = (SampleDataGenerationRule)groupGenerator.getGenerationRule();
+		assertTrue(rule.getSampleData() instanceof GroupComponentSampleData);
+		assertTrue(rule.getIPF().getNbOfEntitiesToGenerate() == groupGenerator.getNbOfEntities());
 	}
 }

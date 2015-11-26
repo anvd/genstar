@@ -15,6 +15,9 @@ import java.util.TreeMap;
 
 import msi.gama.util.file.CsvWriter;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.ipf.GroupComponentSampleData;
+import ummisco.genstar.ipf.ISampleData;
+import ummisco.genstar.ipf.SampleData;
 import ummisco.genstar.ipf.SampleDataGenerationRule;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
 import ummisco.genstar.metamodel.CustomGenerationRule;
@@ -120,6 +123,13 @@ public class GenstarFactoryUtils {
 	
 	public static final class SAMPLE_DATA_PROPERTIES_FILE_FORMAT {
 		
+		public static final int SINGLE_SAMPLE_DATA_NUMBER_OF_PROPERTIES = 5;
+		
+		public static final int GROUP_COMPONENT_SAMPLE_DATA_NUMBER_OF_PROPERTIES = 9;
+		
+		
+		public static final String ATTRIBUTES_PROPERTY = "ATTRIBUTES";
+		
 		public static final String SAMPLE_DATA_PROPERTY = "SAMPLE_DATA";
 		
 		public static final String CONTROLLED_ATTRIBUTES_PROPERTY = "CONTROLLED_ATTRIBUTES";
@@ -127,6 +137,14 @@ public class GenstarFactoryUtils {
 		public static final String CONTROLLED_TOTALS_PROPERTY = "CONTROLLED_TOTALS";
 		
 		public static final String SUPPLEMENTARY_ATTRIBUTES_PROPERTY = "SUPPLEMENTARY_ATTRIBUTES"; 
+		
+		public static final String COMPONENT_SAMPLE_DATA_PROPERTY = "COMPONENT_SAMPLE_DATA";
+		
+		public static final String COMPONENT_ATTRIBUTES_PROPERTY = "COMPONENT_ATTRIBUTES";
+		
+		public static final String GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_GROUP";
+		
+		public static final String GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_COMPONENT";
 	}
 
 	
@@ -401,12 +419,45 @@ public class GenstarFactoryUtils {
 	
 	
 	public static void createSampleDataGenerationRule(final ISingleRuleGenerator generator, final String ruleName, final GenstarCSVFile sampleFile,
-			final GenstarCSVFile controlledAttributesFile, final GenstarCSVFile controlledTotalsFile,
+			final GenstarCSVFile controlledAttributesFile, final GenstarCSVFile controlledTotalsFile, 
 			final GenstarCSVFile supplementaryAttributesFile) throws GenstarException {
 		
-		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, ruleName, sampleFile, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile);
+		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, ruleName, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile);
+		
+		ISampleData sampleData = new SampleData(rule, sampleFile);
+		rule.setSampleData(sampleData);
+		
 		generator.setGenerationRule(rule);
 		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
+	}
+	
+	
+	public static void createGroupComponentSampleDataGenerationRule(final ISingleRuleGenerator groupGenerator, final String ruleName, final GenstarCSVFile groupSampleFile,
+			final GenstarCSVFile groupControlledAttributesFile, final GenstarCSVFile groupControlledTotalsFile, final GenstarCSVFile groupSupplementaryAttributesFile,
+			final GenstarCSVFile componentSampleFile, final GenstarCSVFile componentAttributesFile, final String groupIdAttributeNameOnGroup,
+			final String groupIdAttributeNameOnComponent) throws GenstarException {
+		
+		SampleDataGenerationRule rule = new SampleDataGenerationRule(groupGenerator, ruleName, groupControlledAttributesFile, groupControlledTotalsFile, groupSupplementaryAttributesFile);
+		
+		ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("Component Generator");
+		createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		
+		AbstractAttribute groupIdAttributeOnGroup = rule.getAttribute(groupIdAttributeNameOnGroup);
+		if (groupIdAttributeOnGroup == null) { throw new GenstarException("'" + groupIdAttributeNameOnGroup + "' is not a valid attribute"); }
+		groupIdAttributeOnGroup.setIdentity(true);
+		
+		AbstractAttribute groupIdAttributeOnComponent = componentGenerator.getAttribute(groupIdAttributeNameOnComponent);
+		if (groupIdAttributeOnComponent == null) { throw new GenstarException("'" + groupIdAttributeOnComponent + "' is not a valid attribute"); }
+		groupIdAttributeOnComponent.setIdentity(true);
+		
+		ISampleData groupSampleData = new SampleData(rule, groupSampleFile);
+		ISampleData componentSampleData = new SampleData(componentGenerator, componentSampleFile);
+		
+		ISampleData groupComponentSampleData = new GroupComponentSampleData(groupSampleData, componentSampleData, groupIdAttributeOnGroup, groupIdAttributeOnComponent);
+		rule.setSampleData(groupComponentSampleData);
+
+		groupGenerator.setGenerationRule(rule);
+		groupGenerator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
 	}
 
 		
@@ -499,7 +550,7 @@ public class GenstarFactoryUtils {
 		SortedMap<Integer, AbstractAttribute> attributeIndexes = new TreeMap<Integer, AbstractAttribute>();
 		for (int col=0; col<sampleDataHeader.size(); col++) {
 			String attributeNameOnSample = sampleDataHeader.get(col);
-			AbstractAttribute attribute = generationRule.findAttributeByNameOnData(attributeNameOnSample);
+			AbstractAttribute attribute = generationRule.getAttribute(attributeNameOnSample);
 			if (attribute != null) {
 				attributeIndexes.put(col, attribute);
 			}
@@ -558,9 +609,15 @@ public class GenstarFactoryUtils {
 		
 		Map<AbstractAttribute, List<AttributeValue>> attributeValues = new HashMap<AbstractAttribute, List<AttributeValue>>();
 		Map<AbstractAttribute, Integer> attributeValueSizes = new HashMap<AbstractAttribute, Integer>();
+		Map<AbstractAttribute, Boolean> valueOnDataSameAsValueOnEntity = new HashMap<AbstractAttribute, Boolean>();
+		Map<AbstractAttribute, Class> valueOnEntityClasses = new HashMap<AbstractAttribute, Class>();
 		for (AbstractAttribute attr : attributes) { 
 			attributeValues.put(attr, new ArrayList<AttributeValue>(attr.values())); 
 			attributeValueSizes.put(attr, attr.values().size());
+			valueOnEntityClasses.put(attr, attr.getValueClassOnEntity());
+			
+			if (attr.getValueClassOnData().equals(attr.getValueClassOnEntity())) { valueOnDataSameAsValueOnEntity.put(attr, true); }
+			else { valueOnDataSameAsValueOnEntity.put(attr, false); }
 		}
 		
 		// 1. write attributes' name as the first line of fileContent
@@ -572,13 +629,19 @@ public class GenstarFactoryUtils {
 		String aRow[];
 		int size;
 		List<AttributeValue> values;
+		AttributeValue valueOnData;
 		for (int i=0; i<entities; i++) {
 			aRow = new String[columns];
 			for (int col=0; col<attributes.size(); col++) {
 				values = attributeValues.get(attributes.get(col));
 				size = attributeValueSizes.get(attributes.get(col));
+				valueOnData = values.get(SharedInstances.RandomNumberGenerator.nextInt(size));
 				
-				aRow[col] = values.get(SharedInstances.RandomNumberGenerator.nextInt(size)).toCSVString();
+				if (valueOnDataSameAsValueOnEntity.get(attributes.get(col))) {
+					aRow[col] = valueOnData.toCSVString();
+				} else { // valueOnData != valueOnEntity
+					aRow[col] = valueOnData.cast(valueOnEntityClasses.get(attributes.get(col))).toCSVString();
+				}
 			}
 			
 			fileContent.add(aRow);
@@ -595,7 +658,7 @@ public class GenstarFactoryUtils {
 	}
 	
 	
-	public static void generateComplexSampleData(final GenstarCSVFile groupAttributesFile, final GenstarCSVFile componentAttributesFile,
+	public static void generateGroupComponentSampleData(final GenstarCSVFile groupAttributesFile, final GenstarCSVFile componentAttributesFile,
 			final String groupIdAttributeNameOnGroupEntity, final String groupIdAttributeNameOnComponentEntity, final String groupSizeAttributeName, 
 			final int nbOfGroupEntities, final String groupOutputCSVFilePath, final String componentOutputCSVFilePath) throws GenstarException {
 		
@@ -616,12 +679,14 @@ public class GenstarFactoryUtils {
 		// 2. retrieve reference to groupIdAttributeOnGroupEntity
 		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttribute(groupIdAttributeNameOnGroupEntity);
 		if (groupIdAttributeOnGroupEntity == null) { throw new GenstarException(groupIdAttributeNameOnGroupEntity + " is considered as group identity attribute but not found among the available group attributes"); }
+		groupIdAttributeOnGroupEntity.setIdentity(true);
 		// Important Note: groupIdOnGroupAttribute is an integer, beginning with 0, with 1 as increment
 		// ID should not be defined in the attributesFile?
 		
 		// 3.  retrieve reference to groupSizeAttribute
 		AbstractAttribute groupSizeAttribute = groupGenerator.getAttribute(groupSizeAttributeName);
 		if (groupSizeAttribute == null) { throw new GenstarException(groupSizeAttributeName + " is considered as group size attribute but not found among the available group attributes"); }
+		if (!groupSizeAttribute.getValueClassOnEntity().equals(UniqueValue.class)) { throw new GenstarException(groupSizeAttributeName + " attribute must have unique value"); }
 		if (!groupSizeAttribute.getDataType().equals(DataType.INTEGER)) { throw new GenstarException(groupSizeAttributeName + " attribute must have " + DataType.INTEGER.getName() + " as data type"); }
 		
 		// 4. cache indexes of groupIdAttributeOnGroupEntity and groupSizeAttribute
@@ -643,6 +708,7 @@ public class GenstarFactoryUtils {
 		
 		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttribute(groupIdAttributeNameOnComponentEntity);
 		if (groupIdAttributeOnComponentEntity == null) { throw new GenstarException(groupIdAttributeNameOnComponentEntity + " is considered as group identity attribute on component but not found among the available component attributes"); }
+		groupIdAttributeOnComponentEntity.setIdentity(true);
 		
 		// 7. generate component entities
 		List<String[]> generatedGroupEntitiesWithoutHeader = new ArrayList<String[]>(generatedGroupEntities);
@@ -667,7 +733,7 @@ public class GenstarFactoryUtils {
 	}
 	
 
-	private static List<String[]> generateGroupEntities(final List<AbstractAttribute> groupAttributes, final AbstractAttribute groupIdAttributeOnGroupEntity, final int nbOfGroupEntities) {
+	private static List<String[]> generateGroupEntities(final List<AbstractAttribute> groupAttributes, final AbstractAttribute groupIdAttributeOnGroupEntity, final int nbOfGroupEntities) throws GenstarException {
 		int groupColumns = groupAttributes.size();
 		List<String[]> groupFileContent = new ArrayList<String[]>();
 		int groupIdValue = 0;
@@ -686,9 +752,15 @@ public class GenstarFactoryUtils {
 		// 1. cache attribute values and their positions for later use
 		Map<AbstractAttribute, List<AttributeValue>> groupAttributeValues = new HashMap<AbstractAttribute, List<AttributeValue>>();
 		Map<AbstractAttribute, Integer> groupAttributeValueSizes = new HashMap<AbstractAttribute, Integer>();
-		for (AbstractAttribute attr : groupAttributes) { 
+		Map<AbstractAttribute, Boolean> valueOnDataSameAsValueOnEntity = new HashMap<AbstractAttribute, Boolean>();
+		Map<AbstractAttribute, Class> valueOnEntityClasses = new HashMap<AbstractAttribute, Class>();
+		for (AbstractAttribute attr : groupAttributes) {
 			groupAttributeValues.put(attr, new ArrayList<AttributeValue>(attr.values())); 
 			groupAttributeValueSizes.put(attr, attr.values().size());
+			valueOnEntityClasses.put(attr, attr.getValueClassOnEntity());
+			
+			if (attr.getValueClassOnData().equals(attr.getValueClassOnEntity())) { valueOnDataSameAsValueOnEntity.put(attr, true); }
+			else { valueOnDataSameAsValueOnEntity.put(attr, false); }
 		}
 
 		// 2. write group attribute names as the first line of group file content
@@ -700,6 +772,7 @@ public class GenstarFactoryUtils {
 		String aRowOfGroup[];
 		int valuesSize;
 		List<AttributeValue> values;
+		AttributeValue valueOnData;
 		for (int i=0; i<nbOfGroupEntities; i++) {
 			aRowOfGroup = new String[groupColumns];
 			
@@ -710,8 +783,13 @@ public class GenstarFactoryUtils {
 				} else {
 					values = groupAttributeValues.get(groupAttributes.get(col));
 					valuesSize = groupAttributeValueSizes.get(groupAttributes.get(col));
+					valueOnData = values.get(SharedInstances.RandomNumberGenerator.nextInt(valuesSize));
 					
-					aRowOfGroup[col] = values.get(SharedInstances.RandomNumberGenerator.nextInt(valuesSize)).toCSVString();
+					if (valueOnDataSameAsValueOnEntity.get(groupAttributes.get(col))) {
+						aRowOfGroup[col] = valueOnData.toCSVString();
+					} else { // valueOnData != valueOnEntity
+						aRowOfGroup[col] = valueOnData.cast(valueOnEntityClasses.get(groupAttributes.get(col))).toCSVString();
+					}
 				}
 			}
 			
@@ -724,7 +802,7 @@ public class GenstarFactoryUtils {
 
 	private static List<String[]> generateComponentEntities(final List<AbstractAttribute> componentAttributes, 
 			final AbstractAttribute groupIdAttributeOnComponentEntity, final List<String[]> groupEntities, 
-			final int groupIdAttributeIndexOnGroupEntity, final int groupSizeAttributeIndex) {
+			final int groupIdAttributeIndexOnGroupEntity, final int groupSizeAttributeIndex) throws GenstarException {
 		
 		List<String[]> componentFileContent = new ArrayList<String[]>();		
 		
@@ -740,9 +818,15 @@ public class GenstarFactoryUtils {
 		// 1. cache attribute values and their positions for later use
 		Map<AbstractAttribute, List<AttributeValue>> componentAttributeValues = new HashMap<AbstractAttribute, List<AttributeValue>>();
 		Map<AbstractAttribute, Integer> componentAttributeValueSizes = new HashMap<AbstractAttribute, Integer>();
+		Map<AbstractAttribute, Boolean> valueOnDataSameAsValueOnEntity = new HashMap<AbstractAttribute, Boolean>();
+		Map<AbstractAttribute, Class> valueOnEntityClasses = new HashMap<AbstractAttribute, Class>();
 		for (AbstractAttribute attr : componentAttributes) { 
 			componentAttributeValues.put(attr, new ArrayList<AttributeValue>(attr.values())); 
 			componentAttributeValueSizes.put(attr, attr.values().size());
+			valueOnEntityClasses.put(attr, attr.getValueClassOnEntity());
+			
+			if (attr.getValueClassOnData().equals(attr.getValueClassOnEntity())) { valueOnDataSameAsValueOnEntity.put(attr, true); }
+			else { valueOnDataSameAsValueOnEntity.put(attr, false); }
 		}
 		 
 		// 2. write component attribute names as the first line of component file content
@@ -755,6 +839,7 @@ public class GenstarFactoryUtils {
 		int groupSize;
 		int valuesSize;
 		List<AttributeValue> values;
+		AttributeValue valueOnData;
 		for (String[] groupEntity : groupEntities) {
 			groupID = groupEntity[groupIdAttributeIndexOnGroupEntity];
 			groupSize = Integer.parseInt(groupEntity[groupSizeAttributeIndex]);
@@ -769,8 +854,13 @@ public class GenstarFactoryUtils {
 					} else { // other columns/fields
 						values = componentAttributeValues.get(componentAttributes.get(col));
 						valuesSize = componentAttributeValueSizes.get(componentAttributes.get(col));
-						
-						componentEntity[col] = values.get(SharedInstances.RandomNumberGenerator.nextInt(valuesSize)).toCSVString();
+						valueOnData = values.get(SharedInstances.RandomNumberGenerator.nextInt(valuesSize));
+					
+						if (valueOnDataSameAsValueOnEntity.get(componentAttributes.get(col))) {
+							componentEntity[col] = valueOnData.toCSVString();
+						} else { // valueOnData != valueOnEntity
+							componentEntity[col] = valueOnData.cast(valueOnEntityClasses.get(componentAttributes.get(col))).toCSVString();
+						}						 
 					}
 				}
 				

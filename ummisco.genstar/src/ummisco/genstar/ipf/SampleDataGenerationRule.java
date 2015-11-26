@@ -22,9 +22,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 	
 	private IPF ipf;
 	
-	private GenstarCSVFile sampleDataFile;
-	
-	private SampleData sampleData;
+	private ISampleData sampleData; // this field should be set/injected dynamically before the generation
 	
 	private GenstarCSVFile controlTotalsFile;
 	
@@ -47,25 +45,23 @@ public class SampleDataGenerationRule extends GenerationRule {
 	private List<SampleEntity> internalSampleEntities;
 
 	
-	public SampleDataGenerationRule(final ISingleRuleGenerator populationGenerator, final String name, final GenstarCSVFile sampleDataFile,
+	public SampleDataGenerationRule(final ISingleRuleGenerator populationGenerator, final String name,
 			final GenstarCSVFile controlledAttributesFile, final GenstarCSVFile controlTotalsFile, final GenstarCSVFile supplementaryAttributesFile) throws GenstarException {
 		
 		super(populationGenerator, name);
 		
-		if (sampleDataFile == null) { throw new GenstarException("'sampleDataFile' can not be null"); }
 		if (controlledAttributesFile == null) { throw new GenstarException("'controlledAttributesFile' can not be null"); }
 		if (controlTotalsFile == null) { throw new GenstarException("'controlsFile' can not be null"); }
 		if (supplementaryAttributesFile == null) { throw new GenstarException("'supplementaryAttributesFile' can not be null"); }
 		
-		this.sampleDataFile = sampleDataFile;
 		this.controlledAttributesFile = controlledAttributesFile;
 		this.controlTotalsFile = controlTotalsFile;
 		this.supplementaryAttributesFile = supplementaryAttributesFile;
 		
 		this.controlledAndSupplementaryAttributes = new ControlledAndSupplementaryAttributes(this);
 		this.controlTotals = new ControlTotals(this);
-		this.sampleData = new SampleData(this);
-		this.ipf = IPFFactory.createIPF(this);
+//		this.sampleData = new SampleData(this, sampleDataFile);
+//		this.ipf = IPFFactory.createIPF(this);
 	}
 
 	@Override
@@ -98,7 +94,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 		}
 	}
 	
-	private void internalGenerate() {
+	private void runInternalGeneration() {
 		internalSampleEntities = new ArrayList<SampleEntity>();
 		
 		for (AttributeValuesFrequency selectProba : selectionProbabilities) {
@@ -116,12 +112,14 @@ public class SampleDataGenerationRule extends GenerationRule {
 	 * TODO describe how the method works
 	 */
 	@Override
-	public void generate(Entity entity) throws GenstarException {
+	public void generate(final Entity entity) throws GenstarException {
+		if (sampleData == null) { throw new GenstarException("sampleData can not be null"); }
+		
 		if (!ipfRun) { // run the fitting if necessary
 			ipf.fit();
 			selectionProbabilities = ipf.getSelectionProbabilitiesOfLastIPFIteration();
 			buildSampleEntityCategories();
-			internalGenerate();
+			runInternalGeneration();
 
 			ipfRun = true;
 		}
@@ -134,10 +132,12 @@ public class SampleDataGenerationRule extends GenerationRule {
 		for (AbstractAttribute attribute : attributeValues.keySet()) {
 			entity.putAttributeValue(new EntityAttributeValue(attribute, attributeValues.get(attribute)));
 		}
+		
+		// TODO member generations
 	}
 
 	@Override
-	public AbstractAttribute findAttributeByNameOnData(final String attributeNameOnData) {
+	public AbstractAttribute getAttribute(final String attributeNameOnData) {
 		for (AbstractAttribute a : getAttributes()) {
 			if (a.getNameOnData().equals(attributeNameOnData)) { return a; }
 		}
@@ -150,12 +150,16 @@ public class SampleDataGenerationRule extends GenerationRule {
 		return ipf;
 	}
 	
-	public GenstarCSVFile getSampleDataFile() {
-		return sampleDataFile;
-	}
-
-	public SampleData getSampleData() {
+	public ISampleData getSampleData() {
 		return sampleData;
+	}
+	
+	public void setSampleData(final ISampleData sampleData) throws GenstarException {
+		if (sampleData == null) { throw new GenstarException("Parameter sampleData can not be null"); }
+		
+		this.sampleData = sampleData;
+		this.ipf = IPFFactory.createIPF(this);
+		ipfRun = false;
 	}
 	
 	public GenstarCSVFile getControlTotalsFile() {

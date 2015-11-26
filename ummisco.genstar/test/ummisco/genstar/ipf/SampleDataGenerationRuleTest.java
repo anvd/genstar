@@ -32,8 +32,11 @@ public class SampleDataGenerationRuleTest {
 		GenstarCSVFile controlsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
 		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
-		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule", sampleDataFile,
+		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
+		ISampleData sampleData = new SampleData(rule, sampleDataFile);
+		rule.setSampleData(sampleData);
+		
 		assertTrue(rule.getSampleData() != null);
 		assertTrue(rule.getControlledAttributes().size() == 3);
 		assertTrue(rule.getSupplementaryAttributes().size() == 1);
@@ -50,8 +53,10 @@ public class SampleDataGenerationRuleTest {
 		GenstarCSVFile controlsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
 		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
-		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule", sampleDataFile,
+		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule", 
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
+		ISampleData sampleData = new SampleData(rule, sampleDataFile);
+		rule.setSampleData(sampleData);
 		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
 		
 		List<SampleEntity> internalSampleEntities = Deencapsulation.getField(rule, "internalSampleEntities"); 
@@ -96,8 +101,10 @@ public class SampleDataGenerationRuleTest {
 		GenstarCSVFile controlsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
 		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
-		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule", sampleDataFile,
+		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
+		ISampleData sampleData = new SampleData(rule, sampleDataFile);
+		rule.setSampleData(sampleData);
 		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
 		
 		SyntheticPopulation population = new SyntheticPopulation(generator, "people population", rule.getIPF().getNbOfEntitiesToGenerate());
@@ -117,8 +124,10 @@ public class SampleDataGenerationRuleTest {
 		GenstarCSVFile controlsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
 		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
-		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule", sampleDataFile,
+		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
+		ISampleData sampleData = new SampleData(rule, sampleDataFile);
+		rule.setSampleData(sampleData);
 		
 		// 1. verify sampleEntityCategories.size()
 		Map<AttributeValuesFrequency, List<SampleEntity>> sampleEntityCategories = Deencapsulation.getField(rule, "sampleEntityCategories");

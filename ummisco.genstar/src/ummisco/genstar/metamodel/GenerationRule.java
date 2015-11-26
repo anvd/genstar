@@ -6,7 +6,7 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.util.PersistentObject;
 
-public abstract class GenerationRule implements Comparable<GenerationRule> {
+public abstract class GenerationRule implements Comparable<GenerationRule>, IWithAttributes {
 	
 	protected int generationRuleID = PersistentObject.NEW_OBJECT_ID;
 	
@@ -52,14 +52,10 @@ public abstract class GenerationRule implements Comparable<GenerationRule> {
 	@Override public int compareTo(final GenerationRule other) {
 		return this.order - other.order;
 	}
-	
-	public abstract List<AbstractAttribute> getAttributes();
 
 	public abstract int getRuleTypeID();
 	
 	public abstract String getRuleTypeName();
 
 	public abstract void generate(final Entity entity) throws GenstarException;
-
-	public abstract AbstractAttribute findAttributeByNameOnData(final String attributeNameOnData);
 }

@@ -56,7 +56,7 @@ public class ThreeWayIPF extends IPF {
 	
 	
 	private void initializeData() {
-		SampleData sampleData = generationRule.getSampleData();
+		ISampleData sampleData = generationRule.getSampleData();
 		
 		data = new double[rowAttributeValues.size()][columnAttributeValues.size()][layerAttributeValues.size()];
 

@@ -198,18 +198,13 @@ public abstract class Genstars {
 	returns = "a list of maps in which each map represents the information (i.e., pairs of [attribute name : attribute value]) of a generated agent",
 	special_cases = { "" },
 	comment = "",
-	examples = { @example(value = "list synthetic_population <- ipf_single_population('Attributes.csv', 'single_population_configuration.properties')",
+	examples = { @example(value = "list synthetic_population <- ipf_single_population('single_population_configuration.properties')",
 		equals = "",
 		test = false) }, see = { "population_from_csv" })
-	public static IList generateIPFSinglePopulation(final IScope scope, final String attributesCSVFilePath, final String configurationPropertiesFilePath) {
+	public static IList generateIPFSinglePopulation(final IScope scope, final String configurationPropertiesFilePath) {
 		try {
-			GenstarCSVFile attributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
 			
-			// 1. Create the generator
-			ISingleRuleGenerator generator = new SingleRuleGenerator("single rule generator");
-			GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
-			
-			// 2. Create the generation rule
+			// 0. Load the properties file
 			Properties sampleDataPropeties = null;
 			File sampleDataPropertyFile = new File(FileUtils.constructAbsoluteFilePath(scope, configurationPropertiesFilePath, true));
 			try {
@@ -221,6 +216,15 @@ public abstract class Genstars {
 			} catch (IOException e) {
 				throw new GenstarException(e);
 			}
+			
+			
+			// 1. Create the generator
+			String attributesCSVFilePath = sampleDataPropeties.getProperty(GenstarFactoryUtils.SAMPLE_DATA_PROPERTIES_FILE_FORMAT.ATTRIBUTES_PROPERTY);
+			GenstarCSVFile attributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
+			ISingleRuleGenerator generator = new SingleRuleGenerator("single rule generator");
+			GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+			
+			// 2. Create the generation rule
 			GamaGenstarFactoryUtils.createSampleDataGenerationRule(scope, generator, "sample data generation rule", sampleDataPropeties);
 			
 			return runGeneratorAndConvertGeneratedData(generator);

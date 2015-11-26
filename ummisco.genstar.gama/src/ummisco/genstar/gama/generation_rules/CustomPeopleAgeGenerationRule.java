@@ -117,7 +117,7 @@ public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
 	}
 
 	@Override
-	public AbstractAttribute findAttributeByNameOnData(String attributeNameOnData) {
+	public AbstractAttribute getAttribute(String attributeNameOnData) {
 		return null;
 	}
 

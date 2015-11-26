@@ -1,11 +1,7 @@
 package ummisco.genstar.metamodel;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -19,7 +15,6 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 	
 	protected String populationName = "no-name population";
 	
-//	protected SortedMap<String, AbstractAttribute> attributes; // <attribute name on data, attribute>
 	protected List<AbstractAttribute> attributes;
 
 	protected int nbOfEntities = 100;
@@ -29,7 +24,6 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 		if (generatorName == null || generatorName.trim().length() == 0) { throw new GenstarException("'generatorName' parameter can neither be null nor empty"); }
 		
 		this.generatorName = generatorName;
-//		this.attributes = new TreeMap<String, AbstractAttribute>();
 		this.attributes = new ArrayList<AbstractAttribute>();
 	}
 

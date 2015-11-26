@@ -67,7 +67,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		return retVal;
 	}
 	
-	public AbstractAttribute findAttributeByNameOnData(final String attributeNameOnData) {
+	public AbstractAttribute getAttribute(final String attributeNameOnData) {
 		if (attributeNameOnData == null || attributeNameOnData.isEmpty()) { throw new IllegalArgumentException("'attributeNameOnData' parameter can neither be null nor empty"); }
 		
 		for (AbstractAttribute iAttr : inputAttributes.values()) {

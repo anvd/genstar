@@ -31,6 +31,8 @@ public abstract class AbstractAttribute implements AttributeValueSet {
 	
 	private AttributeValue castDefaultValue;
 	
+	protected boolean isIdentity;
+	
 	
 	public AbstractAttribute(final ISyntheticPopulationGenerator populationGenerator, final String attributeNameOnData, final String attributeNameOnEntity, 
 			final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
@@ -120,5 +122,13 @@ public abstract class AbstractAttribute implements AttributeValueSet {
 	
 	public void setAttributeID(final int attributeID) {
 		this.attributeID = attributeID;
+	}
+	
+	public void setIdentity(final boolean identity) {
+		this.isIdentity = identity;
+	}
+	
+	public boolean isIdentity() {
+		return isIdentity;
 	}
 }

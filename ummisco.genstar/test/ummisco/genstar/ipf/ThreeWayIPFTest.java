@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
@@ -41,7 +42,7 @@ public class ThreeWayIPFTest {
 	
 	@Before public void init() throws GenstarException {
 		
-		generator = new MultipleRulesGenerator("generator", 100);
+		generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -55,20 +56,17 @@ public class ThreeWayIPFTest {
 			generationRule.getGenerator(); result = generator;
 			generationRule.getControlledAttributes(); result = controlledAttributes;
 			
-			generationRule.findAttributeByNameOnData(anyString);
+			generationRule.getAttribute(anyString);
 			result = new Delegate() {
 				AbstractAttribute delegateMethod(final String attributeName) {
 					return generator.getAttribute(attributeName);
 				}
 			};
 			
-			generationRule.getSampleDataFile();
-			result = sampleDataFile;
-			
 			generationRule.getSampleData();
 			result = new Delegate() {
 				SampleData getSampleDataDelegate() throws GenstarException {
-					return new SampleData(generationRule);
+					return new SampleData(generationRule, sampleDataFile);
 				}
 			};
 			
@@ -124,7 +122,7 @@ public class ThreeWayIPFTest {
 		assertTrue(data[0][0].length == layerAttributeValues.size());
 		
 		
-		SampleData sampleData = generationRule.getSampleData();
+		ISampleData sampleData = generationRule.getSampleData();
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		for (int row=0; row<rowAttributeValues.size(); row++) {
@@ -275,8 +273,7 @@ public class ThreeWayIPFTest {
 					attributeValues.put(layerAttribute, layerValue);
 					
 					allAttributeValues.add(attributeValues);
-				}
-				
+				}				
 			}
 		}
 		
@@ -284,6 +281,4 @@ public class ThreeWayIPFTest {
 			assertTrue(allAttributeValues.contains(selectProba.getAttributeValues()));
 		}
 	}
-	
-	
 }

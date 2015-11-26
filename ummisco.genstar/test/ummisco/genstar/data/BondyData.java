@@ -284,8 +284,8 @@ public final class BondyData {
 		
 		bondyInhabitantPopGenerator.appendGenerationRule(generationRule1);
 		
-		AbstractAttribute ageRangeAttrBiz = generationRule1.findAttributeByNameOnData("age_range_1");
-		AbstractAttribute sexAttrBiz = generationRule1.findAttributeByNameOnData("sex");
+		AbstractAttribute ageRangeAttrBiz = generationRule1.getAttribute("age_range_1");
+		AbstractAttribute sexAttrBiz = generationRule1.getAttribute("sex");
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		AttributeValue sexAttrValueBiz;
 		for (int[] range : BondyData.age_ranges_1) {
@@ -314,9 +314,9 @@ public final class BondyData {
 
 		bondyInhabitantPopGenerator.appendGenerationRule(generationRule2);
 		
-		AbstractAttribute ageRangeAttrBiz1 = generationRule2.findAttributeByNameOnData("age_range_2");
-		AbstractAttribute sexAttrBiz1 = generationRule2.findAttributeByNameOnData("sex");
-		AbstractAttribute pcsAttrBiz1 = generationRule2.findAttributeByNameOnData("pcs");
+		AbstractAttribute ageRangeAttrBiz1 = generationRule2.getAttribute("age_range_2");
+		AbstractAttribute sexAttrBiz1 = generationRule2.getAttribute("sex");
+		AbstractAttribute pcsAttrBiz1 = generationRule2.getAttribute("pcs");
 		AttributeValue sexAttrBiz1Value, malePcsValue, femalePcsValue;
 		for (int[] range : age_ranges_2) {
 			attributeValues.clear();
