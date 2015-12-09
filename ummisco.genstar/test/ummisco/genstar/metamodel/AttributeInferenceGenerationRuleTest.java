@@ -251,13 +251,13 @@ public class AttributeInferenceGenerationRuleTest {
 		for (double[] wage : BondyData.hourly_net_wages) {
 			
 			entity = new Entity(generator.generate());
-			entity.putAttributeValue(inferringAttribute, new UniqueValue(DataType.INTEGER, Integer.toString((int) wage[0])));
+			entity.setAttributeValueOnData(inferringAttribute.getNameOnData(), new UniqueValue(DataType.INTEGER, Integer.toString((int) wage[0])));
 			
-			assertTrue(entity.getEntityAttributeValue(inferredAttribute.getNameOnEntity()) == null);
+			assertTrue(entity.getEntityAttributeValueByNameOnData(inferredAttribute.getNameOnEntity()) == null);
 			rule3.generate(entity);
 			
-			assertTrue(entity.getEntityAttributeValue(inferredAttribute.getNameOnEntity()).getAttributeValueOnData().equals(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]))));
-			assertTrue(entity.getEntityAttributeValue(inferredAttribute.getNameOnEntity()).getAttributeValueOnEntity().isValueMatch(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]))));
+			assertTrue(entity.getEntityAttributeValueByNameOnData(inferredAttribute.getNameOnEntity()).getAttributeValueOnData().equals(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]))));
+			assertTrue(entity.getEntityAttributeValueByNameOnData(inferredAttribute.getNameOnEntity()).getAttributeValueOnEntity().isValueMatched(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]))));
 		}
 	}
 }

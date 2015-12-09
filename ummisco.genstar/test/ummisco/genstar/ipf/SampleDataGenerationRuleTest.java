@@ -34,7 +34,7 @@ public class SampleDataGenerationRuleTest {
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
-		ISampleData sampleData = new SampleData(rule, sampleDataFile);
+		ISampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataFile);
 		rule.setSampleData(sampleData);
 		
 		assertTrue(rule.getSampleData() != null);
@@ -55,14 +55,14 @@ public class SampleDataGenerationRuleTest {
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule", 
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
-		ISampleData sampleData = new SampleData(rule, sampleDataFile);
+		ISampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataFile);
 		rule.setSampleData(sampleData);
 		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
 		
 		List<SampleEntity> internalSampleEntities = Deencapsulation.getField(rule, "internalSampleEntities"); 
 		assertTrue(internalSampleEntities == null);
 		
-		SyntheticPopulation population = new SyntheticPopulation(generator, "people population", rule.getIPF().getNbOfEntitiesToGenerate());
+		SyntheticPopulation population = new SyntheticPopulation("people", generator.getAttributes());
 		for (Entity entity : population.getEntities()) { rule.generate(entity); }
 		
 		List<AttributeValuesFrequency> originalSelectionProbabilities = Deencapsulation.getField(rule, "selectionProbabilities");
@@ -103,11 +103,11 @@ public class SampleDataGenerationRuleTest {
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
-		ISampleData sampleData = new SampleData(rule, sampleDataFile);
+		ISampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataFile);
 		rule.setSampleData(sampleData);
 		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
 		
-		SyntheticPopulation population = new SyntheticPopulation(generator, "people population", rule.getIPF().getNbOfEntitiesToGenerate());
+		SyntheticPopulation population = new SyntheticPopulation("people", generator.getAttributes());
 		for (Entity entity : population.getEntities()) { rule.generate(entity); }
 
 		rule.generate(population.getEntities().get(0));
@@ -126,7 +126,7 @@ public class SampleDataGenerationRuleTest {
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
-		ISampleData sampleData = new SampleData(rule, sampleDataFile);
+		ISampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataFile);
 		rule.setSampleData(sampleData);
 		
 		// 1. verify sampleEntityCategories.size()

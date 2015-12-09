@@ -8,8 +8,6 @@ public class UniqueValue extends AttributeValue {
 	
 	public static final String UNIQUE_VALUE_NAME = "Unique";
 	
-//	static { AttributeValue.registerValueTypeID(UniqueValue.class, UNIQUE_VALUE_TYPE, UNIQUE_VALUE_NAME); }
-	
 	private String stringValue;
 
 	
@@ -94,7 +92,7 @@ public class UniqueValue extends AttributeValue {
 	}
 
 	@Override
-	public boolean isValueMatch(final AttributeValue otherValue) {
+	public boolean isValueMatched(final AttributeValue otherValue) {
 		if (otherValue == null) { throw new IllegalArgumentException("'otherValue' parameter can not be null"); }
 		
 		if (otherValue instanceof UniqueValue) {
@@ -112,20 +110,11 @@ public class UniqueValue extends AttributeValue {
 			return this.compareTo(otherValue) == 0; 
 		}
 		
-		if (otherValue instanceof RangeValue) { return ( (RangeValue) otherValue ).isValueMatch(this); }
+		if (otherValue instanceof RangeValue) { return ( (RangeValue) otherValue ).isValueMatched(this); }
 		
 		return false;
 	}
 	
-	// TODO remove
-//	public boolean isValueMatch(final String otherValueStr) {
-//		try {
-//			return isValueMatch(new UniqueValue(dataType, otherValueStr));
-//		} catch (GenstarException e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-//	}
 
 	@Override
 	public int getValueTypeID() {

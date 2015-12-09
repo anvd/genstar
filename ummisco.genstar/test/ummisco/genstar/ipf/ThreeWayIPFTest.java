@@ -47,7 +47,7 @@ public class ThreeWayIPFTest {
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		GenstarCSVFile controlAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/controlled_attributes.csv", false);
-		for (List<String> row : controlAttributesFile.getContent()) { controlledAttributes.add(generator.getAttribute(row.get(0))); }	
+		for (List<String> row : controlAttributesFile.getContent()) { controlledAttributes.add(generator.getAttributeByNameOnData(row.get(0))); }	
 		
 		final GenstarCSVFile sampleDataFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/people_sample.csv", true);
 		final GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/control_totals.csv", false);
@@ -56,17 +56,17 @@ public class ThreeWayIPFTest {
 			generationRule.getGenerator(); result = generator;
 			generationRule.getControlledAttributes(); result = controlledAttributes;
 			
-			generationRule.getAttribute(anyString);
+			generationRule.getAttributeByNameOnData(anyString);
 			result = new Delegate() {
 				AbstractAttribute delegateMethod(final String attributeName) {
-					return generator.getAttribute(attributeName);
+					return generator.getAttributeByNameOnData(attributeName);
 				}
 			};
 			
 			generationRule.getSampleData();
 			result = new Delegate() {
 				SampleData getSampleDataDelegate() throws GenstarException {
-					return new SampleData(generationRule, sampleDataFile);
+					return new SampleData("people", generator.getAttributes(), sampleDataFile);
 				}
 			};
 			
@@ -123,17 +123,17 @@ public class ThreeWayIPFTest {
 		
 		
 		ISampleData sampleData = generationRule.getSampleData();
-		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
+		Map<String, AttributeValue> matchingCriteria = new HashMap<String, AttributeValue>();
 		
 		for (int row=0; row<rowAttributeValues.size(); row++) {
-			matchingCriteria.put(rowAttribute, rowAttributeValues.get(row));
+			matchingCriteria.put(rowAttribute.getNameOnData(), rowAttributeValues.get(row));
 			
 			for (int col=0; col<columnAttributeValues.size(); col++) {
-				matchingCriteria.put(columnAttribute, columnAttributeValues.get(col));
+				matchingCriteria.put(columnAttribute.getNameOnData(), columnAttributeValues.get(col));
 				
 				for (int layer=0; layer<layerAttributeValues.size(); layer++) {
-					matchingCriteria.put(layerAttribute, layerAttributeValues.get(layer));
-					assertTrue(data[row][col][layer] == sampleData.countMatchingEntities(matchingCriteria));
+					matchingCriteria.put(layerAttribute.getNameOnData(), layerAttributeValues.get(layer));
+					assertTrue(data[row][col][layer] == sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria));
 				}
 			}
 		}

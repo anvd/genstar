@@ -8,94 +8,83 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.IWithAttributes;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.util.GenstarCSVFile;
 
-public class SampleData implements ISampleData {
+public class SampleData implements ISampleData { // TODO change to CSVSampleData
 	
-	private IWithAttributes withAttributes;
+	private List<AbstractAttribute> attributes;
 	
 	private GenstarCSVFile data = null;
 	
 	private SortedMap<Integer, AbstractAttribute> attributeIndexes;
 	
-	private List<SampleEntity> sampleEntities;
+	private String populationName;
+	
+	private SampleEntityPopulation sampleEntityPopulation;
 
 	
-	public SampleData(final IWithAttributes withAttributes, GenstarCSVFile data) throws GenstarException {
-		if (withAttributes == null) { throw new GenstarException("Parameter withAttributes can not be null"); }
+	public SampleData(final String populationName, final List<AbstractAttribute> attributes, GenstarCSVFile data) throws GenstarException {
+		if (populationName == null || populationName.isEmpty()) { throw new GenstarException("Parameter populationName can neither be null nor empty"); }
+		if (attributes == null) { throw new GenstarException("Parameter attributes can not be null"); }
 		if (data == null) { throw new GenstarException("Parameter data can not be null"); }
 		
-		this.withAttributes = withAttributes;
+		this.populationName = populationName;
+		this.attributes = new ArrayList<AbstractAttribute>();
+		this.attributes.addAll(attributes);
 		this.data = data;
 		
 		initializeSampleEntities();
 	}
 	
 	private void initializeSampleEntities() throws GenstarException {
+		this.sampleEntityPopulation = new SampleEntityPopulation(populationName, attributes);
+		
+		Map<String, AbstractAttribute> attributeMap = new HashMap<String, AbstractAttribute>();
+		for (AbstractAttribute attr : attributes) { attributeMap.put(attr.getNameOnData(), attr); }
 		
 		// 1. parse CSV file header
 		List<String> sampleDataHeaders = data.getHeaders();
 		attributeIndexes = new TreeMap<Integer, AbstractAttribute>();
 		for (int col=0; col<sampleDataHeaders.size(); col++) {
 			String attributeNameOnSample = sampleDataHeaders.get(col);
-			AbstractAttribute attribute = withAttributes.getAttribute(attributeNameOnSample);
+			AbstractAttribute attribute = attributeMap.get(attributeNameOnSample);
 			if (attribute != null) { attributeIndexes.put(col, attribute); }
 		}
 		
 		// 2. initialize sample entities
-		sampleEntities = new ArrayList<SampleEntity>();
 		List<String> rowContent;
 		AbstractAttribute attribute;
 		AttributeValue value;
 		String valueStr;
-		Map<AbstractAttribute, AttributeValue> sampleAttributes;
+		List<Map<String, AttributeValue>> sampleEntitiesAttributeValues = new ArrayList<Map<String, AttributeValue>>();
+		Map<String, AttributeValue> sampleAttributes;
 		for (int row=0; row<(data.getRows()-1); row++) { // first line is the header
 			rowContent = data.getRow(row);
 			
-			sampleAttributes = new HashMap<AbstractAttribute, AttributeValue>();
+			sampleAttributes = new HashMap<String, AttributeValue>();
 			for (int attributeColumn : attributeIndexes.keySet()) { // only care about attributes "recognized" by the SampleDataGenerationRule
 				attribute = attributeIndexes.get(attributeColumn);
 				valueStr = rowContent.get(attributeColumn);
 				List<String> valueStrList = new ArrayList<String>();
 				valueStrList.add(valueStr);
-				
-				if (attribute.getNameOnData().equals("Household ID")) {
-					System.out.println("");
-				}
-				
 				value = attribute.findCorrespondingAttributeValue(valueStrList);
 				
 				if (value == null) { 
 					value = attribute.findCorrespondingAttributeValue(valueStrList);
 					throw new GenstarException("'" + valueStr + "' defined in the sample data is not recognized. File: " + data.getPath() + " at row: " + (row + 1) + ", column: " + (attributeColumn) + "."); 
 				}
-				sampleAttributes.put(attributeIndexes.get(attributeColumn), value);
+				sampleAttributes.put(attributeIndexes.get(attributeColumn).getNameOnData(), value);
 			}
-			sampleEntities.add(new SampleEntity(sampleAttributes));
+			sampleEntitiesAttributeValues.add(sampleAttributes);
 		}
-	}
-	
-	@Override
-	public int countMatchingEntities(final Map<AbstractAttribute, AttributeValue> matchingCriteria) {
-		int matchingIndividuals = 0;
-		for (SampleEntity se : sampleEntities) { if (se.isMatch(matchingCriteria)) { matchingIndividuals++; } }
 		
-		return matchingIndividuals;
+		sampleEntityPopulation.createSampleEntities(sampleEntitiesAttributeValues);
 	}
 	
 	@Override
-	public List<SampleEntity> getMatchingEntities(final Map<AbstractAttribute, AttributeValue> matchingCriteria) {
-		List<SampleEntity> matchings = new ArrayList<SampleEntity>();
-		for (SampleEntity se : sampleEntities) { if (se.isMatch(matchingCriteria)) { matchings.add(se); } }
-		
-		return matchings;
-	}
-	
-	@Override
-	public List<SampleEntity> getSampleEntities() {
-		return sampleEntities;
+	public SampleEntityPopulation getSampleEntityPopulation() {
+		return sampleEntityPopulation;
 	}
 }

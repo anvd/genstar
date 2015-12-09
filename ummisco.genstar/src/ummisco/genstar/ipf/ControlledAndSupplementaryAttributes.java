@@ -43,7 +43,7 @@ public class ControlledAndSupplementaryAttributes {
 			if (line.size() != 1) { throw new GenstarException("Invalid controlled attribute file format. One line can only contain one attribute. File: " + controlledAttributesData.getPath() + ", line: " + lineNo); }
 			
 			attrName = line.get(0);
-			controlledAttr = generationRule.getGenerator().getAttribute(attrName);
+			controlledAttr = generationRule.getGenerator().getAttributeByNameOnData(attrName);
 			if (controlledAttr == null) { throw new GenstarException("'" + attrName + "' attribute not found in the generator. File: " + controlledAttributesData.getPath() + ", line: " + lineNo); }
 			if (!controlledAttributes.contains(controlledAttr)) { controlledAttributes.add(controlledAttr); }
 			
@@ -58,7 +58,7 @@ public class ControlledAndSupplementaryAttributes {
 			if (line.size() != 1) { throw new GenstarException("Invalid supplementary attribute file format. One line can only contain one attribute. File: " + supplementaryAttributesData.getPath() + ", line: " + lineNo); }
 			
 			attrName = line.get(0);
-			supplementaryAttr = generationRule.getGenerator().getAttribute(attrName);
+			supplementaryAttr = generationRule.getGenerator().getAttributeByNameOnData(attrName);
 			if (supplementaryAttr == null) { throw new GenstarException("'" + attrName + "' attribute not found in the generator. File: " + supplementaryAttributesData.getPath() + ", line: " + lineNo); }
 			if (controlledAttributes.contains(supplementaryAttr)) { throw new GenstarException("'" + attrName + "' attribute has already been a controlled attribute. File: " + supplementaryAttributesData.getPath() + ", line: " + lineNo); }
 			if (!supplementaryAttributes.contains(supplementaryAttr)) supplementaryAttributes.add(supplementaryAttr);

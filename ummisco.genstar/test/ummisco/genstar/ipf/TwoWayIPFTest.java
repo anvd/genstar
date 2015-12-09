@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
@@ -45,7 +44,7 @@ public class TwoWayIPFTest {
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		GenstarCSVFile controlAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/two_way/controlled_attributes.csv", false);
-		for (List<String> row : controlAttributesFile.getContent()) { controlledAttributes.add(generator.getAttribute(row.get(0))); }	
+		for (List<String> row : controlAttributesFile.getContent()) { controlledAttributes.add(generator.getAttributeByNameOnData(row.get(0))); }	
 		
 		final GenstarCSVFile sampleDataFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/two_way/people_sample.csv", true);
 		final GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/two_way/control_totals.csv", false);
@@ -54,17 +53,17 @@ public class TwoWayIPFTest {
 			generationRule.getGenerator(); result = generator;
 			generationRule.getControlledAttributes(); result = controlledAttributes;
 			
-			generationRule.getAttribute(anyString);
+			generationRule.getAttributeByNameOnData(anyString);
 			result = new Delegate() {
 				AbstractAttribute delegateMethod(final String attributeName) {
-					return generator.getAttribute(attributeName);
+					return generator.getAttributeByNameOnData(attributeName);
 				}
 			};
 			
 			generationRule.getSampleData();
 			result = new Delegate() {
 				SampleData getSampleDataDelegate() throws GenstarException {
-					return new SampleData(generationRule, sampleDataFile);
+					return new SampleData("people", generator.getAttributes(), sampleDataFile);
 				}
 			};
 			
@@ -109,14 +108,14 @@ public class TwoWayIPFTest {
 		assertTrue(data[0].length == colAttributeValues.size());
 		
 		ISampleData sampleData = generationRule.getSampleData();
-		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
+		Map<String, AttributeValue> matchingCriteria = new HashMap<String, AttributeValue>();
 		int row=0, col=0;
 		for (AttributeValue rowValue : ipf.getAttributeValues(0)) {
-			matchingCriteria.put(rowAttr, rowValue);
+			matchingCriteria.put(rowAttr.getNameOnData(), rowValue);
 			
 			for (AttributeValue colValue : ipf.getAttributeValues(1)) {
-				matchingCriteria.put(colAttr, colValue);
-				assertTrue(data[row][col] == sampleData.countMatchingEntities(matchingCriteria));
+				matchingCriteria.put(colAttr.getNameOnData(), colValue);
+				assertTrue(data[row][col] == sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria));
 				
 				col++;
 			}

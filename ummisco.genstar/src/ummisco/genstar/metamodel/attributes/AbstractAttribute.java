@@ -96,6 +96,8 @@ public abstract class AbstractAttribute implements AttributeValueSet {
 	}
 	
 	public abstract AttributeValue findCorrespondingAttributeValue(final List<String> stringValue) throws GenstarException;
+	
+	public abstract AttributeValue findMatchingAttributeValue(final AttributeValue attributeValue) throws GenstarException;
 
 	@Override public String toString() {
 		return this.getClass().getSimpleName() + " with dataType : " + dataType.getName() + "; nameOnData : " + this.nameOnData + "; nameOnEntity : " + this.nameOnEntity;

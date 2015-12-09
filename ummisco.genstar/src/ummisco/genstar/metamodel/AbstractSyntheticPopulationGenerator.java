@@ -74,7 +74,7 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 		return false;
 	}
 	
-	@Override public AbstractAttribute getAttribute(final String attributeNameOnData) {
+	@Override public AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData) {
 		if (attributeNameOnData == null) { throw new IllegalArgumentException("'dataAttributeName' parameter can not be null"); }
 
 		for (AbstractAttribute attr : attributes) { if (attr.getNameOnData().equals(attributeNameOnData)) return attr; }

@@ -2,7 +2,9 @@ package ummisco.genstar.metamodel.attributes;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Rule;
@@ -10,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.MultipleRulesGenerator;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
@@ -80,7 +83,7 @@ public class UniqueValueTest {
 		assertTrue(result2 == v0);
 	}
 	
-	@Test public void testIsMatchValue() throws GenstarException {
+	@Test public void testIsValueMatched() throws GenstarException {
 		UniqueValue v1 = new UniqueValue(DataType.INTEGER, "1");
 		UniqueValue v2 = new UniqueValue(DataType.INTEGER, "1");
 		UniqueValue v3 = new UniqueValue(DataType.INTEGER, "2");
@@ -107,29 +110,56 @@ public class UniqueValueTest {
 
 		
 		// assertions
-		assertTrue(v1.isValueMatch(v2));
-		assertFalse(v1.isValueMatch(v3));
+		assertTrue(v1.isValueMatched(v2));
+		assertFalse(v1.isValueMatched(v3));
 		
-		assertTrue(v1.isValueMatch(v4));
-		assertTrue(v4.isValueMatch(v5));
-		assertFalse(v4.isValueMatch(v6));
+		assertTrue(v1.isValueMatched(v4));
+		assertTrue(v4.isValueMatched(v5));
+		assertFalse(v4.isValueMatched(v6));
 		
-		assertTrue(v1.isValueMatch(v7));
-		assertFalse(v1.isValueMatch(v9));
-		assertTrue(v7.isValueMatch(v8));
-		assertFalse(v8.isValueMatch(v9));
+		assertTrue(v1.isValueMatched(v7));
+		assertFalse(v1.isValueMatched(v9));
+		assertTrue(v7.isValueMatched(v8));
+		assertFalse(v8.isValueMatched(v9));
 		
-		assertTrue(v4.isValueMatch(v7));
-		assertFalse(v4.isValueMatch(v9));
+		assertTrue(v4.isValueMatched(v7));
+		assertFalse(v4.isValueMatched(v9));
 		
-		assertTrue(v7.isValueMatch(v10));
-		assertFalse(v7.isValueMatch(v12));
+		assertTrue(v7.isValueMatched(v10));
+		assertFalse(v7.isValueMatched(v12));
 		
-		assertTrue(v10.isValueMatch(v11));
-		assertFalse(v10.isValueMatch(v12));
+		assertTrue(v10.isValueMatched(v11));
+		assertFalse(v10.isValueMatched(v12));
 	
-		assertFalse(v1.isValueMatch(v13));
-		assertTrue(v13.isValueMatch(v14));
-		assertFalse(v13.isValueMatch(v15));
+		assertFalse(v1.isValueMatched(v13));
+		assertTrue(v13.isValueMatched(v14));
+		assertFalse(v13.isValueMatched(v15));
+	}
+
+	@Test public void testFindMatchingAttributeValue() throws GenstarException {
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		
+		List<String> list1 = new ArrayList<String>();
+		list1.add("1");
+		UniqueValue uniqueValue = new UniqueValue(DataType.INTEGER, "1");
+		attr.add(uniqueValue);
+
+		AttributeValue rangeValue1 = new RangeValue(DataType.INTEGER, "1", "3");
+		AttributeValue matchingValue1 = attr.findMatchingAttributeValue(rangeValue1);
+		assertTrue(matchingValue1 instanceof UniqueValue);
+		assertTrue(matchingValue1.equals(uniqueValue));
+		
+		AttributeValue rangeValue2 = new RangeValue(DataType.INTEGER, "2", "3");
+		AttributeValue matchingValue2 = attr.findMatchingAttributeValue(rangeValue2);
+		assertTrue(matchingValue2 == null);
+		
+		AttributeValue uniqueValue1 = new UniqueValue(DataType.INTEGER, "1");
+		AttributeValue matchingValue3 = attr.findMatchingAttributeValue(uniqueValue1);
+		assertTrue(matchingValue3.equals(uniqueValue));
+		
+		AttributeValue uniqueValue2 = new UniqueValue(DataType.INTEGER, "4");
+		AttributeValue matchingValue4 = attr.findMatchingAttributeValue(uniqueValue2);
+		assertTrue(matchingValue4 == null);
 	}
 }

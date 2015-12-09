@@ -434,9 +434,9 @@ public class GenstarGeneratorTest_CanTho3 {
 		
 		ISyntheticPopulation inhabitantPopulation = inhabitantPopGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
-			int age = ((UniqueValue) (inhabitant.getEntityAttributeValue("age").getAttributeValueOnEntity())).getIntValue();
-			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValue("sex").getAttributeValueOnEntity()) ).getBooleanValue();
-			String livingPlace = ( (UniqueValue) (inhabitant.getEntityAttributeValue("living_place").getAttributeValueOnEntity()) ).getStringValue();
+			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
+			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
+			String livingPlace = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("living_place").getAttributeValueOnEntity()) ).getStringValue();
 
 			// age, sex, living_place
 			for (int rowIndex = 0; rowIndex < age_ranges_copy.length; rowIndex++) {
@@ -464,7 +464,7 @@ public class GenstarGeneratorTest_CanTho3 {
 			}
 			
 			// district
-			String district = ((UniqueValue) (inhabitant.getEntityAttributeValue("district").getAttributeValueOnEntity())).getStringValue();
+			String district = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("district").getAttributeValueOnEntity())).getStringValue();
 			int districtIndex = Data.getDistrictIndex(district);
 			if (isMale) {
 				generated_districts[districtIndex][0] = ++generated_districts[districtIndex][0];
@@ -551,11 +551,11 @@ public class GenstarGeneratorTest_CanTho3 {
 		
 		ISyntheticPopulation householdPopulation = householdPopGenerator.generate();
 		for (Entity household : householdPopulation.getEntities()) {
-			int size = ((UniqueValue) household.getEntityAttributeValue("size").getAttributeValueOnEntity()).getIntValue();
+			int size = ((UniqueValue) household.getEntityAttributeValueByNameOnData("size").getAttributeValueOnEntity()).getIntValue();
 			
-			String livingPlace = ( (UniqueValue) household.getEntityAttributeValue("living_place").getAttributeValueOnEntity() ).getStringValue();
+			String livingPlace = ( (UniqueValue) household.getEntityAttributeValueByNameOnData("living_place").getAttributeValueOnEntity() ).getStringValue();
 
-			String type = ( (UniqueValue) household.getEntityAttributeValue("type").getAttributeValueOnEntity()).getStringValue();
+			String type = ( (UniqueValue) household.getEntityAttributeValueByNameOnData("type").getAttributeValueOnEntity()).getStringValue();
 			int typeIndex = householdTypes.get(type);
 			if (livingPlace.equals("rural")) { typeIndex += 5; }
 			
@@ -618,7 +618,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		
 		System.out.println("Started establishing relationship between entities with " + linker.getClass().getName() + " as population linker");
 		System.out.println("Concerning populations : ");
-		for (ISyntheticPopulation p : populations) { System.out.println("\t+ " + p.getName() + " with " + p.getInitialNbOfEntities() + " entities"); }
+		for (ISyntheticPopulation p : populations) { System.out.println("\t+ " + p.getName() + " with " + p.getNbOfEntities() + " entities"); }
 		
 		linker.establishRelationship(populations);
 				
@@ -679,40 +679,48 @@ public class GenstarGeneratorTest_CanTho3 {
 			int hhSizeIntValue;
 			pickedHouseholds = new ArrayList<Entity>();
 			pickedInhabitants = new ArrayList<Entity>();
-			List<Entity> availableHouseholds;
+			List<Entity> availableHouseholds = householdPopulation.getEntities();
+			List<Entity> availableInhabitants = inhabitantPopulation.getEntities();
 			
 			for (int iteration=0; iteration<totalRound; iteration++) {
-				availableHouseholds = new ArrayList<Entity>(householdPopulation.getEntities());
 				
 				for (Entity householdEntity : availableHouseholds) {
-					hhSizeEntityAttrValue = householdEntity.getEntityAttributeValue("size");
+					hhSizeEntityAttrValue = householdEntity.getEntityAttributeValueByNameOnData("size");
 					hhSizeAttrValue = (UniqueValue) hhSizeEntityAttrValue.getAttributeValueOnEntity();
 					hhSizeIntValue = Integer.parseInt(hhSizeAttrValue.getStringValue());
 					
-					buildHousehold(householdEntity, hhSizeIntValue);
+					buildHousehold(householdEntity, hhSizeIntValue, availableInhabitants);
 				}
+				
+				availableHouseholds.removeAll(pickedHouseholds);
 			}
 		}
 		
 		// put inhabitants into household basing on household's size
-		private void buildHousehold(final Entity householdEntity, final int size) {
+		private void buildHousehold(final Entity householdEntity, final int size, final List<Entity> availableInhabitants) throws GenstarException {
 			List<Entity> members = new ArrayList<Entity>();
-			for (int i=0; i<size; i++) {
-				Entity inhabitant = inhabitantPopulation.pick();
-				
-				if (inhabitant == null) { 
-					inhabitantPopulation.putBack(members);
-					return; 
-				}
-				
+			
+			for (Entity inhabitant : availableInhabitants) {
+				if (members.size() == size) { break; }
 				members.add(inhabitant);
 			}
 			
-			householdEntity.addMembers(members);
-			householdPopulation.pick(householdEntity);
-			
-			pickedInhabitants.addAll(members);
-			pickedHouseholds.add(householdEntity);
+			if (members.size() == size) {
+				
+				ISyntheticPopulation memberPopulation = members.get(0).getPopulation();
+				ISyntheticPopulation memberNewPopulation = householdEntity.getComponentPopulation(memberPopulation.getName());
+				if (memberNewPopulation == null) {
+					memberNewPopulation = householdEntity.createComponentPopulation(memberPopulation.getName(), memberPopulation.getAttributes());
+				}
+				List<Entity> newMembers = memberNewPopulation.createEntities(members.size());
+				for (int i=0; i<size; i++) {
+					newMembers.get(i).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(members.get(i).getEntityAttributeValues().values()));
+				}
+				
+				availableInhabitants.removeAll(members);
+				pickedInhabitants.addAll(members);
+				pickedHouseholds.add(householdEntity);
+			}
 		}
 		
 	}
@@ -751,43 +759,51 @@ public class GenstarGeneratorTest_CanTho3 {
 			
 			pickedHouseholds = new ArrayList<Entity>();
 			pickedInhabitants = new ArrayList<Entity>();
-			List<Entity> availableHouseholds;
+			List<Entity> availableHouseholds =  householdPopulation.getEntities();
+			List<Entity> availableInhabitants = inhabitantPopulation.getEntities();
 			
 			for (int iteration=0; iteration<totalRound; iteration++) {
-				availableHouseholds = new ArrayList<Entity>(householdPopulation.getEntities());
 				
 				for (Entity householdEntity : availableHouseholds) {
-					hhSizeIntValue = ((UniqueValue) householdEntity.getEntityAttributeValue("size").getAttributeValueOnEntity()).getIntValue();
-					livingPlace = ((UniqueValue) householdEntity.getEntityAttributeValue("living_place").getAttributeValueOnEntity()).getStringValue();
+					hhSizeIntValue = ((UniqueValue) householdEntity.getEntityAttributeValueByNameOnData("size").getAttributeValueOnEntity()).getIntValue();
+					livingPlace = ((UniqueValue) householdEntity.getEntityAttributeValueByNameOnData("living_place").getAttributeValueOnEntity()).getStringValue();
 					
-					buildHousehold(householdEntity, hhSizeIntValue, livingPlace);
+					buildHousehold(householdEntity, hhSizeIntValue, livingPlace, availableInhabitants);
 				}
+				
+				availableHouseholds.removeAll(pickedHouseholds);
 			}
 		}
 		
 		// put inhabitants into household basing on household's size and living_place
-		private void buildHousehold(final Entity householdEntity, final int size, final String livingPlace) throws GenstarException {
+		private void buildHousehold(final Entity householdEntity, final int size, final String livingPlace, final List<Entity> availableInhabitants) throws GenstarException {
 			Map<String, AttributeValue> livingPlaceMap = new HashMap<String, AttributeValue>();
 			UniqueValue livingPlaceAttrValue = new UniqueValue(DataType.STRING, livingPlace);
 			livingPlaceMap.put("living_place", livingPlaceAttrValue);
 
 			List<Entity> members = new ArrayList<Entity>();
-			for (int i=0; i<size; i++) {
-				
-				Entity inhabitant = inhabitantPopulation.pick(livingPlaceMap);
-				if (inhabitant == null) {
-					inhabitantPopulation.putBack(members);
-					return;
-				}
-				
-				members.add(inhabitant);
+			
+			for (Entity inhabitant : availableInhabitants) {
+				if (members.size() == size) { break; }
+				if (inhabitant.areValuesOnEntityMatched(livingPlaceMap)) { members.add(inhabitant); }
 			}
 			
-			householdEntity.addMembers(members);
-			householdPopulation.pick(householdEntity);
-			
-			pickedInhabitants.addAll(members);
-			pickedHouseholds.add(householdEntity);
+			if (members.size() == size) {
+				
+				ISyntheticPopulation memberPopulation = members.get(0).getPopulation();
+				ISyntheticPopulation memberNewPopulation = householdEntity.getComponentPopulation(memberPopulation.getName());
+				if (memberNewPopulation == null) {
+					memberNewPopulation = householdEntity.createComponentPopulation(memberPopulation.getName(), memberPopulation.getAttributes());
+				}
+				List<Entity> newMembers = memberNewPopulation.createEntities(members.size());
+				for (int i=0; i<size; i++) {
+					newMembers.get(i).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(members.get(i).getEntityAttributeValues().values()));
+				}
+				
+				availableInhabitants.removeAll(members);
+				pickedInhabitants.addAll(members);
+				pickedHouseholds.add(householdEntity);
+			}
 		}
 	}
 		

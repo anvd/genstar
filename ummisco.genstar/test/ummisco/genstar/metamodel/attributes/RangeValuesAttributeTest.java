@@ -94,7 +94,7 @@ public class RangeValuesAttributeTest {
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER, UniqueValue.class);
 		
 		assertTrue(attr.getDefaultValue() instanceof UniqueValue);
-		assertTrue(attr.getDefaultValue().isValueMatch(new UniqueValue(DataType.INTEGER)));
+		assertTrue(attr.getDefaultValue().isValueMatched(new UniqueValue(DataType.INTEGER)));
 	}
 	
 	@Test public void testFindCorrespondingAttributeValue() throws GenstarException {
@@ -128,6 +128,34 @@ public class RangeValuesAttributeTest {
 		List<String> list5 = new ArrayList<String>();
 		list5.add("3");
 		assertTrue(attr.findCorrespondingAttributeValue(list5) == null);
+	}
+	
+	@Test public void testFindMatchingAttributeValue() throws GenstarException {
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		
+		List<String> list1 = new ArrayList<String>();
+		list1.add("1");
+		list1.add("3");
+		AttributeValue rangeValue = new RangeValue(DataType.INTEGER, "1", "3");
+		attr.add(rangeValue);
+
+		AttributeValue rangeValue1 = new RangeValue(DataType.INTEGER, "1", "3");
+		AttributeValue matchingValue1 = attr.findMatchingAttributeValue(rangeValue1);
+		assertTrue(matchingValue1 instanceof RangeValue);
+		assertTrue(matchingValue1.equals(rangeValue));
+		
+		AttributeValue rangeValue2 = new RangeValue(DataType.INTEGER, "0", "3");
+		AttributeValue matchingValue2 = attr.findMatchingAttributeValue(rangeValue2);
+		assertTrue(matchingValue2 == null);
+		
+		AttributeValue uniqueValue1 = new UniqueValue(DataType.INTEGER, "1");
+		AttributeValue matchingValue3 = attr.findMatchingAttributeValue(uniqueValue1);
+		assertTrue(matchingValue3.equals(rangeValue));
+		
+		AttributeValue uniqueValue2 = new UniqueValue(DataType.INTEGER, "4");
+		AttributeValue matchingValue4 = attr.findMatchingAttributeValue(uniqueValue2);
+		assertTrue(matchingValue4 == null);
 	}
 
 }

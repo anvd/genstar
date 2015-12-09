@@ -205,11 +205,11 @@ public class GenstarGeneratorTest_CanTho2 {
 				
 				ISyntheticPopulation householdPopulation = householdPopGenerator1.generate();
 				for (Entity household : householdPopulation.getEntities()) {
-					int size = ((UniqueValue) household.getEntityAttributeValue("size").getAttributeValueOnEntity()).getIntValue();
+					int size = ((UniqueValue) household.getEntityAttributeValueByNameOnData("size").getAttributeValueOnEntity()).getIntValue();
 					
-					String livingPlace = ( (UniqueValue) household.getEntityAttributeValue("living_place").getAttributeValueOnEntity() ).getStringValue();
+					String livingPlace = ( (UniqueValue) household.getEntityAttributeValueByNameOnData("living_place").getAttributeValueOnEntity() ).getStringValue();
 		
-					String type = ( (UniqueValue) household.getEntityAttributeValue("type").getAttributeValueOnEntity()).getStringValue();
+					String type = ( (UniqueValue) household.getEntityAttributeValueByNameOnData("type").getAttributeValueOnEntity()).getStringValue();
 					int typeIndex = householdTypes.get(type);
 					if (livingPlace.equals("rural")) { typeIndex += 5; }
 					

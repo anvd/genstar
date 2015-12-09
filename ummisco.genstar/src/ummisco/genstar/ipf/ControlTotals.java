@@ -53,7 +53,7 @@ public class ControlTotals {
 			attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 			for (int col=0; col<(aRow.size() - 1); col+=2) { // Parse each line of the file
 				// 1. parse the attribute name column
-				attribute = generator.getAttribute(aRow.get(col));
+				attribute = generator.getAttributeByNameOnData(aRow.get(col));
 				if (attribute == null) { throw new GenstarException("'" + aRow.get(col) + "' is not a valid attribute. File: " + data.getPath() + ", line: " + line + "."); }
 				if (!controlledAttributes.contains(attribute)) { throw new GenstarException("'" + aRow.get(col) + "' is not a controlled attribute."); }
 				if (attributeValues.containsKey(attribute)) { throw new GenstarException("Duplicated attribute : '" + attribute.getNameOnData() + "'"); }

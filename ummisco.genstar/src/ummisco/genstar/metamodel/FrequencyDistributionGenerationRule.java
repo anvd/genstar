@@ -67,7 +67,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		return retVal;
 	}
 	
-	public AbstractAttribute getAttribute(final String attributeNameOnData) {
+	public AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData) {
 		if (attributeNameOnData == null || attributeNameOnData.isEmpty()) { throw new IllegalArgumentException("'attributeNameOnData' parameter can neither be null nor empty"); }
 		
 		for (AbstractAttribute iAttr : inputAttributes.values()) {
@@ -406,7 +406,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		if (total == 0) {
 			for (int order=0; order < outputAttributes.size(); order++) {
 				outputAttribute = outputAttributes.get(order);
-				entity.putAttributeValue(new EntityAttributeValue(outputAttribute, outputAttribute.getDefaultValue()));
+				entity.setAttributeValueOnData(outputAttribute.getNameOnData(), outputAttribute.getDefaultValue());
 			}
 			
 			return;
@@ -421,7 +421,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 					outputAttribute = outputAttributes.get(order);
 					attributeValue = de.getAttributeValue(outputAttribute);
 
-					entity.putAttributeValue(new EntityAttributeValue(outputAttribute, attributeValue));
+					entity.setAttributeValueOnData(outputAttribute.getNameOnData(), attributeValue);
 				}
 				
 				break;

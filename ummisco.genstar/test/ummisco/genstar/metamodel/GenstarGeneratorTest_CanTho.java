@@ -78,8 +78,8 @@ public class GenstarGeneratorTest_CanTho {
 		
 		ISyntheticPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
-			int age = ((UniqueValue) (inhabitant.getEntityAttributeValue("age").getAttributeValueOnEntity())).getIntValue();
-			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValue("sex").getAttributeValueOnEntity()) ).getBooleanValue();
+			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
+			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
 
 			for (int rowIndex = 0; rowIndex < age_ranges_1_copy.length; rowIndex++) {
 				if (age >= age_ranges_1_copy[rowIndex][0] && age <= age_ranges_1_copy[rowIndex][1]) {
@@ -167,9 +167,9 @@ public class GenstarGeneratorTest_CanTho {
 		
 		ISyntheticPopulation householdPopulation = scenario1HouseholdGenerator.generate();
 		for (Entity household : householdPopulation.getEntities()) {
-			int size = ((UniqueValue) household.getEntityAttributeValue("size").getAttributeValueOnEntity()).getIntValue();
+			int size = ((UniqueValue) household.getEntityAttributeValueByNameOnData("size").getAttributeValueOnEntity()).getIntValue();
 
-			String type = ( (UniqueValue) household.getEntityAttributeValue("type").getAttributeValueOnEntity()).getStringValue();
+			String type = ( (UniqueValue) household.getEntityAttributeValueByNameOnData("type").getAttributeValueOnEntity()).getStringValue();
 			int typeIndex = householdTypes.get(type);
 			
 			household_size_by_types_1_copy[size-1][typeIndex] = --household_size_by_types_1_copy[size-1][typeIndex]; 
@@ -231,8 +231,8 @@ public class GenstarGeneratorTest_CanTho {
 		
 		ISyntheticPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
-			int age = ((UniqueValue) (inhabitant.getEntityAttributeValue("age").getAttributeValueOnEntity())).getIntValue();
-			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValue("sex").getAttributeValueOnEntity()) ).getBooleanValue();
+			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
+			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
 
 			for (int rowIndex = 0; rowIndex < age_ranges_1_copy.length; rowIndex++) {
 				if (age >= age_ranges_1_copy[rowIndex][0] && age <= age_ranges_1_copy[rowIndex][1]) {
@@ -288,8 +288,8 @@ public class GenstarGeneratorTest_CanTho {
 		
 		ISyntheticPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
-			int age = ((UniqueValue) (inhabitant.getEntityAttributeValue("age").getAttributeValueOnEntity())).getIntValue();
-			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValue("sex").getAttributeValueOnEntity()) ).getBooleanValue();
+			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
+			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
 
 			for (int rowIndex = 0; rowIndex < age_ranges_1_copy.length; rowIndex++) {
 				if (age >= age_ranges_1_copy[rowIndex][0] && age <= age_ranges_1_copy[rowIndex][1]) {
@@ -346,8 +346,8 @@ public class GenstarGeneratorTest_CanTho {
 		
 		ISyntheticPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
-			int age = ((UniqueValue) (inhabitant.getEntityAttributeValue("age").getAttributeValueOnEntity())).getIntValue();
-			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValue("sex").getAttributeValueOnEntity()) ).getBooleanValue();
+			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
+			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
 
 			for (int rowIndex = 0; rowIndex < age_ranges_1_copy.length; rowIndex++) {
 				if (age >= age_ranges_1_copy[rowIndex][0] && age <= age_ranges_1_copy[rowIndex][1]) {
@@ -427,9 +427,9 @@ public class GenstarGeneratorTest_CanTho {
 		
 		ISyntheticPopulation inhabitantPopulation = scenario2InhabitantGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
-			int age = ((UniqueValue) (inhabitant.getEntityAttributeValue("age").getAttributeValueOnEntity())).getIntValue();
-			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValue("sex").getAttributeValueOnEntity()) ).getBooleanValue();
-			String livingPlace = ( (UniqueValue) (inhabitant.getEntityAttributeValue("living_place").getAttributeValueOnEntity()) ).getStringValue();
+			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
+			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
+			String livingPlace = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("living_place").getAttributeValueOnEntity()) ).getStringValue();
 
 			for (int rowIndex = 0; rowIndex < age_ranges_2_copy.length; rowIndex++) {
 				if (age >= age_ranges_2_copy[rowIndex][0] && age <= age_ranges_2_copy[rowIndex][1]) {
@@ -525,11 +525,11 @@ public class GenstarGeneratorTest_CanTho {
 		
 		ISyntheticPopulation householdPopulation = scenario2HouseholdGenerator.generate();
 		for (Entity household : householdPopulation.getEntities()) {
-			int size = ((UniqueValue) household.getEntityAttributeValue("size").getAttributeValueOnEntity()).getIntValue();
+			int size = ((UniqueValue) household.getEntityAttributeValueByNameOnData("size").getAttributeValueOnEntity()).getIntValue();
 			
-			String livingPlace = ( (UniqueValue) household.getEntityAttributeValue("living_place").getAttributeValueOnEntity() ).getStringValue();
+			String livingPlace = ( (UniqueValue) household.getEntityAttributeValueByNameOnData("living_place").getAttributeValueOnEntity() ).getStringValue();
 
-			String type = ( (UniqueValue) household.getEntityAttributeValue("type").getAttributeValueOnEntity()).getStringValue();
+			String type = ( (UniqueValue) household.getEntityAttributeValueByNameOnData("type").getAttributeValueOnEntity()).getStringValue();
 			int typeIndex = householdTypes.get(type);
 			if (livingPlace.equals("rural")) { typeIndex += 5; }
 			
@@ -630,11 +630,11 @@ public class GenstarGeneratorTest_CanTho {
 		for (int i=0; i<CanThoData.Scenario1.household_type1_values.length; i++) { householdTypes.put(CanThoData.Scenario1.household_type1_values[i], i + 1); }
 
 		for (Entity pickedHousehold : linker.getPickedHouseholds()) {
-			int size = ((UniqueValue) pickedHousehold.getEntityAttributeValue("size").getAttributeValueOnEntity()).getIntValue();
-			assertTrue(pickedHousehold.getMembers().size() == size);
+			int size = ((UniqueValue) pickedHousehold.getEntityAttributeValueByNameOnData("size").getAttributeValueOnEntity()).getIntValue();
+			assertTrue(pickedHousehold.getComponentPopulation("Scenario1's inhabitant population").getEntities().size() == size);
 			
 			
-			String type = ( (UniqueValue) pickedHousehold.getEntityAttributeValue("type").getAttributeValueOnEntity()).getStringValue();
+			String type = ( (UniqueValue) pickedHousehold.getEntityAttributeValueByNameOnData("type").getAttributeValueOnEntity()).getStringValue();
 			int typeIndex = householdTypes.get(type);
 			
 			after_linking_households[size-1][typeIndex] = ++after_linking_households[size-1][typeIndex];
@@ -642,10 +642,10 @@ public class GenstarGeneratorTest_CanTho {
 		}
 		
 		for (Entity unpickedHousehold : householdPopulation.getEntities()) {
-			assertTrue(unpickedHousehold.getMembers().isEmpty());
+			assertTrue(unpickedHousehold.getComponentPopulation("Scenario1's inhabitant population") == null);
 			
-			int size = ((UniqueValue) unpickedHousehold.getEntityAttributeValue("size").getAttributeValueOnEntity()).getIntValue();
-			String type = ( (UniqueValue) unpickedHousehold.getEntityAttributeValue("type").getAttributeValueOnEntity()).getStringValue();
+			int size = ((UniqueValue) unpickedHousehold.getEntityAttributeValueByNameOnData("size").getAttributeValueOnEntity()).getIntValue();
+			String type = ( (UniqueValue) unpickedHousehold.getEntityAttributeValueByNameOnData("type").getAttributeValueOnEntity()).getStringValue();
 			int typeIndex = householdTypes.get(type);
 			
 			before_linking_households[size-1][typeIndex] = ++before_linking_households[size-1][typeIndex];
@@ -670,12 +670,11 @@ public class GenstarGeneratorTest_CanTho {
 		}
 		
 		
-		List<Entity> unpickedInhabitants = new ArrayList<Entity>(inhabitantPopulation.getEntities());
 		assertTrue(pickedInhabitants.size() > 0);
-		assertTrue(unpickedInhabitants.size() + pickedInhabitants.size() == inhabitantPopulation.getInitialNbOfEntities());
+//		assertTrue(avaialableInhabitants.size() + pickedInhabitants.size() == inhabitantPopulation.getInitialNbOfEntities());
 		
 
-		System.out.println("pickedInhabitants = " + pickedInhabitants.size() + ", unpickedInhabitants = " + unpickedInhabitants.size());
+//		System.out.println("pickedInhabitants = " + pickedInhabitants.size() + ", unpickedInhabitants = " + unpickedInhabitants.size());
 	}
 	
 	
@@ -713,16 +712,16 @@ public class GenstarGeneratorTest_CanTho {
 		}
 		
 		for (Entity pickedHousehold : linker.getPickedHouseholds()) {
-			int size = ((UniqueValue) pickedHousehold.getEntityAttributeValue("size").getAttributeValueOnData()).getIntValue();
-			assertTrue(pickedHousehold.getMembers().size() == size);
+			int size = ((UniqueValue) pickedHousehold.getEntityAttributeValueByNameOnData("size").getAttributeValueOnData()).getIntValue();
+			assertTrue(pickedHousehold.getComponentPopulation("Scenario2's inhabitant population").getEntities().size() == size);
 		}
 		
 		for (Entity unpickedHousehold : householdPopulation.getEntities()) {
-			assertTrue(unpickedHousehold.getMembers().isEmpty());
+			assertTrue(unpickedHousehold.getComponentPopulation("Scenario2's inhabitant population") == null);
 		}
 		
 		assertTrue(linker.getPickedInhabitants().size() > 0);
-		assertTrue(inhabitantPopulation.getEntities().size() + linker.getPickedInhabitants().size() == inhabitantPopulation.getInitialNbOfEntities());
+//		assertTrue(inhabitantPopulation.getEntities().size() + linker.getPickedInhabitants().size() == inhabitantPopulation.getInitialNbOfEntities());
 	}
 	
 //	@Test public void testScenario3NbOfGeneratedInhabitants() throws GenstarException {
@@ -755,8 +754,8 @@ public class GenstarGeneratorTest_CanTho {
 			
 			ISyntheticPopulation inhabitantPopulation = scenario3InhabitantGenerator.generate();
 			for (Entity inhabitant : inhabitantPopulation.getEntities()) {
-				int age = ((UniqueValue) (inhabitant.getEntityAttributeValue("age").getAttributeValueOnEntity())).getIntValue();
-				boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValue("sex").getAttributeValueOnEntity()) ).getBooleanValue();
+				int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
+				boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
 
 				for (int rowIndex = 0; rowIndex < age_ranges_3_copy.length; rowIndex++) {
 					if (age >= age_ranges_3_copy[rowIndex][0] && age <= age_ranges_3_copy[rowIndex][1]) {
@@ -773,7 +772,7 @@ public class GenstarGeneratorTest_CanTho {
 				}
 				
 				// district
-				String district = ((UniqueValue) (inhabitant.getEntityAttributeValue("district").getAttributeValueOnEntity())).getStringValue();
+				String district = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("district").getAttributeValueOnEntity())).getStringValue();
 				int districtIndex = CanThoData.Scenario3.getDistrictIndex(district);
 				if (isMale) {
 					generated_districts_3[districtIndex][0] = ++generated_districts_3[districtIndex][0];
@@ -861,8 +860,8 @@ public class GenstarGeneratorTest_CanTho {
 			
 			ISyntheticPopulation inhabitantPopulation = scenario4InhabitantGenerator.generate();
 			for (Entity inhabitant : inhabitantPopulation.getEntities()) {
-				int age = ((UniqueValue) (inhabitant.getEntityAttributeValue("age").getAttributeValueOnEntity())).getIntValue();
-				boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValue("sex").getAttributeValueOnEntity()) ).getBooleanValue();
+				int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
+				boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
 
 				for (int rowIndex = 0; rowIndex < age_ranges_4_copy.length; rowIndex++) {
 					if (age >= age_ranges_4_copy[rowIndex][0] && age <= age_ranges_4_copy[rowIndex][1]) {
@@ -879,7 +878,7 @@ public class GenstarGeneratorTest_CanTho {
 				}
 				
 				// district
-				String district = ((UniqueValue) (inhabitant.getEntityAttributeValue("district").getAttributeValueOnEntity())).getStringValue();
+				String district = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("district").getAttributeValueOnEntity())).getStringValue();
 				int districtIndex = CanThoData.Scenario4.getDistrictIndex(district);
 				if (isMale) {
 					generated_districts_4[districtIndex][0] = ++generated_districts_4[districtIndex][0];
@@ -975,8 +974,8 @@ public class GenstarGeneratorTest_CanTho {
 			
 			ISyntheticPopulation inhabitantPopulation = scenario5InhabitantGenerator.generate();
 			for (Entity inhabitant : inhabitantPopulation.getEntities()) {
-				int age = ((UniqueValue) (inhabitant.getEntityAttributeValue("age").getAttributeValueOnEntity())).getIntValue();
-				boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValue("sex").getAttributeValueOnEntity()) ).getBooleanValue();
+				int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
+				boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
 
 				for (int rowIndex = 0; rowIndex < age_ranges_5_copy.length; rowIndex++) {
 					if (age >= age_ranges_5_copy[rowIndex][0] && age <= age_ranges_5_copy[rowIndex][1]) {
@@ -993,7 +992,7 @@ public class GenstarGeneratorTest_CanTho {
 				}
 				
 				// district
-				String district = ((UniqueValue) (inhabitant.getEntityAttributeValue("district").getAttributeValueOnEntity())).getStringValue();
+				String district = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("district").getAttributeValueOnEntity())).getStringValue();
 				int districtIndex = CanThoData.Scenario3.getDistrictIndex(district);
 				if (isMale) {
 					generated_districts_5[districtIndex][0] = ++generated_districts_5[districtIndex][0];

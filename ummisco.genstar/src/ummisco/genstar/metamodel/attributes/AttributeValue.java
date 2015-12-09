@@ -44,7 +44,7 @@ public abstract class AttributeValue implements Comparable<AttributeValue> {
 		return 1;
 	}
 	
-	public abstract boolean isValueMatch(final AttributeValue otherValue);
+	public abstract boolean isValueMatched(final AttributeValue otherValue);
 	
 	public abstract AttributeValue cast(final Class<? extends AttributeValue> targetType) throws GenstarException;
 	

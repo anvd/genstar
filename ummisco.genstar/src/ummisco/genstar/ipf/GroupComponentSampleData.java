@@ -19,9 +19,15 @@ public class GroupComponentSampleData implements ISampleData {
 	
 	private AbstractAttribute groupIdAttributeOnComponentEntity;
 	
-	private List<SampleEntity> complexSampleEntities;
+	private SampleEntityPopulation sampleEntityPopulation;
 	
 	
+	// TODO
+	// change to 
+	/*
+	 * GroupComponentSampleData(final ISampleData groupSampleData, final ISampleData componentSampleData, 
+			final String groupIdAttributeNameOnGroupEntity, final String groupIdAttributeNameOnComponentEntity) throws GenstarException
+	 */
 	public GroupComponentSampleData(final ISampleData groupSampleData, final ISampleData componentSampleData, 
 			final AbstractAttribute groupIdAttributeOnGroupEntity, final AbstractAttribute groupIdAttributeOnComponentEntity) throws GenstarException {
 		
@@ -43,53 +49,46 @@ public class GroupComponentSampleData implements ISampleData {
 	
 	private void buildGroupComponentSampleEntities() throws GenstarException {
 		
-		List<SampleEntity> groupSampleEntities = groupSampleData.getSampleEntities();
-		List<SampleEntity> componentSampleEntities = componentSampleData.getSampleEntities();
+		sampleEntityPopulation = new SampleEntityPopulation(groupSampleData.getSampleEntityPopulation().getPopulationName(), groupSampleData.getSampleEntityPopulation().getAttributes());
+		
+		List<SampleEntity> groupSampleEntities = groupSampleData.getSampleEntityPopulation().getSampleEntities();
+		List<SampleEntity> componentSampleEntities = componentSampleData.getSampleEntityPopulation().getSampleEntities();
 		
 		SampleEntity complexEntity;
 		AttributeValue groupIdAttributeValueOnGroupEntity;
-		complexSampleEntities = new ArrayList<SampleEntity>();
 		
 		List<SampleEntity> copyComponentSampleEntities = new ArrayList<SampleEntity>(componentSampleEntities);
 		
 		for (SampleEntity groupEntity : groupSampleEntities) {
-			complexEntity = new SampleEntity(groupEntity.getAttributeValues());
-			complexSampleEntities.add(complexEntity);
+			complexEntity = sampleEntityPopulation.createSampleEntity(groupEntity.getAttributeValues());
 			
-			groupIdAttributeValueOnGroupEntity = complexEntity.getAttributeValue(groupIdAttributeOnGroupEntity);
+			groupIdAttributeValueOnGroupEntity = complexEntity.getAttributeValue(groupIdAttributeOnGroupEntity.getNameOnData());
 			if (groupIdAttributeValueOnGroupEntity == null) { throw new GenstarException("groupEntity doesn't contain " + groupIdAttributeOnGroupEntity.getNameOnData() + " as ID attribute"); }
 			
-			Map<AbstractAttribute, AttributeValue> componentMatchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
-			componentMatchingCriteria.put(groupIdAttributeOnComponentEntity, groupIdAttributeValueOnGroupEntity);
+			Map<String, AttributeValue> componentMatchingCriteria = new HashMap<String, AttributeValue>();
+			componentMatchingCriteria.put(groupIdAttributeOnComponentEntity.getNameOnData(), groupIdAttributeValueOnGroupEntity);
 			
 			List<SampleEntity> matchedComponentEntities = new ArrayList<SampleEntity>();
 			for (SampleEntity componentEntity : copyComponentSampleEntities) {
-				if (componentEntity.isMatch(componentMatchingCriteria)) { matchedComponentEntities.add(componentEntity);  }
+				if (componentEntity.isMatched(componentMatchingCriteria)) { matchedComponentEntities.add(componentEntity);  }
 			}
 			
-			complexEntity.addMembers(matchedComponentEntities);
+			
+			// create component sample entities
+			if (!matchedComponentEntities.isEmpty()) {
+				List<Map<String, AttributeValue>> componentSampleEntityAVs = new ArrayList<Map<String, AttributeValue>>();
+				for (SampleEntity matchedComEntity : matchedComponentEntities) { componentSampleEntityAVs.add(matchedComEntity.getAttributeValues()); }
+				
+				SampleEntityPopulation componentPopulation = complexEntity.createComponentPopulation(componentSampleData.getSampleEntityPopulation().getPopulationName(), componentSampleData.getSampleEntityPopulation().getAttributes());
+				componentPopulation.createSampleEntities(componentSampleEntityAVs);
+			}
+			
 			copyComponentSampleEntities.removeAll(matchedComponentEntities);
 		}
 	}
-	
-	@Override
-	public int countMatchingEntities(final Map<AbstractAttribute, AttributeValue> matchingCriteria) {
-		int matchingIndividuals = 0;
-		for (SampleEntity se : complexSampleEntities) { if (se.isMatch(matchingCriteria)) { matchingIndividuals++; } }
 		
-		return matchingIndividuals;
-	}
-	
 	@Override
-	public List<SampleEntity> getMatchingEntities(final Map<AbstractAttribute, AttributeValue> matchingCriteria) {
-		List<SampleEntity> matchings = new ArrayList<SampleEntity>();
-		for (SampleEntity se : complexSampleEntities) { if (se.isMatch(matchingCriteria)) { matchings.add(se); } }
-		
-		return matchings;
-	}
-
-	@Override
-	public List<SampleEntity> getSampleEntities() {
-		return complexSampleEntities;
+	public SampleEntityPopulation getSampleEntityPopulation() {
+		return sampleEntityPopulation;
 	}
 }

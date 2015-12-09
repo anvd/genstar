@@ -123,10 +123,12 @@ public class GenstarFactoryUtils {
 	
 	public static final class SAMPLE_DATA_PROPERTIES_FILE_FORMAT {
 		
-		public static final int SINGLE_SAMPLE_DATA_NUMBER_OF_PROPERTIES = 5;
+		public static final int SINGLE_SAMPLE_DATA_NUMBER_OF_PROPERTIES = 6;
 		
-		public static final int GROUP_COMPONENT_SAMPLE_DATA_NUMBER_OF_PROPERTIES = 9;
+		public static final int GROUP_COMPONENT_SAMPLE_DATA_NUMBER_OF_PROPERTIES = 11;
 		
+		
+		public static final String POPULATION_PROPERTY = "POPULATION";
 		
 		public static final String ATTRIBUTES_PROPERTY = "ATTRIBUTES";
 		
@@ -138,6 +140,8 @@ public class GenstarFactoryUtils {
 		
 		public static final String SUPPLEMENTARY_ATTRIBUTES_PROPERTY = "SUPPLEMENTARY_ATTRIBUTES"; 
 		
+		public static final String COMPONENT_POPULATION_PROPERTY = "COMPONENT_POPULATION";
+		
 		public static final String COMPONENT_SAMPLE_DATA_PROPERTY = "COMPONENT_SAMPLE_DATA";
 		
 		public static final String COMPONENT_ATTRIBUTES_PROPERTY = "COMPONENT_ATTRIBUTES";
@@ -145,6 +149,10 @@ public class GenstarFactoryUtils {
 		public static final String GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_GROUP";
 		
 		public static final String GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_COMPONENT";
+		
+		public static final String GROUP_ATTRIBUTE_NAME_ON_COMPONENT_PROPERTY = "GROUP_ATTRIBUTE_NAME_ON_COMPONENT";
+		
+		public static final String COMPONENT_ATTRIBUTE_NAME_ON_GROUP_PROPERTY = "COMPONENT_ATTRIBUTE_NAME_ON_GROUP";
 	}
 
 	
@@ -302,7 +310,7 @@ public class GenstarFactoryUtils {
 			String attributeName = attributeToken.nextToken();
 			String attributeType = attributeToken.nextToken();
 			
-			AbstractAttribute attribute = generator.getAttribute(attributeName);
+			AbstractAttribute attribute = generator.getAttributeByNameOnData(attributeName);
 			if (attribute == null) { throw new GenstarException("Unknown attribute (" + attributeName + ") found in Frequency Distribution Generation Rule (file: " + ruleFile.getPath() + ")"); }
 			concerningAttributes.add(attribute);
 			
@@ -367,10 +375,10 @@ public class GenstarFactoryUtils {
 		String inferringAttributeName = header.get(0);
 		String inferredAttributeName = header.get(1);
 		
-		AbstractAttribute inferringAttribute = generator.getAttribute(inferringAttributeName);
+		AbstractAttribute inferringAttribute = generator.getAttributeByNameOnData(inferringAttributeName);
 		if (inferringAttribute == null) { throw new GenstarException("Inferring attribute (" + inferringAttributeName + ") not found in the generator."); }
 		
-		AbstractAttribute inferredAttribute = generator.getAttribute(inferredAttributeName);
+		AbstractAttribute inferredAttribute = generator.getAttributeByNameOnData(inferredAttributeName);
 		if (inferredAttribute == null) { throw new GenstarException("Inferred attribute (" + inferredAttributeName + ") not found in the generator."); }
 		
 		if (rows != inferringAttribute.values().size()) { throw new GenstarException("Generation Rule must contain exacly the same number of attribute values defined in the inferring attribute and inferred attribute (file: " + ruleFile.getPath() + ")"); }
@@ -424,7 +432,7 @@ public class GenstarFactoryUtils {
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, ruleName, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile);
 		
-		ISampleData sampleData = new SampleData(rule, sampleFile);
+		ISampleData sampleData = new SampleData(generator.getPopulationName(), generator.getAttributes(), sampleFile);
 		rule.setSampleData(sampleData);
 		
 		generator.setGenerationRule(rule);
@@ -435,23 +443,24 @@ public class GenstarFactoryUtils {
 	public static void createGroupComponentSampleDataGenerationRule(final ISingleRuleGenerator groupGenerator, final String ruleName, final GenstarCSVFile groupSampleFile,
 			final GenstarCSVFile groupControlledAttributesFile, final GenstarCSVFile groupControlledTotalsFile, final GenstarCSVFile groupSupplementaryAttributesFile,
 			final GenstarCSVFile componentSampleFile, final GenstarCSVFile componentAttributesFile, final String groupIdAttributeNameOnGroup,
-			final String groupIdAttributeNameOnComponent) throws GenstarException {
+			final String groupIdAttributeNameOnComponent, final String componentPopulationName) throws GenstarException {
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(groupGenerator, ruleName, groupControlledAttributesFile, groupControlledTotalsFile, groupSupplementaryAttributesFile);
 		
 		ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("Component Generator");
 		createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		componentGenerator.setPopulationName(componentPopulationName);
 		
-		AbstractAttribute groupIdAttributeOnGroup = rule.getAttribute(groupIdAttributeNameOnGroup);
+		AbstractAttribute groupIdAttributeOnGroup = rule.getAttributeByNameOnData(groupIdAttributeNameOnGroup);
 		if (groupIdAttributeOnGroup == null) { throw new GenstarException("'" + groupIdAttributeNameOnGroup + "' is not a valid attribute"); }
 		groupIdAttributeOnGroup.setIdentity(true);
 		
-		AbstractAttribute groupIdAttributeOnComponent = componentGenerator.getAttribute(groupIdAttributeNameOnComponent);
+		AbstractAttribute groupIdAttributeOnComponent = componentGenerator.getAttributeByNameOnData(groupIdAttributeNameOnComponent);
 		if (groupIdAttributeOnComponent == null) { throw new GenstarException("'" + groupIdAttributeOnComponent + "' is not a valid attribute"); }
 		groupIdAttributeOnComponent.setIdentity(true);
 		
-		ISampleData groupSampleData = new SampleData(rule, groupSampleFile);
-		ISampleData componentSampleData = new SampleData(componentGenerator, componentSampleFile);
+		ISampleData groupSampleData = new SampleData(groupGenerator.getPopulationName(), groupGenerator.getAttributes(), groupSampleFile);
+		ISampleData componentSampleData = new SampleData(componentGenerator.getPopulationName(), componentGenerator.getAttributes(), componentSampleFile);
 		
 		ISampleData groupComponentSampleData = new GroupComponentSampleData(groupSampleData, componentSampleData, groupIdAttributeOnGroup, groupIdAttributeOnComponent);
 		rule.setSampleData(groupComponentSampleData);
@@ -470,7 +479,7 @@ public class GenstarFactoryUtils {
 			aRow = supplementaryAttributesFile.getRow(r);
 			if (aRow.size() != 1) { throw new GenstarException("Invalid supplementary attribute file format: each row contains only one supplementary attribute. File: " + supplementaryAttributesFile.getPath()); }
 			
-			supplementaryAttr = generator.getAttribute(aRow.get(0));
+			supplementaryAttr = generator.getAttributeByNameOnData(aRow.get(0));
 			if (supplementaryAttr == null) { throw new GenstarException("Attribute '" + aRow.get(0) + "' not found on the generator."); }
 			
 			supplementaryAttributes.add(supplementaryAttr);
@@ -529,7 +538,7 @@ public class GenstarFactoryUtils {
 			String attributeName = attributeToken.nextToken();
 			String attributeType = attributeToken.nextToken();
 			
-			AbstractAttribute attribute = generator.getAttribute(attributeName);
+			AbstractAttribute attribute = generator.getAttributeByNameOnData(attributeName);
 			if (attribute == null) { throw new GenstarException("Unknown attribute (" + attributeName + ") found in " + distributionFormatFile.getPath() + "."); }
 			concerningAttributes.add(attribute);
 			
@@ -550,7 +559,7 @@ public class GenstarFactoryUtils {
 		SortedMap<Integer, AbstractAttribute> attributeIndexes = new TreeMap<Integer, AbstractAttribute>();
 		for (int col=0; col<sampleDataHeader.size(); col++) {
 			String attributeNameOnSample = sampleDataHeader.get(col);
-			AbstractAttribute attribute = generationRule.getAttribute(attributeNameOnSample);
+			AbstractAttribute attribute = generationRule.getAttributeByNameOnData(attributeNameOnSample);
 			if (attribute != null) {
 				attributeIndexes.put(col, attribute);
 			}
@@ -677,14 +686,14 @@ public class GenstarFactoryUtils {
 		List<AbstractAttribute> groupAttributes = new ArrayList<AbstractAttribute>(groupGenerator.getAttributes());
 		
 		// 2. retrieve reference to groupIdAttributeOnGroupEntity
-		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttribute(groupIdAttributeNameOnGroupEntity);
+		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttributeByNameOnData(groupIdAttributeNameOnGroupEntity);
 		if (groupIdAttributeOnGroupEntity == null) { throw new GenstarException(groupIdAttributeNameOnGroupEntity + " is considered as group identity attribute but not found among the available group attributes"); }
 		groupIdAttributeOnGroupEntity.setIdentity(true);
 		// Important Note: groupIdOnGroupAttribute is an integer, beginning with 0, with 1 as increment
 		// ID should not be defined in the attributesFile?
 		
 		// 3.  retrieve reference to groupSizeAttribute
-		AbstractAttribute groupSizeAttribute = groupGenerator.getAttribute(groupSizeAttributeName);
+		AbstractAttribute groupSizeAttribute = groupGenerator.getAttributeByNameOnData(groupSizeAttributeName);
 		if (groupSizeAttribute == null) { throw new GenstarException(groupSizeAttributeName + " is considered as group size attribute but not found among the available group attributes"); }
 		if (!groupSizeAttribute.getValueClassOnEntity().equals(UniqueValue.class)) { throw new GenstarException(groupSizeAttributeName + " attribute must have unique value"); }
 		if (!groupSizeAttribute.getDataType().equals(DataType.INTEGER)) { throw new GenstarException(groupSizeAttributeName + " attribute must have " + DataType.INTEGER.getName() + " as data type"); }
@@ -706,7 +715,7 @@ public class GenstarFactoryUtils {
 		createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		List<AbstractAttribute> componentAttributes = new ArrayList<AbstractAttribute>(componentGenerator.getAttributes());
 		
-		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttribute(groupIdAttributeNameOnComponentEntity);
+		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttributeByNameOnData(groupIdAttributeNameOnComponentEntity);
 		if (groupIdAttributeOnComponentEntity == null) { throw new GenstarException(groupIdAttributeNameOnComponentEntity + " is considered as group identity attribute on component but not found among the available component attributes"); }
 		groupIdAttributeOnComponentEntity.setIdentity(true);
 		

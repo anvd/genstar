@@ -23,7 +23,12 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	
 	private Map<AttributeValue, AttributeValue> inferenceData;
 
-	
+
+	// TODO change to 
+	/*
+	 public AttributeInferenceGenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String ruleName, 
+			final String inferringAttributeName, final String inferredAttributeName) throws GenstarException
+	 */
 	public AttributeInferenceGenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String name, 
 			final AbstractAttribute inferringAttribute, final AbstractAttribute inferredAttribute) throws GenstarException {
 		super(populationGenerator, name);
@@ -84,12 +89,12 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 		if (entity == null) { throw new GenstarException("'entity' parameter can not be null"); }
 		
 		String inferringAttributeName = inferringAttribute.getNameOnEntity();
-		EntityAttributeValue inferringAttrValueOnEntity = entity.getEntityAttributeValue(inferringAttributeName);
+		EntityAttributeValue inferringAttrValueOnEntity = entity.getEntityAttributeValueByNameOnData(inferringAttributeName);
 		
 		if (inferringAttrValueOnEntity != null) {
 			for (AttributeValue inferringAttrValueOnData : inferenceData.keySet()) {
-				if (inferringAttrValueOnEntity.isValueMatch(inferringAttrValueOnData)) {
-					entity.putAttributeValue(new EntityAttributeValue(inferredAttribute, inferenceData.get(inferringAttrValueOnData)));
+				if (inferringAttrValueOnEntity.isAttributeValueOnEntityMatched(inferringAttrValueOnData)) {
+					entity.setAttributeValueOnData(inferredAttribute.getNameOnData(), inferenceData.get(inferringAttrValueOnData));
 					
 					break;
 				}
@@ -129,7 +134,7 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	}
 
 	@Override
-	public AbstractAttribute getAttribute(final String attributeNameOnData) {
+	public AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData) {
 		if (inferringAttribute.getNameOnData().equals(attributeNameOnData)) { return inferringAttribute; }
 		if (inferredAttribute.getNameOnData().equals(attributeNameOnData)) { return inferredAttribute; }
 		

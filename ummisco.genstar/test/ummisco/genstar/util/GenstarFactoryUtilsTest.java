@@ -187,9 +187,9 @@ public class GenstarFactoryUtilsTest {
 		Map<AbstractAttribute, AttributeValue> map1 = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		AttributeValue c0Value = new UniqueValue(DataType.STRING, "C0");
-		map1.put(generator.getAttribute("Category"), c0Value);
+		map1.put(generator.getAttributeByNameOnData("Category"), c0Value);
 		
-		RangeValuesAttribute ageAttribute = (RangeValuesAttribute) generator.getAttribute("Age");
+		RangeValuesAttribute ageAttribute = (RangeValuesAttribute) generator.getAttributeByNameOnData("Age");
 		Set<AttributeValue> ageValues = ageAttribute.values();
 		UniqueValue age5UniqueValue = new UniqueValue(DataType.INTEGER, "5");
 		RangeValue age5RangeValue = null;
@@ -216,7 +216,7 @@ public class GenstarFactoryUtilsTest {
 		// C3, 5 (frequency == 2)
 		Map<AbstractAttribute, AttributeValue> map2 = new HashMap<AbstractAttribute, AttributeValue>();
 		AttributeValue c5Value = new UniqueValue(DataType.STRING, "C3");
-		map2.put(generator.getAttribute("Category"), c5Value);
+		map2.put(generator.getAttributeByNameOnData("Category"), c5Value);
 		map2.put(ageAttribute, age5RangeValue);
 		
 		boolean isMatchMap2 = false;
@@ -258,7 +258,7 @@ public class GenstarFactoryUtilsTest {
 		ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group dummy generator");
 		GenstarFactoryUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
 		List<AbstractAttribute> groupAttributes = new ArrayList<AbstractAttribute>(groupGenerator.getAttributes());
-		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttribute("Household ID");
+		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttributeByNameOnData("Household ID");
 		
 		int nbOfGroups = 100;
 		
@@ -288,8 +288,8 @@ public class GenstarFactoryUtilsTest {
 		ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group dummy generator");
 		GenstarFactoryUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
 		List<AbstractAttribute> groupAttributes = new ArrayList<AbstractAttribute>(groupGenerator.getAttributes());
-		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttribute("Household ID");
-		AbstractAttribute groupSizeAttribute = groupGenerator.getAttribute("Household Size");
+		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttributeByNameOnData("Household ID");
+		AbstractAttribute groupSizeAttribute = groupGenerator.getAttributeByNameOnData("Household Size");
 		int groupIdAttributeIndexOnGroupEntity = 0;
 		int groupSizeAttributeIndex = 1;
 		
@@ -309,7 +309,7 @@ public class GenstarFactoryUtilsTest {
 		ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("component dummy generator");
 		GenstarFactoryUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		List<AbstractAttribute> componentAttributes = new ArrayList<AbstractAttribute>(componentGenerator.getAttributes());
-		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttribute("Household ID"); 
+		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttributeByNameOnData("Household ID"); 
 		
 		// generate component entities
 		List<String[]> generatedGroupsWithoutHeader = new ArrayList<String[]>(generatedGroups);
@@ -370,12 +370,6 @@ public class GenstarFactoryUtilsTest {
 	}
 	
 	
-	/*
-	public static void createGroupComponentSampleDataGenerationRule(final ISingleRuleGenerator groupGenerator, final String ruleName, final GenstarCSVFile groupSampleFile,
-			final GenstarCSVFile groupControlledAttributesFile, final GenstarCSVFile groupControlledTotalsFile, final GenstarCSVFile groupSupplementaryAttributesFile,
-			final GenstarCSVFile componentSampleDataFile, final GenstarCSVFile componentAttributesFile, final String groupIdAttributeNameOnGroup,
-			final String groupIdAttributeNameOnComponent) throws GenstarException {
-	 */
 	@Test public void testCreateGroupComponentSampleDataGenerationRule() throws GenstarException {
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateGroupComponentSampleDataGenerationRule/group_attributes.csv", true);
 		
@@ -393,8 +387,10 @@ public class GenstarFactoryUtilsTest {
 		
 		String groupIdAttributeNameOnGroup = "Household ID";
 		String groupIdAttributeNameOnComponent = "Household ID";
+		String componentPopulationName = "people";
 		
-		GenstarFactoryUtils.createGroupComponentSampleDataGenerationRule(groupGenerator, "group component sample data generation rule", groupSampleFile, groupControlledAttributesFile, groupControlledTotalsFile, groupSupplementaryAttributesFile, componentSampleFile, componentAttributesFile, groupIdAttributeNameOnGroup, groupIdAttributeNameOnComponent);
+		GenstarFactoryUtils.createGroupComponentSampleDataGenerationRule(groupGenerator, "group component sample data generation rule", groupSampleFile, groupControlledAttributesFile, groupControlledTotalsFile, 
+				groupSupplementaryAttributesFile, componentSampleFile, componentAttributesFile, groupIdAttributeNameOnGroup, groupIdAttributeNameOnComponent, componentPopulationName);
 		
 		SampleDataGenerationRule rule = (SampleDataGenerationRule)groupGenerator.getGenerationRule();
 		assertTrue(rule.getSampleData() instanceof GroupComponentSampleData);

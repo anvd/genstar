@@ -42,7 +42,7 @@ public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
 		valueFrequencies = new HashMap<RangeValue, Integer>();
 		
 		attributes = new ArrayList<AbstractAttribute>();
-		ageAttribute = (RangeValuesAttribute) populationGenerator.getAttribute("Age");
+		ageAttribute = (RangeValuesAttribute) populationGenerator.getAttributeByNameOnData("Age");
 		attributes.add(ageAttribute);
 
 		String ruleDataFileRelativePath = parameterValuesMap.get("rule_data_file");
@@ -103,12 +103,16 @@ public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
 
 	@Override
 	public void generate(Entity entity) throws GenstarException {
+		if (true) {
+			throw new UnsupportedOperationException("not yet implemented correctly");
+		}
+		
 		int selectedTotal = SharedInstances.RandomNumberGenerator.nextInt(total);
 		
 		int currentTotal = 0;
 		for (RangeValue value : valueFrequencies.keySet()) {
 			if (currentTotal > selectedTotal) {
-				entity.putAttributeValue(new EntityAttributeValue(ageAttribute, value));
+				// entity.setEntityAttributeValue(new EntityAttributeValue(ageAttribute, value));
 				break;
 			}
 			
@@ -117,7 +121,7 @@ public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
 	}
 
 	@Override
-	public AbstractAttribute getAttribute(String attributeNameOnData) {
+	public AbstractAttribute getAttributeByNameOnData(String attributeNameOnData) {
 		return null;
 	}
 

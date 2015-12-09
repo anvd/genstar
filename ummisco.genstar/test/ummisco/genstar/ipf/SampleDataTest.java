@@ -35,16 +35,16 @@ public class SampleDataTest {
 		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/people_sample.csv", true);
 		
 		new Expectations() {{
-			generationRule.getAttribute(anyString);
+			generationRule.getAttributeByNameOnData(anyString);
 			result = new Delegate() {
 				AbstractAttribute delegateMethod(final String attributeName) {
-					return generator.getAttribute(attributeName);
+					return generator.getAttributeByNameOnData(attributeName);
 				}
 			};
 		}};
 		
-		SampleData sampleData = new SampleData(generationRule, sampleDataCSVFile);
-		assertTrue(sampleData.getSampleEntities().size() == 4);
+		SampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataCSVFile);
+		assertTrue(sampleData.getSampleEntityPopulation().getSampleEntities().size() == 4);
 	}
 	
 	@Test public void testCountMatchingEntities(@Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
@@ -56,15 +56,15 @@ public class SampleDataTest {
 		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/people_sample.csv", true);
 		
 		new Expectations() {{
-			generationRule.getAttribute(anyString);
+			generationRule.getAttributeByNameOnData(anyString);
 			result = new Delegate() {
 				AbstractAttribute delegateMethod(final String attributeName) {
-					return generator.getAttribute(attributeName);
+					return generator.getAttributeByNameOnData(attributeName);
 				}
 			};
 		}};
 		
-		SampleData sampleData = new SampleData(generationRule, sampleDataCSVFile);
+		SampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataCSVFile);
 		/*
 			Household Size,Household Income,Household Type,Number Of Cars
 			1,High,type1,1
@@ -72,59 +72,59 @@ public class SampleDataTest {
 			3,High,type3,1
 			2,High,type1,3 
 		 */
-		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
+		Map<String, AttributeValue> matchingCriteria = new HashMap<String, AttributeValue>();
 		
-		AbstractAttribute householdSizeAttr = generator.getAttribute("Household Size");
+		AbstractAttribute householdSizeAttr = generator.getAttributeByNameOnData("Household Size");
 		
 		AttributeValue householdSizeOne = new UniqueValue(householdSizeAttr.getDataType(), "1");
-		matchingCriteria.put(householdSizeAttr, householdSizeOne);
-		assertTrue(sampleData.countMatchingEntities(matchingCriteria) == 1);
+		matchingCriteria.put(householdSizeAttr.getNameOnData(), householdSizeOne);
+		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 1);
 		
 		AttributeValue householdSizeTwo = new UniqueValue(householdSizeAttr.getDataType(), "2");
-		matchingCriteria.put(householdSizeAttr, householdSizeTwo);
-		assertTrue(sampleData.countMatchingEntities(matchingCriteria) == 2);
+		matchingCriteria.put(householdSizeAttr.getNameOnData(), householdSizeTwo);
+		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 2);
 
 		AttributeValue householdFour = new UniqueValue(householdSizeAttr.getDataType(), "4");
-		matchingCriteria.put(householdSizeAttr, householdFour);
-		assertTrue(sampleData.countMatchingEntities(matchingCriteria) == 0);
+		matchingCriteria.put(householdSizeAttr.getNameOnData(), householdFour);
+		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 0);
 		
 		
 		matchingCriteria.clear();
-		AbstractAttribute typeAttr = generator.getAttribute("Household Type");
+		AbstractAttribute typeAttr = generator.getAttributeByNameOnData("Household Type");
 		
 		AttributeValue typeOne = new UniqueValue(typeAttr.getDataType(), "type1");
-		matchingCriteria.put(typeAttr, typeOne);
-		assertTrue(sampleData.countMatchingEntities(matchingCriteria) == 2);
+		matchingCriteria.put(typeAttr.getNameOnData(), typeOne);
+		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 2);
 		
 		AttributeValue typeThree = new UniqueValue(typeAttr.getDataType(), "type3");
-		matchingCriteria.put(typeAttr, typeThree);
-		assertTrue(sampleData.countMatchingEntities(matchingCriteria) == 1);
+		matchingCriteria.put(typeAttr.getNameOnData(), typeThree);
+		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 1);
 		
 		
 		matchingCriteria.clear();
-		AbstractAttribute incomeAttr = generator.getAttribute("Household Income");
+		AbstractAttribute incomeAttr = generator.getAttributeByNameOnData("Household Income");
 		AttributeValue incomeHigh = new UniqueValue(incomeAttr.getDataType(), "High");
-		matchingCriteria.put(incomeAttr, incomeHigh);
-		assertTrue(sampleData.countMatchingEntities(matchingCriteria) == 3);
+		matchingCriteria.put(incomeAttr.getNameOnData(), incomeHigh);
+		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 3);
 		
 		
 		matchingCriteria.clear();
-		matchingCriteria.put(householdSizeAttr, householdSizeTwo);
-		assertTrue(sampleData.countMatchingEntities(matchingCriteria) == 2);
-		matchingCriteria.put(incomeAttr, incomeHigh);
-		assertTrue(sampleData.countMatchingEntities(matchingCriteria) == 1);
-		matchingCriteria.put(typeAttr, typeOne);
-		assertTrue(sampleData.countMatchingEntities(matchingCriteria) == 1);
+		matchingCriteria.put(householdSizeAttr.getNameOnData(), householdSizeTwo);
+		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 2);
+		matchingCriteria.put(incomeAttr.getNameOnData(), incomeHigh);
+		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 1);
+		matchingCriteria.put(typeAttr.getNameOnData(), typeOne);
+		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 1);
 		
 		
-		AbstractAttribute nbOfCarsAttr = generator.getAttribute("Number Of Cars");
+		AbstractAttribute nbOfCarsAttr = generator.getAttributeByNameOnData("Number Of Cars");
 		
 		AttributeValue carsOne = new UniqueValue(nbOfCarsAttr.getDataType(), "1");
-		matchingCriteria.put(nbOfCarsAttr, carsOne);
-		assertTrue(sampleData.countMatchingEntities(matchingCriteria) == 0);
+		matchingCriteria.put(nbOfCarsAttr.getNameOnData(), carsOne);
+		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 0);
 		
 		AttributeValue carsThree = new UniqueValue(nbOfCarsAttr.getDataType(), "3");
-		matchingCriteria.put(nbOfCarsAttr, carsThree);
-		assertTrue(sampleData.countMatchingEntities(matchingCriteria) == 1);
+		matchingCriteria.put(nbOfCarsAttr.getNameOnData(), carsThree);
+		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 1);
 	}
 }

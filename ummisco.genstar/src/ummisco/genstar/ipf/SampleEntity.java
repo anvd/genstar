@@ -1,67 +1,89 @@
 package ummisco.genstar.ipf;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 
-public class SampleEntity {
-
-	private Map<AbstractAttribute, AttributeValue> attributes; // attribute name on data : attribute value; "value on data" or "value on entity"?
+public class SampleEntity { // TODO in the future, remove this class, use Entity only
 	
-	private List<SampleEntity> members = Collections.EMPTY_LIST;
+	private SampleEntityPopulation population;
+
+	private Map<String, AttributeValue> attributeValues = Collections.EMPTY_MAP; // attribute name on data : attribute value (from CSV file)
+	
+	private Map<String, SampleEntityPopulation> componentSampleEntityPopulations = Collections.EMPTY_MAP; // <population name, sample entity population>
 
 	
-	public SampleEntity(final Map<AbstractAttribute, AttributeValue> attributes) {
-		if (attributes == null) { throw new IllegalArgumentException("'attributes' parameter can not be null"); }
-		
-		this.attributes = attributes;
+	public SampleEntity(final SampleEntityPopulation population) throws GenstarException {
+		if (population == null) { throw new GenstarException("Parameter 'population' can not be null"); }
+		this.population = population;
 	}
 	
-	public boolean isMatch(final Map<AbstractAttribute, AttributeValue> criteria) {
+	public void setAttributeValues(final Map<String, AttributeValue> values) throws GenstarException {
+		if (values == null) { throw new GenstarException("Parameter values can not be null"); }
+		
+		if (attributeValues == Collections.EMPTY_MAP) {
+			attributeValues = new HashMap<String, AttributeValue>();
+			for (AbstractAttribute attr : population.getAttributes()) { attributeValues.put(attr.getNameOnData(), null); }
+		}
+		
+		for (String attrNameOnData : values.keySet()) {
+			if (attributeValues.containsKey(attrNameOnData)) { attributeValues.put(attrNameOnData, values.get(attrNameOnData)); }
+		}
+	}
+	
+	public Map<String, AttributeValue> getAttributeValues() {
+		Map<String, AttributeValue> copy = new HashMap<String, AttributeValue>(attributeValues);
+		return copy;
+	}
+	
+	public boolean isMatched(final Map<String, AttributeValue> criteria) {
 		if (criteria == null || criteria.isEmpty()) { return true; }
 		
 		AttributeValue criterionValue, sampleEntityValue;
 		
-		for (AbstractAttribute criterionAttr : criteria.keySet()) {
-			sampleEntityValue = attributes.get(criterionAttr);
+		for (String criterionAttrNameOnData : criteria.keySet()) {
+			sampleEntityValue = attributeValues.get(criterionAttrNameOnData);
 			if (sampleEntityValue != null) {
-				criterionValue = criteria.get(criterionAttr);
-				if (!criterionValue.isValueMatch(sampleEntityValue)) { return false; }
+				criterionValue = criteria.get(criterionAttrNameOnData);
+				if (!criterionValue.isValueMatched(sampleEntityValue)) { return false; }
 			}
 		}
 		
 		return true;
 	}
 	
-	public Map<AbstractAttribute, AttributeValue> getAttributeValues() {
-		Map<AbstractAttribute, AttributeValue> copy = new HashMap<AbstractAttribute, AttributeValue>();
-		copy.putAll(attributes);
+	public AttributeValue getAttributeValue(final String attributeNameOndata) {
+		return attributeValues.get(attributeNameOndata);
+	}
 		
-		return copy;
+	public SampleEntityPopulation createComponentPopulation(final String populationName, final List<AbstractAttribute> attributes) throws GenstarException {
+		if (populationName == null || populationName.isEmpty()) { throw new GenstarException("Parameter populationName can neither be null nor empty"); }
+		if (attributes == null || attributes.isEmpty()) { throw new GenstarException("Parameter attributes can neither be null nor empty"); }
+		
+		if (componentSampleEntityPopulations == Collections.EMPTY_MAP) {
+			componentSampleEntityPopulations = new HashMap<String, SampleEntityPopulation>();
+		}
+		
+		if (componentSampleEntityPopulations.get(populationName) != null) {
+			throw new GenstarException("Sample Entity Population " + populationName + " has already existed");
+		}
+		
+		SampleEntityPopulation population = new SampleEntityPopulation(populationName, attributes);
+		componentSampleEntityPopulations.put(populationName, population);
+		
+		return population;
 	}
 	
-	public AttributeValue getAttributeValue(final AbstractAttribute attribute) {
-		return attributes.get(attribute);
+	public SampleEntityPopulation getComponentPopulation(final String populationName) {
+		return componentSampleEntityPopulations.get(populationName);
 	}
 	
-	public List<SampleEntity> getMembers() {
-		return members;
-	}
-	
-	public void addMember(final SampleEntity member) {
-		if (member == null) { throw new IllegalArgumentException("'member' parameter can not be null"); }
-		if (members == Collections.EMPTY_LIST) { members = new ArrayList<SampleEntity>(5); }
-		if (!members.contains(member)) { members.add(member); }
-	}
-	
-	public void addMembers(final List<SampleEntity> members) {
-		if (members == null) { throw new IllegalArgumentException("'members' parameter can not be null"); }
-		if (this.members == Collections.EMPTY_LIST) { this.members = new ArrayList<SampleEntity>(members.size()); }
-		for (SampleEntity m : members) { this.addMember(m); }
+	public Map<String, SampleEntityPopulation> getComponentSampleEntityPopulations() {
+		return new HashMap<String, SampleEntityPopulation>(componentSampleEntityPopulations);
 	}
 }

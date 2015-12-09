@@ -179,7 +179,7 @@ public class UniqueValuesAttributeTest {
 
 		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER);
 		assertTrue(attribute1.getDefaultValue() instanceof UniqueValue);
-		assertTrue(attribute1.getDefaultValue().isValueMatch(new UniqueValue(DataType.INTEGER)));
+		assertTrue(attribute1.getDefaultValue().isValueMatched(new UniqueValue(DataType.INTEGER)));
 		
 		AttributeValue defaultValue1 = new UniqueValue(DataType.INTEGER, "1");
 		attribute1.setDefaultValue(defaultValue1);
@@ -200,6 +200,6 @@ public class UniqueValuesAttributeTest {
 
 		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER, RangeValue.class);
 		assertTrue(attribute1.getDefaultValue() instanceof RangeValue);
-		assertTrue(attribute1.getDefaultValue().isValueMatch(new RangeValue(DataType.INTEGER)));
+		assertTrue(attribute1.getDefaultValue().isValueMatched(new RangeValue(DataType.INTEGER)));
 	}
 }

@@ -37,8 +37,8 @@ public class ControlTotalsTest {
 		
 		final GenstarCSVFile frequencyFile1 = new GenstarCSVFile("test_data/ummisco/genstar/ipf/control_totals1.csv", false);
 
-		AbstractAttribute householdSizeAttr = generator.getAttribute("Household Size");
-		AbstractAttribute householdIncomeAttr = generator.getAttribute("Household Income");
+		AbstractAttribute householdSizeAttr = generator.getAttributeByNameOnData("Household Size");
+		AbstractAttribute householdIncomeAttr = generator.getAttributeByNameOnData("Household Income");
 		
 		final List<AbstractAttribute> rule1ControlledAttributes = new ArrayList<AbstractAttribute>();
 		rule1ControlledAttributes.add(householdSizeAttr);
@@ -62,8 +62,8 @@ public class ControlTotalsTest {
 			Household Income,High,40
 			Household Income,Low,60		 
 		 */
-		AbstractAttribute householdSize = generator.getAttribute("Household Size");
-		AbstractAttribute householdIncome = generator.getAttribute("Household Income");
+		AbstractAttribute householdSize = generator.getAttributeByNameOnData("Household Size");
+		AbstractAttribute householdIncome = generator.getAttributeByNameOnData("Household Income");
 		
 		AttributeValue householdSizeOne = new UniqueValue(householdSize.getDataType(), "1");
 		AttributeValue householdSizeTwo = new UniqueValue(householdSize.getDataType(), "2");
@@ -98,7 +98,7 @@ public class ControlTotalsTest {
 		
 		final GenstarCSVFile frequencyFile2 = new GenstarCSVFile("test_data/ummisco/genstar/ipf/control_totals2.csv", false);
 		
-		AbstractAttribute nbOfCarAttr = generator.getAttribute("Number Of Cars");
+		AbstractAttribute nbOfCarAttr = generator.getAttributeByNameOnData("Number Of Cars");
 		
 		final List<AbstractAttribute> rule2ControlledAttributes = new ArrayList<AbstractAttribute>();
 		rule2ControlledAttributes.add(householdSizeAttr);
@@ -130,7 +130,7 @@ public class ControlTotalsTest {
 		assertTrue(result6.get(0).getFrequency() == 50);
 		
 		
-		AbstractAttribute nbOfCars = generator.getAttribute("Number Of Cars");
+		AbstractAttribute nbOfCars = generator.getAttributeByNameOnData("Number Of Cars");
 		AttributeValue nbOfCarsThree = new UniqueValue(nbOfCars.getDataType(), "3");
 		AttributeValue nbOfCarsZero =  new UniqueValue(nbOfCars.getDataType(), "0");
 		
@@ -162,8 +162,8 @@ public class ControlTotalsTest {
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 
-		AbstractAttribute householdSizeAttr = generator.getAttribute("Household Size");
-		AbstractAttribute householdIncomeAttr = generator.getAttribute("Household Income");
+		AbstractAttribute householdSizeAttr = generator.getAttributeByNameOnData("Household Size");
+		AbstractAttribute householdIncomeAttr = generator.getAttributeByNameOnData("Household Income");
 
 		final List<AbstractAttribute> rule1ControlledAttributes = new ArrayList<AbstractAttribute>();
 		rule1ControlledAttributes.add(householdSizeAttr);
@@ -181,7 +181,7 @@ public class ControlTotalsTest {
 		List<AttributeValuesFrequency> avFrequencies1 = getField(avfCSVFile1, "avFrequencies");
 		assertTrue(avFrequencies1.size() == 5);
 		
-		AbstractAttribute nbOfCarsAttr = generator.getAttribute("Number Of Cars");
+		AbstractAttribute nbOfCarsAttr = generator.getAttributeByNameOnData("Number Of Cars");
 		
 		final List<AbstractAttribute> rule2ControlledAttributes = new ArrayList<AbstractAttribute>();
 		rule2ControlledAttributes.add(householdSizeAttr);
@@ -208,8 +208,8 @@ public class ControlTotalsTest {
 		
 		final GenstarCSVFile frequencyFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/control_totals3.csv", false);
 		
-		AbstractAttribute ageAttr = generator.getAttribute("Age");
-		AbstractAttribute genderAttr = generator.getAttribute("Gender");
+		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age");
+		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
 		
 		final List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
 		controlledAttributes.add(ageAttr);
@@ -276,8 +276,8 @@ public class ControlTotalsTest {
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes1.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		AbstractAttribute ageAttr = generator.getAttribute("Age");
-		AbstractAttribute genderAttr = generator.getAttribute("Gender");
+		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age");
+		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
 
 		final List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
 		controlledAttributes.add(ageAttr);
@@ -321,8 +321,8 @@ public class ControlTotalsTest {
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes1.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		AbstractAttribute ageAttr = generator.getAttribute("Age");
-		AbstractAttribute genderAttr = generator.getAttribute("Gender");
+		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age");
+		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
 
 		final List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
 		controlledAttributes.add(ageAttr);
@@ -350,8 +350,8 @@ public class ControlTotalsTest {
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 
-		AbstractAttribute householdSizeAttr = generator.getAttribute("Household Size");
-		AbstractAttribute householdIncomeAttr = generator.getAttribute("Household Income");
+		AbstractAttribute householdSizeAttr = generator.getAttributeByNameOnData("Household Size");
+		AbstractAttribute householdIncomeAttr = generator.getAttributeByNameOnData("Household Income");
 		
 		final List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
 		controlledAttributes.add(householdSizeAttr);

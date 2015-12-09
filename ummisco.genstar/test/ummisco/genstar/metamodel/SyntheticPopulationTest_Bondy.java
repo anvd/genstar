@@ -3,6 +3,7 @@ package ummisco.genstar.metamodel;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -12,7 +13,6 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
-import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 
 public class SyntheticPopulationTest_Bondy {
@@ -24,7 +24,7 @@ public class SyntheticPopulationTest_Bondy {
 		bondyData = new BondyData();
 	}
 
-	@Test public void testPick1() throws GenstarException {
+	@Test public void testGetMatchingEntitiesByAttributeValuesOnEntity1() throws GenstarException {
 		ISyntheticPopulationGenerator inhabitantPopulationGenerator = bondyData.getInhabitantPopGenerator();
 		inhabitantPopulationGenerator.setNbOfEntities(10);
 		
@@ -33,19 +33,19 @@ public class SyntheticPopulationTest_Bondy {
 		
 		int entitiesBefore = population.getEntities().size();
 		
-		EntityAttributeValue entityAgeAttrValue = firstInhabitant.getEntityAttributeValue("age");
+		EntityAttributeValue entityAgeAttrValue = firstInhabitant.getEntityAttributeValueByNameOnEntity("age");
 		AttributeValue ageAttrValue = entityAgeAttrValue.getAttributeValueOnEntity();
 		Map<String, AttributeValue> attributeValues = new HashMap<String, AttributeValue>();
 		attributeValues.put("age", ageAttrValue);
-		Entity pickedEntity = population.pick(attributeValues);
+		List<Entity> pickedEntities = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValues);
 		
-		assertTrue(firstInhabitant.equals(pickedEntity));
+		assertTrue(firstInhabitant.equals(pickedEntities.get(0)));
 		
 		int entitiesAfter = population.getEntities().size();
-		assertTrue(entitiesBefore == entitiesAfter + 1);
+		assertTrue(entitiesBefore == entitiesAfter);
 	}
 	
-	@Test public void testPick2() throws GenstarException {
+	@Test public void testGetMatchingEntitiesByAttributeValuesOnEntity2() throws GenstarException {
 		ISyntheticPopulationGenerator inhabitantPopulationGenerator = bondyData.getInhabitantPopGenerator();
 		inhabitantPopulationGenerator.setNbOfEntities(10);
 		
@@ -54,55 +54,18 @@ public class SyntheticPopulationTest_Bondy {
 		
 		int entitiesBefore = population.getEntities().size();
 		
-		EntityAttributeValue entityAgeAttrValue = firstInhabitant.getEntityAttributeValue("age");
+		EntityAttributeValue entityAgeAttrValue = firstInhabitant.getEntityAttributeValueByNameOnEntity("age");
 		UniqueValue ageAttrValue = (UniqueValue) entityAgeAttrValue.getAttributeValueOnEntity();
 		UniqueValue queryAgeAttributeValue = new UniqueValue(DataType.INTEGER, ageAttrValue.getStringValue());
 		
 		Map<String, AttributeValue> attributeValues = new HashMap<String, AttributeValue>();
 		attributeValues.put("age", queryAgeAttributeValue);
-		Entity pickedEntity = population.pick(attributeValues);
+		List<Entity> pickedEntities = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValues);
 		
-		assertTrue(firstInhabitant.equals(pickedEntity));
+		assertTrue(firstInhabitant.equals(pickedEntities.get(0)));
 		
 		int entitiesAfter = population.getEntities().size();
-		assertTrue(entitiesBefore == entitiesAfter + 1);
+		assertTrue(entitiesBefore == entitiesAfter);
 	}
-	
-	@Test public void testPick3() throws GenstarException {
-		ISyntheticPopulationGenerator inhabitantPopulationGenerator = bondyData.getInhabitantPopGenerator();
-		inhabitantPopulationGenerator.setNbOfEntities(10);
-		
-		ISyntheticPopulation inhabitantPopulation = inhabitantPopulationGenerator.generate();
-		
-		
-		// 1. pick by age attribute value on data
-		Entity concernedHouseholdHead1 = inhabitantPopulation.getEntities().get(1);
-		EntityAttributeValue ageEAValue1 = concernedHouseholdHead1.getEntityAttributeValue("age");
-		RangeValue ageRangeValue1 = new RangeValue((RangeValue) ageEAValue1.getAttributeValueOnData());
-
-		int entitiesBefore = inhabitantPopulation.getEntities().size();
-
-		Map<String, AttributeValue> headAgeAttributeValue = new HashMap<String, AttributeValue>();
-		headAgeAttributeValue.put("age", ageRangeValue1);
-		
-		Entity householdHead1 = inhabitantPopulation.pick(headAgeAttributeValue);
-		
-		int entitiesAfter = inhabitantPopulation.getEntities().size();
-		assertTrue(entitiesBefore == entitiesAfter + 1);
-		
-		
-		// 2. pick by age attribute value on entity
-		Entity concernedHouseholdHead2 = inhabitantPopulation.getEntities().get(2);
-		EntityAttributeValue ageEAValue2 = concernedHouseholdHead2.getEntityAttributeValue("age");
-		UniqueValue ageUniqueValue2 = new UniqueValue((UniqueValue) ageEAValue2.getAttributeValueOnEntity());
-		
-		entitiesBefore = inhabitantPopulation.getEntities().size();
-		
-		headAgeAttributeValue.put("age", ageUniqueValue2);
-		
-		Entity householdHead2 = inhabitantPopulation.pick(headAgeAttributeValue);
-		entitiesAfter = inhabitantPopulation.getEntities().size();
-		assertTrue(entitiesBefore == entitiesAfter + 1);
-	}	
 	
 }

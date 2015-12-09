@@ -1,9 +1,6 @@
 package ummisco.genstar.metamodel;
 
-import java.util.List;
-
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.util.PersistentObject;
 
 public abstract class GenerationRule implements Comparable<GenerationRule>, IWithAttributes {

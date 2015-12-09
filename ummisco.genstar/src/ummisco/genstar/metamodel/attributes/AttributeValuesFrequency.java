@@ -14,7 +14,7 @@ public class AttributeValuesFrequency {
 	
 	private int attributeValuesFrequencyID = PersistentObject.NEW_OBJECT_ID;
 	
-	private Map<AbstractAttribute, AttributeValue> attributeValues;
+	private Map<AbstractAttribute, AttributeValue> attributeValues; // TODO change to Map<String, AttributeValue> <attribute name on data, attribute value>
 	
 	private int frequency = 0;
 	
@@ -34,8 +34,7 @@ public class AttributeValuesFrequency {
 			}
 		}
 		
-		this.attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
-		this.attributeValues.putAll(attributeValues);
+		this.attributeValues = new HashMap<AbstractAttribute, AttributeValue>(attributeValues);
 	}
 	
 	public AttributeValue getAttributeValue(final AbstractAttribute attribute) {
@@ -48,6 +47,16 @@ public class AttributeValuesFrequency {
 		
 		return copy;
 	}
+	
+	public Map<String, AttributeValue> getAttributeValuesWithAttributeNamesAsKey() {
+		Map<String, AttributeValue> result = new HashMap<String, AttributeValue>();
+		
+		for (AbstractAttribute attr : attributeValues.keySet()) {
+			result.put(attr.getNameOnData(), attributeValues.get(attr));
+		}
+		
+		return result;
+	}
 
 	public int getFrequency() {
 		return frequency;
@@ -59,14 +68,14 @@ public class AttributeValuesFrequency {
 		this.frequency = frequency;
 	}
 	
-	public boolean isMatchEntity(final Collection<? extends AbstractAttribute> inputAttributes, final Entity entity) {
+	public boolean isMatchEntity(final Collection<? extends AbstractAttribute> inputAttributes, final Entity entity) throws GenstarException {
 		if (inputAttributes == null || entity == null) { throw new IllegalArgumentException("Neither 'inputAttributes' nor 'entity' parameter can be null"); }
 		
 		// attribute values on entity
 		EntityAttributeValue entityAttributeValue;
 		Map<AbstractAttribute, EntityAttributeValue> entityAttributeValues = new HashMap<AbstractAttribute, EntityAttributeValue>();
 		for (AbstractAttribute attribute : inputAttributes) {
-			entityAttributeValue = entity.getEntityAttributeValue(attribute.getNameOnEntity());
+			entityAttributeValue = entity.getEntityAttributeValueByNameOnData(attribute.getNameOnData());
 			
 			if (entityAttributeValue == null) { return false; } // or throw exception?
 			
@@ -86,7 +95,7 @@ public class AttributeValuesFrequency {
 		if (entityAttributeValues.size() != inputAttributeValues.size()) { return false; }
 		
 		for (AbstractAttribute attribute : entityAttributeValues.keySet()) {
-			if (!entityAttributeValues.get(attribute).isValueMatch(inputAttributeValues.get(attribute))) { return false; }
+			if (!entityAttributeValues.get(attribute).isAttributeValueOnEntityMatched(inputAttributeValues.get(attribute))) { return false; }
 		}
 		
 		

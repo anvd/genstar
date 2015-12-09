@@ -4,9 +4,9 @@ import java.util.List;
 
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 
-public interface IWithAttributes {
+public interface IWithAttributes { // change to IPopulationAttributes
 	
 	public abstract List<AbstractAttribute> getAttributes();
 
-	public abstract AbstractAttribute getAttribute(final String attributeNameOnData);
+	public abstract AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData);
 }

@@ -110,8 +110,8 @@ public class AttributeValuesFrequencyTest {
 
 		
 		Entity entity1 = new Entity(bondyPopulationGenerator.generate());
-		entity1.putAttributeValue(ageRangesAttr1, ageRange1);
-		entity1.putAttributeValue(sexAttr, maleValueOrigin);
+		entity1.setAttributeValueOnData(ageRangesAttr1.getNameOnData(), ageRange1);
+		entity1.setAttributeValueOnData(sexAttr.getNameOnData(), maleValueOrigin);
 		
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValues.put(ageRangesAttr1, ageRange1);

@@ -144,4 +144,17 @@ public class RangeValuesAttribute extends AbstractAttribute {
 		
 		return getInstanceOfAttributeValue(new RangeValue(dataType, stringValue.get(0), stringValue.get(1)));
 	}
+
+	@Override public AttributeValue findMatchingAttributeValue(final AttributeValue attributeValue) throws GenstarException {
+		if (attributeValue instanceof RangeValue) { return this.getInstanceOfAttributeValue(attributeValue); }
+		
+		UniqueValue uniqueValue = (UniqueValue) attributeValue;
+		if (attributeValue.getDataType().isNumericValue()) {
+			for (RangeValue value : rangeValues ) {
+				if (value.cover(uniqueValue)) { return value; }
+			}
+		}
+		
+		return null;
+	}
 }

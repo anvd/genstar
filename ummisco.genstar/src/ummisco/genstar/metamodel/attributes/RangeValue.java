@@ -9,8 +9,6 @@ public class RangeValue extends AttributeValue {
 	
 	public static final String RANGE_VALUE_NAME = "Range";
 	
-//	static { AttributeValue.registerValueTypeID(RangeValue.class, RANGE_VALUE_TYPE, RANGE_VALUE_NAME); }
-
 	private String minStringValue = "";
 	
 	private String maxStringValue = "";
@@ -207,7 +205,7 @@ public class RangeValue extends AttributeValue {
 	}
 
 	@Override
-	public boolean isValueMatch(final AttributeValue otherValue) {
+	public boolean isValueMatched(final AttributeValue otherValue) {
 		
 		if (otherValue == null) { throw new IllegalArgumentException("'otherValue' parameter can not be null"); }
 		

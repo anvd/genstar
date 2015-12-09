@@ -367,8 +367,8 @@ public class GenstarGeneratorTest_CanTho1 {
 				
 				ISyntheticPopulation inhabitantPopulation = rulesOrder1InhabitantPopGenerator.generate();
 				for (Entity inhabitant : inhabitantPopulation.getEntities()) {
-					int age = ((UniqueValue) (inhabitant.getEntityAttributeValue("age").getAttributeValueOnEntity())).getIntValue();
-					boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValue("sex").getAttributeValueOnEntity()) ).getBooleanValue();
+					int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
+					boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
 
 					for (int rowIndex = 0; rowIndex < age_ranges_copy.length; rowIndex++) {
 						if (age >= age_ranges_copy[rowIndex][0] && age <= age_ranges_copy[rowIndex][1]) {
@@ -385,7 +385,7 @@ public class GenstarGeneratorTest_CanTho1 {
 					}
 					
 					// district
-					String district = ((UniqueValue) (inhabitant.getEntityAttributeValue("district").getAttributeValueOnEntity())).getStringValue();
+					String district = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("district").getAttributeValueOnEntity())).getStringValue();
 					int districtIndex = InhabitantData.getDistrictIndex(district);
 					if (isMale) {
 						generated_districts[districtIndex][0] = ++generated_districts[districtIndex][0];
@@ -508,8 +508,8 @@ public class GenstarGeneratorTest_CanTho1 {
 				
 				ISyntheticPopulation inhabitantPopulation = rulesOrder2InhabitantPopGenerator.generate();
 				for (Entity inhabitant : inhabitantPopulation.getEntities()) {
-					int age = ((UniqueValue) (inhabitant.getEntityAttributeValue("age").getAttributeValueOnEntity())).getIntValue();
-					boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValue("sex").getAttributeValueOnEntity()) ).getBooleanValue();
+					int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
+					boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
 
 					for (int rowIndex = 0; rowIndex < age_ranges_copy.length; rowIndex++) {
 						if (age >= age_ranges_copy[rowIndex][0] && age <= age_ranges_copy[rowIndex][1]) {
@@ -526,7 +526,7 @@ public class GenstarGeneratorTest_CanTho1 {
 					}
 					
 					// district
-					String district = ((UniqueValue) (inhabitant.getEntityAttributeValue("district").getAttributeValueOnEntity())).getStringValue();
+					String district = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("district").getAttributeValueOnEntity())).getStringValue();
 					int districtIndex = InhabitantData.getDistrictIndex(district);
 					if (isMale) {
 						generated_districts[districtIndex][0] = ++generated_districts[districtIndex][0];
