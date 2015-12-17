@@ -9,8 +9,8 @@ model household_people
 global {
 	
 	init {
-		list household_population <- ipf_population('../includes/household_people/ipf_configuration.properties');
-		create household from: household_population;
+		list household_population <- ipf_compound_population('../includes/household_people/ipf_configuration.properties');
+		genstar_create synthetic_population: household_population;
 		// TODO how to initialize "people"/component agents in GAMA?
 	}
 }

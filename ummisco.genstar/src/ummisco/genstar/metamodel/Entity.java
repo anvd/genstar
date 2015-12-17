@@ -113,7 +113,7 @@ public class Entity {
 		if (attributeValueOnData == null) { throw new GenstarException("Parameter attributeValueOnData can not be null"); }
 		
 		AbstractAttribute attribute = population.getAttributeByNameOnData(attributeNameOnData);
-		if (attribute == null) { throw new GenstarException(attributeNameOnData + " attribute is not found on entity"); }
+		if (attribute == null) { throw new GenstarException(attributeNameOnData + " attribute is not found on " + population.getName() + " entity"); }
 		
 		if (entityAttributeValues == Collections.EMPTY_MAP) {
 			entityAttributeValues = new HashMap<String, EntityAttributeValue>();
@@ -124,12 +124,26 @@ public class Entity {
 		entityAttributeValues.put(attributeNameOnData, eav);
 	}
 	
-	public void setAttributeValueOnEntity(final String attributeNameOnEntity, final AttributeValue attributeValueOnEntity) throws GenstarException {
-		AbstractAttribute attribute = population.getAttributebyNameOnEntity(attributeNameOnEntity);
-		if (attribute == null) { throw new GenstarException("No attribute found with " + attributeNameOnEntity + " as name on entity"); }
+	public void setAttributeValueOnEntity(final String attributeNameOnData, final AttributeValue attributeValueOnEntity) throws GenstarException {
+		if (attributeNameOnData == null || attributeValueOnEntity == null) {
+			throw new GenstarException("Parameters attributeNameOnData, attributevalueOnEntity can not be null");
+		}
 		
-		AttributeValue attributeValueOnData = attribute.findMatchingAttributeValue(attributeValueOnEntity);
-		if (attributeValueOnData == null) { throw new GenstarException("No matching attribute found for " + attributeValueOnEntity); }
+		AbstractAttribute attribute = population.getAttributeByNameOnData(attributeNameOnData);
+		if (attribute == null) { throw new GenstarException("No attribute found with " + attributeNameOnData + " as name on " + population.getName() + " entity"); }
+		
+		AttributeValue attributeValueOnData = null;
+		
+		if (!attribute.isIdentity()) {
+			attributeValueOnData = attribute.findMatchingAttributeValue(attributeValueOnEntity);
+			if (attributeValueOnData == null) { throw new GenstarException("No matching attribute found for attribute on entity: " + attributeValueOnEntity + " on attribute " + attribute.getNameOnData()); }
+		} else {
+			// attributeValueOnEntity of an identity attribute doesn't have a corresponding attributeValueOnData, i.e., attributeOnData == null
+			if (!attributeValueOnEntity.getDataType().equals(attribute.getDataType())) {
+				throw new GenstarException("Incompatible data type between attribute (" + attribute.getNameOnData() + ") and attribute value on entity");
+			}
+		}
+		
 		
 		if (entityAttributeValues == Collections.EMPTY_MAP) {
 			entityAttributeValues = new HashMap<String, EntityAttributeValue>();

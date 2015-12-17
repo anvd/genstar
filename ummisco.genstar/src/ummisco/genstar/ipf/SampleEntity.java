@@ -13,7 +13,7 @@ public class SampleEntity { // TODO in the future, remove this class, use Entity
 	
 	private SampleEntityPopulation population;
 
-	private Map<String, AttributeValue> attributeValues = Collections.EMPTY_MAP; // attribute name on data : attribute value (from CSV file)
+	private Map<String, AttributeValue> attributeValuesOnEntity = Collections.EMPTY_MAP; // attribute name on data : attribute value from CSV file ( = attribute value on entity)
 	
 	private Map<String, SampleEntityPopulation> componentSampleEntityPopulations = Collections.EMPTY_MAP; // <population name, sample entity population>
 
@@ -23,21 +23,24 @@ public class SampleEntity { // TODO in the future, remove this class, use Entity
 		this.population = population;
 	}
 	
-	public void setAttributeValues(final Map<String, AttributeValue> values) throws GenstarException {
+	public void setAttributeValuesOnEntity(final Map<String, AttributeValue> values) throws GenstarException {
 		if (values == null) { throw new GenstarException("Parameter values can not be null"); }
 		
-		if (attributeValues == Collections.EMPTY_MAP) {
-			attributeValues = new HashMap<String, AttributeValue>();
-			for (AbstractAttribute attr : population.getAttributes()) { attributeValues.put(attr.getNameOnData(), null); }
+		if (attributeValuesOnEntity == Collections.EMPTY_MAP) {
+			attributeValuesOnEntity = new HashMap<String, AttributeValue>();
+			for (AbstractAttribute attr : population.getAttributes()) { attributeValuesOnEntity.put(attr.getNameOnData(), null); }
 		}
 		
 		for (String attrNameOnData : values.keySet()) {
-			if (attributeValues.containsKey(attrNameOnData)) { attributeValues.put(attrNameOnData, values.get(attrNameOnData)); }
+			if (attributeValuesOnEntity.containsKey(attrNameOnData)) { attributeValuesOnEntity.put(attrNameOnData, values.get(attrNameOnData)); }
+			else { throw new GenstarException(attrNameOnData + " is not recognized as an attribute"); }
+			
+			// TODO verify that the attribute can accept the value
 		}
 	}
 	
-	public Map<String, AttributeValue> getAttributeValues() {
-		Map<String, AttributeValue> copy = new HashMap<String, AttributeValue>(attributeValues);
+	public Map<String, AttributeValue> getAttributeValuesOnEntity() {
+		Map<String, AttributeValue> copy = new HashMap<String, AttributeValue>(attributeValuesOnEntity);
 		return copy;
 	}
 	
@@ -47,7 +50,7 @@ public class SampleEntity { // TODO in the future, remove this class, use Entity
 		AttributeValue criterionValue, sampleEntityValue;
 		
 		for (String criterionAttrNameOnData : criteria.keySet()) {
-			sampleEntityValue = attributeValues.get(criterionAttrNameOnData);
+			sampleEntityValue = attributeValuesOnEntity.get(criterionAttrNameOnData);
 			if (sampleEntityValue != null) {
 				criterionValue = criteria.get(criterionAttrNameOnData);
 				if (!criterionValue.isValueMatched(sampleEntityValue)) { return false; }
@@ -57,8 +60,8 @@ public class SampleEntity { // TODO in the future, remove this class, use Entity
 		return true;
 	}
 	
-	public AttributeValue getAttributeValue(final String attributeNameOndata) {
-		return attributeValues.get(attributeNameOndata);
+	public AttributeValue getAttributeValueOnEntity(final String attributeNameOndata) {
+		return attributeValuesOnEntity.get(attributeNameOndata);
 	}
 		
 	public SampleEntityPopulation createComponentPopulation(final String populationName, final List<AbstractAttribute> attributes) throws GenstarException {
@@ -85,5 +88,9 @@ public class SampleEntity { // TODO in the future, remove this class, use Entity
 	
 	public Map<String, SampleEntityPopulation> getComponentSampleEntityPopulations() {
 		return new HashMap<String, SampleEntityPopulation>(componentSampleEntityPopulations);
+	}
+	
+	public SampleEntityPopulation getPopulation() {
+		return population;
 	}
 }

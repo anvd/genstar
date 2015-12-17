@@ -8,8 +8,9 @@ import java.util.Map;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
 
-public class GroupComponentSampleData implements ISampleData {
+public class GroupComponentSampleData extends AbstractSampleData implements ISampleData {
 	
 	private ISampleData groupSampleData;
 	
@@ -22,12 +23,6 @@ public class GroupComponentSampleData implements ISampleData {
 	private SampleEntityPopulation sampleEntityPopulation;
 	
 	
-	// TODO
-	// change to 
-	/*
-	 * GroupComponentSampleData(final ISampleData groupSampleData, final ISampleData componentSampleData, 
-			final String groupIdAttributeNameOnGroupEntity, final String groupIdAttributeNameOnComponentEntity) throws GenstarException
-	 */
 	public GroupComponentSampleData(final ISampleData groupSampleData, final ISampleData componentSampleData, 
 			final AbstractAttribute groupIdAttributeOnGroupEntity, final AbstractAttribute groupIdAttributeOnComponentEntity) throws GenstarException {
 		
@@ -41,6 +36,7 @@ public class GroupComponentSampleData implements ISampleData {
 		this.groupSampleData = groupSampleData;
 		this.componentSampleData = componentSampleData;
 		
+		// ?? duplicate with group-component references
 		this.groupIdAttributeOnGroupEntity = groupIdAttributeOnGroupEntity;
 		this.groupIdAttributeOnComponentEntity = groupIdAttributeOnComponentEntity;
 		
@@ -49,7 +45,9 @@ public class GroupComponentSampleData implements ISampleData {
 	
 	private void buildGroupComponentSampleEntities() throws GenstarException {
 		
-		sampleEntityPopulation = new SampleEntityPopulation(groupSampleData.getSampleEntityPopulation().getPopulationName(), groupSampleData.getSampleEntityPopulation().getAttributes());
+		sampleEntityPopulation = new SampleEntityPopulation(groupSampleData.getSampleEntityPopulation().getName(), groupSampleData.getSampleEntityPopulation().getAttributes());
+		sampleEntityPopulation.addGroupReferences(groupSampleData.getGroupReferences());
+		sampleEntityPopulation.addComponentReferences(groupSampleData.getComponentReferences());
 		
 		List<SampleEntity> groupSampleEntities = groupSampleData.getSampleEntityPopulation().getSampleEntities();
 		List<SampleEntity> componentSampleEntities = componentSampleData.getSampleEntityPopulation().getSampleEntities();
@@ -60,9 +58,9 @@ public class GroupComponentSampleData implements ISampleData {
 		List<SampleEntity> copyComponentSampleEntities = new ArrayList<SampleEntity>(componentSampleEntities);
 		
 		for (SampleEntity groupEntity : groupSampleEntities) {
-			complexEntity = sampleEntityPopulation.createSampleEntity(groupEntity.getAttributeValues());
+			complexEntity = sampleEntityPopulation.createSampleEntity(groupEntity.getAttributeValuesOnEntity());
 			
-			groupIdAttributeValueOnGroupEntity = complexEntity.getAttributeValue(groupIdAttributeOnGroupEntity.getNameOnData());
+			groupIdAttributeValueOnGroupEntity = complexEntity.getAttributeValueOnEntity(groupIdAttributeOnGroupEntity.getNameOnData());
 			if (groupIdAttributeValueOnGroupEntity == null) { throw new GenstarException("groupEntity doesn't contain " + groupIdAttributeOnGroupEntity.getNameOnData() + " as ID attribute"); }
 			
 			Map<String, AttributeValue> componentMatchingCriteria = new HashMap<String, AttributeValue>();
@@ -73,13 +71,15 @@ public class GroupComponentSampleData implements ISampleData {
 				if (componentEntity.isMatched(componentMatchingCriteria)) { matchedComponentEntities.add(componentEntity);  }
 			}
 			
-			
 			// create component sample entities
 			if (!matchedComponentEntities.isEmpty()) {
 				List<Map<String, AttributeValue>> componentSampleEntityAVs = new ArrayList<Map<String, AttributeValue>>();
-				for (SampleEntity matchedComEntity : matchedComponentEntities) { componentSampleEntityAVs.add(matchedComEntity.getAttributeValues()); }
+				for (SampleEntity matchedComEntity : matchedComponentEntities) { componentSampleEntityAVs.add(matchedComEntity.getAttributeValuesOnEntity()); }
 				
-				SampleEntityPopulation componentPopulation = complexEntity.createComponentPopulation(componentSampleData.getSampleEntityPopulation().getPopulationName(), componentSampleData.getSampleEntityPopulation().getAttributes());
+				SampleEntityPopulation componentPopulation = complexEntity.createComponentPopulation(componentSampleData.getSampleEntityPopulation().getName(), componentSampleData.getSampleEntityPopulation().getAttributes());
+				componentPopulation.addGroupReferences(componentSampleData.getGroupReferences());
+				componentPopulation.addComponentReferences(componentSampleData.getComponentReferences());
+				
 				componentPopulation.createSampleEntities(componentSampleEntityAVs);
 			}
 			

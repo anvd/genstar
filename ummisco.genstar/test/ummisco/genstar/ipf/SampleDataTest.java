@@ -26,43 +26,25 @@ import ummisco.genstar.util.GenstarFactoryUtils;
 public class SampleDataTest {
 
 	@Test
-	public void testGetSampleEntities(@Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
+	public void testGetSampleEntities() throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 10);
 		
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/people_sample.csv", true);
-		
-		new Expectations() {{
-			generationRule.getAttributeByNameOnData(anyString);
-			result = new Delegate() {
-				AbstractAttribute delegateMethod(final String attributeName) {
-					return generator.getAttributeByNameOnData(attributeName);
-				}
-			};
-		}};
 		
 		SampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataCSVFile);
 		assertTrue(sampleData.getSampleEntityPopulation().getSampleEntities().size() == 4);
 	}
 	
-	@Test public void testCountMatchingEntities(@Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
+	@Test public void testCountMatchingEntities(/*@Mocked final SampleDataGenerationRule generationRule*/) throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 10);
 		
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/people_sample.csv", true);
-		
-		new Expectations() {{
-			generationRule.getAttributeByNameOnData(anyString);
-			result = new Delegate() {
-				AbstractAttribute delegateMethod(final String attributeName) {
-					return generator.getAttributeByNameOnData(attributeName);
-				}
-			};
-		}};
 		
 		SampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataCSVFile);
 		/*

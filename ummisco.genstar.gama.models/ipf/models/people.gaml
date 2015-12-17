@@ -9,7 +9,7 @@ model people
 global {
 	
 	init {
-		list people_population <- ipf_population('../includes/people/ipf_configuration.properties');
+		list people_population <- ipf_single_population('../includes/people/ipf_configuration.properties');
 		create people from: people_population;
 	}
 }

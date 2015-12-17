@@ -63,7 +63,7 @@ public class SampleDataGenerationRuleTest {
 		assertTrue(internalSampleEntities == null);
 		
 		SyntheticPopulation population = new SyntheticPopulation("people", generator.getAttributes());
-		for (Entity entity : population.getEntities()) { rule.generate(entity); }
+		for (Entity entity : population.createEntities(generator.getNbOfEntities())) { rule.generate(entity); }
 		
 		List<AttributeValuesFrequency> originalSelectionProbabilities = Deencapsulation.getField(rule, "selectionProbabilities");
 		List<AttributeValuesFrequency> copySelectionProbabilities = new ArrayList<AttributeValuesFrequency>();
@@ -88,10 +88,10 @@ public class SampleDataGenerationRuleTest {
 		for (AttributeValuesFrequency copy : copySelectionProbabilities) { assertTrue(copy.getFrequency() == 0); }
 		
 		internalSampleEntities = Deencapsulation.getField(rule, "internalSampleEntities"); 
-		assertTrue(internalSampleEntities.size() == 0);
+		assertTrue(internalSampleEntities.size() == generator.getNbOfEntities());
 	}
 	
-	@Test(expected = GenstarException.class) public void testGenerateFailed() throws GenstarException {
+	@Test(expected = Exception.class) public void testGenerateFailed() throws GenstarException {
 		ISingleRuleGenerator generator = new SingleRuleGenerator("generator"); 
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
@@ -108,7 +108,7 @@ public class SampleDataGenerationRuleTest {
 		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
 		
 		SyntheticPopulation population = new SyntheticPopulation("people", generator.getAttributes());
-		for (Entity entity : population.getEntities()) { rule.generate(entity); }
+		for (Entity entity : population.createEntities(1)) { rule.generate(entity); }
 
 		rule.generate(population.getEntities().get(0));
 	}

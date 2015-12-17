@@ -10,9 +10,11 @@ import java.util.TreeMap;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarFactoryUtils;
 
-public class SampleData implements ISampleData { // TODO change to CSVSampleData
+public class SampleData extends AbstractSampleData implements ISampleData { // TODO change to CSVSampleData
 	
 	private List<AbstractAttribute> attributes;
 	
@@ -64,18 +66,23 @@ public class SampleData implements ISampleData { // TODO change to CSVSampleData
 			rowContent = data.getRow(row);
 			
 			sampleAttributes = new HashMap<String, AttributeValue>();
-			for (int attributeColumn : attributeIndexes.keySet()) { // only care about attributes "recognized" by the SampleDataGenerationRule
+			for (int attributeColumn : attributeIndexes.keySet()) { // only care about "recognized" attributes
 				attribute = attributeIndexes.get(attributeColumn);
 				valueStr = rowContent.get(attributeColumn);
 				List<String> valueStrList = new ArrayList<String>();
 				valueStrList.add(valueStr);
-				value = attribute.findCorrespondingAttributeValue(valueStrList);
 				
+				value = attribute.findCorrespondingAttributeValue(valueStrList); // ensure that the value is accepted by the attribute
 				if (value == null) { 
-					value = attribute.findCorrespondingAttributeValue(valueStrList);
 					throw new GenstarException("'" + valueStr + "' defined in the sample data is not recognized. File: " + data.getPath() + " at row: " + (row + 1) + ", column: " + (attributeColumn) + "."); 
 				}
-				sampleAttributes.put(attributeIndexes.get(attributeColumn).getNameOnData(), value);
+				
+				if (attribute.getValueClassOnData().equals(attribute.getValueClassOnEntity())) { // valueOnClass == valueOnEntity
+					sampleAttributes.put(attributeIndexes.get(attributeColumn).getNameOnData(), value);
+				} else {
+					sampleAttributes.put(attributeIndexes.get(attributeColumn).getNameOnData(), 
+							GenstarFactoryUtils.createAttributeValue(attribute.getValueClassOnEntity(), attribute.getDataType(), valueStrList));
+				}
 			}
 			sampleEntitiesAttributeValues.add(sampleAttributes);
 		}

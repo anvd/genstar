@@ -373,7 +373,7 @@ public class GenstarFactoryUtilsTest {
 	@Test public void testCreateGroupComponentSampleDataGenerationRule() throws GenstarException {
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateGroupComponentSampleDataGenerationRule/group_attributes.csv", true);
 		
-		SingleRuleGenerator groupGenerator = new SingleRuleGenerator("group rule generator");
+		ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group rule generator");
 		GenstarFactoryUtils.createAttributesFromCSVFile(groupGenerator, attributesFile);
 		
 		
@@ -389,8 +389,14 @@ public class GenstarFactoryUtilsTest {
 		String groupIdAttributeNameOnComponent = "Household ID";
 		String componentPopulationName = "people";
 		
+		// optional/supplementary properties (COMPONENT_REFERENCE_ON_GROUP, GROUP_REFERENCE_ON_COMPONENT)
+		Map<String, String> supplementaryProperties = new HashMap<String, String>();
+		supplementaryProperties.put(GenstarFactoryUtils.SAMPLE_DATA_PROPERTIES_FILE_FORMAT.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY, groupIdAttributeNameOnGroup);
+		supplementaryProperties.put(GenstarFactoryUtils.SAMPLE_DATA_PROPERTIES_FILE_FORMAT.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY, groupIdAttributeNameOnComponent);
+		 
+		
 		GenstarFactoryUtils.createGroupComponentSampleDataGenerationRule(groupGenerator, "group component sample data generation rule", groupSampleFile, groupControlledAttributesFile, groupControlledTotalsFile, 
-				groupSupplementaryAttributesFile, componentSampleFile, componentAttributesFile, groupIdAttributeNameOnGroup, groupIdAttributeNameOnComponent, componentPopulationName);
+				groupSupplementaryAttributesFile, componentSampleFile, componentAttributesFile, componentPopulationName, supplementaryProperties);
 		
 		SampleDataGenerationRule rule = (SampleDataGenerationRule)groupGenerator.getGenerationRule();
 		assertTrue(rule.getSampleData() instanceof GroupComponentSampleData);

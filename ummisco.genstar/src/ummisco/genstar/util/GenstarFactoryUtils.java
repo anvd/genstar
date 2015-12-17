@@ -150,9 +150,9 @@ public class GenstarFactoryUtils {
 		
 		public static final String GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_COMPONENT";
 		
-		public static final String GROUP_ATTRIBUTE_NAME_ON_COMPONENT_PROPERTY = "GROUP_ATTRIBUTE_NAME_ON_COMPONENT";
+		public static final String COMPONENT_REFERENCE_ON_GROUP_PROPERTY = "COMPONENT_REFERENCE_ON_GROUP";
 		
-		public static final String COMPONENT_ATTRIBUTE_NAME_ON_GROUP_PROPERTY = "COMPONENT_ATTRIBUTE_NAME_ON_GROUP";
+		public static final String GROUP_REFERENCE_ON_COMPONENT_PROPERTY = "GROUP_REFERENCE_ON_COMPONENT";
 	}
 
 	
@@ -442,25 +442,35 @@ public class GenstarFactoryUtils {
 	
 	public static void createGroupComponentSampleDataGenerationRule(final ISingleRuleGenerator groupGenerator, final String ruleName, final GenstarCSVFile groupSampleFile,
 			final GenstarCSVFile groupControlledAttributesFile, final GenstarCSVFile groupControlledTotalsFile, final GenstarCSVFile groupSupplementaryAttributesFile,
-			final GenstarCSVFile componentSampleFile, final GenstarCSVFile componentAttributesFile, final String groupIdAttributeNameOnGroup,
-			final String groupIdAttributeNameOnComponent, final String componentPopulationName) throws GenstarException {
+			final GenstarCSVFile componentSampleFile, final GenstarCSVFile componentAttributesFile, final String componentPopulationName, final Map<String, String> generatorProperties) throws GenstarException {
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(groupGenerator, ruleName, groupControlledAttributesFile, groupControlledTotalsFile, groupSupplementaryAttributesFile);
-		
+
 		ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("Component Generator");
 		createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		componentGenerator.setPopulationName(componentPopulationName);
 		
+		String groupIdAttributeNameOnGroup = generatorProperties.get(GenstarFactoryUtils.SAMPLE_DATA_PROPERTIES_FILE_FORMAT.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY);
 		AbstractAttribute groupIdAttributeOnGroup = rule.getAttributeByNameOnData(groupIdAttributeNameOnGroup);
 		if (groupIdAttributeOnGroup == null) { throw new GenstarException("'" + groupIdAttributeNameOnGroup + "' is not a valid attribute"); }
 		groupIdAttributeOnGroup.setIdentity(true);
 		
+		String groupIdAttributeNameOnComponent = generatorProperties.get(GenstarFactoryUtils.SAMPLE_DATA_PROPERTIES_FILE_FORMAT.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY);
 		AbstractAttribute groupIdAttributeOnComponent = componentGenerator.getAttributeByNameOnData(groupIdAttributeNameOnComponent);
 		if (groupIdAttributeOnComponent == null) { throw new GenstarException("'" + groupIdAttributeOnComponent + "' is not a valid attribute"); }
 		groupIdAttributeOnComponent.setIdentity(true);
 		
 		ISampleData groupSampleData = new SampleData(groupGenerator.getPopulationName(), groupGenerator.getAttributes(), groupSampleFile);
+		String componentReferenceOnGroup = generatorProperties.get(GenstarFactoryUtils.SAMPLE_DATA_PROPERTIES_FILE_FORMAT.COMPONENT_REFERENCE_ON_GROUP_PROPERTY);
+		if (componentReferenceOnGroup != null) { 
+			groupSampleData.addComponentReference(componentGenerator.getPopulationName(), componentReferenceOnGroup);
+		}
+		
 		ISampleData componentSampleData = new SampleData(componentGenerator.getPopulationName(), componentGenerator.getAttributes(), componentSampleFile);
+		String groupReferenceOnComponent = generatorProperties.get(GenstarFactoryUtils.SAMPLE_DATA_PROPERTIES_FILE_FORMAT.GROUP_REFERENCE_ON_COMPONENT_PROPERTY);
+		if (groupReferenceOnComponent != null) {
+			componentSampleData.addGroupReference(groupGenerator.getPopulationName(), groupReferenceOnComponent);
+		}
 		
 		ISampleData groupComponentSampleData = new GroupComponentSampleData(groupSampleData, componentSampleData, groupIdAttributeOnGroup, groupIdAttributeOnComponent);
 		rule.setSampleData(groupComponentSampleData);
@@ -878,5 +888,26 @@ public class GenstarFactoryUtils {
 		}
 		
 		return componentFileContent;
+	}
+	
+	public static AttributeValue createAttributeValue(final Class<? extends AttributeValue> attributeClass, final DataType dataType, final List<String> stringValue) throws GenstarException {
+		if (attributeClass == null || dataType == null || stringValue == null) {
+			throw new GenstarException("Parameters attributeClass, dataType, stringValue can not be null");
+		}
+		
+		if (attributeClass.equals(UniqueValue.class)) {
+			if (stringValue.size() >= 1) { return new UniqueValue(dataType, stringValue.get(0)); }
+
+			throw new GenstarException("Invalid stringValue " + stringValue);
+		}
+		
+		if (attributeClass.equals(RangeValue.class)) {
+			if (stringValue.size() == 1) { return new RangeValue(dataType, stringValue.get(0), stringValue.get(0)); }
+			if (stringValue.size() >= 2) { return new RangeValue(dataType, stringValue.get(0), stringValue.get(1)); }
+			
+			throw new GenstarException("Invalid stringValue " + stringValue);
+		}
+		
+		return null;
 	}
 }

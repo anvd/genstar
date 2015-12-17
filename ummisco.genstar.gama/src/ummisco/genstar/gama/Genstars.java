@@ -234,6 +234,14 @@ public abstract class Genstars {
 	}
 	
 	
+	@operator(value = "ipf_compound_population", type = IType.LIST, category = { IOperatorCategory.GENSTAR })
+	@doc(value = "generates a synthetic population from the input data provided by the CVS files using the IPF algorithm. The generated population can be passed to the 'create' statement to create agents.",
+	returns = "a list of maps in which each map represents the information (i.e., pairs of [attribute name : attribute value]) of a generated agent",
+	special_cases = { "" },
+	comment = "",
+	examples = { @example(value = "list synthetic_population <- ipf_compound_population('compound_population_configuration.properties')",
+		equals = "",
+		test = false) }, see = { "population_from_csv" })
 	public static IList generateIPFCompoundPopulation(final IScope scope, final String configurationPropertiesFilePath) {
 		
 		try {
@@ -292,7 +300,11 @@ public abstract class Genstars {
 	
 	private static IList convertGenstarPopulationToGamaPopulation(final ISyntheticPopulation genstarPopulation) throws GenstarException {
 		IList gamaPopulation = GamaListFactory.create();
-		gamaPopulation.add(genstarPopulation.getName());
+		
+		
+		gamaPopulation.add(genstarPopulation.getName()); // first element is the population name
+		gamaPopulation.add(genstarPopulation.getGroupReferences()); // second element is references to "group" agents
+		gamaPopulation.add(genstarPopulation.getComponentReferences()); // third element is the references to "component" agents
 		
 		// Convert the genstar population to format understood by GAML "genstar_create" statement
 		GamaMap map;

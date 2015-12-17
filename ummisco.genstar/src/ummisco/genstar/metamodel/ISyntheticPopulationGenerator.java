@@ -1,5 +1,7 @@
 package ummisco.genstar.metamodel;
 
+import java.util.Map;
+
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 
@@ -31,4 +33,10 @@ public interface ISyntheticPopulationGenerator extends IWithAttributes { // FIXM
 	// consider to move these methods to IWithAttributes -
 
 	public abstract ISyntheticPopulation generate() throws GenstarException;
+	
+	public abstract Map<String, String> getProperties();
+	
+	public abstract String getProperty(final String name);
+	
+	public abstract void setProperty(final String name, final String value) throws GenstarException;
 }

@@ -1,7 +1,10 @@
 package ummisco.genstar.metamodel;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -18,6 +21,8 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 	protected List<AbstractAttribute> attributes;
 
 	protected int nbOfEntities = 100;
+	
+	protected Map<String, String> properties = Collections.EMPTY_MAP;
 
 
 	public AbstractSyntheticPopulationGenerator(final String generatorName) throws GenstarException {
@@ -96,4 +101,18 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 		// TODO implement it!
 	}
 	
+	@Override public Map<String, String> getProperties() {
+		return new HashMap<String, String>(properties);
+	}
+	
+	@Override public String getProperty(final String name) {
+		return properties.get(name);
+	}
+	
+	@Override public void setProperty(final String name, final String value) throws GenstarException {
+		if (name == null || value == null) { throw new GenstarException("Parameters name, value can not be null"); }
+		
+		if (properties == Collections.EMPTY_MAP) { properties = new HashMap<String, String>(); }
+		properties.put(name, value);
+	}
 }
