@@ -126,13 +126,13 @@ public class ThreeWayIPFTest {
 		Map<String, AttributeValue> matchingCriteria = new HashMap<String, AttributeValue>();
 		
 		for (int row=0; row<rowAttributeValues.size(); row++) {
-			matchingCriteria.put(rowAttribute.getNameOnData(), rowAttributeValues.get(row));
+			matchingCriteria.put(rowAttribute.getNameOnEntity(), rowAttributeValues.get(row));
 			
 			for (int col=0; col<columnAttributeValues.size(); col++) {
-				matchingCriteria.put(columnAttribute.getNameOnData(), columnAttributeValues.get(col));
+				matchingCriteria.put(columnAttribute.getNameOnEntity(), columnAttributeValues.get(col));
 				
 				for (int layer=0; layer<layerAttributeValues.size(); layer++) {
-					matchingCriteria.put(layerAttribute.getNameOnData(), layerAttributeValues.get(layer));
+					matchingCriteria.put(layerAttribute.getNameOnEntity(), layerAttributeValues.get(layer));
 					assertTrue(data[row][col][layer] == sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria));
 				}
 			}

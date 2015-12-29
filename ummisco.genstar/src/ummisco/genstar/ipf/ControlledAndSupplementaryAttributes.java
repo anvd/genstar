@@ -44,7 +44,9 @@ public class ControlledAndSupplementaryAttributes {
 			
 			attrName = line.get(0);
 			controlledAttr = generationRule.getGenerator().getAttributeByNameOnData(attrName);
-			if (controlledAttr == null) { throw new GenstarException("'" + attrName + "' attribute not found in the generator. File: " + controlledAttributesData.getPath() + ", line: " + lineNo); }
+			if (controlledAttr == null) { 
+				throw new GenstarException("'" + attrName + "' attribute not found in the generator. \n\tFile: " + controlledAttributesData.getPath() + ", line: " + lineNo); 
+			}
 			if (!controlledAttributes.contains(controlledAttr)) { controlledAttributes.add(controlledAttr); }
 			
 			lineNo++;

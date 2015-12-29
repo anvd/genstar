@@ -47,24 +47,24 @@ public class SampleEntityPopulationTest {
 		SampleEntityPopulation population = new SampleEntityPopulation("dummy population", generator.getAttributes());
 		
 		Map<String, AttributeValue> attributeValues1 = new HashMap<String, AttributeValue>();
-		attributeValues1.put("Household Size", new UniqueValue(DataType.INTEGER, "1")); // Household Size
-		attributeValues1.put("Household Income", new UniqueValue(DataType.STRING, "High")); // Household Income
+		attributeValues1.put("householdSize", new UniqueValue(DataType.INTEGER, "1")); // Household Size
+		attributeValues1.put("householdIncome", new UniqueValue(DataType.STRING, "High")); // Household Income
 		population.createSampleEntity(attributeValues1);
 		
 		Map<String, AttributeValue> attributeValues2 = new HashMap<String, AttributeValue>();
-		attributeValues2.put("Household Size", new UniqueValue(DataType.INTEGER, "1")); // Household Size
-		attributeValues2.put("Household Income", new UniqueValue(DataType.STRING, "Low")); // Household Income
+		attributeValues2.put("householdSize", new UniqueValue(DataType.INTEGER, "1")); // Household Size
+		attributeValues2.put("householdIncome", new UniqueValue(DataType.STRING, "Low")); // Household Income
 		population.createSampleEntity(attributeValues2);
 		
 		
 		Map<String, AttributeValue> criteria = new HashMap<String, AttributeValue>();
-		criteria.put("Household Size", new UniqueValue(DataType.INTEGER, "0"));
+		criteria.put("householdSize", new UniqueValue(DataType.INTEGER, "0"));
 		assertTrue(population.getMatchingEntities(criteria).isEmpty());
 
-		criteria.put("Household Size", new UniqueValue(DataType.INTEGER, "1"));
+		criteria.put("householdSize", new UniqueValue(DataType.INTEGER, "1"));
 		assertTrue(population.getMatchingEntities(criteria).size() == 2);
 
-		criteria.put("Household Income", new UniqueValue(DataType.STRING, "Low"));
+		criteria.put("householdIncome", new UniqueValue(DataType.STRING, "Low"));
 		assertTrue(population.getMatchingEntities(criteria).size() == 1);
 	}
 	
@@ -79,15 +79,15 @@ public class SampleEntityPopulationTest {
 		assertTrue(population.getNbOfEntities() == 0);
 
 		Map<String, AttributeValue> attributeValues1 = new HashMap<String, AttributeValue>();
-		attributeValues1.put("Household Size", new UniqueValue(DataType.INTEGER, "1")); // Household Size
-		attributeValues1.put("Household Income", new UniqueValue(DataType.STRING, "High")); // Household Income
+		attributeValues1.put("householdSize", new UniqueValue(DataType.INTEGER, "1")); // Household Size
+		attributeValues1.put("householdIncome", new UniqueValue(DataType.STRING, "High")); // Household Income
 		population.createSampleEntity(attributeValues1);
 		
 		assertTrue(population.getNbOfEntities() == 1);
 		
 		Map<String, AttributeValue> attributeValues2 = new HashMap<String, AttributeValue>();
-		attributeValues2.put("Household Size", new UniqueValue(DataType.INTEGER, "1")); // Household Size
-		attributeValues2.put("Household Income", new UniqueValue(DataType.STRING, "Low")); // Household Income
+		attributeValues2.put("householdSize", new UniqueValue(DataType.INTEGER, "1")); // Household Size
+		attributeValues2.put("householdIncome", new UniqueValue(DataType.STRING, "Low")); // Household Income
 		population.createSampleEntity(attributeValues2);		
 
 		assertTrue(population.getNbOfEntities() == 2);
@@ -106,13 +106,13 @@ public class SampleEntityPopulationTest {
 		List<Map<String, AttributeValue>> attributeValues = new ArrayList<Map<String, AttributeValue>>();
 
 		Map<String, AttributeValue> attributeValues1 = new HashMap<String, AttributeValue>();
-		attributeValues1.put("Household Size", new UniqueValue(DataType.INTEGER, "1")); // Household Size
-		attributeValues1.put("Household Income", new UniqueValue(DataType.STRING, "High")); // Household Income
+		attributeValues1.put("householdSize", new UniqueValue(DataType.INTEGER, "1")); // Household Size
+		attributeValues1.put("householdIncome", new UniqueValue(DataType.STRING, "High")); // Household Income
 		attributeValues.add(attributeValues1);
 		
 		Map<String, AttributeValue> attributeValues2 = new HashMap<String, AttributeValue>();
-		attributeValues2.put("Household Size", new UniqueValue(DataType.INTEGER, "1")); // Household Size
-		attributeValues2.put("Household Income", new UniqueValue(DataType.STRING, "Low")); // Household Income
+		attributeValues2.put("householdSize", new UniqueValue(DataType.INTEGER, "1")); // Household Size
+		attributeValues2.put("householdIncome", new UniqueValue(DataType.STRING, "Low")); // Household Income
 		attributeValues.add(attributeValues2);
 
 		population.createSampleEntities(attributeValues);		

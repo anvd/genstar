@@ -109,7 +109,7 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 	
 	@Override public Entity createEntityWithAttributeValuesOnEntity(final Map<String, AttributeValue> attributeValuesOnEntity) throws GenstarException {
 		Entity e = new Entity(this);
-		e.setAttributeValuesOnData(attributeValuesOnEntity);
+		e.setAttributeValuesOnEntity(attributeValuesOnEntity);
 		
 		if (entities == Collections.EMPTY_LIST) { entities = new ArrayList<Entity>(); }
 		entities.add(e);

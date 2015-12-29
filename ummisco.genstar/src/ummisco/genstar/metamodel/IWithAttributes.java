@@ -9,4 +9,6 @@ public interface IWithAttributes { // change to IPopulationAttributes
 	public abstract List<AbstractAttribute> getAttributes();
 
 	public abstract AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData);
+	
+	public abstract AbstractAttribute getAttributeByNameOnEntity(final String attributeNameOnEntity);
 }

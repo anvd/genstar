@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
-import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarFactoryUtils;
 
@@ -43,19 +42,41 @@ public class SampleData extends AbstractSampleData implements ISampleData { // T
 	private void initializeSampleEntities() throws GenstarException {
 		this.sampleEntityPopulation = new SampleEntityPopulation(populationName, attributes);
 		
-		Map<String, AbstractAttribute> attributeMap = new HashMap<String, AbstractAttribute>();
-		for (AbstractAttribute attr : attributes) { attributeMap.put(attr.getNameOnData(), attr); }
+		Map<String, AbstractAttribute> attributeMap = new HashMap<String, AbstractAttribute>(); // attributeNameOnEntity :: attribute
+		for (AbstractAttribute attr : attributes) { attributeMap.put(attr.getNameOnEntity(), attr); }
 		
 		// 1. parse CSV file header
 		List<String> sampleDataHeaders = data.getHeaders();
 		attributeIndexes = new TreeMap<Integer, AbstractAttribute>();
 		for (int col=0; col<sampleDataHeaders.size(); col++) {
-			String attributeNameOnSample = sampleDataHeaders.get(col);
-			AbstractAttribute attribute = attributeMap.get(attributeNameOnSample);
+			String attributeNameOnSampleEntity = sampleDataHeaders.get(col);
+			AbstractAttribute attribute = attributeMap.get(attributeNameOnSampleEntity);
 			if (attribute != null) { attributeIndexes.put(col, attribute); }
 		}
 		
-		// 2. initialize sample entities
+		// 2. verify that the CSV file contains all the "required" attributes
+		if (attributeMap.size() != attributeIndexes.size()) {
+			List<String> attributeOnSampleFile = new ArrayList<String>();
+			for (AbstractAttribute attr : attributeIndexes.values()) { attributeOnSampleFile.add(attr.getNameOnEntity()); }
+			
+			List<String> attributeOnSEPopulation = new ArrayList<String>(attributeMap.keySet());
+			
+			attributeOnSEPopulation.removeAll(attributeOnSampleFile);
+			if (!attributeOnSEPopulation.isEmpty()) {
+				StringBuffer missingAttributes = new StringBuffer();
+				
+				int size = attributeOnSEPopulation.size();
+				for (String attrName : attributeOnSEPopulation) {
+					missingAttributes.append(attrName);
+					if (size < attributeOnSEPopulation.size() - 1) { missingAttributes.append(", "); }
+					size++;
+				}
+				
+				throw new GenstarException("Missing required attribute(s) : " + missingAttributes.toString() + ". Sample data file : " + data.getPath());
+			}
+		}
+		
+		// 3. initialize sample entities
 		List<String> rowContent;
 		AbstractAttribute attribute;
 		AttributeValue value;
@@ -74,13 +95,14 @@ public class SampleData extends AbstractSampleData implements ISampleData { // T
 				
 				value = attribute.findCorrespondingAttributeValue(valueStrList); // ensure that the value is accepted by the attribute
 				if (value == null) { 
-					throw new GenstarException("'" + valueStr + "' defined in the sample data is not recognized. File: " + data.getPath() + " at row: " + (row + 1) + ", column: " + (attributeColumn) + "."); 
+					throw new GenstarException("'" + valueStr + "' defined in the sample data is not recognized as a value of " + attribute.getNameOnEntity()
+								+ " attribute. File: " + data.getPath() + " at row: " + (row + 1) + ", column: " + (attributeColumn) + "."); 
 				}
 				
 				if (attribute.getValueClassOnData().equals(attribute.getValueClassOnEntity())) { // valueOnClass == valueOnEntity
-					sampleAttributes.put(attributeIndexes.get(attributeColumn).getNameOnData(), value);
+					sampleAttributes.put(attributeIndexes.get(attributeColumn).getNameOnEntity(), value);
 				} else {
-					sampleAttributes.put(attributeIndexes.get(attributeColumn).getNameOnData(), 
+					sampleAttributes.put(attributeIndexes.get(attributeColumn).getNameOnEntity(), 
 							GenstarFactoryUtils.createAttributeValue(attribute.getValueClassOnEntity(), attribute.getDataType(), valueStrList));
 				}
 			}

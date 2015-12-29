@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
@@ -31,7 +32,7 @@ import ummisco.genstar.util.GenstarFactoryUtils;
 public class ControlTotalsTest {
 
 	@Test public void testGetMatchingAttributeValuesFrequenciesForUniqueValue(@Mocked final SampleDataGenerationRule rule1, @Mocked final SampleDataGenerationRule rule2) throws GenstarException {
-		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 1000);
+		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -158,7 +159,7 @@ public class ControlTotalsTest {
 	
 	@Test public void testParseAttributeValuesFrequencyForUniqueValue(@Mocked final SampleDataGenerationRule rule1, @Mocked final SampleDataGenerationRule rule2) throws GenstarException {
 		
-		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 1000);
+		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 
@@ -202,7 +203,7 @@ public class ControlTotalsTest {
 	}
 	
 	@Test public void testGetMatchingAttributeValuesFrequenciesForRangeValue(@Mocked final SampleDataGenerationRule rule) throws GenstarException {
-		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 1000);
+		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes1.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -272,7 +273,7 @@ public class ControlTotalsTest {
 	}
 	
 	@Test(expected = GenstarException.class) public void testAttributeValuesFrequenciesFileContainsInvalidAttribute(@Mocked final SampleDataGenerationRule rule) throws GenstarException {
-		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 1000);
+		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes1.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -317,7 +318,7 @@ public class ControlTotalsTest {
 	}
 	
 	@Test(expected = GenstarException.class) public void testAttributeValuesFrequenciesFileContainsInvalidControlledAttribute(@Mocked final SampleDataGenerationRule rule) throws GenstarException {
-		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 1000);
+		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes1.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -346,7 +347,7 @@ public class ControlTotalsTest {
 	
 	
 	@Test public void testGetTotal(@Mocked final SampleDataGenerationRule rule) throws GenstarException {
-		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 1000);
+		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 

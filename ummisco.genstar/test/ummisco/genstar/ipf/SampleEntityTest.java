@@ -48,14 +48,14 @@ public class SampleEntityTest {
 		SampleEntity entity = new SampleEntity(population);
 		
 		assertTrue(entity.getAttributeValuesOnEntity().size() == 0);
-		assertTrue(entity.getAttributeValueOnEntity("Number Of Cars") == null);
+		assertTrue(entity.getAttributeValueOnEntity("numberOfCars") == null);
 		
 		// Number Of Cars
 		Map<String, AttributeValue> attributeValues = new HashMap<String, AttributeValue>();
-		attributeValues.put("Number Of Cars", new UniqueValue(DataType.INTEGER, "0"));
+		attributeValues.put("numberOfCars", new UniqueValue(DataType.INTEGER, "0"));
 		entity.setAttributeValuesOnEntity(attributeValues);
 		
-		assertTrue(entity.getAttributeValueOnEntity("Number Of Cars") != null);
+		assertTrue(entity.getAttributeValueOnEntity("numberOfCars") != null);
 	}
 	
 	
@@ -103,9 +103,9 @@ public class SampleEntityTest {
 		SampleEntity entity = new SampleEntity(population);
 		
 		Map<String, AttributeValue> attributeValues = new HashMap<String, AttributeValue>();
-		attributeValues.put("Number Of Cars", new UniqueValue(DataType.INTEGER, "0")); // Number Of Cars
-		attributeValues.put("Household Type", new UniqueValue(DataType.STRING, "type1")); // Household Type
-		attributeValues.put("Household Income", new UniqueValue(DataType.STRING, "High")); // Household Income
+		attributeValues.put("numberOfCars", new UniqueValue(DataType.INTEGER, "0")); // Number Of Cars
+		attributeValues.put("householdType", new UniqueValue(DataType.STRING, "type1")); // Household Type
+		attributeValues.put("householdIncome", new UniqueValue(DataType.STRING, "High")); // Household Income
 
 		entity.setAttributeValuesOnEntity(attributeValues);
 		
@@ -113,19 +113,19 @@ public class SampleEntityTest {
 		assertTrue(entity.isMatched(new HashMap<String, AttributeValue>()));
 		
 		Map<String, AttributeValue> criteria1 = new HashMap<String, AttributeValue>();
-		criteria1.put("Number Of Cars", new UniqueValue(DataType.INTEGER, "1")); // Number Of Cars
+		criteria1.put("numberOfCars", new UniqueValue(DataType.INTEGER, "1")); // Number Of Cars
 		assertFalse(entity.isMatched(criteria1));
 		
-		criteria1.put("Number Of Cars", new UniqueValue(DataType.INTEGER, "0")); // Number Of Cars
+		criteria1.put("numberOfCars", new UniqueValue(DataType.INTEGER, "0")); // Number Of Cars
 		assertTrue(entity.isMatched(criteria1));
 		
-		criteria1.put("Household Type", new UniqueValue(DataType.STRING, "type1")); // Household Type
+		criteria1.put("householdType", new UniqueValue(DataType.STRING, "type1")); // Household Type
 		assertTrue(entity.isMatched(criteria1));
 		
-		criteria1.put("Household Income", new UniqueValue(DataType.STRING, "Low")); // Household Income
+		criteria1.put("householdIncome", new UniqueValue(DataType.STRING, "Low")); // Household Income
 		assertFalse(entity.isMatched(criteria1));
 
-		criteria1.put("Household Income", new UniqueValue(DataType.STRING, "High")); // Household Income
+		criteria1.put("householdIncome", new UniqueValue(DataType.STRING, "High")); // Household Income
 		assertTrue(entity.isMatched(criteria1));
 		
 	}

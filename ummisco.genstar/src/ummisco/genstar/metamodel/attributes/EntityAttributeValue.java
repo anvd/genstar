@@ -46,6 +46,10 @@ public class EntityAttributeValue {
 	public EntityAttributeValue(final AbstractAttribute attribute, final AttributeValue attributeValueOnData) throws GenstarException {
 		if (attribute == null || attributeValueOnData == null) { throw new GenstarException("Neither 'attribute' nor 'attributeValueOnData' parameter can be null"); }
 		
+		if (!attribute.getValueClassOnData().equals(attributeValueOnData.getClass())) {
+			throw new GenstarException("Incompatible attribute value classes between " + attribute.getValueClassOnData().getName() + " and " + attributeValueOnData.getClass().getName());
+		}
+		
 		if (!attribute.containsValueOfAttributeValue(attributeValueOnData)) {
 			throw new GenstarException(attributeValueOnData + " is not a valid value of " + attribute.getNameOnData() + " attribute");
 		}

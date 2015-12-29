@@ -67,7 +67,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		return retVal;
 	}
 	
-	public AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData) {
+	@Override public AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData) {
 		if (attributeNameOnData == null || attributeNameOnData.isEmpty()) { throw new IllegalArgumentException("'attributeNameOnData' parameter can neither be null nor empty"); }
 		
 		for (AbstractAttribute iAttr : inputAttributes.values()) {
@@ -79,6 +79,21 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		}
 		
 		return null;
+	}
+	
+	@Override public AbstractAttribute getAttributeByNameOnEntity(final String attributeNameOnEntity) {
+		if (attributeNameOnEntity == null || attributeNameOnEntity.isEmpty()) { throw new IllegalArgumentException("'attributeNameOnEntity' parameter can neither be null nor empty"); }
+		
+		for (AbstractAttribute iAttr : inputAttributes.values()) {
+			if (iAttr.getNameOnEntity().equals(attributeNameOnEntity)) { return iAttr; }
+		}
+		
+		for (AbstractAttribute oAttr : outputAttributes.values()) {
+			if (oAttr.getNameOnEntity().equals(attributeNameOnEntity)) { return oAttr; }
+		}
+		
+		return null;
+		
 	}
 	
 	public Set<AttributeValuesFrequency> getAttributeValuesFrequencies() {

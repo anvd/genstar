@@ -1,4 +1,4 @@
-Household Size,Household Income,Household Type,Number Of Cars
+householdSize,householdIncome,householdType,numberOfCars
 1,High,type1,0
 1,High,type2,1
 1,High,type3,2

@@ -3,19 +3,19 @@ package ummisco.genstar.ipf;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import mockit.Delegate;
-import mockit.Expectations;
-import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
@@ -27,24 +27,24 @@ public class SampleDataTest {
 
 	@Test
 	public void testGetSampleEntities() throws GenstarException {
-		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 10);
+		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
+		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testGetSampleEntities/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/people_sample.csv", true);
+		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testGetSampleEntities/people_sample.csv", true);
 		
 		SampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataCSVFile);
 		assertTrue(sampleData.getSampleEntityPopulation().getSampleEntities().size() == 4);
 	}
 	
-	@Test public void testCountMatchingEntities(/*@Mocked final SampleDataGenerationRule generationRule*/) throws GenstarException {
+	@Test public void testCountMatchingEntities() throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 10);
 		
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
+		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testCountMatchingEntities/attributes.csv", true);
 		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/people_sample.csv", true);
+		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testCountMatchingEntities/people_sample.csv", true);
 		
 		SampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataCSVFile);
 		/*
@@ -56,18 +56,18 @@ public class SampleDataTest {
 		 */
 		Map<String, AttributeValue> matchingCriteria = new HashMap<String, AttributeValue>();
 		
-		AbstractAttribute householdSizeAttr = generator.getAttributeByNameOnData("Household Size");
+		AbstractAttribute householdSizeAttr = generator.getAttributeByNameOnEntity("householdSize");
 		
 		AttributeValue householdSizeOne = new UniqueValue(householdSizeAttr.getDataType(), "1");
-		matchingCriteria.put(householdSizeAttr.getNameOnData(), householdSizeOne);
+		matchingCriteria.put(householdSizeAttr.getNameOnEntity(), householdSizeOne);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 1);
 		
 		AttributeValue householdSizeTwo = new UniqueValue(householdSizeAttr.getDataType(), "2");
-		matchingCriteria.put(householdSizeAttr.getNameOnData(), householdSizeTwo);
+		matchingCriteria.put(householdSizeAttr.getNameOnEntity(), householdSizeTwo);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 2);
 
 		AttributeValue householdFour = new UniqueValue(householdSizeAttr.getDataType(), "4");
-		matchingCriteria.put(householdSizeAttr.getNameOnData(), householdFour);
+		matchingCriteria.put(householdSizeAttr.getNameOnEntity(), householdFour);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 0);
 		
 		
@@ -75,38 +75,49 @@ public class SampleDataTest {
 		AbstractAttribute typeAttr = generator.getAttributeByNameOnData("Household Type");
 		
 		AttributeValue typeOne = new UniqueValue(typeAttr.getDataType(), "type1");
-		matchingCriteria.put(typeAttr.getNameOnData(), typeOne);
+		matchingCriteria.put(typeAttr.getNameOnEntity(), typeOne);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 2);
 		
 		AttributeValue typeThree = new UniqueValue(typeAttr.getDataType(), "type3");
-		matchingCriteria.put(typeAttr.getNameOnData(), typeThree);
+		matchingCriteria.put(typeAttr.getNameOnEntity(), typeThree);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 1);
 		
 		
 		matchingCriteria.clear();
 		AbstractAttribute incomeAttr = generator.getAttributeByNameOnData("Household Income");
 		AttributeValue incomeHigh = new UniqueValue(incomeAttr.getDataType(), "High");
-		matchingCriteria.put(incomeAttr.getNameOnData(), incomeHigh);
+		matchingCriteria.put(incomeAttr.getNameOnEntity(), incomeHigh);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 3);
 		
 		
 		matchingCriteria.clear();
-		matchingCriteria.put(householdSizeAttr.getNameOnData(), householdSizeTwo);
+		matchingCriteria.put(householdSizeAttr.getNameOnEntity(), householdSizeTwo);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 2);
-		matchingCriteria.put(incomeAttr.getNameOnData(), incomeHigh);
+		matchingCriteria.put(incomeAttr.getNameOnEntity(), incomeHigh);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 1);
-		matchingCriteria.put(typeAttr.getNameOnData(), typeOne);
+		matchingCriteria.put(typeAttr.getNameOnEntity(), typeOne);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 1);
 		
 		
 		AbstractAttribute nbOfCarsAttr = generator.getAttributeByNameOnData("Number Of Cars");
 		
 		AttributeValue carsOne = new UniqueValue(nbOfCarsAttr.getDataType(), "1");
-		matchingCriteria.put(nbOfCarsAttr.getNameOnData(), carsOne);
+		matchingCriteria.put(nbOfCarsAttr.getNameOnEntity(), carsOne);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 0);
 		
 		AttributeValue carsThree = new UniqueValue(nbOfCarsAttr.getDataType(), "3");
-		matchingCriteria.put(nbOfCarsAttr.getNameOnData(), carsThree);
+		matchingCriteria.put(nbOfCarsAttr.getNameOnEntity(), carsThree);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria) == 1);
+	}
+	
+	@Test(expected = GenstarException.class) public void testInitializeSampleEntitiesWithMismatchedAttributes() throws GenstarException {
+		ISingleRuleGenerator generator = new SingleRuleGenerator("generator");
+		
+		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testInitializeSampleEntitiesWithMismatchedAttributes/attributes.csv", true);
+		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesFile);
+		
+		GenstarCSVFile data = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testInitializeSampleEntitiesWithMismatchedAttributes/PICURS_People_SampleData.csv", true);
+		
+		new SampleData("dummy population", generator.getAttributes(), data);
 	}
 }

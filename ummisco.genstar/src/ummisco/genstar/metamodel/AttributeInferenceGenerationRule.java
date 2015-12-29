@@ -140,6 +140,15 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 		
 		return null;
 	}
+	
+	@Override
+	public AbstractAttribute getAttributeByNameOnEntity(final String attributeNameOnEntity) {
+		if (inferringAttribute.getNameOnEntity().equals(attributeNameOnEntity)) { return inferringAttribute; }
+		if (inferredAttribute.getNameOnEntity().equals(attributeNameOnEntity)) { return inferredAttribute; }
+		
+		return null;
+	}
+
 
 	@Override
 	public String getRuleTypeName() {

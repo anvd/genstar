@@ -1,0 +1,17 @@
+Category,Gender,Input Frequency,Generated Frequency
+C0,true,2221,2123
+C1,true,203,189
+C2,true,301,291
+C3,true,1458,1426
+C4,true,649,702
+C5,true,1035,1088
+C6,true,1490,1484
+C7,true,0,2
+C0,false,1693,1711
+C1,false,1110,1109
+C2,false,276,295
+C3,false,1248,1292
+C4,false,634,603
+C5,false,1096,1084
+C6,false,1407,1421
+C7,false,0,0

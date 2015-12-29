@@ -13,7 +13,7 @@ public class SampleEntity { // TODO in the future, remove this class, use Entity
 	
 	private SampleEntityPopulation population;
 
-	private Map<String, AttributeValue> attributeValuesOnEntity = Collections.EMPTY_MAP; // attribute name on data : attribute value from CSV file ( = attribute value on entity)
+	private Map<String, AttributeValue> attributeValuesOnEntity = Collections.EMPTY_MAP; // attribute name on entity : attribute value from CSV file ( = attribute value on entity)
 	
 	private Map<String, SampleEntityPopulation> componentSampleEntityPopulations = Collections.EMPTY_MAP; // <population name, sample entity population>
 
@@ -28,14 +28,24 @@ public class SampleEntity { // TODO in the future, remove this class, use Entity
 		
 		if (attributeValuesOnEntity == Collections.EMPTY_MAP) {
 			attributeValuesOnEntity = new HashMap<String, AttributeValue>();
-			for (AbstractAttribute attr : population.getAttributes()) { attributeValuesOnEntity.put(attr.getNameOnData(), null); }
+			for (AbstractAttribute attr : population.getAttributes()) { attributeValuesOnEntity.put(attr.getNameOnEntity(), null); }
 		}
 		
-		for (String attrNameOnData : values.keySet()) {
-			if (attributeValuesOnEntity.containsKey(attrNameOnData)) { attributeValuesOnEntity.put(attrNameOnData, values.get(attrNameOnData)); }
-			else { throw new GenstarException(attrNameOnData + " is not recognized as an attribute"); }
-			
-			// TODO verify that the attribute can accept the value
+		for (String attrNameOnEntity : values.keySet()) {
+			if (attributeValuesOnEntity.containsKey(attrNameOnEntity)) { 
+				AbstractAttribute attribute = population.getAttributebyNameOnEntity(attrNameOnEntity);
+				
+				if (attribute != null) {
+					AttributeValue value = values.get(attrNameOnEntity);
+					if (!attribute.getValueClassOnEntity().equals(value.getClass())) { // verify that the attribute can accept the value
+						throw new GenstarException("Incompatible value classes between " + attribute.getValueClassOnEntity().getName() + " and " + value.getClass().getName());
+					}
+					
+					attributeValuesOnEntity.put(attrNameOnEntity, value); 
+				} else { // should never happen
+					throw new GenstarException(attrNameOnEntity + " is not recognized as an attribute");
+				}
+			} else { throw new GenstarException(attrNameOnEntity + " is not recognized as an attribute"); }
 		}
 	}
 	
@@ -44,24 +54,34 @@ public class SampleEntity { // TODO in the future, remove this class, use Entity
 		return copy;
 	}
 	
-	public boolean isMatched(final Map<String, AttributeValue> criteria) {
+	public boolean isMatched(final Map<String, AttributeValue> criteria) throws GenstarException {
 		if (criteria == null || criteria.isEmpty()) { return true; }
 		
 		AttributeValue criterionValue, sampleEntityValue;
 		
-		for (String criterionAttrNameOnData : criteria.keySet()) {
-			sampleEntityValue = attributeValuesOnEntity.get(criterionAttrNameOnData);
+		for (String attributeNameOnEntity : criteria.keySet()) {
+			sampleEntityValue = attributeValuesOnEntity.get(attributeNameOnEntity);
 			if (sampleEntityValue != null) {
-				criterionValue = criteria.get(criterionAttrNameOnData);
+				criterionValue = criteria.get(attributeNameOnEntity);
 				if (!criterionValue.isValueMatched(sampleEntityValue)) { return false; }
+			} else {
+				int attrSize = 0;
+				StringBuffer avaiableAttributesStr = new StringBuffer();
+				for (String attr : attributeValuesOnEntity.keySet()) { 
+					avaiableAttributesStr.append(attr);
+					if (attrSize < attributeValuesOnEntity.size() - 1) avaiableAttributesStr.append(", ");
+					attrSize++;
+				}
+				
+				throw new GenstarException("Unrecognized attribute " + attributeNameOnEntity + " on SampleEntity, available attributes : " + avaiableAttributesStr.toString());
 			}
 		}
 		
 		return true;
 	}
 	
-	public AttributeValue getAttributeValueOnEntity(final String attributeNameOndata) {
-		return attributeValuesOnEntity.get(attributeNameOndata);
+	public AttributeValue getAttributeValueOnEntity(final String attributeNameOnEntity) {
+		return attributeValuesOnEntity.get(attributeNameOnEntity);
 	}
 		
 	public SampleEntityPopulation createComponentPopulation(final String populationName, final List<AbstractAttribute> attributes) throws GenstarException {

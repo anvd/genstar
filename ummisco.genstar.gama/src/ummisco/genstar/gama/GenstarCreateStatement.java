@@ -76,12 +76,12 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 	public IList<? extends IAgent> privateExecuteIn(final IScope scope) {
 		IList genstarPopulation = (IList) syntheticPopulation.value(scope);
 		
+		// First three elements of a GAMA synthetic population
 		String speciesName = (String) genstarPopulation.get(0); // first element is the population/species name
+		Map<String, String> groupReferences = (Map<String, String>) genstarPopulation.get(1); // second element contains references to "group" agents
+		Map<String, String> componentReferences = (Map<String, String>) genstarPopulation.get(2); // third element contains references to "component" agents
+		
 		IPopulation population = scope.getSimulationScope().getPopulationFor(speciesName);
-		
-		Map<String, String> groupReferences = (Map<String, String>) genstarPopulation.get(1); // second element is references to "group" agents
-		Map<String, String> componentReferences = (Map<String, String>) genstarPopulation.get(2); // third element is references to "component" agents
-		
 		if (population == null) { throw GamaRuntimeException.error(speciesName + " species not found", scope); }
 		
 		// extract init values
@@ -133,17 +133,16 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 			// create component agents if necessary
 			if (genstarComponentPopulations != null) {
 				
-				
 				for (Object genstarComponentPopulation : genstarComponentPopulations) {
 					List genstarComPopulation = (List)genstarComponentPopulation;
 					
-					// first element is the population/species name
-					String componentSpeciesName = (String)genstarComPopulation.get(0);
-					IPopulation componentGamaPopulation = scope.getSimulationScope().getPopulationFor(componentSpeciesName);
-					if (componentGamaPopulation == null) { throw GamaRuntimeException.error(componentSpeciesName + " species not found", scope); }
-					
+					// First three elements of a GAMA synthetic population
+					String componentSpeciesName = (String)genstarComPopulation.get(0); // first element is the population/species name
 					Map<String, String> componentGroupReferences = (Map<String, String>) genstarComPopulation.get(1); // second element contains references to "group" agents
 					Map<String, String> componentComponentReferences = (Map<String, String>) genstarComPopulation.get(2); // third element contains references to "component" agents
+					
+					IPopulation componentGamaPopulation = scope.getSimulationScope().getPopulationFor(componentSpeciesName);
+					if (componentGamaPopulation == null) { throw GamaRuntimeException.error(componentSpeciesName + " species not found", scope); }
 					
 					
 					// extract init values
@@ -159,9 +158,7 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 							// TODO verify that the corresponding IVariable is of container/list type
 							agent.setAttribute(componentReferences.get(componentGamaPopulation.getSpecies().getName()), componentAgents);
 						}
-						
 					}
-					
 				}
 			}
 		}

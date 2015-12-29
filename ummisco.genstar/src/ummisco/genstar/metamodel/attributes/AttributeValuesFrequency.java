@@ -48,11 +48,11 @@ public class AttributeValuesFrequency {
 		return copy;
 	}
 	
-	public Map<String, AttributeValue> getAttributeValuesWithAttributeNamesAsKey() {
+	public Map<String, AttributeValue> getAttributeValuesWithNamesOnEntityAsKey() {
 		Map<String, AttributeValue> result = new HashMap<String, AttributeValue>();
 		
 		for (AbstractAttribute attr : attributeValues.keySet()) {
-			result.put(attr.getNameOnData(), attributeValues.get(attr));
+			result.put(attr.getNameOnEntity(), attributeValues.get(attr));
 		}
 		
 		return result;

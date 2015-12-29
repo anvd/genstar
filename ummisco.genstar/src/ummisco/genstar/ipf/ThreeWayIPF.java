@@ -55,20 +55,20 @@ public class ThreeWayIPF extends IPF {
 	}
 	
 	
-	private void initializeData() {
+	private void initializeData() throws GenstarException {
 		ISampleData sampleData = generationRule.getSampleData();
 		
 		data = new double[rowAttributeValues.size()][columnAttributeValues.size()][layerAttributeValues.size()];
 
 		Map<String, AttributeValue> matchingCondition = new HashMap<String, AttributeValue>();
 		for (int row=0; row<rowAttributeValues.size(); row++) {
-			matchingCondition.put(rowAttribute.getNameOnData(), rowAttributeValues.get(row));
+			matchingCondition.put(rowAttribute.getNameOnEntity(), rowAttributeValues.get(row));
 			
 			for (int col=0; col<columnAttributeValues.size(); col++) {
-				matchingCondition.put(columnAttribute.getNameOnData(), columnAttributeValues.get(col));
+				matchingCondition.put(columnAttribute.getNameOnEntity(), columnAttributeValues.get(col));
 				
 				for (int layer=0; layer<layerAttributeValues.size(); layer++) {
-					matchingCondition.put(layerAttribute.getNameOnData(), layerAttributeValues.get(layer));
+					matchingCondition.put(layerAttribute.getNameOnEntity(), layerAttributeValues.get(layer));
 					data[row][col][layer] = sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCondition);
 					// TODO if (data[row][col][layer] == 0) raise warning
 				}

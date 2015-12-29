@@ -124,13 +124,13 @@ public class Entity {
 		entityAttributeValues.put(attributeNameOnData, eav);
 	}
 	
-	public void setAttributeValueOnEntity(final String attributeNameOnData, final AttributeValue attributeValueOnEntity) throws GenstarException {
-		if (attributeNameOnData == null || attributeValueOnEntity == null) {
+	public void setAttributeValueOnEntity(final String attributeNameOnEntity, final AttributeValue attributeValueOnEntity) throws GenstarException {
+		if (attributeNameOnEntity == null || attributeValueOnEntity == null) {
 			throw new GenstarException("Parameters attributeNameOnData, attributevalueOnEntity can not be null");
 		}
 		
-		AbstractAttribute attribute = population.getAttributeByNameOnData(attributeNameOnData);
-		if (attribute == null) { throw new GenstarException("No attribute found with " + attributeNameOnData + " as name on " + population.getName() + " entity"); }
+		AbstractAttribute attribute = population.getAttributebyNameOnEntity(attributeNameOnEntity);
+		if (attribute == null) { throw new GenstarException("No attribute found with " + attributeNameOnEntity + " as name on " + population.getName() + " entity"); }
 		
 		AttributeValue attributeValueOnData = null;
 		
@@ -156,7 +156,7 @@ public class Entity {
 	
 	public void setAttributeValuesOnEntity(Map<String, AttributeValue> attributeValuesOnEntity) throws GenstarException {
 		if (attributeValuesOnEntity == null) {
-			throw new GenstarException("attributeValuesOnEntity paramter can not be null");
+			throw new GenstarException("attributeValuesOnEntity parameter can not be null");
 		}
 		
 		for (String attributeNameOnEntity : attributeValuesOnEntity.keySet()) {

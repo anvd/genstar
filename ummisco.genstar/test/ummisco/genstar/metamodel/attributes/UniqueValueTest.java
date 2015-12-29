@@ -59,19 +59,6 @@ public class UniqueValueTest {
 		assertTrue(v2.compareTo(v0) == 1);
 	}
 	
-	@Test public void testEquals() throws GenstarException {
-		UniqueValue v0 = new UniqueValue(DataType.INTEGER, "0");
-		UniqueValue v1 = new UniqueValue(DataType.INTEGER, "0");
-		UniqueValue v2 = new UniqueValue(DataType.INTEGER, "1");
-		
-		assertTrue(v0.equals(v0));
-		assertTrue(v0.equals(v1));
-		assertFalse(v0.equals(v2));
-		
-		Map<UniqueValue, Integer> mapData = new HashMap<UniqueValue, Integer>();
-		mapData.put(v0, 1);
-		assertTrue(mapData.get(v1) == 1);
-	}
 	
 	@Test public void testCast() throws GenstarException {
 		UniqueValue v0 = new UniqueValue(DataType.INTEGER, "0");

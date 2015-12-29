@@ -8,7 +8,6 @@ import java.util.Map;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
-import ummisco.genstar.metamodel.attributes.UniqueValue;
 
 public class GroupComponentSampleData extends AbstractSampleData implements ISampleData {
 	
@@ -60,11 +59,11 @@ public class GroupComponentSampleData extends AbstractSampleData implements ISam
 		for (SampleEntity groupEntity : groupSampleEntities) {
 			complexEntity = sampleEntityPopulation.createSampleEntity(groupEntity.getAttributeValuesOnEntity());
 			
-			groupIdAttributeValueOnGroupEntity = complexEntity.getAttributeValueOnEntity(groupIdAttributeOnGroupEntity.getNameOnData());
-			if (groupIdAttributeValueOnGroupEntity == null) { throw new GenstarException("groupEntity doesn't contain " + groupIdAttributeOnGroupEntity.getNameOnData() + " as ID attribute"); }
+			groupIdAttributeValueOnGroupEntity = complexEntity.getAttributeValueOnEntity(groupIdAttributeOnGroupEntity.getNameOnEntity());
+			if (groupIdAttributeValueOnGroupEntity == null) { throw new GenstarException("groupEntity doesn't contain " + groupIdAttributeOnGroupEntity.getNameOnEntity() + " as ID attribute"); }
 			
 			Map<String, AttributeValue> componentMatchingCriteria = new HashMap<String, AttributeValue>();
-			componentMatchingCriteria.put(groupIdAttributeOnComponentEntity.getNameOnData(), groupIdAttributeValueOnGroupEntity);
+			componentMatchingCriteria.put(groupIdAttributeOnComponentEntity.getNameOnEntity(), groupIdAttributeValueOnGroupEntity);
 			
 			List<SampleEntity> matchedComponentEntities = new ArrayList<SampleEntity>();
 			for (SampleEntity componentEntity : copyComponentSampleEntities) {

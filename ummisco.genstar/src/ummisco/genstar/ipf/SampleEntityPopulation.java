@@ -42,14 +42,14 @@ public class SampleEntityPopulation {
 	}
  
 	
-	public List<SampleEntity> getMatchingEntities(final Map<String, AttributeValue> matchingCriteria) {
+	public List<SampleEntity> getMatchingEntities(final Map<String, AttributeValue> matchingCriteria) throws GenstarException {
 		List<SampleEntity> matchings = new ArrayList<SampleEntity>();
 		for (SampleEntity e : sampleEntities) { if (e.isMatched(matchingCriteria)) { matchings.add(e); } }
 		
 		return matchings;
 	}
 	
-	public int countMatchingEntities(final Map<String, AttributeValue> matchingCriteria) {
+	public int countMatchingEntities(final Map<String, AttributeValue> matchingCriteria) throws GenstarException {
 		return getMatchingEntities(matchingCriteria).size();
 	}
 
@@ -64,6 +64,22 @@ public class SampleEntityPopulation {
 		return copy;
 	}
 	
+	public AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData) throws GenstarException {
+		for (AbstractAttribute attr : attributes) {
+			if (attr.getNameOnData().equals(attributeNameOnData)) { return attr; }
+		}
+		
+		return null;
+	}
+	
+	public AbstractAttribute getAttributebyNameOnEntity(final String attributeNameOnEntity) throws GenstarException {
+		for (AbstractAttribute attr : attributes) {
+			if (attr.getNameOnEntity().equals(attributeNameOnEntity)) { return attr; }
+		}
+		
+		return null;
+	}
+
 	public List<SampleEntity> createSampleEntities(final List<Map<String, AttributeValue>> attributeValues) throws GenstarException {
 		if (attributeValues == null) { throw new GenstarException("Parameter attributeValues can not be null"); }
 		

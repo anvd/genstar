@@ -16,6 +16,16 @@ global {
 
 	int nb_of_people <- 14821;
 	
+	// input data
+	matrix category_age_input_data <- csv_file('../includes/population/people/People_GenerationRule1_Data.csv');
+	list category_age_input_frequency <- category_age_input_data column_at 2;
+	matrix category_gender_input_data <- csv_file('../includes/population/people/People_GenerationRule2_Data.csv');
+	list category_gender_input_frequency <- category_gender_input_data column_at 2;
+
+	// generation result
+	list<int> category_age_result;
+	list<int> category_gender_result;
+	
 	init {
 		create building from: shape_file_buildings with: [type::string(read ("NATURE"))] {
 			if type="Industrial" {
@@ -25,7 +35,7 @@ global {
 		create road from: shape_file_roads ;
 		
 
-		list miro_people_population <- population_from_csv('../includes/population/people/People_Attributes.csv', '../includes/population/people/People_GenerationRules.csv', nb_of_people);
+		list miro_people_population <- frequency_distribution_population('../includes/population/people/People_Attributes.csv', '../includes/population/people/People_GenerationRules.csv', nb_of_people);
 		create people from: miro_people_population {
 			location <- any_location_in(one_of(building)); 
 		}
@@ -37,22 +47,13 @@ global {
 		map<int, int> age_ranges <- [ 0::4, 5::17, 18::24, 25::34, 35::49, 50::64, 65::100 ];
 		list<bool> genders <- [ true, false ];
 		
-		matrix category_age_input_data <- csv_file('../includes/population/people/People_GenerationRule1_Data.csv');
-//		file category_age_input_data <- csv_file('../includes/population/people/People_GenerationRule1_Data.csv');
-
-//		loop aRow over: rows_list(category_age_input_data) {
-//			string str <- '';
-//			loop st over: aRow { str <- str + st + ', '; }
-//			
-//			write str;
-//		}
-
-		list category_age_input_frequency <- category_age_input_data column_at 2;
 		int category_age_index <- 0;
 		write '\tClassification of category and age';
 		write '\t\tCategory, Age, Input Frequency, Generated Frequency';
 		loop ar_key over: age_ranges.keys {
 			loop c over: categories {
+				add length(people where ( (each.category = c) and (each.age >= ar_key ) and (each.age <= age_ranges[ar_key]) ) ) to: category_age_result; 
+				
 				write '\t\t' + c + ', [' + ar_key + '::' + age_ranges[ar_key] + '], ' + string(category_age_input_frequency at category_age_index) + ", "
 					+ length(people where ( (each.category = c) and (each.age >= ar_key ) and (each.age <= age_ranges[ar_key]) ) );
 				category_age_index <- category_age_index + 1;
@@ -60,18 +61,21 @@ global {
 		}
 		
 		
-		matrix category_gender_input_data <- csv_file('../includes/population/people/People_GenerationRule2_Data.csv');
-		list category_gender_input_frequency <- category_gender_input_data column_at 2;
 		int category_index <- 0;
 		write '\n\tClassfication of category and gender';
 		write '\t\tCategory, Gender, Input Frequency, Generated Frequency';
 		loop g over: genders {
 			loop c over: categories {
+				add length(people where ( (each.gender = g) and (each.category = c) )) to: category_gender_result;
+				
 				write '\t\t' + c + ", " + g + ", " + (category_gender_input_frequency at category_index) + ', '
 					+ length (people where ( (each.gender = g) and (each.category = c) ));
 				category_index <- category_index + 1;
 			}
 		}
+		
+		write 'category_age_result: ' + category_age_result;
+		write 'category_gender_result: ' + category_gender_result;
 	}
 }
 
@@ -112,6 +116,53 @@ experiment miro_people type: gui {
 			species road aspect: base;
 			species building aspect:base;
 			species people aspect: base;
+		}
+		
+		/*
+		display ChartHisto {
+			chart "DataBar" type:histogram
+			{
+				data "empty_ants" value:(list(ant) count (!each.hasFood)) color:°red;
+				data "carry_food_ants" value:(list(ant) count (each.hasFood)) color:°green;				
+			}
+			
+			}
+		 */
+		display generation_result {
+			// TODO focus only on selected output
+			// the rest should be "processed" by Numbers
+			chart "Age statistic" type: histogram {
+				//data "test" value: 100;
+				
+				// age_range: 0::4
+//				data "0_4_data" value: int(category_age_input_frequency at 0) color: °red;
+				data "0_4_data" value: 100 color: °red;
+//				data "0_4_generated" value: category_age_result at 0 color: °green;
+				
+				// age_range: 5::17
+				data "5_17_data" value: int(category_age_input_frequency at 1) color: °red;
+//				data "5_17_generated" value: category_age_result at 1 color: °green;
+								
+				// age_range: 18::24
+				data "18_24_data" value: int(category_age_input_frequency at 2) color: °red;
+//				data "18_24_generated" value: category_age_result at 2 color: °green;
+				
+				// age_range: 25_34
+				data "25_34_data" value: int(category_age_input_frequency at 3) color: °red;
+//				data "25_34_generated" value: category_age_result at 3 color: °green;
+				
+				// age_range: 35::49
+				data "35_49_data" value: int(category_age_input_frequency at 4) color: °red;
+//				data "35_49_generated" value: category_age_result at 4 color: °green;
+				
+				// age_range: 50::64
+				data "50_64_data" value: int(category_age_input_frequency at 5) color: °red;
+//				data "50_64_generated" value: category_age_result at 5 color: °green;
+				
+				// age_range: 65::100
+				data "65_100_data" value: int(category_age_input_frequency at 6) color: °red;
+//				data "65_100_generated" value: category_age_result at 6 color: °green;
+			} 
 		}
 	}
 }

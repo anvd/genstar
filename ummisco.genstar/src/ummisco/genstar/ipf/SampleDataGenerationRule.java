@@ -13,7 +13,6 @@ import ummisco.genstar.metamodel.ISyntheticPopulation;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
-import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.SharedInstances;
 
@@ -89,11 +88,11 @@ public class SampleDataGenerationRule extends GenerationRule {
 		return RULE_TYPE_NAME;
 	}
 	
-	private void buildSampleEntityCategories() {
+	private void buildSampleEntityCategories() throws GenstarException {
 		sampleEntityCategories = new HashMap<AttributeValuesFrequency, List<SampleEntity>>();
 		
 		for (AttributeValuesFrequency selectProba : selectionProbabilities) {
-			sampleEntityCategories.put(selectProba, sampleData.getSampleEntityPopulation().getMatchingEntities(selectProba.getAttributeValuesWithAttributeNamesAsKey()));
+			sampleEntityCategories.put(selectProba, sampleData.getSampleEntityPopulation().getMatchingEntities(selectProba.getAttributeValuesWithNamesOnEntityAsKey()));
 		}
 	}
 	
@@ -203,6 +202,15 @@ public class SampleDataGenerationRule extends GenerationRule {
 		return null;
 	}
 	
+
+	@Override
+	public AbstractAttribute getAttributeByNameOnEntity(final String attributeNameOnEntity) {
+		for (AbstractAttribute a : getAttributes()) {
+			if (a.getNameOnEntity().equals(attributeNameOnEntity)) { return a; }
+		}
+		
+		return null;
+	}
 	
 	public IPF getIPF() {
 		return ipf;

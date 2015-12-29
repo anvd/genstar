@@ -111,10 +111,10 @@ public class TwoWayIPFTest {
 		Map<String, AttributeValue> matchingCriteria = new HashMap<String, AttributeValue>();
 		int row=0, col=0;
 		for (AttributeValue rowValue : ipf.getAttributeValues(0)) {
-			matchingCriteria.put(rowAttr.getNameOnData(), rowValue);
+			matchingCriteria.put(rowAttr.getNameOnEntity(), rowValue);
 			
 			for (AttributeValue colValue : ipf.getAttributeValues(1)) {
-				matchingCriteria.put(colAttr.getNameOnData(), colValue);
+				matchingCriteria.put(colAttr.getNameOnEntity(), colValue);
 				assertTrue(data[row][col] == sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria));
 				
 				col++;

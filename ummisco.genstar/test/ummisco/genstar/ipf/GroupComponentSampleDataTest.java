@@ -62,11 +62,11 @@ public class GroupComponentSampleDataTest {
 		// verify that the number of people of households is consistent with "Household_ID" attribute value
 		Map<String, AttributeValue> matchingCriteria = new HashMap<String, AttributeValue>();
 		for (List<String> row : groupSampleFile.getContent()) {
-			// Header: Household_ID,Household Size,Household Income,Household Type,Number Of Cars 
+			// Header: Household_ID,Household Size,Household Income,Household Type,Number Of Cars
 			UniqueValue householdIdValue = new UniqueValue(DataType.INTEGER, row.get(0));			
 			Integer householdSize = Integer.parseInt(row.get(1));
 			
-			matchingCriteria.put("Household_ID", householdIdValue);
+			matchingCriteria.put(groupIdAttributeOnGroup.getNameOnEntity(), householdIdValue);
 			List<SampleEntity> matchingHouseholdEntities = buildGroupEntityPopulation.getMatchingEntities(matchingCriteria);
 			
 			assertTrue(matchingHouseholdEntities.size() == 1);

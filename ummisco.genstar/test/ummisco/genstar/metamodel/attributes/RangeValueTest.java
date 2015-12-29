@@ -54,7 +54,7 @@ public class RangeValueTest {
 		assertFalse(rangeValue1.equals(rangeValue2));
 		assertFalse(rangeValue1.equals(rangeValue3));
 		assertFalse(rangeValue1.equals(rangeValue4));
-		assertTrue(rangeValue1.equals(rangeValue5));
+		assertFalse(rangeValue1.equals(rangeValue5));
 		assertTrue(rangeValue1.equals(rangeValue1));
 	}
 	

@@ -58,7 +58,7 @@ public class GenstarCSVFile {
 					if (columns == 0) {
 						columns = reader.getColumnCount();
 						if (columns == 0) { throw new GenstarException("CSV file contains empty row."); }
-					} else if (reader.getColumnCount() != columns) {  throw new GenstarException("CSV file contains rows with different numbers of columns (row: " + rows + ")."); }
+					} else if (reader.getColumnCount() != columns) {  throw new GenstarException("CSV file contains rows with different numbers of columns (row: " + rows + "). File: " + csvFilePath); }
 					rows++;
 					
 					fileContent.add(Arrays.asList(reader.getValues()));
