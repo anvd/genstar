@@ -35,13 +35,24 @@ global {
 		create road from: shape_file_roads ;
 		
 
-		list miro_people_population <- frequency_distribution_population('../includes/population/people/People_Attributes.csv', '../includes/population/people/People_GenerationRules.csv', nb_of_people);
-		create people from: miro_people_population {
-			location <- any_location_in(one_of(building)); 
+		list miro_people_population <- frequency_distribution_population('../includes/population/people/Population.properties');
+		genstar_create synthetic_population: miro_people_population returns: created_people;
+		ask created_people as: people {
+			location <- any_location_in(one_of(building));
 		}
+		 
+//		create people {
+//			location <- any_location_in(one_of(building));
+//		}
+//		genstar_create synthetic_population: miro_people_population {
+//			location <- any_location_in(one_of(building));
+//		}
+//		create people from: miro_people_population {
+//			location <- any_location_in(one_of(building)); 
+//		}
 		
 		write 'Quick analysis of the generated people population:';
-		write 'Number of people: ' + string(length(miro_people_population) - 1);
+		write 'Number of people: ' + string(length(miro_people_population) - 3);
 		
 		list<string> categories <- [ 'C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7' ];
 		map<int, int> age_ranges <- [ 0::4, 5::17, 18::24, 25::34, 35::49, 50::64, 65::100 ];

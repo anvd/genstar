@@ -1,0 +1,44 @@
+Household Income,High,HouseholdSize,1,827
+Household Income,Low,HouseholdSize,1,845
+Household Income,High,HouseholdSize,2,882
+Household Income,Low,HouseholdSize,2,794
+Household Income,High,HouseholdSize,3,842
+Household Income,Low,HouseholdSize,3,791
+Household Income,High,HouseholdSize,4,809
+Household Income,Low,HouseholdSize,4,815
+Household Income,High,HouseholdSize,5,864
+Household Income,Low,HouseholdSize,5,839
+Household Income,High,HouseholdSize,6,814
+Household Income,Low,HouseholdSize,6,878
+HouseholdSize,1,Number Of Cars,0,411
+HouseholdSize,1,Number Of Cars,1,409
+HouseholdSize,1,Number Of Cars,2,414
+HouseholdSize,1,Number Of Cars,3,438
+HouseholdSize,2,Number Of Cars,0,418
+HouseholdSize,2,Number Of Cars,1,434
+HouseholdSize,2,Number Of Cars,2,392
+HouseholdSize,2,Number Of Cars,3,432
+HouseholdSize,3,Number Of Cars,0,412
+HouseholdSize,3,Number Of Cars,1,453
+HouseholdSize,3,Number Of Cars,2,385
+HouseholdSize,3,Number Of Cars,3,383
+HouseholdSize,4,Number Of Cars,0,402
+HouseholdSize,4,Number Of Cars,1,427
+HouseholdSize,4,Number Of Cars,2,398
+HouseholdSize,4,Number Of Cars,3,397
+HouseholdSize,5,Number Of Cars,0,430
+HouseholdSize,5,Number Of Cars,1,424
+HouseholdSize,5,Number Of Cars,2,423
+HouseholdSize,5,Number Of Cars,3,426
+HouseholdSize,6,Number Of Cars,0,429
+HouseholdSize,6,Number Of Cars,1,404
+HouseholdSize,6,Number Of Cars,2,458
+HouseholdSize,6,Number Of Cars,3,401
+Household Income,High,Number Of Cars,0,1268
+Household Income,High,Number Of Cars,1,1290
+Household Income,High,Number Of Cars,2,1225
+Household Income,High,Number Of Cars,3,1255
+Household Income,Low,Number Of Cars,0,1234
+Household Income,Low,Number Of Cars,1,1261
+Household Income,Low,Number Of Cars,2,1245
+Household Income,Low,Number Of Cars,3,1222

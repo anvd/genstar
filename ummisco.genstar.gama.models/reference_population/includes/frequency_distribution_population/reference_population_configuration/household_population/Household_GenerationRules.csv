@@ -1,0 +1,5 @@
+Name,File,Rule Type
+Size Distribution,../../includes/frequency_distribution_population/reference_population_configuration/household_population/Size_GenerationRule.csv,Frequency Distribution
+Size Income Distribution,../../includes/frequency_distribution_population/reference_population_configuration/household_population/Size_Income_GenerationRule.csv,Frequency Distribution
+Income Type Distribution,../../includes/frequency_distribution_population/reference_population_configuration/household_population/Income_Type_GenerationRule.csv,Frequency Distribution
+Income NumberOfCars Distribution,../../includes/frequency_distribution_population/reference_population_configuration/household_population/Income_NbOfCars_GenerationRule.csv,Frequency Distribution

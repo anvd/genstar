@@ -6,16 +6,13 @@
 model household_with_people
 
 global {
-	
-	int nb_of_people <- 14821;
-	int nb_of_households <- 6420;
 
 	init {
-		list miro_household_population <- population_from_csv('../includes/population/Household_Attributes.csv', '../includes/population/Household_GenerationRules.csv', nb_of_households);
-		create household from: miro_household_population returns: generated_households;
+		list miro_household_population <- frequency_distribution_population('../includes/population/household_with_people/Household_Population.properties');
+		genstar_create synthetic_population: miro_household_population returns: generated_households;
 		
-		list miro_people_population <- population_from_csv('../includes/population/People_Attributes.csv', '../includes/population/People_GenerationRules.csv', nb_of_people);
-		create people from: miro_people_population returns: generated_people;
+		list miro_people_population <- frequency_distribution_population('../includes/population/household_with_people/People_Population.properties');
+		genstar_create people synthetic_population: miro_people_population returns: generated_people;
 		
 		list<list> populations_to_link <- [ generated_households, generated_people ];
 		let linker_result <- link_populations('miro_household_size_linker', populations_to_link);

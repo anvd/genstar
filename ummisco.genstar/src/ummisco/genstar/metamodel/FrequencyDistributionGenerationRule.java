@@ -14,6 +14,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
+import ummisco.genstar.util.GenstarFactoryUtils;
 import ummisco.genstar.util.SharedInstances;
 
 import com.google.common.collect.Sets;
@@ -337,26 +338,6 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		return outputAttributes.get(order);
 	}
 		
-	private Map<AbstractAttribute, AttributeValue> buildAttributeValueMap(final List<AbstractAttribute> attributes, List<AttributeValue> values) throws GenstarException {
-		Map<AbstractAttribute, AttributeValue> retVal = new HashMap<AbstractAttribute, AttributeValue>();
-		
-		List<AbstractAttribute> copyAttributes = new ArrayList<AbstractAttribute>();
-		copyAttributes.addAll(attributes);
-		AbstractAttribute concernedAttr;
-		for (AttributeValue v : values) {
-			concernedAttr = null;
-			for (AbstractAttribute attr : copyAttributes) {
-				if (attr.containsInstanceOfAttributeValue(v)) { 
-					retVal.put(attr, v); 
-					concernedAttr = attr;
-					break;
-				}
-			}
-			copyAttributes.remove(concernedAttr);
-		}
-		
-		return retVal;
-	}
 
 	// FIXME clearly define how these objects should be generated automatically or explicitly/manually be invoked outside to be generated!!!
 	// 1. On object creation : -> the user invokes this method
@@ -374,7 +355,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		allAttributes.addAll(outputAttributes.values());
 		Set<List<AttributeValue>> cartesianSet = Sets.cartesianProduct(attributesPossibleValues);
 		for (List<AttributeValue> catesian : cartesianSet) {
-			attributeValuesFrequencies.add(new AttributeValuesFrequency(buildAttributeValueMap(allAttributes, catesian)));
+			attributeValuesFrequencies.add(new AttributeValuesFrequency(GenstarFactoryUtils.buildAttributeValueMap(allAttributes, catesian)));
 		}
 	}
 	

@@ -9,8 +9,8 @@ model people
 global {
 	
 	init {
-		list people_population <- ipf_single_population('../includes/people/ipf_configuration.properties');
-		create people from: people_population;
+		list people_population <- ipf_population('../includes/people/ipf_configuration.properties');
+		genstar_create synthetic_population: people_population;
 	}
 }
 

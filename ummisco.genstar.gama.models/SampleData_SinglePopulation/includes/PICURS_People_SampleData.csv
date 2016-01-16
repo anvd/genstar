@@ -1,4 +1,4 @@
-Age,Gender,Work
+age,gender,work
 18,true,ouvrier
 32,true,agriculteur
 40,false,ouvrier_agricole

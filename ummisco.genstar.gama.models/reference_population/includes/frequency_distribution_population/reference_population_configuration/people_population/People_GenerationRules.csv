@@ -1,0 +1,3 @@
+Name,File,Rule Type
+Age Gender Distribution,../../includes/frequency_distribution_population/reference_population_configuration/people_population/Age_Gender_GenerationRule.csv,Frequency Distribution
+Age Gender Work Distribution,../../includes/frequency_distribution_population/reference_population_configuration/people_population/Age_Gender_Work_GenerationRule.csv,Frequency Distribution

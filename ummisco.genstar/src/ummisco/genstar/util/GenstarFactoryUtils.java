@@ -13,6 +13,8 @@ import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import msi.gama.common.util.FileUtils;
+import msi.gama.runtime.IScope;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.GroupComponentSampleData;
 import ummisco.genstar.ipf.ISampleData;
@@ -146,7 +148,7 @@ public class GenstarFactoryUtils {
 		
 		public static final String ATTRIBUTES_PROPERTY = "ATTRIBUTES";
 		
-		public static final String ID_ATTRIBUTE_PROPERTY = "ID_ATTRIBUTE";
+		public static final String ID_ATTRIBUTE_PROPERTY = "ID_ATTRIBUTE"; // TODO remove as of not use?
 		
 		public static final String SAMPLE_DATA_PROPERTY = "SAMPLE_DATA";
 		
@@ -162,7 +164,7 @@ public class GenstarFactoryUtils {
 		
 		public static final String COMPONENT_ATTRIBUTES_PROPERTY = "COMPONENT_ATTRIBUTES";
 		
-		public static final String COMPONENT_ID_ATTRIBUTE_PROPERTY = "COMPONENT_ID_ATTRIBUTE";
+		public static final String COMPONENT_ID_ATTRIBUTE_PROPERTY = "COMPONENT_ID_ATTRIBUTE"; // TODO remove as of not use?
 		
 		public static final String GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_GROUP";
 		
@@ -199,6 +201,17 @@ public class GenstarFactoryUtils {
 		public static final String GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_GROUP";
 		
 		public static final String GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_COMPONENT";
+	}
+	
+	public static final class CONTROL_TOTALS_PROPERTIES {
+		
+		public static final String ATTRIBUTES_PROPERTY = "ATTRIBUTES";
+		
+		public static final String ID_ATTRIBUTE_PROPERTY = "ID_ATTRIBUTE";
+		
+		public static final String CONTROLLED_ATTRIBUTES_PROPERTY = "CONTROLLED_ATTRIBUTES";
+		
+		public static final String POPULATION_DATA_PROPERTY = "POPULATION_DATA";
 	}
 
 	
@@ -619,22 +632,22 @@ public class GenstarFactoryUtils {
 		List<String> sampleDataHeader = sampleDataFile.getHeaders();
 		SortedMap<Integer, AbstractAttribute> attributeIndexes = new TreeMap<Integer, AbstractAttribute>();
 		for (int col=0; col<sampleDataHeader.size(); col++) {
-			String attributeNameOnSample = sampleDataHeader.get(col);
-			AbstractAttribute attribute = generationRule.getAttributeByNameOnData(attributeNameOnSample);
+			String attributeNameOnEntity = sampleDataHeader.get(col);
+			AbstractAttribute attribute = generationRule.getAttributeByNameOnEntity(attributeNameOnEntity);
 			if (attribute != null) {
 				attributeIndexes.put(col, attribute);
-			}
+			};
 		}
 		
 		// 3.2. calculate the number of attribute values
-		List<List<String>> contents = sampleDataFile.getContent();
+		List<List<String>> sampleData = sampleDataFile.getContent();
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		Set<AttributeValuesFrequency> attributeValuesFrequencies = generationRule.getAttributeValuesFrequencies();
-		for (int row=0; row<contents.size(); row++) {
+		for (int row=0; row<sampleData.size(); row++) {
 			attributeValues.clear();
 			
 			for (int col : attributeIndexes.keySet()) {
-				String attributeValueString = contents.get(row).get(col);
+				String attributeValueString = sampleData.get(row).get(col);
 				
 				List<String> valueList = new ArrayList<String>();
 				
@@ -772,14 +785,14 @@ public class GenstarFactoryUtils {
 	}
 	
 	
-	public static final Map<String, String> writePopulationToCSVFile(final ISyntheticPopulation population, final Map<String, String> csvFilePathsByPopulationNames) throws GenstarException {
+	public static final Map<String, String> writePopulationToCSVFile(final IScope scope, final ISyntheticPopulation population, final Map<String, String> csvFilePathsByPopulationNames) throws GenstarException {
 		// parameters validation
 		if (population == null) { throw new GenstarException("Parameter population can not be null"); }
 		if (csvFilePathsByPopulationNames == null) { throw new GenstarException("Parameter csvFilePathsByPopulationNames can not be null"); }
 		
 		// build CsvWriters
 		Map<String, CsvWriter> csvWriters = new HashMap<String, CsvWriter>();
-		buildCsvWriters(population, csvWriters, csvFilePathsByPopulationNames);
+		buildCsvWriters(scope, population, csvWriters, csvFilePathsByPopulationNames);
 		
 		// write to csv files
 		writeToCsv(population, csvWriters);
@@ -792,7 +805,7 @@ public class GenstarFactoryUtils {
 		return csvFilePathsByPopulationNames;
 	}
 	
-	private static final void buildCsvWriters(final ISyntheticPopulation population, final Map<String, CsvWriter> csvWriters, 
+	private static final void buildCsvWriters(final IScope scope, final ISyntheticPopulation population, final Map<String, CsvWriter> csvWriters, 
 			final Map<String, String> csvFilePathsByPopulationNames) throws GenstarException {
 		try {
 			String populationName = population.getName();
@@ -801,7 +814,7 @@ public class GenstarFactoryUtils {
 			
 			// build writer
 			if (csvFilePath != null && writer == null) {
-				writer = new CsvWriter(csvFilePath);
+				writer = new CsvWriter(FileUtils.constructAbsoluteFilePath(scope, csvFilePath, false));
 				csvWriters.put(populationName, writer);
 				List<AbstractAttribute> attributes = population.getAttributes();
 				
@@ -816,7 +829,7 @@ public class GenstarFactoryUtils {
 				for (ISyntheticPopulation componentPopulation : e.getComponentPopulations()) {
 					String componentPopulationName = componentPopulation.getName();
 					if (csvWriters.get(componentPopulationName) == null && csvFilePathsByPopulationNames.get(componentPopulationName) != null) {
-						buildCsvWriters(componentPopulation, csvWriters, csvFilePathsByPopulationNames);
+						buildCsvWriters(scope, componentPopulation, csvWriters, csvFilePathsByPopulationNames);
 					}
 				}
 			}
@@ -994,4 +1007,26 @@ public class GenstarFactoryUtils {
 		
 		return null;
 	}
+	
+	public static Map<AbstractAttribute, AttributeValue> buildAttributeValueMap(final List<AbstractAttribute> attributes, List<AttributeValue> values) throws GenstarException {
+		Map<AbstractAttribute, AttributeValue> retVal = new HashMap<AbstractAttribute, AttributeValue>();
+		
+		List<AbstractAttribute> copyAttributes = new ArrayList<AbstractAttribute>();
+		copyAttributes.addAll(attributes);
+		AbstractAttribute concernedAttr;
+		for (AttributeValue v : values) {
+			concernedAttr = null;
+			for (AbstractAttribute attr : copyAttributes) {
+				if (attr.containsInstanceOfAttributeValue(v)) { 
+					retVal.put(attr, v); 
+					concernedAttr = attr;
+					break;
+				}
+			}
+			copyAttributes.remove(concernedAttr);
+		}
+		
+		return retVal;
+	}
+	
 }

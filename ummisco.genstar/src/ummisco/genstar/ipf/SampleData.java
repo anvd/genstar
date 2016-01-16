@@ -65,7 +65,7 @@ public class SampleData extends AbstractSampleData implements ISampleData { // T
 			if (!attributeOnSEPopulation.isEmpty()) {
 				StringBuffer missingAttributes = new StringBuffer();
 				
-				int size = attributeOnSEPopulation.size();
+				int size = 0;
 				for (String attrName : attributeOnSEPopulation) {
 					missingAttributes.append(attrName);
 					if (size < attributeOnSEPopulation.size() - 1) { missingAttributes.append(", "); }

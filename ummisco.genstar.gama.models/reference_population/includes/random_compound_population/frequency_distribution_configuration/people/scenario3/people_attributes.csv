@@ -1,0 +1,2 @@
+Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On Entity
+Work,work,string,Unique,agriculteur; artisant; conducteur; commercant; ecolier; employe_prive; enseignant; militaire; retraite; ouvrier; ouvrier_agricole; ouvrier_batiment; sans_activite,Unique

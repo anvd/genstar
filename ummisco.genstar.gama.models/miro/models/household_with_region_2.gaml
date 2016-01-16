@@ -7,7 +7,6 @@
 model household_with_region2
 
 global {
-	int nb_of_people <- 14821;
 	file bordeaux_shape_file <- file('../includes/gis/bordeaux/Tirage_2010_L93_region.shp');
 	file bordeaux_bounds <- file('../includes/gis/bordeaux/Bordeaux_Bounds.shp');
 	
@@ -16,8 +15,8 @@ global {
 	init {
 		create region from: bordeaux_shape_file with: [ regionID::int(read("2010")) ];
 
-		list miro_people_population <- population_from_csv('../includes/population/people_with_region_2/People_With_Region_2_Attributes.csv', '../includes/population/people_with_region_2/People_With_Region_2_GenerationRules.csv', nb_of_people);
-		create people from: miro_people_population;
+		list miro_people_population <- frequency_distribution_population('../includes/population/people_with_region_2/Population.properties');
+		genstar_create synthetic_population: miro_people_population;
 		
 		// Analysis
 		// 		criteria : Category & Zone

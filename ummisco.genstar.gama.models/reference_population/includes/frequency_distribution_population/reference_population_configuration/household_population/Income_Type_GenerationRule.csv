@@ -1,0 +1,7 @@
+Household Income:Input,Household Type:Output,Frequency
+High,type1,1
+High,type2,2
+High,type3,3
+Low,type1,3
+Low,type2,2
+Low,type3,1

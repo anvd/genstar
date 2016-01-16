@@ -64,10 +64,6 @@ public class MiroPopulationsLinker implements IGamaPopulationsLinker {
 		for (IMacroAgent household : householdPopulation) {
 			Integer householdSize = (Integer) household.getAttribute("householdSize");
 			
-			if (householdSize > 0) {
-				System.out.println("householdSize = " + householdSize);
-			}
-			
 			// GAML field name: "member_people"
 			IList<IMacroAgent> member_people = GamaListFactory.create(Types.AGENT);
 			

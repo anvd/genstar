@@ -9,9 +9,12 @@ import java.util.Map;
 import java.util.Set;
 
 import mockit.Deencapsulation;
+import mockit.Delegate;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
+import msi.gama.common.util.FileUtils;
+import msi.gama.runtime.IScope;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -410,7 +413,7 @@ public class GenstarFactoryUtilsTest {
 	}
 	
 
-	@Test public void testWritePopulationToCSVFile() throws GenstarException {
+	@Test public void testWriteSinglePopulationToCSVFile(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
 		
 		// test write single population
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testWritePopulationToCSVFile/singlePopulation/attributes.csv", true);
@@ -418,11 +421,22 @@ public class GenstarFactoryUtilsTest {
 		
 		Map<String, String> generatedSinglePopulationFilePaths = new HashMap<String, String>();
 		String singlePopulationName = "single population";
-		String singlePopulationOutputFile = "test_data/ummisco/genstar/util/testWritePopulationToCSVFile/singlePopulation/single_population.csv";
+		final String singlePopulationOutputFile = "test_data/ummisco/genstar/util/testWritePopulationToCSVFile/singlePopulation/single_population.csv";
 		generatedSinglePopulationFilePaths.put(singlePopulationName, singlePopulationOutputFile);
 		
+		new Expectations() {{
+			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
+			result = new Delegate() {
+				String delegate(IScope scope, String filePath, boolean mustExist) {
+					if (filePath.endsWith("/single_population.csv")) { return singlePopulationOutputFile; }
+
+					return null;
+				}
+			};
+		}};
+		
 		ISyntheticPopulation generatedSinglePopulation = GenstarFactoryUtils.generateRandomSinglePopulation(singlePopulationName, attributesFile, nbEntities);
-		Map<String, String> resultSingleFilePaths = GenstarFactoryUtils.writePopulationToCSVFile(generatedSinglePopulation, generatedSinglePopulationFilePaths);
+		Map<String, String> resultSingleFilePaths = GenstarFactoryUtils.writePopulationToCSVFile(scope, generatedSinglePopulation, generatedSinglePopulationFilePaths);
 		
 		assertTrue(resultSingleFilePaths.size() == 1);
 		assertTrue(resultSingleFilePaths.get(singlePopulationName).equals(singlePopulationOutputFile));
@@ -437,8 +451,10 @@ public class GenstarFactoryUtilsTest {
 		}
 		
 		assertTrue(singlePopOutputFile.getRows() == nbEntities + 1);
-		
-		
+	}
+	
+	
+	@Test public void testWriteCompoundPopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
 		// test write compound population
 		String groupPopulationName = "household";
 		GenstarCSVFile groupAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testWritePopulationToCSVFile/compoundPopulation/group_attributes.csv", true);
@@ -465,13 +481,25 @@ public class GenstarFactoryUtilsTest {
 			}
 		}
 		
-		String groupPopulationOutputFile = "test_data/ummisco/genstar/util/testWritePopulationToCSVFile/compoundPopulation/group_population.csv";
-		String componentPopulationOutputFile = "test_data/ummisco/genstar/util/testWritePopulationToCSVFile/compoundPopulation/component_population.csv";
+		final String groupPopulationOutputFile = "test_data/ummisco/genstar/util/testWritePopulationToCSVFile/compoundPopulation/group_population.csv";
+		final String componentPopulationOutputFile = "test_data/ummisco/genstar/util/testWritePopulationToCSVFile/compoundPopulation/component_population.csv";
 		Map<String, String> generatedCompoundPopulationFilePaths = new HashMap<String, String>();
 		generatedCompoundPopulationFilePaths.put(groupPopulationName, groupPopulationOutputFile);
 		generatedCompoundPopulationFilePaths.put(componentPopulationName, componentPopulationOutputFile);
 		
-		Map<String, String> resultCompoundFilePaths = GenstarFactoryUtils.writePopulationToCSVFile(generatedCompoundPopulation, generatedCompoundPopulationFilePaths);
+		new Expectations() {{
+			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
+			result = new Delegate() {
+				String delegate(IScope scope, String filePath, boolean mustExist) {
+					if (filePath.endsWith("/group_population.csv")) { return groupPopulationOutputFile; }
+					if (filePath.endsWith("/component_population.csv")) { return componentPopulationOutputFile; }
+
+					return null;
+				}
+			};
+		}};
+
+		Map<String, String> resultCompoundFilePaths = GenstarFactoryUtils.writePopulationToCSVFile(scope, generatedCompoundPopulation, generatedCompoundPopulationFilePaths);
 		
 		assertTrue(resultCompoundFilePaths.size() == 2);
 		assertTrue(resultCompoundFilePaths.get(groupPopulationName).equals(groupPopulationOutputFile));

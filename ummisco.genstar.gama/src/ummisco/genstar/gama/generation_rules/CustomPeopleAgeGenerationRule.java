@@ -125,4 +125,10 @@ public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
 		return null;
 	}
 
+	@Override
+	public AbstractAttribute getAttributeByNameOnEntity(
+			String attributeNameOnEntity) {
+		throw new UnsupportedOperationException("not yet implemented");
+	}
+
 }

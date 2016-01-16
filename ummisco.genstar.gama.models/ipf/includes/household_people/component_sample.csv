@@ -1,4 +1,4 @@
-Age,Gender,Work,Household_ID
+age,gender,work,householdID
 20,true,employe_prive,0
 22,true,enseignant,0
 17,false,conducteur,1

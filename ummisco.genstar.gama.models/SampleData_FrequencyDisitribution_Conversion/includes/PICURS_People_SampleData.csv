@@ -1,4 +1,4 @@
-Age,Gender,Work
+age,gender,work
 16:20,true,ouvrier
 31:50,true,agriculteur
 31:50,false,ouvrier_agricole

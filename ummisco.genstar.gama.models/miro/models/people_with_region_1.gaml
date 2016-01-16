@@ -6,12 +6,9 @@
 model people_with_region_1
 
 global {
-	int nb_of_people <- 14821;
-//	file grenoble_zone_shape_file <- file('../includes/gis/grenoble_less_detail/Tirage_2010_L93_region.shp');
 	file grenoble_zone_shape_file <- file('../includes/gis/grenoble_more_detail/OD_2010_OK_L93_region.shp');
 	
-	file grenoble_building_shape_file <- file('../includes/gis/grenoble_buildings/bati_categorieL93_region.shp');
-//	file grenoble_building_shape_file <- file('../includes/gis/grenoble_buildings_new/bati_zones.shp');
+	file grenoble_building_shape_file <- file('../includes/gis/grenoble_less_detail/Tirage_2010_L93_region.shp');
 	
 	file grenoble_bounds <- file('../includes/gis/grenoble_less_detail/Grenoble_Bounds.shp');
 	geometry shape <- envelope(grenoble_bounds);
@@ -20,7 +17,7 @@ global {
 		create region from: grenoble_zone_shape_file with: [ regionID::int(read("2010")) ];
 		create building from: grenoble_building_shape_file;
 
-		list miro_people_population <- population_from_csv('../includes/population/people_with_region_1/People_With_Region_Attributes.csv', '../includes/population/people_with_region_1/People_With_Region_GenerationRules.csv', nb_of_people);
+		list miro_people_population <- frequency_distribution_population('../includes/population/people_with_region_1/Population.properties');
 		create people from: miro_people_population;	
 		
 		// Analysis

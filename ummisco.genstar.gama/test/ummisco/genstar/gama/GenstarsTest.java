@@ -1,33 +1,28 @@
 package ummisco.genstar.gama;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import mockit.Delegate;
 import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import msi.gama.common.util.FileUtils;
-import msi.gama.common.util.GuiUtils;
-import msi.gama.kernel.experiment.IExperimentAgent;
 import msi.gama.runtime.IScope;
-import msi.gama.runtime.exceptions.GamaRuntimeException;
 import msi.gama.util.GamaFont;
 import msi.gama.util.IList;
 import msi.gama.util.file.GamaCSVFile;
-import msi.gama.util.file.GamaFile;
-import msi.gama.util.file.IFileMetaDataProvider;
 import msi.gama.util.file.IGamaFile;
 import msi.gama.util.matrix.GamaFloatMatrix;
 import msi.gama.util.matrix.GamaIntMatrix;
 import msi.gama.util.matrix.GamaObjectMatrix;
-import msi.gama.util.matrix.IMatrix;
 import msi.gama.util.path.GamaPath;
 import msi.gaml.compilation.AbstractGamlAdditions;
 import msi.gaml.compilation.IGamlAdditions;
@@ -51,15 +46,26 @@ import msi.gaml.types.GamaPointType;
 import msi.gaml.types.GamaSpeciesType;
 import msi.gaml.types.GamaStringType;
 import msi.gaml.types.GamaTopologyType;
-import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.ipf.ControlTotals;
+import ummisco.genstar.ipf.SampleDataGenerationRule;
 import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.RangeValue;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.util.CsvWriter;
+import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarFactoryUtils;
 
 @RunWith(JMockit.class)
@@ -479,6 +485,328 @@ public class GenstarsTest {
 		
 		assertTrue(resultFilePaths.size() == 1);
 		assertTrue(resultFilePaths.get(populationName).equals(peoplePopulationOutputFile));
+	}
+	
+	
+	@Test public void testGenerateControlTotalsDataSet1(@Mocked final IScope scope, @Mocked final FileUtils fileUtils, @Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
+		
+		// dataSet1
+		final String dataSet1AttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/group_attributes.csv";
+		final String dataSet1ControlledAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/group_controlled_attributes.csv";
+		final String dataSet1PopulationFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/group_sample.csv";
+		final String dataSet1ControlTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/generated_controlled_totals.csv";
+		
+		final String controlTotalPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/DataSet1_ControlTotals.properties";
+		
+		// /dataSet1/group_controlled_attributes.csv
+		new Expectations() {{
+			FileUtils.constructAbsoluteFilePath(scope, anyString, anyBoolean);
+			result = new Delegate() {
+				String delegate(IScope scope, String filePath, boolean mustExist) {
+					if (filePath.endsWith("/dataSet1/group_attributes.csv")) { return dataSet1AttributesFilePath; }
+					if (filePath.endsWith("/dataSet1/group_controlled_attributes.csv")) { return dataSet1ControlledAttributesFilePath; }
+					if (filePath.endsWith("/dataSet1/group_sample.csv")) { return dataSet1PopulationFilePath; }
+					if (filePath.endsWith("/dataSet1/generated_controlled_totals.csv")) { return dataSet1ControlTotalFilePath; }
+					if (filePath.endsWith("/dataSet1/DataSet1_ControlTotals.properties")) { return controlTotalPropertiesFilePath; }
+					
+					return null;
+				}
+			};
+		}};
+		
+		
+		// dataSet1
+		/*
+		 * group_controlled_attributes.csv
+			Household Size
+			Household Income
+			Number Of Cars
+		 */
+		
+		/*
+		 * group_sample.csv
+			householdID,householdSize,householdIncome,householdType,numberOfCars
+			0,2,High,type3,2
+			1,3,High,type1,1
+			2,3,High,type1,2
+			3,1,High,type2,3
+			4,3,High,type1,3
+			5,1,High,type3,3
+			6,1,High,type3,1
+			7,1,Low,type1,1
+			8,1,Low,type2,2
+			
+			==> generated_controlled_totals.csv
+			Household Size,1,Household Income,High,3
+			Household Size,2,Household Income,High,1
+			Household Size,3,Household Income,High,2
+			Household Size,1,Household Income,Low,2
+			Household Size,2,Household Income,Low,0
+			Household Size,3,Household Income,Low,0
+			Household Size,1,Number Of Cars,0,0
+			Household Size,1,Number Of Cars,1,2
+			Household Size,1,Number Of Cars,2,1
+			Household Size,1,Number Of Cars,3,2
+			Household Size,2,Number Of Cars,0,0
+			Household Size,2,Number Of Cars,1,0
+			Household Size,2,Number Of Cars,2,1
+			Household Size,2,Number Of Cars,3,0
+			Household Size,3,Number Of Cars,0,0
+			Household Size,3,Number Of Cars,1,1
+			Household Size,3,Number Of Cars,2,1
+			Household Size,3,Number Of Cars,3,1
+			Household Income,High,Number Of Cars,0,0
+			Household Income,High,Number Of Cars,1,2
+			Household Income,High,Number Of Cars,2,2
+			Household Income,High,Number Of Cars,3,3
+			Household Income,Low,Number Of Cars,0,0
+			Household Income,Low,Number Of Cars,1,1
+			Household Income,Low,Number Of Cars,2,1
+			Household Income,Low,Number Of Cars,3,0
+		 */
+		
+		Genstars.generateControlTotals(scope, controlTotalPropertiesFilePath, dataSet1ControlTotalFilePath);
+		final GenstarCSVFile dataSet1controlTotalFile = new GenstarCSVFile(dataSet1ControlTotalFilePath, false);
+		assertTrue(dataSet1controlTotalFile.getColumns() == 5);
+		assertTrue(dataSet1controlTotalFile.getRows() == 26);
+
+		// dataSet1
+		final ISyntheticPopulationGenerator dataSet1Generator = new SingleRuleGenerator("dummy generator");
+		GenstarCSVFile dataSet1AttributesFile = new GenstarCSVFile(dataSet1AttributesFilePath, true);
+		GenstarFactoryUtils.createAttributesFromCSVFile(dataSet1Generator, dataSet1AttributesFile);
+		
+		AbstractAttribute householdSizeAttr = dataSet1Generator.getAttributeByNameOnData("Household Size");
+		AttributeValue size1 = new UniqueValue(DataType.INTEGER, "1");
+		AttributeValue size2 = new UniqueValue(DataType.INTEGER, "2");
+		AttributeValue size3 = new UniqueValue(DataType.INTEGER, "3");
+		
+		AbstractAttribute householdIncomeAttr = dataSet1Generator.getAttributeByNameOnData("Household Income");
+		AttributeValue incomeLow = new UniqueValue(DataType.STRING, "Low");
+		AttributeValue incomeHigh = new UniqueValue(DataType.STRING, "High");
+		
+		AbstractAttribute nbOfCarsAttr = dataSet1Generator.getAttributeByNameOnData("Number Of Cars");
+		AttributeValue zeroCar = new UniqueValue(DataType.INTEGER, "0");
+		AttributeValue oneCar = new UniqueValue(DataType.INTEGER, "1");
+		AttributeValue twoCars = new UniqueValue(DataType.INTEGER, "2");
+		AttributeValue threeCars = new UniqueValue(DataType.INTEGER, "3");
+		
+		final List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
+		controlledAttributes.add(householdSizeAttr);
+		controlledAttributes.add(householdIncomeAttr);
+		controlledAttributes.add(nbOfCarsAttr);
+		
+
+		new Expectations() {{
+			generationRule.getGenerator();
+			result = dataSet1Generator;
+			
+			generationRule.getControlTotalsFile();
+			result = dataSet1controlTotalFile;
+			
+			generationRule.getControlledAttributes();
+			result = controlledAttributes;
+		}};
+		
+		
+		ControlTotals dataSet1ControlTotals = new ControlTotals(generationRule);
+		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
+		
+		// Household Size,1,Household Income,High,3
+		matchingCriteria.put(householdSizeAttr, size1);
+		matchingCriteria.put(householdIncomeAttr, incomeHigh);
+		List<AttributeValuesFrequency> avfs = dataSet1ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 3);
+		
+		// Household Size,2,Household Income,Low,0
+		matchingCriteria.put(householdSizeAttr, size2);
+		matchingCriteria.put(householdIncomeAttr, incomeLow);
+		avfs = dataSet1ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 0);
+		
+		// Household Size,1,Number Of Cars,1,2
+		matchingCriteria.clear();
+		matchingCriteria.put(householdSizeAttr, size1);
+		matchingCriteria.put(nbOfCarsAttr, oneCar);
+		avfs = dataSet1ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 2);
+		
+		// Household Size,2,Number Of Cars,0,0
+		matchingCriteria.put(householdSizeAttr, size2);
+		matchingCriteria.put(nbOfCarsAttr, zeroCar);
+		avfs = dataSet1ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 0);
+		
+		// Household Income,High,Number Of Cars,3,3
+		matchingCriteria.clear();
+		matchingCriteria.put(householdIncomeAttr, incomeHigh);
+		matchingCriteria.put(nbOfCarsAttr, threeCars);
+		avfs = dataSet1ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 3);
+		
+		// Household Income,Low,Number Of Cars,3,0
+		matchingCriteria.put(householdIncomeAttr, incomeLow);
+		avfs = dataSet1ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 0);
+	}
+	
+	
+	@Test public void testGenerateControlTotalsDataSet2(@Mocked final IScope scope, @Mocked final FileUtils fileUtils, @Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
+		
+		// dataSet2
+		final String dataSet2AttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/attributes.csv";
+		final String dataSet2ControlledAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/controlled_attributes.csv";
+		final String dataSet2PopulationFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/people_sample.csv";
+		final String dataSet2ControlTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/generated_controlled_totals.csv";
+		
+		final String controlTotalPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/DataSet2_ControlTotals.properties";
+		
+
+		new Expectations() {{
+			FileUtils.constructAbsoluteFilePath(scope, anyString, anyBoolean);
+			result = new Delegate() {
+				String delegate(IScope scope, String filePath, boolean mustExist) {
+					if (filePath.endsWith("/dataSet2/attributes.csv")) { return dataSet2AttributesFilePath; }
+					if (filePath.endsWith("/dataSet2/controlled_attributes.csv")) { return dataSet2ControlledAttributesFilePath; }
+					if (filePath.endsWith("/dataSet2/people_sample.csv")) { return dataSet2PopulationFilePath; }
+					if (filePath.endsWith("/dataSet2/generated_controlled_totals.csv")) { return dataSet2ControlTotalFilePath; }
+					if (filePath.endsWith("/dataSet2/DataSet2_ControlTotals.properties")) { return controlTotalPropertiesFilePath; }
+					
+					return null;
+				}
+			};
+		}};
+		
+		
+		// dataSet2
+		/*
+		 * controlled_attributes.csv
+				Age
+				Gender
+		 */
+		/*
+		 * people_sample.csv
+			age,gender,work
+			18,true,ouvrier
+			32,true,agriculteur
+			40,false,ouvrier_agricole
+			45,true,agriculteur
+			17,false,agriculteur
+			10,true,sans_activite
+			76,true,enseignant
+			70,false,sans_activite
+			40,false,conducteur
+			38,true,commercant
+			
+			==>
+			Age,0:15,1
+			Age,16:20,2
+			Age,21:25,0
+			Age,26:30,0
+			Age,31:50,5
+			Age,51:60,0
+			Age,61:75,1
+			Age,76:80,1
+			Age,81:100,0
+			Gender,true,6
+			Gender,false,4
+		 */
+		
+		Genstars.generateControlTotals(scope, controlTotalPropertiesFilePath, dataSet2ControlTotalFilePath);
+		final GenstarCSVFile dataSet2controlTotalFile = new GenstarCSVFile(dataSet2ControlTotalFilePath, false);
+		assertTrue(dataSet2controlTotalFile.getColumns() == 3);
+		assertTrue(dataSet2controlTotalFile.getRows() == 11);
+		
+		// dataSet2
+		final ISyntheticPopulationGenerator dataSet2Generator = new SingleRuleGenerator("dummy generator");
+		GenstarCSVFile dataSet2AttributesFile = new GenstarCSVFile(dataSet2AttributesFilePath, true);
+		GenstarFactoryUtils.createAttributesFromCSVFile(dataSet2Generator, dataSet2AttributesFile);
+		
+		AbstractAttribute ageAttr = dataSet2Generator.getAttributeByNameOnData("Age");
+		// 0:15; 16:20; 21:25; 26:30; 31:50; 51:60; 61:75; 76:80; 81:100
+		RangeValue zeroValue = new RangeValue(DataType.INTEGER, "0", "15");
+		RangeValue sixteenValue = new RangeValue(DataType.INTEGER, "16", "20");
+		RangeValue twentyOneValue = new RangeValue(DataType.INTEGER, "21", "25");
+		RangeValue twentySixValue = new RangeValue(DataType.INTEGER, "26", "30");
+		RangeValue thirtyOneValue = new RangeValue(DataType.INTEGER, "31", "50");
+		RangeValue fiftyOneValue = new RangeValue(DataType.INTEGER, "51", "60");
+		RangeValue sixtyOneValue = new RangeValue(DataType.INTEGER, "61", "75");
+		RangeValue seventySixValue = new RangeValue(DataType.INTEGER, "76", "80");
+		RangeValue eightyOneValue = new RangeValue(DataType.INTEGER, "81", "100");
+
+		
+		AbstractAttribute genderAttr = dataSet2Generator.getAttributeByNameOnData("Gender");
+		AttributeValue maleValue = new UniqueValue(DataType.BOOL, "true");
+		AttributeValue femaleValue = new UniqueValue(DataType.BOOL, "false");
+
+		final List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
+		controlledAttributes.add(ageAttr);
+		controlledAttributes.add(genderAttr);
+		
+
+		new Expectations() {{
+			generationRule.getGenerator();
+			result = dataSet2Generator;
+			
+			generationRule.getControlTotalsFile();
+			result = dataSet2controlTotalFile;
+			
+			generationRule.getControlledAttributes();
+			result = controlledAttributes;
+		}};
+		
+		
+		ControlTotals dataSet2ControlTotals = new ControlTotals(generationRule);
+		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
+		
+		// Age,0:15,1
+		matchingCriteria.put(ageAttr, zeroValue);
+		List<AttributeValuesFrequency> avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 1);
+		
+		// Age,21:25,0
+		matchingCriteria.put(ageAttr, twentyOneValue);
+		avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 0);
+		
+		// Age,31:50,5
+		matchingCriteria.put(ageAttr, thirtyOneValue);
+		avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 5);
+		
+		// Age,61:75,1
+		matchingCriteria.put(ageAttr, sixtyOneValue);
+		avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 1);
+		
+		// Age,81:100,0
+		matchingCriteria.put(ageAttr, eightyOneValue);
+		avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 0);
+		
+		// Gender,true,6
+		matchingCriteria.clear();
+		matchingCriteria.put(genderAttr, maleValue);
+		avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 6);
+		
+		// Gender,false,4
+		matchingCriteria.put(genderAttr, femaleValue);
+		avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
+		assertTrue(avfs.size() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 4);
+		
 	}
 
 }

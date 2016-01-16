@@ -9,8 +9,8 @@ global {
 	int nb_of_households <- 6420;
 	
 	init {
-		list miro_household_population <- population_from_csv('../includes/population/household/Household_Attributes.csv', '../includes/population/household/Household_GenerationRules.csv', nb_of_households);
-		create household from: miro_household_population;
+		list miro_household_population <- frequency_distribution_population('../includes/population/household/Population.properties');
+		genstar_create synthetic_population: miro_household_population;
 		
 		matrix input_data <- csv_file('../includes/population/household/Household_GenerationRule_Data.csv');
 		list input_frequency <- input_data column_at 1;

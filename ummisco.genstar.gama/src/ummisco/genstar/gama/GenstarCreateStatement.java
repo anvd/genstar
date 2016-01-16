@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import msi.gama.common.interfaces.IKeyword;
 import msi.gama.metamodel.agent.IAgent;
 import msi.gama.metamodel.population.IPopulation;
 import msi.gama.precompiler.GamlAnnotations.doc;
@@ -21,11 +22,13 @@ import msi.gama.util.GamaMap;
 import msi.gama.util.GamaMapFactory;
 import msi.gama.util.IList;
 import msi.gaml.compilation.IDescriptionValidator;
+import msi.gaml.compilation.ISymbol;
 import msi.gaml.descriptions.IDescription;
 import msi.gaml.descriptions.StatementDescription;
 import msi.gaml.expressions.IExpression;
 import msi.gaml.species.ISpecies;
 import msi.gaml.statements.AbstractStatementSequence;
+import msi.gaml.statements.RemoteSequence;
 import msi.gaml.types.IType;
 import ummisco.genstar.gama.GenstarCreateStatement.GenstarCreateValidator;
 import ummisco.genstar.metamodel.ISyntheticPopulation;
@@ -36,14 +39,19 @@ import ummisco.genstar.metamodel.ISyntheticPopulation;
 	kind = ISymbolKind.SEQUENCE_STATEMENT,
 	with_sequence = true,
 	with_args = false,
-	remote_context = false
+	remote_context = true
 )
 @inside(kinds = { ISymbolKind.BEHAVIOR, ISymbolKind.SEQUENCE_STATEMENT })
 @facets(value = {
-	@facet(name = GenstarCreateStatement.SYNTHETIC_POPULATION,
-		type = IType.LIST,
-		optional = false,
-		doc = @doc("an expression that evaluates to a list representing the Genstar synthetic population")) },
+			@facet(name = GenstarCreateStatement.SYNTHETIC_POPULATION,
+			type = IType.LIST,
+			optional = false,
+			doc = @doc("an expression that evaluates to a list representing the Genstar synthetic population")),
+			@facet(name = IKeyword.RETURNS,
+			type = IType.NEW_TEMP_ID,
+			optional = true,
+			doc = @doc("a new temporary variable name containing the list of created agents (a lsit even if only one agent has been created)"))
+		},
 		omissible = GenstarCreateStatement.SYNTHETIC_POPULATION)
 @validator(GenstarCreateValidator.class)
 public class GenstarCreateStatement extends AbstractStatementSequence {
@@ -64,12 +72,32 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 	
 	private IExpression syntheticPopulation;
 	
+	private final RemoteSequence sequence;
+
+	private final String returns;
+
 	
 	public GenstarCreateStatement(final IDescription desc) {
 		super(desc);
 		
 		syntheticPopulation = getFacet(SYNTHETIC_POPULATION);
+		sequence = new RemoteSequence(description);
+		sequence.setName("commands of genstar_create");
 		setName(GENSTAR_CREATE);
+		returns = getLiteral(IKeyword.RETURNS);
+	}
+
+	@Override
+	public void setChildren(final List<? extends ISymbol> com) {
+		sequence.setChildren(com);
+	}
+
+	@Override
+	public void enterScope(final IScope scope) {
+		if ( returns != null ) {
+			scope.addVarWithValue(returns, null);
+		}
+		super.enterScope(scope);
 	}
 
 	@Override
@@ -88,20 +116,32 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 		IList<GamaMap> inits = GamaListFactory.create();
 		inits.addAll(genstarPopulation.subList(3, genstarPopulation.size()));
 		
-		createAgents(null, scope, population, inits, groupReferences, componentReferences);
+		IList<? extends IAgent> createdAgents = createAgents(null, scope, population, inits, groupReferences, componentReferences);
 		
-		return null;
+		if ( !sequence.isEmpty() ) {
+			for ( final IAgent remoteAgent : createdAgents ) {
+				Object[] result = new Object[1];
+				if ( !scope.execute(sequence, remoteAgent, null, result) ) {
+					break;
+				}
+			}
+		}
+		
+		if ( returns != null ) {
+			scope.setVarValue(returns, createdAgents);
+		}
+
+		return createdAgents;
 	}
 	
 	private IList<? extends IAgent> createAgents(final IAgent groupAgent, final IScope scope, final IPopulation gamaPopulation, final IList<GamaMap> inits, 
 			final Map<String, String> groupReferences, final Map<String, String> componentReferences) {
 		
-		// each element of inits is a map containing
+		// each element of IList inits is a map containing
 		//		attribute values of an agent to be created
-		//		if an agent has component populations, then this in information is the last element of the list
+		//			if the agent has component populations, then the map contains an element with ISyntheticPopulation.class as key
 		
-		IList<? extends IAgent> retVal = GamaListFactory.create();
-		
+		IList<IAgent> outerMostCreatedAgents = GamaListFactory.create();
 		for (GamaMap element : inits) {
 			
 			// extract initial values
@@ -118,16 +158,13 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 			}
 			
 			// create agent
-			IList<? extends IAgent> newAgents = gamaPopulation.createAgents(scope, 1, initialValues, false);
-			retVal.addAll((Collection) newAgents);
+			IAgent newAgent = gamaPopulation.createAgents(scope, 1, initialValues, false).get(0);
+			outerMostCreatedAgents.add(newAgent);
 			
 			// establish "group" reference (of newAgents)
 			if (groupAgent != null && groupReferences.containsKey(groupAgent.getSpeciesName()) 
 					&& gamaPopulation.getSpecies().getVarNames().contains(groupReferences.get(groupAgent.getSpeciesName()))) {
-				for (IAgent agent : newAgents) {
-					// TODO verify that the corresponding IVariable is of appropriate type (i.e., correct species)
-					agent.setAttribute(groupReferences.get(groupAgent.getSpeciesName()), groupAgent);
-				}
+				newAgent.setAttribute(groupReferences.get(groupAgent.getSpeciesName()), groupAgent);
 			}
 
 			// create component agents if necessary
@@ -150,20 +187,16 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 					componentInitialValues.addAll(genstarComPopulation.subList(3, genstarComPopulation.size()));
 					
 					// recursively create component agents in GAMA
-					IList<? extends IAgent> componentAgents = this.createAgents(newAgents.get(0), scope, componentGamaPopulation, componentInitialValues, componentGroupReferences, componentComponentReferences);
+					IList<? extends IAgent> componentAgents = this.createAgents(newAgent, scope, componentGamaPopulation, componentInitialValues, componentGroupReferences, componentComponentReferences);
 					
 					// establish the link between the agent and its "component" agents
 					if (componentReferences.containsKey(componentGamaPopulation.getSpecies().getName())) {
-						for (IAgent agent : newAgents) {
-							// TODO verify that the corresponding IVariable is of container/list type
-							agent.setAttribute(componentReferences.get(componentGamaPopulation.getSpecies().getName()), componentAgents);
-						}
+						newAgent.setAttribute(componentReferences.get(componentGamaPopulation.getSpecies().getName()), componentAgents);
 					}
 				}
 			}
 		}
 		
-		return retVal;
-		
+		return outerMostCreatedAgents;
 	}
 }

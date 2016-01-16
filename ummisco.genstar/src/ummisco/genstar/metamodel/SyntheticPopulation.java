@@ -23,9 +23,9 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 	private Map<String, String> componentReferences = Collections.EMPTY_MAP; // population_name :: GAMA_attribute_name
 	
 
-	public SyntheticPopulation(final String name, final List<AbstractAttribute> attributes) {
-		if ( name == null ) { throw new IllegalArgumentException("'name' parameter can not be null"); }
-		if (attributes == null) { throw new IllegalArgumentException("'attributes' parameter can not be null"); }
+	public SyntheticPopulation(final String name, final List<AbstractAttribute> attributes) throws GenstarException {
+		if ( name == null ) { throw new GenstarException("Parameter name can not be null"); }
+		if (attributes == null) { throw new GenstarException("Parameter attributes can not be null"); }
 		
 		this.name = name;
 		this.attributes = new ArrayList<AbstractAttribute>();

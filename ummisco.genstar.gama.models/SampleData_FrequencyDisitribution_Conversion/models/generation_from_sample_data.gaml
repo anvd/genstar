@@ -10,42 +10,47 @@ global {
 	int scenario <- 0;
 	
 	init {
-		int nb_of_people <- 324;
-		string attribute_data <- '../includes/attributes.csv';
+		string attribute_data;
 		string sample_data <- '../includes/PICURS_People_SampleData.csv';
 		file distribution_result_file;
 		string generation_rule_file;
+		string population_property_file;
 		
-
 		switch scenario {
 			match 1 {
 				write ('Scenario 1');
-				string distribution_format1 <- '../includes/distributionFormat1.csv';
+				attribute_data <- '../includes/scenario1/attributes1.csv';
+				string distribution_format1 <- '../includes/scenario1/distributionFormat1.csv';
 				string resulting_distribution_file1 <- '../results/resultingDistribution1.csv';
 				distribution_result_file <- frequency_distribution_from_sample(attribute_data, sample_data, distribution_format1, resulting_distribution_file1);
 				generation_rule_file <- '../includes/generationRule1.csv';
+				population_property_file <- '../includes/scenario1/Population1.properties';
 			}
 			
 			match 2 {
 				write ('Scenario 2');
-				string distribution_format2 <- '../includes/distributionFormat2.csv';
+				attribute_data <- '../includes/scenario2/attributes2.csv';
+				string distribution_format2 <- '../includes/scenario2/distributionFormat2.csv';
 				string resulting_distribution_file2 <- '../results/resultingDistribution2.csv';
 				distribution_result_file <- frequency_distribution_from_sample(attribute_data, sample_data, distribution_format2, resulting_distribution_file2);
 				generation_rule_file <- '../includes/generationRule2.csv';
+				population_property_file <- '../includes/scenario2/Population2.properties';
 			}
 			
 			match 3 {
 				write ('Scenario 3');
-				string distribution_format3 <- '../includes/distributionFormat3.csv';
+				attribute_data <- '../includes/scenario3/attributes3.csv';
+				string distribution_format3 <- '../includes/scenario3/distributionFormat3.csv';
 				string resulting_distribution_file3 <- '../results/resultingDistribution3.csv';
 				distribution_result_file <- frequency_distribution_from_sample(attribute_data, sample_data, distribution_format3, resulting_distribution_file3);
 				generation_rule_file <- '../includes/generationRule3.csv';
+				population_property_file <- '../includes/scenario3/Population3.properties';
 			}
 		}
 		
 		
-		list people_population <- population_from_csv(attribute_data, generation_rule_file, nb_of_people);
-		create people from: people_population;
+		list people_population <- frequency_distribution_population(population_property_file);
+		genstar_create synthetic_population: people_population;
 		do analyse_result(distribution_result_file);
 	}	
 	
