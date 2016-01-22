@@ -3,8 +3,17 @@ package ummisco.genstar.ipf;
 import java.util.Arrays;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
 
 public class ThreeWayIteration extends IPFIteration {
+	
+	private static final int ROW_ATTRIBUTE_INDEX = 0;
+	
+	private static final int COLUMN_ATTRIBUTE_INDEX = 1;
+	
+	private static final int LAYER_ATTRIBUTE_INDEX = 2;
+	
 
 	private double[][][] data;
 	
@@ -36,14 +45,14 @@ public class ThreeWayIteration extends IPFIteration {
 		super(previousIteration.getIPF(), previousIteration.getIteration() + 1);
 		
 		this.data = data;
-		this.rowControls = (int[][]) previousIteration.getIPF().getControls(0);
-		this.columnControls = (int[][]) previousIteration.getIPF().getControls(1);
-		this.layerControls = (int[][]) previousIteration.getIPF().getControls(2);
+		this.rowControls = (int[][]) previousIteration.getIPF().getControls(ROW_ATTRIBUTE_INDEX);
+		this.columnControls = (int[][]) previousIteration.getIPF().getControls(COLUMN_ATTRIBUTE_INDEX);
+		this.layerControls = (int[][]) previousIteration.getIPF().getControls(LAYER_ATTRIBUTE_INDEX);
 		
 		computeMarginals();
 	}
 	
-	private void computeMarginals() {
+	private void computeMarginals() throws GenstarException {
 		// rowMarginals
 		rowMarginals = new double[data[0].length][data[0][0].length];
 		for (int col=0; col<data[0].length; col++) {
@@ -51,6 +60,19 @@ public class ThreeWayIteration extends IPFIteration {
 				double rowMarginal = 0;
 				for (int row=0; row<data.length; row++) { rowMarginal += data[row][col][layer]; }
 				rowMarginals[col][layer] = rowMarginal;
+				
+				if (rowMarginals[col][layer] == 0) {
+					AbstractAttribute rowAttribute = ipf.getControlledAttribute(0);
+					AbstractAttribute columnAttribute = ipf.getControlledAttribute(1);
+					AbstractAttribute layerAttribute = ipf.getControlledAttribute(2);
+					
+					AttributeValue columnValue = ipf.getAttributeValues(1).get(col);
+					AttributeValue layerValue = ipf.getAttributeValues(2).get(layer);
+					
+					throw new GenstarException("Zero marginal total on row attribute: " + rowAttribute.getNameOnData() 
+							+ ", columnValue: " + columnValue.toCSVString() + "(" + columnAttribute.getNameOnData() + ")"
+							+ ", layerValue: " + layerValue.toCSVString() + "(" + layerAttribute.getNameOnData() + ")");
+				}
 			}
 		}		
 		
@@ -61,6 +83,19 @@ public class ThreeWayIteration extends IPFIteration {
 				double columnMarginal = 0;
 				for (int col=0; col<data[0].length; col++) { columnMarginal += data[row][col][layer]; }
 				columnMarginals[row][layer] = columnMarginal;
+				
+				if (columnMarginal == 0) {
+					AbstractAttribute rowAttribute = ipf.getControlledAttribute(0);
+					AbstractAttribute columnAttribute = ipf.getControlledAttribute(1);
+					AbstractAttribute layerAttribute = ipf.getControlledAttribute(2);
+					
+					AttributeValue rowValue = ipf.getAttributeValues(0).get(row);
+					AttributeValue layerValue = ipf.getAttributeValues(2).get(layer);
+					
+					throw new GenstarException("Zero marginal total on column attribute: " + columnAttribute.getNameOnData() 
+							+ ", rowValue: " + rowValue.toCSVString() + "(" + rowAttribute.getNameOnData() + ")"
+							+ ", layerValue: " + layerValue.toCSVString() + "(" + layerAttribute.getNameOnData() + ")");
+				}
 			}
 		}
 		
@@ -71,6 +106,19 @@ public class ThreeWayIteration extends IPFIteration {
 				double layerMarginal = 0;
 				for (int layer=0; layer<data[0][0].length; layer++) { layerMarginal += data[row][col][layer]; }
 				layerMarginals[row][col] = layerMarginal; 
+				
+				if (layerMarginal == 0) {
+					AbstractAttribute rowAttribute = ipf.getControlledAttribute(0);
+					AbstractAttribute columnAttribute = ipf.getControlledAttribute(1);
+					AbstractAttribute layerAttribute = ipf.getControlledAttribute(2);
+					
+					AttributeValue rowValue = ipf.getAttributeValues(0).get(row);
+					AttributeValue columnValue = ipf.getAttributeValues(1).get(col);
+					
+					throw new GenstarException("Zero marginal total on layer attribute: " + layerAttribute.getNameOnData() 
+							+ ", rowValue: " + rowValue.toCSVString() + "(" + rowAttribute.getNameOnData() + ")"
+							+ ", columnValue: " + columnValue.toCSVString() + "(" + columnAttribute.getNameOnData() + ")");
+				}
 			}
 		}
 	}

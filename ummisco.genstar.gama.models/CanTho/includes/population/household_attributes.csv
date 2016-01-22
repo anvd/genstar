@@ -1,0 +1,4 @@
+Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On Entity
+Household Size,householdSize,int,Unique,1;2;3;4;5;6;7;8;9,Unique
+Household Type,householdType,string,Unique,permanent;semi-permanent;less-permanent;simple;not-stated,Unique
+Living Place,livingPlace,string,Unique,urban;rural,Unique

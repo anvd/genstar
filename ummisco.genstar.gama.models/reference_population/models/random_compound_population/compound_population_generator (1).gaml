@@ -49,8 +49,8 @@ global {
 		string base_sample_folder <- '../../includes/random_compound_population/generated_populations/extracted_sample/';
 		string sample_household_population_base_name <- '_household_population.csv';
 		string sample_people_population_base_name <- '_people_population.csv';
-		list<string> percent_names <- [ '1_percent', '5_percent', '10_percent', '30_percent', '50_percent' ];
-		list<int> percentages <- [ 1, 5, 10, 30, 50 ];
+		list<string> percent_names <- [ '0.5_percent', '1_percent', '5_percent', '10_percent', '30_percent' ];
+		list<float> percentages <- [ 0.5, 1, 5, 10, 30 ];
 		
 		list population_header <- copy_between(generated_population, 0, 3);
 		list core_population <- copy_between(generated_population, 3, length(generated_population));
@@ -69,7 +69,7 @@ global {
 		
 		loop i from: 0 to: (length(percentages) - 1) step: 1 {
 			string percent_name <- percent_names[i];
-			int percentage <- percentages[i];
+			float percentage <- percentages[i];
 			int nbOfSampleEntity <- int(float(core_population_size) * float(percentage / 100));
 
 			write 'Starts extracting ' + percentage + ' percents sample, ' + nbOfSampleEntity + ' entities out of ' + core_population_size;

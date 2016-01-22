@@ -58,7 +58,9 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 	}
 	
 	@Override public void setNbOfEntities(final int nbOfEntities) {
-		if (nbOfEntities <= 0) { throw new IllegalArgumentException("'nbOfEntities' must be a positive integer"); }
+		if (nbOfEntities <= 0) { 
+			throw new IllegalArgumentException("'nbOfEntities' must be a positive integer"); 
+		}
 		this.nbOfEntities = nbOfEntities;
 	}
 

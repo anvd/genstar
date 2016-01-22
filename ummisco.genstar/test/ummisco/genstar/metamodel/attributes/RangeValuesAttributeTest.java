@@ -89,13 +89,22 @@ public class RangeValuesAttributeTest {
 		assertTrue(attr.containsInstanceOfAttributeValue(rangeValue));
 	}
 
-	@Test public void testCastDefaultValue() throws GenstarException {
+	@Test public void testDefaultValueOnEntity() throws GenstarException {
 		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER, UniqueValue.class);
 		
-		assertTrue(attr.getDefaultValue() instanceof UniqueValue);
-		assertTrue(attr.getDefaultValue().isValueMatched(new UniqueValue(DataType.INTEGER)));
+		assertTrue(attr.getDefaultValueOnEntity() instanceof UniqueValue);
+		assertTrue(attr.getDefaultValueOnEntity().isValueMatched(new UniqueValue(DataType.INTEGER)));
 	}
+	
+	@Test public void testDefaultValueOnData() throws GenstarException {
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER, UniqueValue.class);
+		
+		assertTrue(attr.getDefaultValueOnData() instanceof RangeValue);
+		assertTrue(attr.getDefaultValueOnData().isValueMatched(new RangeValue(DataType.INTEGER, "0", "0")));
+	}
+	
 	
 	@Test public void testFindCorrespondingAttributeValue() throws GenstarException {
 		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);

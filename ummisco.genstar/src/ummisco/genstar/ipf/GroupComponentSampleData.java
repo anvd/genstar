@@ -8,6 +8,8 @@ import java.util.Map;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
 
 public class GroupComponentSampleData extends AbstractSampleData implements ISampleData {
 	
@@ -20,6 +22,8 @@ public class GroupComponentSampleData extends AbstractSampleData implements ISam
 	private AbstractAttribute groupIdAttributeOnComponentEntity;
 	
 	private SampleEntityPopulation sampleEntityPopulation;
+	
+	private Map<String, Integer> populationIDs;
 	
 	
 	public GroupComponentSampleData(final ISampleData groupSampleData, final ISampleData componentSampleData, 
@@ -90,4 +94,51 @@ public class GroupComponentSampleData extends AbstractSampleData implements ISam
 	public SampleEntityPopulation getSampleEntityPopulation() {
 		return sampleEntityPopulation;
 	}
+
+	@Override
+	public void recodeIdAttributes(final SampleEntity targetEntity) throws GenstarException {
+		String targetEntityPopulationName = targetEntity.getPopulation().getName();
+		
+		Map<String, AttributeValue> attributeValues = new HashMap<String, AttributeValue>();
+		if (targetEntityPopulationName.equals(groupSampleData.getSampleEntityPopulation().getName())) {
+			AttributeValue groupIdValueOnGroup = targetEntity.getAttributeValueOnEntity(groupIdAttributeOnGroupEntity.getNameOnEntity());
+			if (groupIdValueOnGroup == null) { throw new GenstarException("No attribute value found for " + groupIdAttributeOnGroupEntity.getNameOnEntity() + " attribute on " + groupSampleData.getSampleEntityPopulation().getName() + " name."); }
+			
+			int recodedID = nextIdValue(targetEntityPopulationName);
+			AttributeValue recodedIdValue = new UniqueValue(DataType.INTEGER, Integer.toString(recodedID));
+			attributeValues.clear();
+			attributeValues.put(groupIdAttributeOnGroupEntity.getNameOnEntity(), recodedIdValue);
+			
+			targetEntity.setAttributeValuesOnEntity(attributeValues); // recode ID of group entity
+			
+			// recode ID of component entities
+			SampleEntityPopulation componentPopulation = targetEntity.getComponentPopulation(componentSampleData.getSampleEntityPopulation().getName());
+			if (componentPopulation != null) {
+				for (SampleEntity componentEntity : componentPopulation.getSampleEntities()) {
+					AttributeValue groupIdValueOnComponent = componentEntity.getAttributeValueOnEntity(groupIdAttributeOnComponentEntity.getNameOnEntity());
+					if (groupIdValueOnComponent == null) {}
+					
+					attributeValues.clear();
+					attributeValues.put(groupIdAttributeOnComponentEntity.getNameOnEntity(), recodedIdValue);
+					
+					componentEntity.setAttributeValuesOnEntity(attributeValues);
+				}
+			}
+			
+		} else {
+			throw new GenstarException("Unrecognized population of targetEntity: " + targetEntity.getPopulation().getName());
+		}
+	}
+	
+	private int nextIdValue(final String populationName) throws GenstarException {
+		if (populationName == null || populationName.isEmpty()) { throw new GenstarException("Parameter populationName can be neither null nor empty"); }
+		if (populationIDs == null) { populationIDs = new HashMap<String, Integer>(); }
+		
+		Integer nextId = populationIDs.get(populationName);
+		if (nextId == null) { nextId = 0; }
+		populationIDs.put(populationName, nextId + 1);
+
+		return nextId;
+	}
+	
 }

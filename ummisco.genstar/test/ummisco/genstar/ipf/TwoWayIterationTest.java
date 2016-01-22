@@ -56,6 +56,10 @@ public class TwoWayIterationTest {
 		new TwoWayIteration(ipf);
 	}
 	
+	@Test public void testInitializeObjectWithZeroMarginals(@Mocked final ThreeWayIPF ipf) throws GenstarException {
+		fail("Not yet implemented");
+	}
+
 	@Test(expected = GenstarException.class) public void testInitializeObjectWithNullRowControls(@Mocked final TwoWayIPF ipf) throws GenstarException {
 		final double[][] data = {
 				{ 1, 2 },

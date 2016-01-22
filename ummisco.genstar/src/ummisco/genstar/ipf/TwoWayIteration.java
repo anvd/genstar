@@ -3,6 +3,8 @@ package ummisco.genstar.ipf;
 import java.util.Arrays;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
 
 public class TwoWayIteration extends IPFIteration {
 	
@@ -47,6 +49,13 @@ public class TwoWayIteration extends IPFIteration {
 			double rowTotal = 0;
 			for (int column=0; column<columnControls.length; column++) { rowTotal += data[row][column]; }
 			rowMarginals[row] = rowTotal;
+			
+			if (rowMarginals[row] == 0) {
+				AbstractAttribute rowAttribute = ipf.getControlledAttribute(0);
+				AttributeValue rowValue = ipf.getAttributeValues(0).get(row);
+				
+				throw new GenstarException("Zero marginal total on row attribute: " + rowAttribute.getNameOnData() + " rowValue: " + rowValue.toCSVString());
+			}
 		}
 		
 		columnMarginals = new double[columnControls.length];
@@ -54,6 +63,13 @@ public class TwoWayIteration extends IPFIteration {
 			double columnTotal = 0;
 			for (int row=0; row<rowControls.length; row++) { columnTotal += data[row][column]; }
 			columnMarginals[column] = columnTotal;
+			
+			if (columnMarginals[column] == 0) {
+				AbstractAttribute columnAttribute = ipf.getControlledAttribute(1);
+				AttributeValue columnValue = ipf.getAttributeValues(1).get(column);
+
+				throw new GenstarException("Zero marginal total on column attribute: " + columnAttribute.getNameOnData() + " rowValue: " + columnValue.toCSVString());
+			}
 		}
 	}
 

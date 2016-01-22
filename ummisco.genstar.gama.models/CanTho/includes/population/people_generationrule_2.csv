@@ -1,0 +1,19 @@
+Gender:Input,District:Output,Frequency
+true,Ninh Kieu,116700
+true,O Mon,65232
+true,Binh Thuy,54314
+true,Cai Rang,42617
+true,Thot Not,79932
+true,Vinh Thanh,57153
+true,Co Do,62996
+true,Thoi Lai,61870
+true,Phong Dien,49928
+false,Ninh Kieu,127365
+false,O Mon,65042
+false,Binh Thuy,56992
+false,Cai Rang,43711
+false,Thot Not,79529
+false,Vinh Thanh,55735
+false,Co Do,61269
+false,Thoi Lai,59451
+false,Phong Dien,49739

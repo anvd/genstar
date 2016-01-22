@@ -108,12 +108,14 @@ public class SampleDataGenerationRule extends GenerationRule {
 			for (int agentNo=0; agentNo<selectProba.getFrequency(); agentNo++) {
 				int selectedSampleEntityIndex = SharedInstances.RandomNumberGenerator.nextInt(selectedSampleCategory.size());
 				SampleEntity sourceSampleEntity = selectedSampleCategory.get(selectedSampleEntityIndex);
-				generateInternalSampleEntity(sourceSampleEntity, internalSampleEntityPopulation);
+				
+				SampleEntity targetEntity = generateInternalSampleEntity(sourceSampleEntity, internalSampleEntityPopulation);
+				sampleData.recodeIdAttributes(targetEntity);
 			}
 		}
 	}
 	
-	private void generateInternalSampleEntity(final SampleEntity sourceSampleEntity, final SampleEntityPopulation targetSamplePopulation) throws GenstarException {
+	private SampleEntity generateInternalSampleEntity(final SampleEntity sourceSampleEntity, final SampleEntityPopulation targetSamplePopulation) throws GenstarException {
 		SampleEntity targetSampleEntity = targetSamplePopulation.createSampleEntity(sourceSampleEntity.getAttributeValuesOnEntity());
 		
 		List<SampleEntityPopulation> sourceComponentPopulations = new ArrayList<SampleEntityPopulation>(sourceSampleEntity.getComponentSampleEntityPopulations().values());
@@ -126,6 +128,8 @@ public class SampleDataGenerationRule extends GenerationRule {
 				generateInternalSampleEntity(sourceComponentEntity, tagetComponentSamplePopulation);
 			}
 		}
+		
+		return targetSampleEntity;
 	}
 
 	/**

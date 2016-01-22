@@ -123,6 +123,14 @@ public class ThreeWayIPF extends IPF {
 		}
 	}
 	
+	@Override
+	public AbstractAttribute getControlledAttribute(final int dimension) throws GenstarException {
+		if (dimension == 0) { return rowAttribute; }
+		if (dimension == 1) { return columnAttribute; }
+		if (dimension == 2) { return layerAttribute; }
+		
+		throw new GenstarException("Invalid dimension value (accepted values: 0, 1, 2).");
+	}
 
 	@Override
 	public List<AttributeValue> getAttributeValues(final int dimension) throws GenstarException {

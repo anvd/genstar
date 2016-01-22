@@ -32,7 +32,7 @@ public class SampleEntity { // TODO in the future, remove this class, use Entity
 		}
 		
 		for (String attrNameOnEntity : values.keySet()) {
-			if (attributeValuesOnEntity.containsKey(attrNameOnEntity)) { 
+			if (attributeValuesOnEntity.containsKey(attrNameOnEntity)) {
 				AbstractAttribute attribute = population.getAttributebyNameOnEntity(attrNameOnEntity);
 				
 				if (attribute != null) {

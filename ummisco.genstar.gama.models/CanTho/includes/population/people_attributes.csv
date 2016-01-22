@@ -1,0 +1,5 @@
+Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On Entity
+Gender,gender,bool,Unique,true; false,Unique
+Age,age,int,Range,0:0; 1:4; 5:17; 18:24; 25:34; 35:49; 50:64; 65:100,Unique
+Living Place,livingPlace,string,Unique,urban;rural,Unique
+District,district,string,Unique,Ninh Kieu;O Mon;Binh Thuy;Cai Rang;Thot Not;Vinh Thanh;Co Do;Thoi Lai;Phong Dien,Unique

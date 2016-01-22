@@ -1,0 +1,12 @@
+Steps:
+1. Run “compound_population_generator (1).gaml”: 
+	Configure the number of households to generate in “reference_population_configuration/ReferencePopulation.properties”. 
+	Note: min 20000 household, min sample percentage: 0.5%
+	
+2. Run “control_totals_generator (2).gaml” to generate the control total from the generated populations
+
+3. Run “frequency_distribution_generator (2).gaml” to generate the frequency distribution from the generated populations.
+
+4. Run generator_from_control_totals (3).gaml” to generate the populations from the samples and control totals
+
+5. Run “generator_from_frequency_distribution (3).gaml” to (re-)generate the populations from the (generated) frequency distribution

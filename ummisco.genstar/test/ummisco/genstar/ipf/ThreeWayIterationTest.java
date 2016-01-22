@@ -75,7 +75,11 @@ public class ThreeWayIterationTest {
 		}
 	}
 	
-	
+	@Test public void testInitializeObjectWithZeroMarginals(@Mocked final ThreeWayIPF ipf) throws GenstarException {
+		fail("Not yet implemented");
+	}
+
+		
 	@Test public void testNextIteration(@Mocked final ThreeWayIPF ipf) throws GenstarException {
 		
 		// data[2][3][4]

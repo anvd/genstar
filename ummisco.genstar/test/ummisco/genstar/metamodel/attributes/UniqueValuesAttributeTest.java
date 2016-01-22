@@ -173,33 +173,42 @@ public class UniqueValuesAttributeTest {
 		assertTrue(attr.getInstanceOfAttributeValue(testValue1).equals(testValue));
 	}
 	
-	
-	@Test public void testDefaultAttributeValue() throws GenstarException {
+	@Test public void testGetDefaultValueOnEntity() throws GenstarException {
 		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 
 		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER);
-		assertTrue(attribute1.getDefaultValue() instanceof UniqueValue);
-		assertTrue(attribute1.getDefaultValue().isValueMatched(new UniqueValue(DataType.INTEGER)));
-		
-		AttributeValue defaultValue1 = new UniqueValue(DataType.INTEGER, "1");
-		attribute1.setDefaultValue(defaultValue1);
-		assertTrue(attribute1.getDefaultValue().equals(defaultValue1));
-		
-		AttributeValue defaultValue2 = new RangeValue(DataType.INTEGER, "1", "2");
-		
-		exception.expect(GenstarException.class);
+		assertTrue(attribute1.getDefaultValueOnEntity() instanceof UniqueValue);
+		assertTrue(attribute1.getDefaultValueOnEntity().isValueMatched(new UniqueValue(DataType.INTEGER)));
 
-		attribute1.setDefaultValue(defaultValue2);
-		assertTrue(attribute1.getDefaultValue().equals(defaultValue2));
-		
-		attribute1.setDefaultValue(null);
+		UniqueValuesAttribute attribute2 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER, RangeValue.class);
+		assertTrue(attribute2.getDefaultValueOnEntity() instanceof RangeValue);
+		assertTrue(attribute2.getDefaultValueOnEntity().isValueMatched(new RangeValue(DataType.INTEGER)));
 	}
 	
-	@Test public void testCastDefaultValue() throws GenstarException {
+	@Test public void testGetDefaultValueOnData() throws GenstarException {
 		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 
-		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER, RangeValue.class);
-		assertTrue(attribute1.getDefaultValue() instanceof RangeValue);
-		assertTrue(attribute1.getDefaultValue().isValueMatched(new RangeValue(DataType.INTEGER)));
+		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER);
+		assertTrue(attribute1.getDefaultValueOnData() instanceof UniqueValue);
+		assertTrue(attribute1.getDefaultValueOnData().isValueMatched(new UniqueValue(DataType.INTEGER)));
+
+		UniqueValuesAttribute attribute2 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER, RangeValue.class);
+		assertTrue(attribute2.getDefaultValueOnData() instanceof UniqueValue);
+		assertTrue(attribute2.getDefaultValueOnData().isValueMatched(new UniqueValue(DataType.INTEGER)));
+	}
+	
+	@Test public void testSetDefaultValue() throws GenstarException {
+		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		
+		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER);
+
+		AttributeValue defaultValue1 = new UniqueValue(DataType.INTEGER, "1");
+		attribute1.setDefaultValue(defaultValue1);
+		assertTrue(attribute1.getDefaultValueOnEntity().equals(defaultValue1));
+		assertTrue(attribute1.getDefaultValueOnData().equals(defaultValue1));
+
+		AttributeValue defaultValue2 = new RangeValue(DataType.INTEGER, "1", "2");
+		exception.expect(GenstarException.class);
+		attribute1.setDefaultValue(defaultValue2);
 	}
 }

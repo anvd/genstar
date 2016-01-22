@@ -114,8 +114,12 @@ public abstract class AbstractAttribute implements AttributeValueSet {
 		this.castDefaultValue = defaultValue.cast(valueClassOnEntity);
 	}
 	
-	public AttributeValue getDefaultValue() {
+	public AttributeValue getDefaultValueOnEntity() {
 		return castDefaultValue;
+	}
+	
+	public AttributeValue getDefaultValueOnData() {
+		return defaultValue;
 	}
 	
 	public int getAttributeID() {

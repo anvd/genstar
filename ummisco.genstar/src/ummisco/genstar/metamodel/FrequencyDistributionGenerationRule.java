@@ -402,7 +402,8 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		if (total == 0) {
 			for (int order=0; order < outputAttributes.size(); order++) {
 				outputAttribute = outputAttributes.get(order);
-				entity.setAttributeValueOnData(outputAttribute.getNameOnData(), outputAttribute.getDefaultValue());
+//				entity.setAttributeValueOnData(outputAttribute.getNameOnData(), outputAttribute.getDefaultValue());
+				entity.setAttributeValueOnData(outputAttribute.getNameOnData(), outputAttribute.getDefaultValueOnData());
 			}
 			
 			return;

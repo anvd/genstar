@@ -116,4 +116,9 @@ public class SampleData extends AbstractSampleData implements ISampleData { // T
 	public SampleEntityPopulation getSampleEntityPopulation() {
 		return sampleEntityPopulation;
 	}
+
+	@Override
+	public void recodeIdAttributes(final SampleEntity targetEntity) throws GenstarException {
+		// TODO find the (only) ID attribute then recode it
+	}
 }

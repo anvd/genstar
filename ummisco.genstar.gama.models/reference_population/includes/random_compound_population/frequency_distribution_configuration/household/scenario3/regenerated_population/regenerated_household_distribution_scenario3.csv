@@ -1,13 +1,13 @@
 HouseholdSize:Output,Household Income:Output,Frequency
-1,High,830
-1,Low,803
-2,High,839
-2,Low,845
-3,High,813
-3,Low,793
-4,High,871
-4,Low,787
-5,High,823
-5,Low,899
-6,High,904
-6,Low,793
+1,High,1631
+1,Low,1767
+2,High,1641
+2,Low,1654
+3,High,1574
+3,Low,1665
+4,High,1723
+4,Low,1707
+5,High,1703
+5,Low,1731
+6,High,1662
+6,Low,1542

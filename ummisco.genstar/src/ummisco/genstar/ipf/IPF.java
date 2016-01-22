@@ -3,6 +3,7 @@ package ummisco.genstar.ipf;
 import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 
@@ -39,6 +40,8 @@ public abstract class IPF {
 	public abstract <T> T getData();
 	
 	public abstract <K> K getControls(final int dimension) throws GenstarException;
+	
+	public abstract AbstractAttribute getControlledAttribute(final int dimension) throws GenstarException;
 		
 	public abstract List<AttributeValue> getAttributeValues(final int dimension) throws GenstarException;
 	

@@ -114,6 +114,7 @@ public class TwoWayIPF extends IPF {
 		}		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public double[][] getData() {
 		double[][] copy = new double[data.length][data[0].length];
@@ -122,12 +123,22 @@ public class TwoWayIPF extends IPF {
 		return copy;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public int[] getControls(final int dimension) throws GenstarException {
 		if (dimension == 0) { return rowControls; }
 		if (dimension == 1) { return columnControls; }
 		throw new GenstarException("Invalid 'dimension' value (valid values: 0, 1)");
 	}
+	
+	@Override
+	public AbstractAttribute getControlledAttribute(final int dimension) throws GenstarException {
+		if (dimension == 0) { return rowAttribute; }
+		if (dimension == 1) { return columnAttribute; }
+		
+		throw new GenstarException("Invalid dimension value (accepted values: 0, 1).");
+	}
+	
 	
 	@Override
 	public List<AttributeValue> getAttributeValues(final int dimension) throws GenstarException {

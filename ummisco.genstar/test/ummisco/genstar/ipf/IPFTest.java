@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 
 @RunWith(JMockit.class)
 public class IPFTest {
@@ -22,12 +23,14 @@ public class IPFTest {
 
 		public void fit() {}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public Object getData() {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public Object getControls(int dimension) throws GenstarException {
 			// TODO Auto-generated method stub
@@ -50,6 +53,13 @@ public class IPFTest {
 		public void printDebug() throws GenstarException {
 			// TODO Auto-generated method stub
 			
+		}
+
+		@Override
+		public AbstractAttribute getControlledAttribute(int dimension)
+				throws GenstarException {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 
