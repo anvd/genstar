@@ -127,7 +127,7 @@ public class UniqueValue extends AttributeValue {
 	}
 
 	@Override
-	public String toCSVString() {
+	public String toCsvString() {
 		return stringValue;
 	}
 

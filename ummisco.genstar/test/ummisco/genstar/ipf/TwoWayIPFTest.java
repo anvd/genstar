@@ -101,7 +101,6 @@ public class TwoWayIPFTest {
 	
 	// "data" verification
 	@Test public void testDataIsInitializedCorrectly() throws GenstarException {
-//		double[][] data = Deencapsulation.getField(ipf, "data");
 		double[][] data = ipf.getData();
 				
 		assertTrue(data.length == rowAttributeValues.size());
@@ -127,9 +126,9 @@ public class TwoWayIPFTest {
 	
 	
 	// "controls" verification
-	@Test public void testControlsAreInitializedCorrectly() {	
-		int[] rowControls = Deencapsulation.getField(ipf, "rowControls");
-		int[] columnControls = Deencapsulation.getField(ipf, "columnControls");
+	@Test public void testControlsAreInitializedCorrectly() throws GenstarException {	
+		int[] rowControls = ipf.getControls(0);
+		int[] columnControls = ipf.getControls(1);
 		
 		assertTrue(rowControls.length == rowAttributeValues.size());
 		assertTrue(columnControls.length == colAttributeValues.size());

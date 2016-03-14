@@ -72,7 +72,8 @@ public class ControlTotals {
 				
 				
 				attributeValue = attribute.findCorrespondingAttributeValue(valueList);
-				if (attributeValue == null) { throw new GenstarException("Attribute value '" + aRow.get(col+1) + "' not found."); }
+				if (attributeValue == null) { throw new GenstarException("Attribute value '" + aRow.get(col+1) + "' not found in valid attribute value of " + attribute.getNameOnData()
+						+ ". File: " + data.getPath() + ", line: " + line); }
 				
 				attributeValues.put(attribute, attributeValue);
 			}

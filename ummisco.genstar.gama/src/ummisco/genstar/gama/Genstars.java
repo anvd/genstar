@@ -211,7 +211,7 @@ public abstract class Genstars {
 				// build the string representation of each set of attribute values
 				for (int i=0; i<generationRuleAttributes.size(); i++) {
 					AttributeValue av = avf.getAttributeValue(generationRuleAttributes.get(i));
-					row[i] = av.toCSVString();
+					row[i] = av.toCsvString();
 				}
 				row[row.length - 1] = Integer.toString(avf.getFrequency());
 				
@@ -309,7 +309,7 @@ public abstract class Genstars {
 			// 6. build a list of AttributeValueFrequencies
 			List<AttributeValuesFrequency> attributeValuesFrequencies = new ArrayList<AttributeValuesFrequency>();
 			for (Set<String> controlledAttributeName : validControlledAttributeNameSets) {
-				List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
+				Set<AbstractAttribute> controlledAttributes = new HashSet<AbstractAttribute>();
 				List<Set<AttributeValue>> attributesPossibleValues = new ArrayList<Set<AttributeValue>>();
 				
 				for (String attributeNameOnData : controlledAttributeName) {
@@ -343,7 +343,7 @@ public abstract class Genstars {
 				for (Map.Entry<AbstractAttribute, AttributeValue> entry : avf.getAttributeValues().entrySet()) {
 					row[i] = entry.getKey().getNameOnData();
 					i++;
-					row[i] = entry.getValue().toCSVString(); // BUG different types of attribute values???
+					row[i] = entry.getValue().toCsvString(); // BUG different types of attribute values???
 					i++;
 				}
 				
@@ -604,11 +604,17 @@ public abstract class Genstars {
 				}
 			}
 			
+			// re-build populationOutputFilePaths
+			Map<String, String> rebuiltPopulationOutputFilePaths = new HashMap<String, String>();
+			for (Map.Entry<String, String> populationOutputFilePathsEntry : populationOutputFilePaths.entrySet()) {
+				rebuiltPopulationOutputFilePaths.put(populationOutputFilePathsEntry.getKey(), FileUtils.constructAbsoluteFilePath(scope, populationOutputFilePathsEntry.getValue(), false));
+			}
+			
 			// convert GAMA synthetic populations to Gen* synthetic populations
 			ISyntheticPopulation genstarPopulation = convertGamaPopulationToGenstarPopulation(null, gamaPopulation, populationAttributes);
 			
 			// write Gen* synthetic populations to CSV files
-			return GenstarFactoryUtils.writePopulationToCSVFile(scope, genstarPopulation, populationOutputFilePaths);
+			return GenstarFactoryUtils.writePopulationToCSVFile(genstarPopulation, rebuiltPopulationOutputFilePaths);
 		} catch (GenstarException e) {
 			throw GamaRuntimeException.error(e.getMessage(), scope);
 		}

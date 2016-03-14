@@ -1,6 +1,13 @@
 package ummisco.genstar.ipf;
 
 import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
@@ -9,6 +16,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeValue;
 
 @RunWith(JMockit.class)
 public class TwoWayIterationTest {
@@ -34,7 +43,7 @@ public class TwoWayIterationTest {
 		TwoWayIteration iteration = new TwoWayIteration(ipf);
 		assertTrue(iteration.getIteration() == 0);
 		
-		double[][] iterationData = iteration.getData();
+		double[][] iterationData = iteration.getCopyData();
 		for (int row=0; row<data.length; row++) {
 			for (int column=0; column<data[0].length; column++) {
 				assertTrue(data[row][column] == iterationData[row][column]);
@@ -42,7 +51,7 @@ public class TwoWayIterationTest {
 		}
 	}
 	
-	@Test(expected = GenstarException.class) public void testInitializeObjectWithNullData(@Mocked final TwoWayIPF ipf) throws GenstarException {
+	@Test(expected = NullPointerException.class) public void testInitializeObjectWithNullData(@Mocked final TwoWayIPF ipf) throws GenstarException {
 		final int[] rowControls = { 10, 20, 30 };
 		
 		final int[] columnControls = { 30, 40 };
@@ -56,11 +65,36 @@ public class TwoWayIterationTest {
 		new TwoWayIteration(ipf);
 	}
 	
-	@Test public void testInitializeObjectWithZeroMarginals(@Mocked final ThreeWayIPF ipf) throws GenstarException {
-		fail("Not yet implemented");
+	@Test(expected = GenstarException.class) public void testInitializeObjectWithZeroMarginals(@Mocked final TwoWayIPF ipf, @Mocked final AbstractAttribute attribute, 
+			@Mocked final AttributeValue attributeValue) throws GenstarException {
+		final double[][] data = {
+				{ 0, 2 },
+				{ 0, 4 },
+				{ 0, 6 }
+		};
+		
+		final int[] rowControls = { 10, 20, 30 };
+		
+		final int[] columnControls = { 30, 40 };
+		
+		final List<AttributeValue> attributeValues = new ArrayList<AttributeValue>();
+		attributeValues.add(attributeValue);
+		
+		new Expectations() {{
+			ipf.getData(); result = data;
+			ipf.getControls(0); result = rowControls;
+			ipf.getControls(1); result = columnControls;
+			
+			ipf.getAttributeValues(anyInt); result = attributeValues;
+			attributeValues.get(0); result = attributeValue;
+			attribute.getNameOnData(); result = "dummy attribute name";
+			attributeValue.toCsvString(); result = "dummy CSV string";
+		}};
+		
+		new TwoWayIteration(ipf);
 	}
 
-	@Test(expected = GenstarException.class) public void testInitializeObjectWithNullRowControls(@Mocked final TwoWayIPF ipf) throws GenstarException {
+	@Test(expected = NullPointerException.class) public void testInitializeObjectWithNullRowControls(@Mocked final TwoWayIPF ipf) throws GenstarException {
 		final double[][] data = {
 				{ 1, 2 },
 				{ 3, 4 },
@@ -79,7 +113,7 @@ public class TwoWayIterationTest {
 	}
 
 
-	@Test(expected = GenstarException.class) public void testInitializeObjectWithNullColumnControls(@Mocked final TwoWayIPF ipf) throws GenstarException {
+	@Test(expected = NullPointerException.class) public void testInitializeObjectWithNullColumnControls(@Mocked final TwoWayIPF ipf) throws GenstarException {
 		final double[][] data = {
 				{ 1, 2 },
 				{ 3, 4 },
@@ -118,8 +152,8 @@ public class TwoWayIterationTest {
 		TwoWayIteration iteration0 = new TwoWayIteration(ipf);
 		TwoWayIteration iteration1 = iteration0.nextIteration();
 		
-		double[][] data0 = iteration0.getData();
-		double[][] data1 = iteration1.getData();
+		double[][] data0 = iteration0.getCopyData();
+		double[][] data1 = iteration1.getCopyData();
 		
 		// 1. compute row adjustments on data0 then use row adjustments to adjust data0
 		for (int row=0; row<data.length; row++) {
@@ -171,7 +205,7 @@ public class TwoWayIterationTest {
 
 		
 		// data0
-		double[][] data0 = iteration0.getData();
+		double[][] data0 = iteration0.getCopyData();
 		int sumData0 = 0;
 		for (int row=0; row<data0.length; row++) {
 			for (int column=0; column<data0[0].length; column++) {
@@ -182,7 +216,7 @@ public class TwoWayIterationTest {
 		
 		
 		// data1
-		double[][] data1 = iteration1.getData();
+		double[][] data1 = iteration1.getCopyData();
 		int sumData1 = 0;
 		for (int row=0; row<data1.length; row++) {
 			for (int column=0; column<data1[0].length; column++) {

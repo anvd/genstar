@@ -16,23 +16,21 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 @RunWith(JMockit.class)
 public class IPFTest {
 
-	private class MockIPF extends IPF {
+	private class MockIPF extends IPF<double[][], int[], double[]> {
 		public MockIPF(SampleDataGenerationRule generationRule) throws GenstarException {
 			super(generationRule);
 		}
 
 		public void fit() {}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public Object getData() {
+		public double[][] getData() {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public Object getControls(int dimension) throws GenstarException {
+		public int[] getControls(int dimension) throws GenstarException {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -57,6 +55,31 @@ public class IPFTest {
 
 		@Override
 		public AbstractAttribute getControlledAttribute(int dimension)
+				throws GenstarException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		protected int getNbOfControlledAttributes() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		protected void initializeData() throws GenstarException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		protected void computeControls() throws GenstarException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		protected IPFIteration<double[][], int[], double[]> createIPFIteration()
 				throws GenstarException {
 			// TODO Auto-generated method stub
 			return null;

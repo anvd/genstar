@@ -2,14 +2,15 @@ package ummisco.genstar.util;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import mockit.Deencapsulation;
-import mockit.Delegate;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
@@ -241,6 +242,123 @@ public class GenstarFactoryUtilsTest {
 		GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", attributesFile, 0);
 	}
 	
+	@Test public void testBuildControlledAttributesValuesSubsets() throws GenstarException {
+		// test_data/ummisco/genstar/util/testBuildControlledAttributesValuesSubsets/controlled_attributes1.csv
+		GenstarCSVFile controlledAttributesFile1 = new GenstarCSVFile("test_data/ummisco/genstar/util/testBuildControlledAttributesValuesSubsets/controlled_attributes1.csv", true);
+		ISingleRuleGenerator generator1 = new SingleRuleGenerator("dummy single rule generator");
+		GenstarFactoryUtils.createAttributesFromCSVFile(generator1, controlledAttributesFile1);
+		
+		// generate frequencies / control totals
+		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets1 = GenstarFactoryUtils.buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(generator1.getAttributes()));
+		
+		// 4 controlled attributes
+		assertTrue(controlledAttributesValuesSubsets1.size() == 4);
+		for (List<Map<AbstractAttribute, AttributeValue>> subset : controlledAttributesValuesSubsets1) {
+			int nbPossibilities = 1;
+			for (AbstractAttribute attribute : subset.get(0).keySet()) { nbPossibilities *= attribute.values().size(); }
+			assertTrue(nbPossibilities == subset.size());
+			
+			Set<AbstractAttribute> attributeSet = subset.get(0).keySet();
+			for (Map<AbstractAttribute, AttributeValue> entry : subset) {
+				assertTrue(attributeSet.size() == entry.size() && attributeSet.containsAll(entry.keySet()));
+			}
+		}
+	
+	
+		// test_data/ummisco/genstar/util/testBuildControlledAttributesValuesSubsets/controlled_attributes2.csv
+		GenstarCSVFile controlledAttributesFile2 = new GenstarCSVFile("test_data/ummisco/genstar/util/testBuildControlledAttributesValuesSubsets/controlled_attributes2.csv", true);
+		ISingleRuleGenerator generator2 = new SingleRuleGenerator("dummy single rule generator");
+		GenstarFactoryUtils.createAttributesFromCSVFile(generator2, controlledAttributesFile2);
+		
+		// generate frequencies / control totals
+		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets2 = GenstarFactoryUtils.buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(generator2.getAttributes()));
+
+		// 3 controlled attributes
+		assertTrue(controlledAttributesValuesSubsets2.size() == 3);
+	}
+	
+	@Test(expected = GenstarException.class) public void testGenerateControlTotalsWithNullControlledAttributesFile() throws GenstarException {
+		GenstarFactoryUtils.generateControlTotals(null, 1);
+	}
+	
+	@Test(expected = GenstarException.class) public void testGenerateControlTotalsWithNonPositiveTotal(@Mocked final GenstarCSVFile controlledAttributesFile) throws GenstarException {
+		GenstarFactoryUtils.generateControlTotals(controlledAttributesFile, 0);
+	}
+	
+	@Test public void testGenerateControlTotals() throws GenstarException {
+		GenstarCSVFile controlledAttributesFile1 = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateControlTotals/controlled_attributes1.csv", true);
+		List<List<String>> result1 = GenstarFactoryUtils.generateControlTotals(controlledAttributesFile1, 1000);
+		
+		/*
+			Household Size, Household Income, Household Type: 3*2*3 = 18
+			Household Size, Household Income, Number Of Cars: 3*2*4 = 24
+			Household Size,Household Type, Number Of Cars: 3*3*4 = 36
+			Household Income, Household Type, Number Of Cars: 2*3*4 = 24
+			--> 18 + 24 + 36 + 24 = 102		
+		*/
+		assertTrue(result1.size() == 102); 
+		for (List<String> row1 : result1) { assertTrue(row1.size() == 7); }
+
+		GenstarCSVFile controlledAttributesFile2 = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateControlTotals/controlled_attributes2.csv", true);
+		List<List<String>> result3 = GenstarFactoryUtils.generateControlTotals(controlledAttributesFile2, 10000);
+		
+		/*
+			Household Size, Household Income: 3*2 = 6
+			Household Size, Household Type: 3*3 = 9
+			Household Income, Household Type: 2*3 = 6	
+			6 + 9 + 6 = 21	 
+		*/
+		assertTrue(result3.size() == 21);
+		for (List<String> row3 : result3) { assertTrue(row3.size() == 5); }
+	}
+	
+	@Test(expected = GenstarException.class) public void testWriteControlTotalsToCsvFileWithNullControlTotals() throws GenstarException {
+		GenstarFactoryUtils.writeControlTotalsToCsvFile(null, "");
+	}
+	
+	@Test(expected = GenstarException.class) public void testWriteControlTotalsToCsvFileWithNullCsvFilePath() throws GenstarException {
+		GenstarFactoryUtils.writeControlTotalsToCsvFile(new ArrayList<List<String>>(), null);
+	}
+	
+	@Test public void testWriteControlTotalsToCsvFile() throws GenstarException {
+		GenstarCSVFile controlledAttributesFile1 = new GenstarCSVFile("test_data/ummisco/genstar/util/testWriteControlTotalsToCsvFile/controlled_attributes1.csv", true);
+		List<List<String>> controlTotals = GenstarFactoryUtils.generateControlTotals(controlledAttributesFile1, 500);
+		
+		String controlTotalsFilePath = "test_data/ummisco/genstar/util/testWriteControlTotalsToCsvFile/control_totals1.csv";
+		File controlTotalsFile = new File(controlTotalsFilePath);
+		if (controlTotalsFile.exists()) { controlTotalsFile.delete(); }
+		controlTotalsFile = null;
+		
+		GenstarFactoryUtils.writeControlTotalsToCsvFile(controlTotals, controlTotalsFilePath);
+
+		GenstarCSVFile controlTotalsCsvFile = new GenstarCSVFile(controlTotalsFilePath, false);
+		assertTrue(controlTotalsCsvFile.getRows() == controlTotals.size()); // number of rows
+		assertTrue(controlTotalsCsvFile.getColumns() == 7);  // number of columns (3 attributes + frequency)
+	}
+	
+	@Test public void testGenerateRandomSinglePopulationSuccessfully1() throws GenstarException {
+		GenstarCSVFile attributesFile1 = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateRandomSinglePopulation1/attributes1.csv", true);
+		ISyntheticPopulation generatedPopulation = GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", attributesFile1, 1, 1);
+		
+		int nbOfEntities1 = 1;
+		for (AbstractAttribute attribute : generatedPopulation.getAttributes()) { nbOfEntities1 *= attribute.values().size(); }
+		assertTrue(generatedPopulation.getEntities().size() == nbOfEntities1);
+		
+		generatedPopulation = GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", attributesFile1, 2, 2);
+		assertTrue(generatedPopulation.getEntities().size() == 2 * nbOfEntities1);
+		
+		generatedPopulation = GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", attributesFile1, 1, 2);
+		assertTrue((generatedPopulation.getEntities().size() <= 2 * nbOfEntities1) && (generatedPopulation.getEntities().size() >= nbOfEntities1));
+
+	
+		GenstarCSVFile attributesFile2 = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateRandomSinglePopulation1/attributes2.csv", true);
+		ISyntheticPopulation generatedPopulation2 = GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", attributesFile2, 1, 1);
+		
+		int nbOfEntities2 = 1;
+		for (AbstractAttribute attribute : generatedPopulation2.getAttributes()) { nbOfEntities2 *= attribute.values().size(); }
+		assertTrue(generatedPopulation2.getEntities().size() == nbOfEntities2);
+	}
+	
 	@Test public void testGenerateRandomSinglePopulationSuccessfully() throws GenstarException {
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateRandomSinglePopulation/attributes.csv", true);
 		int nbEntities = 100 + SharedInstances.RandomNumberGenerator.nextInt(100);
@@ -424,19 +542,9 @@ public class GenstarFactoryUtilsTest {
 		final String singlePopulationOutputFile = "test_data/ummisco/genstar/util/testWritePopulationToCSVFile/singlePopulation/single_population.csv";
 		generatedSinglePopulationFilePaths.put(singlePopulationName, singlePopulationOutputFile);
 		
-		new Expectations() {{
-			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
-			result = new Delegate() {
-				String delegate(IScope scope, String filePath, boolean mustExist) {
-					if (filePath.endsWith("/single_population.csv")) { return singlePopulationOutputFile; }
-
-					return null;
-				}
-			};
-		}};
 		
 		ISyntheticPopulation generatedSinglePopulation = GenstarFactoryUtils.generateRandomSinglePopulation(singlePopulationName, attributesFile, nbEntities);
-		Map<String, String> resultSingleFilePaths = GenstarFactoryUtils.writePopulationToCSVFile(scope, generatedSinglePopulation, generatedSinglePopulationFilePaths);
+		Map<String, String> resultSingleFilePaths = GenstarFactoryUtils.writePopulationToCSVFile(generatedSinglePopulation, generatedSinglePopulationFilePaths);
 		
 		assertTrue(resultSingleFilePaths.size() == 1);
 		assertTrue(resultSingleFilePaths.get(singlePopulationName).equals(singlePopulationOutputFile));
@@ -454,7 +562,7 @@ public class GenstarFactoryUtilsTest {
 	}
 	
 	
-	@Test public void testWriteCompoundPopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
+	@Test public void testWriteCompoundPopulation() throws GenstarException {
 		// test write compound population
 		String groupPopulationName = "household";
 		GenstarCSVFile groupAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testWritePopulationToCSVFile/compoundPopulation/group_attributes.csv", true);
@@ -487,19 +595,8 @@ public class GenstarFactoryUtilsTest {
 		generatedCompoundPopulationFilePaths.put(groupPopulationName, groupPopulationOutputFile);
 		generatedCompoundPopulationFilePaths.put(componentPopulationName, componentPopulationOutputFile);
 		
-		new Expectations() {{
-			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
-			result = new Delegate() {
-				String delegate(IScope scope, String filePath, boolean mustExist) {
-					if (filePath.endsWith("/group_population.csv")) { return groupPopulationOutputFile; }
-					if (filePath.endsWith("/component_population.csv")) { return componentPopulationOutputFile; }
 
-					return null;
-				}
-			};
-		}};
-
-		Map<String, String> resultCompoundFilePaths = GenstarFactoryUtils.writePopulationToCSVFile(scope, generatedCompoundPopulation, generatedCompoundPopulationFilePaths);
+		Map<String, String> resultCompoundFilePaths = GenstarFactoryUtils.writePopulationToCSVFile(generatedCompoundPopulation, generatedCompoundPopulationFilePaths);
 		
 		assertTrue(resultCompoundFilePaths.size() == 2);
 		assertTrue(resultCompoundFilePaths.get(groupPopulationName).equals(groupPopulationOutputFile));
@@ -528,5 +625,51 @@ public class GenstarFactoryUtilsTest {
 		}
 		
 		assertTrue(componentPopOutputFile.getRows() == nbOfComponentEntities + 1);
+	}
+	
+	
+	@Test(expected = GenstarException.class) public void testFindSubsetSumWithNonPositiveTotal() throws GenstarException {
+		GenstarFactoryUtils.findSubsetSum(0, 10);
+	}
+	
+	
+	@Test(expected = GenstarException.class) public void testFindSubsetSumWithNonPositiveN() throws GenstarException {
+		GenstarFactoryUtils.findSubsetSum(10, 0);
+	}
+	
+	
+	@Test(expected = GenstarException.class) public void testFindSubsetSumWithTotalSmallerThanN() throws GenstarException {
+		GenstarFactoryUtils.findSubsetSum(9, 10);
+	}
+	
+	
+	@Test public void testFindSubsetSum() throws GenstarException {
+		List<Integer> subset1 = GenstarFactoryUtils.findSubsetSum(100000, 10);
+		assertTrue(subset1.size() == 10);
+		int sumSubset1 = 0;
+		for (int i=0; i<subset1.size(); i++) { 
+			assertTrue(subset1.get(i) >= 1);
+			sumSubset1 += subset1.get(i); 
+		}
+		assertTrue(sumSubset1 == 100000);
+		
+		
+		List<Integer> subset2 = GenstarFactoryUtils.findSubsetSum(1000000, 15);
+		assertTrue(subset2.size() == 15);
+		int sumSubset2 = 0;
+		for (int i=0; i<subset2.size(); i++) {
+			assertTrue(subset2.get(i) >= 1);
+			sumSubset2 += subset2.get(i);
+		}
+		assertTrue(sumSubset2 == 1000000);
+		
+		List<Integer> subset3 = GenstarFactoryUtils.findSubsetSum(2, 1);
+		assertTrue(subset3.size() == 1);
+		assertTrue(subset3.get(subset3.size() - 1) == 2);
+		
+		List<Integer> subset4 = GenstarFactoryUtils.findSubsetSum(2, 2);
+		assertTrue(subset4.size() == 2);
+		assertTrue(subset4.get(subset4.size() - 1) == 1);
+		assertTrue(subset4.get(0) == 1);
 	}
 }

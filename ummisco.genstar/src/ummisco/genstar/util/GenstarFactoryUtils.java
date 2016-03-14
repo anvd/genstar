@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,8 +16,8 @@ import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-import msi.gama.common.util.FileUtils;
-import msi.gama.runtime.IScope;
+import com.google.common.collect.Sets;
+
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.GroupComponentSampleData;
 import ummisco.genstar.ipf.ISampleData;
@@ -40,6 +43,9 @@ import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
+
+// TODO refactoring
+// divide this class into two: GenstarFactory & GenstarUtils
 public class GenstarFactoryUtils {
 
 	public static class AttributeValuesFrequencyComparator implements Comparator<AttributeValuesFrequency> {
@@ -288,13 +294,13 @@ public class GenstarFactoryUtils {
 		if ( fileContent == null || fileContent.isEmpty() ) { throw new GenstarException("Empty attribute file. File: " + attributesFile.getPath()); }
 		
 		if (attributesFile.getColumns() != CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS) { 
-			throw new GenstarException("CSV file must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns. File: " + attributesFile.getPath()); 
+			throw new GenstarException("Attributes file must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns. File: " + attributesFile.getPath()); 
 		}
 		
 		// 1. Parse the header
 		List<String> fileHeader = attributesFile.getHeaders();
 		if (fileHeader.size() != CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS) {
-			throw new GenstarException("Attribute file header must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns. File: " + attributesFile.getPath());
+			throw new GenstarException("Attributes file header must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns. File: " + attributesFile.getPath());
 		}
 		for (int i=0; i<fileHeader.size(); i++) {
 			if (!fileHeader.get(i).equals(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.HEADERS[i])) {
@@ -679,6 +685,208 @@ public class GenstarFactoryUtils {
 	}
 	
 	
+	// TODO improve this algo to remove bias
+	public static List<Integer> findSubsetSum(final int total, final int numberOfElements) throws GenstarException {
+		// parameters validation
+		if (total < 1) { throw new GenstarException("Parameter total must be positive"); }
+		if (numberOfElements < 1) { throw new GenstarException("Parameter numberOfElements must be positive"); }
+		if (total < numberOfElements) { throw new GenstarException("total can not be smaller than numberOfElements"); }
+		
+		int internalTotal = total; 
+		
+		internalTotal -= (1 * numberOfElements);
+		
+		List<Integer> result = new ArrayList<Integer>();
+		for (int i=0; i<numberOfElements-1; i++) {
+			if (internalTotal == 0) { result.add(1); }
+			else {
+
+				int centerNumber = internalTotal / (numberOfElements - i);
+				
+//				int rndNumber = SharedInstances.RandomNumberGenerator.nextInt(internalTotal);
+				int rndNumber = SharedInstances.RandomNumberGenerator.nextInt(centerNumber);
+				result.add(1 + rndNumber);
+				internalTotal -= rndNumber;
+			}
+		}
+		
+		result.add(1 + internalTotal);
+		
+		return result;
+	}
+	
+	
+	public static List<List<Map<AbstractAttribute, AttributeValue>>> buildControlledAttributesValuesSubsets(final Set<AbstractAttribute> controlledAttributes) throws GenstarException {
+		
+		// parameters validation
+		if (controlledAttributes == null) { throw new GenstarException("Parameter controlledAttributes can not be null"); }
+		if (controlledAttributes.size() < 2) { throw new GenstarException("controlledAttributes must contain at least 2 attributes"); }
+		
+		Set<Set<AbstractAttribute>> controlledAttributesSubsets = Sets.powerSet(controlledAttributes);
+		
+		Set<Set<AbstractAttribute>> validControlledAttributesSubSets = new HashSet<Set<AbstractAttribute>>();
+		int validSubsetSize = controlledAttributes.size() - 1;
+		for (Set<AbstractAttribute> subset : controlledAttributesSubsets) {
+			if (subset.size() == validSubsetSize) { validControlledAttributesSubSets.add(subset); }
+		}
+		
+		List<List<Map<AbstractAttribute, AttributeValue>>> resultingControlledAttributesValuesSubsets = new ArrayList<List<Map<AbstractAttribute, AttributeValue>>>();
+		for (Set<AbstractAttribute> validSubsetAttributes : validControlledAttributesSubSets) {
+			
+			// build attributesValuesMaps
+			List<Set<AttributeValue>> attributesPossibleValues = new ArrayList<Set<AttributeValue>>();
+			for (AbstractAttribute attribute : validSubsetAttributes) {  attributesPossibleValues.add(attribute.values());  }
+			List<Map<AbstractAttribute, AttributeValue>> attributeValuesMaps = new ArrayList<Map<AbstractAttribute, AttributeValue>>();
+			for (List<AttributeValue> cartesian : Sets.cartesianProduct(attributesPossibleValues)) {
+				attributeValuesMaps.add(buildAttributeValueMap(validSubsetAttributes, cartesian));
+			}
+			
+			
+			List<Map<AbstractAttribute, AttributeValue>> controlledAttributesValuesSubset = new ArrayList<Map<AbstractAttribute, AttributeValue>>();
+			
+			for (Map<AbstractAttribute, AttributeValue> attributeValuesMap : attributeValuesMaps) {
+				Set<AbstractAttribute> subsetAttributes = attributeValuesMap.keySet();
+				
+//				if (validSubsetAttributes.size() == subsetAttributes.size() && subsetAttributes.containsAll(validSubsetAttributes)) { // TODO redundant condition: validSubsetAttributes.size() == subsetAttributes.size()
+				if (subsetAttributes.containsAll(validSubsetAttributes)) {
+					controlledAttributesValuesSubset.add(attributeValuesMap);
+				}
+			}
+			
+			if (!controlledAttributesValuesSubset.isEmpty()) {
+				resultingControlledAttributesValuesSubsets.add(controlledAttributesValuesSubset);
+			}
+		}
+		
+		return resultingControlledAttributesValuesSubsets;
+	}
+	
+	
+	public static List<List<String>> generateControlTotals(final GenstarCSVFile attributesFile, final int total) throws GenstarException {
+		// parameters validation
+		if (attributesFile == null) { throw new GenstarException("Parameter attributesFile can not be null"); }
+		if (total < 1) { throw new GenstarException("Parameter controlTotal must be positive"); }
+		
+		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy single rule generator");
+		createAttributesFromCSVFile(generator, attributesFile);
+		
+		// generate frequencies / control totals
+		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets = buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(generator.getAttributes()));
+		List<List<String>> controlTotals = new ArrayList<List<String>>();
+		for (List<Map<AbstractAttribute, AttributeValue>> controlledAttributesValuesSubset : controlledAttributesValuesSubsets) {
+
+			List<Integer> subsetSum = findSubsetSum(total, controlledAttributesValuesSubset.size());
+			int i=0;
+			for (Map<AbstractAttribute, AttributeValue> attributeValueMap : controlledAttributesValuesSubset) {
+				
+				// write each row
+				List<String> controlTotal = new ArrayList<String>();
+				for (Map.Entry<AbstractAttribute, AttributeValue> entry : attributeValueMap.entrySet()) {
+					controlTotal.add(entry.getKey().getNameOnData());
+					controlTotal.add(entry.getValue().toCsvString());
+				}
+				
+				// write frequency
+				controlTotal.add(Integer.toString(subsetSum.get(i)));
+				i++;
+
+				controlTotals.add(controlTotal);
+			}
+		}
+		
+		return controlTotals;
+	}
+	
+	
+	public static void writeControlTotalsToCsvFile(final List<List<String>> controlTotals, final String csvFilePath) throws GenstarException {
+		// parameters validation
+		if( controlTotals == null) { throw new GenstarException("Parameter controlTotals can not be null"); }
+		if (csvFilePath == null) { throw new GenstarException("Parameter csvFilePath can not be null"); }
+		
+		try {
+			CsvWriter writer = new CsvWriter(csvFilePath);
+			for (List<String> row : controlTotals) {
+				writer.writeRecord(row.toArray(new String[0]));
+			}
+			
+			writer.flush();
+			writer.close();
+		} catch (final Exception e) {
+			throw new GenstarException(e);
+		}
+	}
+	
+	
+	public static ISyntheticPopulation generateRandomSinglePopulation(final String populationName, final GenstarCSVFile attributesFile, 
+			final int minEntitiesOfEachAttributeValuesSet, final int maxEntitiesOfEachAttributeValuesSet) throws GenstarException {
+		// parameters validation
+		if (populationName == null || populationName.isEmpty()) { throw new GenstarException("Parameter populationName can not be null or empty"); }
+		if (attributesFile == null) { throw new GenstarException("Parameter attributesFile can not be null"); }
+		if (minEntitiesOfEachAttributeValuesSet < 1) { throw new GenstarException("minEntitiesOfEachAttributeValuesSet can not be smaller than 1"); }
+		if (maxEntitiesOfEachAttributeValuesSet < minEntitiesOfEachAttributeValuesSet) { throw new GenstarException("maxEntitiesOfEachAttributeValuesSet can not be smaller than minEntitiesOfEachAttributeValuesSet"); }
+		
+		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy single rule generator");
+		createAttributesFromCSVFile(generator, attributesFile);
+
+		Set<AbstractAttribute> attributes = new HashSet<AbstractAttribute>(generator.getAttributes());
+		ISyntheticPopulation syntheticPopulation = new SyntheticPopulation(populationName, generator.getAttributes());
+
+		// build attributeValuesMaps
+		List<Set<AttributeValue>> attributesPossibleValues = new ArrayList<Set<AttributeValue>>();
+		Map<AbstractAttribute, Boolean> valueOnDataSameAsValueOnEntity = new HashMap<AbstractAttribute, Boolean>();
+		for (AbstractAttribute attribute : attributes) { 
+			attributesPossibleValues.add(attribute.values()); 
+			
+			if (attribute.getValueClassOnData().equals(attribute.getValueClassOnEntity())) { valueOnDataSameAsValueOnEntity.put(attribute, true); }
+			else { valueOnDataSameAsValueOnEntity.put(attribute, false); }
+			
+		}
+		List<Map<AbstractAttribute, AttributeValue>> attributeValuesMaps = new ArrayList<Map<AbstractAttribute, AttributeValue>>();
+		for (List<AttributeValue> cartesian : Sets.cartesianProduct(attributesPossibleValues)) {
+			attributeValuesMaps.add(buildAttributeValueMap(attributes, cartesian));
+		}
+		
+		
+		// build attributeValuesOnEntityMaps
+		List<Map<String, AttributeValue>> attributeValuesOnEntityMaps = new ArrayList<Map<String, AttributeValue>>();
+		for (Map<AbstractAttribute, AttributeValue> attributeValuesOnData : attributeValuesMaps) {
+			Map<String, AttributeValue> attributeValuesOnEntity = new HashMap<String, AttributeValue>();
+			
+			for (Map.Entry<AbstractAttribute, AttributeValue> entry : attributeValuesOnData.entrySet()) {
+				if (valueOnDataSameAsValueOnEntity.get(entry.getKey())) {
+					attributeValuesOnEntity.put(entry.getKey().getNameOnEntity(), entry.getValue());
+				} else {
+					attributeValuesOnEntity.put(entry.getKey().getNameOnEntity(), entry.getValue().cast(entry.getKey().getValueClassOnEntity()));
+				}
+			}
+			
+			attributeValuesOnEntityMaps.add(attributeValuesOnEntity);
+		}
+		
+		
+		// generate the population (sample data)
+		if (minEntitiesOfEachAttributeValuesSet == maxEntitiesOfEachAttributeValuesSet) {
+			for (Map<String, AttributeValue> attributeValuesOnEntity : attributeValuesOnEntityMaps) {
+				for (int entityIndex=0; entityIndex<minEntitiesOfEachAttributeValuesSet; entityIndex++) {
+					syntheticPopulation.createEntityWithAttributeValuesOnEntity(attributeValuesOnEntity);
+				}
+				
+			}
+		} else {
+			int entityDifference = maxEntitiesOfEachAttributeValuesSet - minEntitiesOfEachAttributeValuesSet;
+			for (Map<String, AttributeValue> attributeValuesOnEntity : attributeValuesOnEntityMaps) {
+				int nbOfEntities = minEntitiesOfEachAttributeValuesSet + SharedInstances.RandomNumberGenerator.nextInt(entityDifference);
+				
+				for (int entityIndex=0; entityIndex<nbOfEntities; entityIndex++) {
+					syntheticPopulation.createEntityWithAttributeValuesOnEntity(attributeValuesOnEntity);
+				}
+			}
+		}
+		
+		return syntheticPopulation;
+	}
+	
+	
 	public static ISyntheticPopulation generateRandomSinglePopulation(final String populationName, final GenstarCSVFile attributesFile, final int entities) throws GenstarException {
 		// parameters validation
 		if (populationName == null || populationName.isEmpty()) { throw new GenstarException("Parameter populationName can not be null or empty"); }
@@ -785,17 +993,17 @@ public class GenstarFactoryUtils {
 	}
 	
 	
-	public static final Map<String, String> writePopulationToCSVFile(final IScope scope, final ISyntheticPopulation population, final Map<String, String> csvFilePathsByPopulationNames) throws GenstarException {
+	public static final Map<String, String> writePopulationToCSVFile(final ISyntheticPopulation population, final Map<String, String> csvFilePathsByPopulationNames) throws GenstarException {
 		// parameters validation
 		if (population == null) { throw new GenstarException("Parameter population can not be null"); }
 		if (csvFilePathsByPopulationNames == null) { throw new GenstarException("Parameter csvFilePathsByPopulationNames can not be null"); }
 		
 		// build CsvWriters
 		Map<String, CsvWriter> csvWriters = new HashMap<String, CsvWriter>();
-		buildCsvWriters(scope, population, csvWriters, csvFilePathsByPopulationNames);
+		buildCsvWriters(population, csvWriters, csvFilePathsByPopulationNames);
 		
 		// write to csv files
-		writeToCsv(population, csvWriters);
+		doWritePopulationToCsvFile(population, csvWriters);
 		
 		// TODO optimization: merge build + write processes into one
 		
@@ -805,7 +1013,7 @@ public class GenstarFactoryUtils {
 		return csvFilePathsByPopulationNames;
 	}
 	
-	private static final void buildCsvWriters(final IScope scope, final ISyntheticPopulation population, final Map<String, CsvWriter> csvWriters, 
+	private static final void buildCsvWriters(final ISyntheticPopulation population, final Map<String, CsvWriter> csvWriters, 
 			final Map<String, String> csvFilePathsByPopulationNames) throws GenstarException {
 		try {
 			String populationName = population.getName();
@@ -814,7 +1022,7 @@ public class GenstarFactoryUtils {
 			
 			// build writer
 			if (csvFilePath != null && writer == null) {
-				writer = new CsvWriter(FileUtils.constructAbsoluteFilePath(scope, csvFilePath, false));
+				writer = new CsvWriter(csvFilePath);
 				csvWriters.put(populationName, writer);
 				List<AbstractAttribute> attributes = population.getAttributes();
 				
@@ -829,7 +1037,7 @@ public class GenstarFactoryUtils {
 				for (ISyntheticPopulation componentPopulation : e.getComponentPopulations()) {
 					String componentPopulationName = componentPopulation.getName();
 					if (csvWriters.get(componentPopulationName) == null && csvFilePathsByPopulationNames.get(componentPopulationName) != null) {
-						buildCsvWriters(scope, componentPopulation, csvWriters, csvFilePathsByPopulationNames);
+						buildCsvWriters(componentPopulation, csvWriters, csvFilePathsByPopulationNames);
 					}
 				}
 			}
@@ -838,7 +1046,7 @@ public class GenstarFactoryUtils {
 		}
 	}
 	
-	private static final void writeToCsv(final ISyntheticPopulation population, final Map<String, CsvWriter> csvWriters) throws GenstarException {
+	private static final void doWritePopulationToCsvFile(final ISyntheticPopulation population, final Map<String, CsvWriter> csvWriters) throws GenstarException {
 		
 		try {
 			CsvWriter writer = csvWriters.get(population.getName());
@@ -851,7 +1059,7 @@ public class GenstarFactoryUtils {
 				for (Entity e : population.getEntities()) {
 					Map<String, EntityAttributeValue> attributeValues = e.getEntityAttributeValues();
 					for (int attrIndex=0; attrIndex<attributes.size(); attrIndex++) {
-						entityValues[attrIndex] = attributeValues.get(attributes.get(attrIndex).getNameOnData()).getAttributeValueOnEntity().toCSVString();
+						entityValues[attrIndex] = attributeValues.get(attributes.get(attrIndex).getNameOnData()).getAttributeValueOnEntity().toCsvString();
 					}
 					
 					writer.writeRecord(entityValues);
@@ -859,7 +1067,7 @@ public class GenstarFactoryUtils {
 					// recursively write entity's component populations
 					for (ISyntheticPopulation componentPopulation : e.getComponentPopulations()) {
 						if (csvWriters.get(componentPopulation.getName()) != null) {
-							writeToCsv(componentPopulation, csvWriters);
+							doWritePopulationToCsvFile(componentPopulation, csvWriters);
 						}
 					}
 				}
@@ -1008,7 +1216,7 @@ public class GenstarFactoryUtils {
 		return null;
 	}
 	
-	public static Map<AbstractAttribute, AttributeValue> buildAttributeValueMap(final List<AbstractAttribute> attributes, List<AttributeValue> values) throws GenstarException {
+	public static Map<AbstractAttribute, AttributeValue> buildAttributeValueMap(final Set<AbstractAttribute> attributes, final List<AttributeValue> values) throws GenstarException {
 		Map<AbstractAttribute, AttributeValue> retVal = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		List<AbstractAttribute> copyAttributes = new ArrayList<AbstractAttribute>();

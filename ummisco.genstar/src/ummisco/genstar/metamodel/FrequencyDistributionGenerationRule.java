@@ -350,12 +350,12 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		for (AbstractAttribute inputAttr : inputAttributes.values()) { attributesPossibleValues.add(inputAttr.values()); }
 		for (AbstractAttribute outputAttr : outputAttributes.values()) { attributesPossibleValues.add(outputAttr.values()); }
 		
-		List<AbstractAttribute> allAttributes = new ArrayList<AbstractAttribute>();
+		Set<AbstractAttribute> allAttributes = new HashSet<AbstractAttribute>();
 		allAttributes.addAll(inputAttributes.values());
 		allAttributes.addAll(outputAttributes.values());
 		Set<List<AttributeValue>> cartesianSet = Sets.cartesianProduct(attributesPossibleValues);
-		for (List<AttributeValue> catesian : cartesianSet) {
-			attributeValuesFrequencies.add(new AttributeValuesFrequency(GenstarFactoryUtils.buildAttributeValueMap(allAttributes, catesian)));
+		for (List<AttributeValue> cartesian : cartesianSet) {
+			attributeValuesFrequencies.add(new AttributeValuesFrequency(GenstarFactoryUtils.buildAttributeValueMap(allAttributes, cartesian)));
 		}
 	}
 	

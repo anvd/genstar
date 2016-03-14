@@ -11,7 +11,6 @@ global {
 	init {
 		list household_population <- ipf_compound_population('../includes/household_people/ipf_configuration.properties');
 		genstar_create synthetic_population: household_population;
-		// TODO how to initialize "people"/component agents in GAMA?
 	}
 }
 

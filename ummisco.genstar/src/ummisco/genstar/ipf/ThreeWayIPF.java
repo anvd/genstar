@@ -1,63 +1,36 @@
 package ummisco.genstar.ipf;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 
-public class ThreeWayIPF extends IPF {
+public class ThreeWayIPF extends IPF<double[][][], int[][], double[][]> {
 
-	private AbstractAttribute rowAttribute, columnAttribute, layerAttribute;
-	
-	private List<AttributeValue> rowAttributeValues;
-	
-	private List<AttributeValue> columnAttributeValues;
-	
-	private List<AttributeValue> layerAttributeValues;
-	
-	private double[][][] data;
-	
-	private int[][] rowControls;
-	
-	private int[][] columnControls;
-	
-	private int[][] layerControls;
-	
 	
 	public ThreeWayIPF(final SampleDataGenerationRule generationRule) throws GenstarException {
 		super(generationRule);
-		
-		// input parameters validation
-		List<AbstractAttribute> controlledAttributes = generationRule.getControlledAttributes();
-		
-		if (controlledAttributes.size() != 3) { throw new GenstarException("ThreeWayIPF only accepts three controlled attributes."); }
-		Set<AbstractAttribute> attributeSet = new HashSet<AbstractAttribute>(controlledAttributes);
-		if (attributeSet.size() != 3) { throw new GenstarException("Some controlled attributes are duplicated"); }
-
-		this.rowAttribute = controlledAttributes.get(0);
-		this.columnAttribute = controlledAttributes.get(1);
-		this.layerAttribute = controlledAttributes.get(2);
-		
-		this.rowAttributeValues = new ArrayList<AttributeValue>(rowAttribute.values());
-		this.columnAttributeValues = new ArrayList<AttributeValue>(columnAttribute.values());
-		this.layerAttributeValues = new ArrayList<AttributeValue>(layerAttribute.values());
-		
-		initializeData();
-		computeControls();
 	}
 	
+	@Override
+	protected int getNbOfControlledAttributes() { return 3; }
 	
-	private void initializeData() throws GenstarException {
+	@Override
+	protected void initializeData() throws GenstarException {
 		ISampleData sampleData = generationRule.getSampleData();
 		
+		AbstractAttribute rowAttribute = getControlledAttribute(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+		List<AttributeValue> rowAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+		AbstractAttribute columnAttribute = getControlledAttribute(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+		List<AttributeValue> columnAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+		AbstractAttribute layerAttribute = getControlledAttribute(IPF_ATTRIBUTE_INDEXES.LAYER_ATTRIBUTE_INDEX);
+		List<AttributeValue> layerAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.LAYER_ATTRIBUTE_INDEX);
+
 		data = new double[rowAttributeValues.size()][columnAttributeValues.size()][layerAttributeValues.size()];
 
 		Map<String, AttributeValue> matchingCondition = new HashMap<String, AttributeValue>();
@@ -77,12 +50,20 @@ public class ThreeWayIPF extends IPF {
 	}
 	
 	
-	private void computeControls() {
+	@Override
+	protected void computeControls() throws GenstarException {
 		ControlTotals controlTotals = generationRule.getControlTotals();
 		
+		AbstractAttribute rowAttribute = getControlledAttribute(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+		List<AttributeValue> rowAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+		AbstractAttribute columnAttribute = getControlledAttribute(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+		List<AttributeValue> columnAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+		AbstractAttribute layerAttribute = getControlledAttribute(IPF_ATTRIBUTE_INDEXES.LAYER_ATTRIBUTE_INDEX);
+		List<AttributeValue> layerAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.LAYER_ATTRIBUTE_INDEX);
+
 		// 1. compute row controls
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
-		rowControls = new int[columnAttributeValues.size()][layerAttributeValues.size()];
+		int[][] rowControls = new int[columnAttributeValues.size()][layerAttributeValues.size()];
 		for (int col=0; col<columnAttributeValues.size(); col++) {
 			matchingCriteria.put(columnAttribute, columnAttributeValues.get(col));
 			
@@ -93,10 +74,11 @@ public class ThreeWayIPF extends IPF {
 				for (AttributeValuesFrequency f : matchingFrequencies) { rowControls[col][layer] += f.getFrequency(); }
 			}
 		}
+		controls.add(rowControls);
 		
 		// 2. compute column controls
 		matchingCriteria.clear();
-		columnControls = new int[rowAttributeValues.size()][layerAttributeValues.size()];
+		int[][] columnControls = new int[rowAttributeValues.size()][layerAttributeValues.size()];
 		for (int row=0; row<rowAttributeValues.size(); row++) {
 			matchingCriteria.put(rowAttribute, rowAttributeValues.get(row));
 			
@@ -107,10 +89,11 @@ public class ThreeWayIPF extends IPF {
 				for (AttributeValuesFrequency f : matchingFrequencies) { columnControls[row][layer] += f.getFrequency(); }
 			}
 		}
+		controls.add(columnControls);
 		
 		// 3. compute layer controls
 		matchingCriteria.clear();
-		layerControls = new int[rowAttributeValues.size()][columnAttributeValues.size()];
+		int[][] layerControls = new int[rowAttributeValues.size()][columnAttributeValues.size()];
 		for (int row=0; row<rowAttributeValues.size(); row++) {
 			matchingCriteria.put(rowAttribute, rowAttributeValues.get(row));
 			
@@ -121,82 +104,29 @@ public class ThreeWayIPF extends IPF {
 				for (AttributeValuesFrequency f : matchingFrequencies) { layerControls[row][col] += f.getFrequency(); }
 			}
 		}
+		controls.add(layerControls);
+		
+		// TODO ensure that sum(rowControls) == sum(columnControls) == sum(layerControls) ELSE raise exception
 	}
 	
 	@Override
-	public AbstractAttribute getControlledAttribute(final int dimension) throws GenstarException {
-		if (dimension == 0) { return rowAttribute; }
-		if (dimension == 1) { return columnAttribute; }
-		if (dimension == 2) { return layerAttribute; }
-		
-		throw new GenstarException("Invalid dimension value (accepted values: 0, 1, 2).");
-	}
-
-	@Override
-	public List<AttributeValue> getAttributeValues(final int dimension) throws GenstarException {
-		if (dimension == 0) { 
-			List<AttributeValue> copy = new ArrayList<AttributeValue>(rowAttributeValues);
-			return copy;
-		}
-		
-		if (dimension == 1) {
-			List<AttributeValue> copy = new ArrayList<AttributeValue>(columnAttributeValues);
-			return copy;
-		}
-		
-		if (dimension == 2) {
-			List<AttributeValue> copy = new ArrayList<AttributeValue>(layerAttributeValues);
-			return copy;
-		}
-		
-		throw new GenstarException("Invalid dimension value (accepted values: 0, 1, 2).");
-	}
-	
-	@Override
-	public void fit() throws GenstarException {
-		if (iterations != null) {
-			iterations.clear();
-		} else {
-			iterations = new ArrayList<IPFIteration>();
-		}
-
-		if (selectionProbabilities != null) {
-			selectionProbabilities.clear();
-			selectionProbabilities = null;
-		}
-		
-		IPFIteration iteration = new ThreeWayIteration(this);
-		iterations.add(iteration);
-		for (int iter=0; iter<maxIteration; iter++) {
-			iteration = iteration.nextIteration();
-			iterations.add(iteration);
-		}		
+	protected ThreeWayIteration createIPFIteration() throws GenstarException {
+		return new ThreeWayIteration(this);
 	}
 
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public int[][] getControls(int dimension) throws GenstarException {
-		if (dimension == 0) { return rowControls; }
-		if (dimension == 1) { return columnControls; }
-		if (dimension == 2) { return layerControls; }
-
-		throw new GenstarException("Invalid 'dimension' value. Accepted values: 0, 1, 2.");
-	}
-
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public double[][][] getData() {
-		double[][][] copy = new double[data.length][data[0].length][data[0][0].length];
-		for (int row=0; row<data.length; row++) {
-			for (int column=0; column<data[0].length; column++) {
-				copy[row][column] = Arrays.copyOf(data[row][column], data[row][column].length);
-			}
-		}
-		
-		return copy;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public double[][][] getData() {
+//		double[][][] copy = new double[data.length][data[0].length][data[0][0].length];
+//		for (int row=0; row<data.length; row++) {
+//			for (int column=0; column<data[0].length; column++) {
+//				copy[row][column] = Arrays.copyOf(data[row][column], data[row][column].length);
+//			}
+//		}
+//		
+//		return copy;
+//	}
 
 
 	@Override
@@ -204,10 +134,17 @@ public class ThreeWayIPF extends IPF {
 		if (iterations == null) { fit(); }
 		
 		if (selectionProbabilities == null) {
+			AbstractAttribute rowAttribute = getControlledAttribute(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+			List<AttributeValue> rowAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+			AbstractAttribute columnAttribute = getControlledAttribute(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+			List<AttributeValue> columnAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+			AbstractAttribute layerAttribute = getControlledAttribute(IPF_ATTRIBUTE_INDEXES.LAYER_ATTRIBUTE_INDEX);
+			List<AttributeValue> layerAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.LAYER_ATTRIBUTE_INDEX);
+
 			selectionProbabilities = new ArrayList<AttributeValuesFrequency>();
 			Map<AbstractAttribute, AttributeValue> attributeValues;
 			ThreeWayIteration lastIpfIteration = (ThreeWayIteration)iterations.get(iterations.size() - 1);
-			double[][][] iterationData = lastIpfIteration.getData();
+			double[][][] iterationData = lastIpfIteration.getCopyData();
 			
 			for (int row=0; row<iterationData.length; row++) {
 				attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
@@ -234,6 +171,10 @@ public class ThreeWayIPF extends IPF {
 	public void printDebug() throws GenstarException {
 		if (iterations == null) { fit(); }
 		
+		List<AttributeValue> rowAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+		List<AttributeValue> columnAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+		List<AttributeValue> layerAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.LAYER_ATTRIBUTE_INDEX);
+
 		System.out.println("ThreeWayIPF with");
 		System.out.println("\tNumber of entities to generate = " + this.getNbOfEntitiesToGenerate());
 		System.out.println("\trowAttributeValues.size() = " + rowAttributeValues.size());
@@ -242,6 +183,7 @@ public class ThreeWayIPF extends IPF {
 		System.out.println();
 
 		// 1. rowControls
+		int[][] rowControls = controls.get(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
 		System.out.println("rowControls: ");
 		for (int dim1=0; dim1<rowControls.length; dim1++) {
 			for (int dim2=0; dim2<rowControls[0].length; dim2++) {
@@ -254,6 +196,7 @@ public class ThreeWayIPF extends IPF {
 		System.out.println();
 		
 		// 2. columnControls
+		int[][] columnControls = controls.get(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
 		System.out.println("columnControls: ");
 		for (int dim1=0; dim1<columnControls.length; dim1++) {
 			for (int dim2=0; dim2<columnControls[0].length; dim2++) {
@@ -266,6 +209,7 @@ public class ThreeWayIPF extends IPF {
 		System.out.println();
 		
 		// 3.layerControls
+		int[][] layerControls = controls.get(IPF_ATTRIBUTE_INDEXES.LAYER_ATTRIBUTE_INDEX);
 		System.out.println("layerControls: ");
 		for (int dim1=0; dim1<layerControls.length; dim1++) {
 			for (int dim2=0; dim2<layerControls[0].length; dim2++) {
@@ -280,11 +224,11 @@ public class ThreeWayIPF extends IPF {
 		// IPFIterations
 		int iterationNo = 0;
 		System.out.println("Data of ThreeWayIteration: ");
-		for (IPFIteration iter : iterations) {
+		for (IPFIteration<double[][][], int[][], double[][]> iter : iterations) {
 			System.out.println("\tIteration: " + iterationNo);
 			
 			// data
-			double[][][] iterationData = iter.getData();
+			double[][][] iterationData = iter.getCopyData();
 			for (int layer=0; layer<layerAttributeValues.size(); layer++) {
 				System.out.println("\t\tLayer : " + layer);
 				

@@ -9,7 +9,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	GroupComponentSampleDataTest.class, IPFFactoryTest.class, IPFIterationTest.class,
 	IPFTest.class, SampleDataGenerationRuleTest.class,
 	SampleDataTest.class, SampleEntityPopulationTest.class, SampleEntityTest.class,
-	ThreeWayIPFTest.class, ThreeWayIterationTest.class, TwoWayIPFTest.class, TwoWayIterationTest.class })
+	TwoWayIPFTest.class, TwoWayIterationTest.class, ThreeWayIPFTest.class, ThreeWayIterationTest.class,  
+	FourWayIPFTest.class, FourWayIterationTest.class, FiveWayIPFTest.class, FiveWayIterationTest.class })
 public class IPFTestSuite {
 
 }

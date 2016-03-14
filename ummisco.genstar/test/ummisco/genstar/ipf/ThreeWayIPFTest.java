@@ -1,6 +1,6 @@
 package ummisco.genstar.ipf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
@@ -114,7 +113,6 @@ public class ThreeWayIPFTest {
 	// "data" verification
 	@Test public void testDataIsInitializedCorrectly() throws GenstarException {
 		
-		// double[][][] data = Deencapsulation.getField(ipf, "data");
 		double[][][] data = ipf.getData();
 				
 		assertTrue(data.length == rowAttributeValues.size());
@@ -141,10 +139,10 @@ public class ThreeWayIPFTest {
 	
 
 	// "controls" verification
-	@Test public void testControlsAreInitializedCorrectly() {
-		int[][] rowControls = Deencapsulation.getField(ipf, "rowControls");
-		int[][] columnControls = Deencapsulation.getField(ipf, "columnControls");
-		int[][] layerControls = Deencapsulation.getField(ipf, "layerControls");
+	@Test public void testControlsAreInitializedCorrectly() throws GenstarException {
+		int[][] rowControls = ipf.getControls(0);
+		int[][] columnControls = ipf.getControls(1);
+		int[][] layerControls = ipf.getControls(2);
 		
 		assertTrue(rowControls.length == columnAttributeValues.size());
 		assertTrue(rowControls[0].length == layerAttributeValues.size());

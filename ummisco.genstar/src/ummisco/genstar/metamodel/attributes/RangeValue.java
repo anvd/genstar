@@ -242,7 +242,7 @@ public class RangeValue extends AttributeValue {
 	}
 
 	@Override
-	public String toCSVString() {
+	public String toCsvString() {
 		return minStringValue + ":" + maxStringValue;
 	}	
 }

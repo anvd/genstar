@@ -6,55 +6,25 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 
-public class ThreeWayIteration extends IPFIteration {
-	
-	private static final int ROW_ATTRIBUTE_INDEX = 0;
-	
-	private static final int COLUMN_ATTRIBUTE_INDEX = 1;
-	
-	private static final int LAYER_ATTRIBUTE_INDEX = 2;
+public class ThreeWayIteration extends IPFIteration<double[][][], int[][], double[][]> {
 	
 
-	private double[][][] data;
-	
-	private int[][] rowControls;
-	
-	private int[][] columnControls;
-	
-	private int[][] layerControls;
-	
-	private double[][] rowMarginals;
-	
-	private double[][] columnMarginals;
-	
-	private double[][] layerMarginals;
-		
-	
 	public ThreeWayIteration(final ThreeWayIPF ipf) throws GenstarException {
-		super(ipf, 0);
-		
-		this.data = ipf.getData();
-		this.rowControls = ipf.getControls(0);
-		this.columnControls = ipf.getControls(1);
-		this.layerControls = ipf.getControls(2);
-		
-		computeMarginals();
+		super(ipf, 0, ipf.getData());
 	}
 	
 	private ThreeWayIteration(final ThreeWayIteration previousIteration, final double[][][] data) throws GenstarException {
-		super(previousIteration.getIPF(), previousIteration.getIteration() + 1);
-		
-		this.data = data;
-		this.rowControls = (int[][]) previousIteration.getIPF().getControls(ROW_ATTRIBUTE_INDEX);
-		this.columnControls = (int[][]) previousIteration.getIPF().getControls(COLUMN_ATTRIBUTE_INDEX);
-		this.layerControls = (int[][]) previousIteration.getIPF().getControls(LAYER_ATTRIBUTE_INDEX);
-		
-		computeMarginals();
+		super(previousIteration.getIPF(), previousIteration.getIteration() + 1, data);
 	}
 	
-	private void computeMarginals() throws GenstarException {
+	@Override
+	protected void computeMarginals() throws GenstarException {
+		AbstractAttribute rowAttribute = ipf.getControlledAttribute(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+		AbstractAttribute columnAttribute = ipf.getControlledAttribute(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+		AbstractAttribute layerAttribute = ipf.getControlledAttribute(IPF_ATTRIBUTE_INDEXES.LAYER_ATTRIBUTE_INDEX);
+		
 		// rowMarginals
-		rowMarginals = new double[data[0].length][data[0][0].length];
+		double[][] rowMarginals = new double[data[0].length][data[0][0].length];
 		for (int col=0; col<data[0].length; col++) {
 			for (int layer=0; layer<data[0][0].length; layer++) {
 				double rowMarginal = 0;
@@ -62,22 +32,19 @@ public class ThreeWayIteration extends IPFIteration {
 				rowMarginals[col][layer] = rowMarginal;
 				
 				if (rowMarginals[col][layer] == 0) {
-					AbstractAttribute rowAttribute = ipf.getControlledAttribute(0);
-					AbstractAttribute columnAttribute = ipf.getControlledAttribute(1);
-					AbstractAttribute layerAttribute = ipf.getControlledAttribute(2);
-					
 					AttributeValue columnValue = ipf.getAttributeValues(1).get(col);
 					AttributeValue layerValue = ipf.getAttributeValues(2).get(layer);
 					
 					throw new GenstarException("Zero marginal total on row attribute: " + rowAttribute.getNameOnData() 
-							+ ", columnValue: " + columnValue.toCSVString() + "(" + columnAttribute.getNameOnData() + ")"
-							+ ", layerValue: " + layerValue.toCSVString() + "(" + layerAttribute.getNameOnData() + ")");
+							+ ", columnValue: " + columnValue.toCsvString() + " (" + columnAttribute.getNameOnData() + ")"
+							+ ", layerValue: " + layerValue.toCsvString() + " (" + layerAttribute.getNameOnData() + ")");
 				}
 			}
-		}		
+		}	
+		marginals.add(rowMarginals);
 		
 		// columnMarginals
-		columnMarginals = new double[data.length][data[0][0].length];
+		double[][] columnMarginals = new double[data.length][data[0][0].length];
 		for (int row=0; row<data.length; row++) {
 			for (int layer=0; layer<data[0][0].length; layer++) {
 				double columnMarginal = 0;
@@ -85,22 +52,19 @@ public class ThreeWayIteration extends IPFIteration {
 				columnMarginals[row][layer] = columnMarginal;
 				
 				if (columnMarginal == 0) {
-					AbstractAttribute rowAttribute = ipf.getControlledAttribute(0);
-					AbstractAttribute columnAttribute = ipf.getControlledAttribute(1);
-					AbstractAttribute layerAttribute = ipf.getControlledAttribute(2);
-					
 					AttributeValue rowValue = ipf.getAttributeValues(0).get(row);
 					AttributeValue layerValue = ipf.getAttributeValues(2).get(layer);
 					
 					throw new GenstarException("Zero marginal total on column attribute: " + columnAttribute.getNameOnData() 
-							+ ", rowValue: " + rowValue.toCSVString() + "(" + rowAttribute.getNameOnData() + ")"
-							+ ", layerValue: " + layerValue.toCSVString() + "(" + layerAttribute.getNameOnData() + ")");
+							+ ", rowValue: " + rowValue.toCsvString() + " (" + rowAttribute.getNameOnData() + ")"
+							+ ", layerValue: " + layerValue.toCsvString() + " (" + layerAttribute.getNameOnData() + ")");
 				}
 			}
 		}
+		marginals.add(columnMarginals);
 		
 		// layerMarginals
-		layerMarginals = new double[data.length][data[0].length];
+		double[][] layerMarginals = new double[data.length][data[0].length];
 		for (int row=0; row<data.length; row++) {
 			for (int col=0; col<data[0].length; col++) {
 				double layerMarginal = 0;
@@ -108,24 +72,20 @@ public class ThreeWayIteration extends IPFIteration {
 				layerMarginals[row][col] = layerMarginal; 
 				
 				if (layerMarginal == 0) {
-					AbstractAttribute rowAttribute = ipf.getControlledAttribute(0);
-					AbstractAttribute columnAttribute = ipf.getControlledAttribute(1);
-					AbstractAttribute layerAttribute = ipf.getControlledAttribute(2);
-					
 					AttributeValue rowValue = ipf.getAttributeValues(0).get(row);
 					AttributeValue columnValue = ipf.getAttributeValues(1).get(col);
 					
 					throw new GenstarException("Zero marginal total on layer attribute: " + layerAttribute.getNameOnData() 
-							+ ", rowValue: " + rowValue.toCSVString() + "(" + rowAttribute.getNameOnData() + ")"
-							+ ", columnValue: " + columnValue.toCSVString() + "(" + columnAttribute.getNameOnData() + ")");
+							+ ", rowValue: " + rowValue.toCsvString() + " (" + rowAttribute.getNameOnData() + ")"
+							+ ", columnValue: " + columnValue.toCsvString() + " (" + columnAttribute.getNameOnData() + ")");
 				}
 			}
 		}
+		marginals.add(layerMarginals);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public double[][][] getData() {
+	public double[][][] getCopyData() {
 		double[][][] copy = new double[data.length][data[0].length][data[0][0].length];
 		for (int row=0; row<data.length; row++) {
 			for (int column=0; column<data[0].length; column++) {
@@ -138,13 +98,11 @@ public class ThreeWayIteration extends IPFIteration {
 
 	@Override
 	public ThreeWayIteration nextIteration() throws GenstarException {
-		double[][][] copyData = new double[data.length][data[0].length][data[0][0].length];
-		for (int row=0; row<copyData.length; row++) {
-			for (int column=0; column<copyData[0].length; column++) {
-				copyData[row][column] = Arrays.copyOf(data[row][column], data[row][column].length);
-			}
-		}
-
+		int[][] rowControls = ipf.getControls(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+		int[][] columnControls = ipf.getControls(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+		int[][] layerControls = ipf.getControls(IPF_ATTRIBUTE_INDEXES.LAYER_ATTRIBUTE_INDEX);
+		
+		double[][][] copyData = this.getCopyData();
 		
 		// 1. compute row marginals, rowAdjustments then adjust rows
 		double[][] copyDataRowMarginals = new double[data[0].length][data[0][0].length];
@@ -191,33 +149,7 @@ public class ThreeWayIteration extends IPFIteration {
 		return new ThreeWayIteration(this, copyData);
 	}
 	
-	@SuppressWarnings("unchecked")
-	@Override
-	public double[][] getMarginals(final int dimension) throws GenstarException {
-		if (dimension == 0) {
-			double[][] copyRowMarginals = new double[rowMarginals.length][rowMarginals[0].length];
-			for (int row=0; row<rowMarginals.length; row++) { copyRowMarginals[row] = Arrays.copyOf(rowMarginals[row], rowMarginals[row].length); }
-					
-			return copyRowMarginals;
-		}
-		
-		if (dimension == 1) {
-			double[][] copyColumnMarginals = new double[columnMarginals.length][columnMarginals[0].length];
-			for (int row=0; row<columnMarginals.length; row++) { copyColumnMarginals[row] = Arrays.copyOf(columnMarginals[row], columnMarginals[row].length); }
-					
-			return copyColumnMarginals;
-		}
-		
-		if (dimension == 2) {
-			double[][] copyLayerMarginals = new double[layerMarginals.length][layerMarginals[0].length];
-			for (int row=0; row<layerMarginals.length; row++) { copyLayerMarginals[row] = Arrays.copyOf(layerMarginals[row], layerMarginals[row].length); }
-			
-			return copyLayerMarginals;
-		}
-		
-		throw new GenstarException("Invalid 'dimension' value (accepted values: 0, 1, 2)");
-	}
-	
+
 	@Override
 	public int getNbOfEntitiesToGenerate() {
 		if (entitiesToGenerate == -1) {

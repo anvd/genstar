@@ -10,15 +10,36 @@ public class IPFFactory {
 	public static IPF createIPF(final SampleDataGenerationRule generationRule) throws GenstarException {
 		if (generationRule == null) { throw new GenstarException("'generationRule' can not be null"); }
 		
-		// create TwoWayIPF or ThreeWayIPF basing on the number of controlled attributes
+		// initialise nWayIPF basing on the number of controlled attributes
 		List<AbstractAttribute> controlledAttributes = generationRule.getControlledAttributes();
+		int nbOfControlledAttributes = controlledAttributes.size();
 		
-		if (controlledAttributes.size() == 2) {
-			return new TwoWayIPF(generationRule);
-		} else if (controlledAttributes.size() == 3) {
-			return new ThreeWayIPF(generationRule);
-		} else {
-			throw new GenstarException("Can not handle " + controlledAttributes.size() + " controlled attributes.");
+		switch (nbOfControlledAttributes) {
+			case 2: { return new TwoWayIPF(generationRule); }
+			
+			case 3: { return new ThreeWayIPF(generationRule); }
+			
+			case 4: { return new FourWayIPF(generationRule); }
+			
+			case 5: { return new FiveWayIPF(generationRule); }
+			
+			case 6: { return new SixWayIPF(generationRule); }
+			
+			default: { throw new GenstarException("Can not handle " + nbOfControlledAttributes + " controlled attributes."); }
 		}
+		
+//		if (controlledAttributes.size() == 2) {
+//			return new TwoWayIPF(generationRule);
+//		} else if (controlledAttributes.size() == 3) {
+//			return new ThreeWayIPF(generationRule);
+//		} else if (controlledAttributes.size() == 4) {
+//			return new FourWayIPF(generationRule);
+//		} else if  (controlledAttributes.size() == 5) {
+//			return new FiveWayIPF(generationRule);
+//		} else if (controlledAttributes.size() == 6) {
+//			return new SixWayIPF(generationRule);
+//		} else {
+//			throw new GenstarException("Can not handle " + controlledAttributes.size() + " controlled attributes.");
+//		}
 	}
 }

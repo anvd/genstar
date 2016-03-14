@@ -6,77 +6,57 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 
-public class TwoWayIteration extends IPFIteration {
+public class TwoWayIteration extends IPFIteration<double[][], int[], double[]> {
 	
-	private double[][] data;
-	
-	private int[] rowControls;
-	
-	private int[] columnControls;
-	
-	private double[] rowMarginals;
-	
-	private double[] columnMarginals;
-	
-	
+
 	public TwoWayIteration(final TwoWayIPF ipf) throws GenstarException {
-		super(ipf, 0);
-		
-		this.data = ipf.getData();
-		this.rowControls = ipf.getControls(0);
-		this.columnControls = ipf.getControls(1);
-		
-		if (data == null) { throw new GenstarException("'ipf' parameter contains null data"); }
-		if (rowControls == null) { throw new GenstarException("'ipf' parameter contains null row controls"); }
-		if (columnControls == null) { throw new GenstarException("'ipf' parameter contains null column controls"); }
-		
-		computeMarginals();
+		super(ipf, 0, ipf.getData());
 	}
 	
 	private TwoWayIteration(final TwoWayIteration previousIteration, final double[][] data) throws GenstarException {
-		super(previousIteration.getIPF(), previousIteration.getIteration() + 1);
-		
-		this.data = data;
-		this.rowControls = (int[]) previousIteration.getIPF().getControls(0);
-		this.columnControls = (int[]) previousIteration.getIPF().getControls(1);
-		
-		computeMarginals();
+		super(previousIteration.getIPF(), previousIteration.getIteration() + 1, data);
 	}	
 	
-	private void computeMarginals() throws GenstarException {
-		rowMarginals = new double[rowControls.length];
+	@Override
+	protected void computeMarginals() throws GenstarException {
+		int[] rowControls = ipf.getControls(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+		int[] columnControls = ipf.getControls(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+
+		double[] rowMarginals = new double[rowControls.length];
 		for (int row=0; row<rowControls.length; row++) {
 			double rowTotal = 0;
 			for (int column=0; column<columnControls.length; column++) { rowTotal += data[row][column]; }
 			rowMarginals[row] = rowTotal;
 			
 			if (rowMarginals[row] == 0) {
-				AbstractAttribute rowAttribute = ipf.getControlledAttribute(0);
-				AttributeValue rowValue = ipf.getAttributeValues(0).get(row);
+				AbstractAttribute rowAttribute = ipf.getControlledAttribute(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+				AttributeValue rowValue = ipf.getAttributeValues(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX).get(row);
 				
-				throw new GenstarException("Zero marginal total on row attribute: " + rowAttribute.getNameOnData() + " rowValue: " + rowValue.toCSVString());
+				throw new GenstarException("Zero marginal total on row attribute: " + rowAttribute.getNameOnData() + " rowValue: " + rowValue.toCsvString());
 			}
 		}
 		
-		columnMarginals = new double[columnControls.length];
+		double[] columnMarginals = new double[columnControls.length];
 		for (int column=0; column<columnControls.length; column++) {
 			double columnTotal = 0;
 			for (int row=0; row<rowControls.length; row++) { columnTotal += data[row][column]; }
 			columnMarginals[column] = columnTotal;
 			
 			if (columnMarginals[column] == 0) {
-				AbstractAttribute columnAttribute = ipf.getControlledAttribute(1);
-				AttributeValue columnValue = ipf.getAttributeValues(1).get(column);
+				AbstractAttribute columnAttribute = ipf.getControlledAttribute(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+				AttributeValue columnValue = ipf.getAttributeValues(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX).get(column);
 
-				throw new GenstarException("Zero marginal total on column attribute: " + columnAttribute.getNameOnData() + " rowValue: " + columnValue.toCSVString());
+				throw new GenstarException("Zero marginal total on column attribute: " + columnAttribute.getNameOnData() + " columnValue: " + columnValue.toCsvString());
 			}
 		}
 	}
 
 	@Override
 	public TwoWayIteration nextIteration() throws GenstarException {
-		double[][] copyData = new double[data.length][data[0].length];
-		for (int row=0; row<data.length; row++) { copyData[row] = Arrays.copyOf(data[row], data[row].length); }
+		int[] rowControls = ipf.getControls(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
+		int[] columnControls = ipf.getControls(IPF_ATTRIBUTE_INDEXES.COLUMN_ATTRIBUTE_INDEX);
+
+		double[][] copyData = getCopyData();
 		
 		// 1. compute row marginals, rowAdjustments then adjust rows
 		double[] copyDataRowMarginals = new double[rowControls.length];
@@ -103,31 +83,14 @@ public class TwoWayIteration extends IPFIteration {
 		return new TwoWayIteration(this, copyData);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public double[][] getData() {
+	public double[][] getCopyData() {
 		double[][] copy = new double[data.length][data[0].length];
 		for (int row=0; row<data.length; row++) { copy[row] = Arrays.copyOf(data[row], data[row].length); }
 		
 		return copy;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public double[] getMarginals(final int dimension) throws GenstarException {
-		if (dimension == 0) {
-			double[] copyRowMarginals = Arrays.copyOf(rowMarginals, rowMarginals.length);
-			return copyRowMarginals;
-		}
-		
-		if (dimension == 1) {
-			double[] copyColumnMarginals = Arrays.copyOf(columnMarginals, columnMarginals.length);
-			return copyColumnMarginals;
-		}
-		
-		throw new GenstarException("Invalid 'dimension' value (accepted values: 0, 1)");
-	}
-	
 	@Override
 	public int getNbOfEntitiesToGenerate() {
 		if (entitiesToGenerate == -1) {
