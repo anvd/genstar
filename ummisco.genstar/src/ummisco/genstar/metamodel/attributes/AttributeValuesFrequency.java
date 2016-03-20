@@ -18,6 +18,8 @@ public class AttributeValuesFrequency {
 	
 	private int frequency = 0;
 	
+	private Set<AbstractAttribute> attributes;
+	
 	
 	public AttributeValuesFrequency(final Map<AbstractAttribute, AttributeValue> attributeValues, final int frequency) throws GenstarException {
 		this(attributeValues);
@@ -35,6 +37,7 @@ public class AttributeValuesFrequency {
 		}
 		
 		this.attributeValues = new HashMap<AbstractAttribute, AttributeValue>(attributeValues);
+		this.attributes = new HashSet<AbstractAttribute>(attributeValues.keySet());
 	}
 	
 	public AttributeValue getAttributeValue(final AbstractAttribute attribute) {
@@ -68,7 +71,7 @@ public class AttributeValuesFrequency {
 		this.frequency = frequency;
 	}
 	
-	public boolean isMatchEntity(final Collection<? extends AbstractAttribute> inputAttributes, final Entity entity) throws GenstarException {
+	public boolean matchEntity(final Collection<? extends AbstractAttribute> inputAttributes, final Entity entity) throws GenstarException {
 		if (inputAttributes == null || entity == null) { throw new IllegalArgumentException("Neither 'inputAttributes' nor 'entity' parameter can be null"); }
 		
 		// attribute values on entity
@@ -102,7 +105,13 @@ public class AttributeValuesFrequency {
 		return true;
 	}
 	
-	public boolean isMatch(final Map<AbstractAttribute, ? extends AttributeValue> otherAttributeValues) {
+	public boolean matchEntity(final Entity entity) throws GenstarException {
+		if (entity == null) { throw new GenstarException("Parameter entity can not be null"); }
+		
+		return this.matchEntity(attributes, entity);
+	}
+	
+	public boolean matchAttributeValues(final Map<AbstractAttribute, ? extends AttributeValue> otherAttributeValues) {
 		if (otherAttributeValues == null || otherAttributeValues.isEmpty()) { throw new IllegalArgumentException("'otherAttributeValues' parameter can not be null or empty"); }
 		
 		AttributeValue attributeValue;
@@ -135,6 +144,6 @@ public class AttributeValuesFrequency {
 	}
 	
 	public Set<AbstractAttribute> getAttributes() {
-		return new HashSet<AbstractAttribute>(attributeValues.keySet());
+		return new HashSet<AbstractAttribute>(attributes);
 	}
 }

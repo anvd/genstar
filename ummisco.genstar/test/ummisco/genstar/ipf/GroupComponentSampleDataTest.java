@@ -16,7 +16,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarFactoryUtils;
+import ummisco.genstar.util.GenstarUtils;
 
 public class GroupComponentSampleDataTest {
 
@@ -25,13 +25,13 @@ public class GroupComponentSampleDataTest {
 		// group generator
 		GenstarCSVFile groupAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/group_component_sample_data/group_attributes.csv", true);
 		ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group generator");
-		GenstarFactoryUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
+		GenstarUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
 		groupGenerator.setPopulationName("household");
 		
 		// component generator
 		GenstarCSVFile componentAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/group_component_sample_data/component_attributes.csv", true);
 		ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("component generator");
-		GenstarFactoryUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		GenstarUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		componentGenerator.setPopulationName("people");
 		
 		// sample files

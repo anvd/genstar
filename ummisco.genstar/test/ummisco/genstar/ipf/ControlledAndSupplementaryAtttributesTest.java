@@ -18,7 +18,7 @@ import ummisco.genstar.metamodel.MultipleRulesGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarFactoryUtils;
+import ummisco.genstar.util.GenstarUtils;
 
 @RunWith(JMockit.class)
 public class ControlledAndSupplementaryAtttributesTest {
@@ -28,7 +28,7 @@ public class ControlledAndSupplementaryAtttributesTest {
 		try {
 			generator = new SingleRuleGenerator("generator");
 			GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/attributes.csv", true);
-			GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+			GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		} catch (final GenstarException e) {
 			e.printStackTrace();
 		} 

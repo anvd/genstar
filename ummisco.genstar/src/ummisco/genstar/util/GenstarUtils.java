@@ -5,7 +5,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,8 +14,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
-
-import com.google.common.collect.Sets;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.GroupComponentSampleData;
@@ -43,10 +40,12 @@ import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
+import com.google.common.collect.Sets;
+
 
 // TODO refactoring
 // divide this class into two: GenstarFactory & GenstarUtils
-public class GenstarFactoryUtils {
+public class GenstarUtils {
 
 	public static class AttributeValuesFrequencyComparator implements Comparator<AttributeValuesFrequency> {
 		
@@ -520,24 +519,24 @@ public class GenstarFactoryUtils {
 		createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		componentGenerator.setPopulationName(componentPopulationName);
 		
-		String groupIdAttributeNameOnGroup = generatorProperties.get(GenstarFactoryUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY);
+		String groupIdAttributeNameOnGroup = generatorProperties.get(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY);
 		AbstractAttribute groupIdAttributeOnGroup = rule.getAttributeByNameOnData(groupIdAttributeNameOnGroup);
 		if (groupIdAttributeOnGroup == null) { throw new GenstarException("'" + groupIdAttributeNameOnGroup + "' is not a valid attribute"); }
 		groupIdAttributeOnGroup.setIdentity(true);
 		
-		String groupIdAttributeNameOnComponent = generatorProperties.get(GenstarFactoryUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY);
+		String groupIdAttributeNameOnComponent = generatorProperties.get(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY);
 		AbstractAttribute groupIdAttributeOnComponent = componentGenerator.getAttributeByNameOnData(groupIdAttributeNameOnComponent);
 		if (groupIdAttributeOnComponent == null) { throw new GenstarException("'" + groupIdAttributeOnComponent + "' is not a valid attribute"); }
 		groupIdAttributeOnComponent.setIdentity(true);
 		
 		ISampleData groupSampleData = new SampleData(groupGenerator.getPopulationName(), groupGenerator.getAttributes(), groupSampleFile);
-		String componentReferenceOnGroup = generatorProperties.get(GenstarFactoryUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_REFERENCE_ON_GROUP_PROPERTY);
+		String componentReferenceOnGroup = generatorProperties.get(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_REFERENCE_ON_GROUP_PROPERTY);
 		if (componentReferenceOnGroup != null) { 
 			groupSampleData.addComponentReference(componentGenerator.getPopulationName(), componentReferenceOnGroup);
 		}
 		
 		ISampleData componentSampleData = new SampleData(componentGenerator.getPopulationName(), componentGenerator.getAttributes(), componentSampleFile);
-		String groupReferenceOnComponent = generatorProperties.get(GenstarFactoryUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_REFERENCE_ON_COMPONENT_PROPERTY);
+		String groupReferenceOnComponent = generatorProperties.get(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_REFERENCE_ON_COMPONENT_PROPERTY);
 		if (groupReferenceOnComponent != null) {
 			componentSampleData.addGroupReference(groupGenerator.getPopulationName(), groupReferenceOnComponent);
 		}
@@ -674,7 +673,7 @@ public class GenstarFactoryUtils {
 			}
 			
 			for (AttributeValuesFrequency avf : attributeValuesFrequencies) {
-				if (avf.isMatch(attributeValues)) { 
+				if (avf.matchAttributeValues(attributeValues)) { 
 					avf.setFrequency(avf.getFrequency() + 1);
 					break;
 				}
@@ -1216,6 +1215,7 @@ public class GenstarFactoryUtils {
 		return null;
 	}
 	
+	
 	public static Map<AbstractAttribute, AttributeValue> buildAttributeValueMap(final Set<AbstractAttribute> attributes, final List<AttributeValue> values) throws GenstarException {
 		Map<AbstractAttribute, AttributeValue> retVal = new HashMap<AbstractAttribute, AttributeValue>();
 		
@@ -1235,6 +1235,146 @@ public class GenstarFactoryUtils {
 		}
 		
 		return retVal;
+	}
+	
+	
+	public static List<Integer> analyseIpfPopulation(final ISyntheticPopulation population, final GenstarCSVFile controlledAttributesListFile, 
+			final GenstarCSVFile controlTotalsFile) throws GenstarException {
+		
+		// parameters validation
+		if (population == null || controlledAttributesListFile == null || controlTotalsFile == null) {
+			throw new GenstarException("Parameters population, controlledAttributesListFile, controlTotalsFile can not be null");
+		}
+		
+		List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
+		List<List<String>> controlledAttributesList = controlledAttributesListFile.getContent();
+		if (controlledAttributesList.size() < 2) { throw new GenstarException("The number of controlled attributes must be at least 2 (file: " + controlledAttributesListFile.getPath() + ")."); }
+		for (int line=0; line<controlledAttributesList.size(); line++) {
+			List<String> row = controlledAttributesList.get(line);
+			if (row.size() > 1) { throw new GenstarException("Invalid controlledAttributesListFile file format (file: " + controlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
+			
+			String controlledAttrName = row.get(0);
+			AbstractAttribute controlledAttribute = population.getAttributeByNameOnData(controlledAttrName);
+			if (controlledAttribute == null) { throw new GenstarException("Invalid controlled attribute: " + controlledAttrName + ". File: " + controlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
+			if (controlledAttributes.contains(controlledAttribute)) { throw new GenstarException("Duplicated controlled attribute: " + controlledAttrName + ". File: " + controlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
+			
+			controlledAttributes.add(controlledAttribute);
+		}
+
+		// read attribute values frequencies from control totals file then do the analysis
+		List<AttributeValuesFrequency> attributeValuesFrequencies = readAttributeValuesFrequenciesFromControlTotalsFile(controlTotalsFile, controlledAttributes);
+		List<Integer> generatedFrequencies = new ArrayList<Integer>();
+		List<Entity> entities = population.getEntities();
+		for (AttributeValuesFrequency avf : attributeValuesFrequencies) {
+			int matched = 0;
+			for (Entity e : entities) { if (avf.matchEntity(e)) { matched++; } }
+			generatedFrequencies.add(matched);
+		}
+		
+		return generatedFrequencies;
+	}
+	
+	
+	public static GenstarCSVFile writeAnalsysisResultToFile(final GenstarCSVFile controlTotalsFile, final List<Integer> analysisResult, final String csvOutputFilePath) throws GenstarException {
+		
+		// parameters validation
+		if (controlTotalsFile == null || analysisResult == null || csvOutputFilePath == null) {
+			throw new GenstarException("Parameters controlTotalsFile, analysisResult, csvOutputFilePath can not be null");
+		}
+		
+		if (controlTotalsFile.getRows() != analysisResult.size()) {
+			throw new GenstarException("controlTotalsFile's row is different from analsysisResult's size (" + controlTotalsFile.getRows() + " v.s. " + analysisResult.size() + ")");
+		}
+		
+		// write analysis result to file
+		CsvWriter writer = new CsvWriter(csvOutputFilePath);
+		try {
+			int line=0;
+			for (List<String> row : controlTotalsFile.getContent()) {
+				String[] newRow = new String[row.size() + 1];
+				newRow = Arrays.copyOf(row.toArray(new String[0]), newRow.length);
+				newRow[newRow.length - 1] = analysisResult.get(line).toString();
+				
+				writer.writeRecord(newRow);
+				line++;
+			}
+		} catch (IOException ioe) {
+			throw new GenstarException(ioe);
+		} finally {
+			writer.close();
+		}
+		
+		return new GenstarCSVFile(csvOutputFilePath, false);
+	}
+	
+	
+	public static List<AttributeValuesFrequency> readAttributeValuesFrequenciesFromControlTotalsFile(final GenstarCSVFile controlTotalsFile, 
+			final List<AbstractAttribute> controlledAttributes) throws GenstarException {
+		
+		// parameters validation
+		if (controlTotalsFile == null || controlledAttributes == null) {
+			throw new GenstarException("Parameters controlTotalsFile, controlledAttributes can not be null");
+		}
+		
+		if (controlledAttributes.size() < 2) { throw new GenstarException("controlledAttributes must have at least two attributes/elements"); }
+		
+		// build controlledAttributesMap
+		ISyntheticPopulationGenerator generator = controlledAttributes.get(0).getPopulationGenerator();
+		Map<String, AbstractAttribute> controlledAttributesMap = new HashMap<String, AbstractAttribute>();
+		for (AbstractAttribute controlledAttr : controlledAttributes) {
+			if (controlledAttributesMap.containsKey(controlledAttr.getNameOnData())) { throw new GenstarException("Duplicated controlled attributes (" + controlledAttr.getNameOnData() + ")"); }
+			if (!controlledAttr.getPopulationGenerator().equals(generator)) { throw new GenstarException("Controlled attributes belong to different population generator"); }
+			
+			controlledAttributesMap.put(controlledAttr.getNameOnData(), controlledAttr);
+		}
+		
+		
+		// read the control totals file line by line to initialize AttributeValueFrequencies
+		List<AttributeValuesFrequency> avFrequencies = new ArrayList<AttributeValuesFrequency>();
+		
+		AbstractAttribute attribute;
+		AttributeValue attributeValue;
+		List<String> valueList = new ArrayList<String>();
+		int line = 1;
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
+		for (List<String> aRow : controlTotalsFile.getContent()) {
+			if (aRow.size() < 3 && (aRow.size() %2 != 1)) throw new GenstarException("Invalid attribute values frequency format. File: " + controlTotalsFile.getPath() + ", line: " + line);
+			line++;
+			
+			attributeValues.clear();
+			for (int col=0; col<(aRow.size() - 1); col+=2) { // Parse each line of the file
+				// 1. parse the attribute name column
+				attribute = generator.getAttributeByNameOnData(aRow.get(col));
+				if (attribute == null) { throw new GenstarException("'" + aRow.get(col) + "' is not a valid attribute. File: " + controlTotalsFile.getPath() + ", line: " + line + "."); }
+				if (!controlledAttributes.contains(attribute)) { throw new GenstarException("'" + aRow.get(col) + "' is not a controlled attribute."); }
+				if (attributeValues.containsKey(attribute)) { throw new GenstarException("Duplicated attribute : '" + attribute.getNameOnData() + "'"); }
+				
+				// 2. parse the attribute value column
+				valueList.clear();
+				String attributeValueString = aRow.get(col+1);
+				if (attributeValueString.contains(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER)) { // range value
+					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER);
+					if (rangeValueToken.countTokens() != 2) { throw new GenstarException("Invalid range attribute value: '" + attributeValueString + "'. File: " + controlTotalsFile.getPath()); }
+					valueList.add(rangeValueToken.nextToken());
+					valueList.add(rangeValueToken.nextToken());
+				} else { // unique value
+					valueList.add(attributeValueString);
+				}
+				
+				
+				attributeValue = attribute.findCorrespondingAttributeValue(valueList);
+				if (attributeValue == null) { throw new GenstarException("Attribute value '" + aRow.get(col+1) + "' not found in valid attribute values of " + attribute.getNameOnData()
+						+ ". File: " + controlTotalsFile.getPath() + ", line: " + line); }
+				
+				attributeValues.put(attribute, attributeValue);
+			}
+			
+			// "frequency" is the last column
+			int frequency = Integer.parseInt(aRow.get(aRow.size() - 1));
+			avFrequencies.add(new AttributeValuesFrequency(attributeValues, frequency));
+		}		
+		
+		return avFrequencies;
 	}
 	
 }

@@ -27,7 +27,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarFactoryUtils;
+import ummisco.genstar.util.GenstarUtils;
 
 @RunWith(JMockit.class)
 public class FourWayIPFTest {
@@ -42,32 +42,47 @@ public class FourWayIPFTest {
 	
 	@Before public void init() throws GenstarException {
 		
+		String _attributesFilePath = "test_data/ummisco/genstar/ipf/four_way/attributes.csv";
+		String _sampleDataFilePath = "test_data/ummisco/genstar/ipf/four_way/household_sample.csv";
+		String controlTotalsFilePath = "test_data/ummisco/genstar/ipf/four_way/control_totals.csv";
+
+		GenstarCSVFile _attributesFile = new GenstarCSVFile(_attributesFilePath, true);
+		GenstarCSVFile controlAttributesFile = _attributesFile; 
+		
+		String controlAttributesListFilePath = "test_data/ummisco/genstar/ipf/four_way/controlled_attributes_list.csv";
+		
+		// generate household control totals if necessary
+		File controlTotalsFile = new File(controlTotalsFilePath);
+		if (!controlTotalsFile.exists()) {
+			int numberOfHouseholds = 1000;
+			List<List<String>> householdControlTotals = GenstarUtils.generateControlTotals(controlAttributesFile, numberOfHouseholds);
+			GenstarUtils.writeControlTotalsToCsvFile(householdControlTotals, controlTotalsFilePath);
+		}
+		
 		// generate sample data if necessary
-		String _sampleDataFileName = "test_data/ummisco/genstar/ipf/four_way/household_sample.csv";
-		File _sampleDataFile = new File(_sampleDataFileName);
+		File _sampleDataFile = new File(_sampleDataFilePath);
 		if (!_sampleDataFile.exists()) {
 			String populationName = "dummy population";
-			GenstarCSVFile _attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/four_way/attributes.csv", true);
 			int minEntitiesOfEachAttributeValuesSet = 1;
 			int maxEntitiesOfEachAttributeValuesSet = 3;
 			
-			ISyntheticPopulation generatedSamplePopulation = GenstarFactoryUtils.generateRandomSinglePopulation(populationName, _attributesFile, minEntitiesOfEachAttributeValuesSet, maxEntitiesOfEachAttributeValuesSet);
+			ISyntheticPopulation generatedSamplePopulation = GenstarUtils.generateRandomSinglePopulation(populationName, _attributesFile, minEntitiesOfEachAttributeValuesSet, maxEntitiesOfEachAttributeValuesSet);
 			
 			Map<String, String> csvFilePaths = new HashMap<String, String>();
-			csvFilePaths.put(populationName, _sampleDataFileName);
+			csvFilePaths.put(populationName, _sampleDataFilePath);
 			
-			GenstarFactoryUtils.writePopulationToCSVFile(generatedSamplePopulation, csvFilePaths);
+			GenstarUtils.writePopulationToCSVFile(generatedSamplePopulation, csvFilePaths);
 		}
 		
 		generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/four_way/attributes.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		GenstarCSVFile controlAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/four_way/controlled_attributes.csv", false);
-		for (List<String> row : controlAttributesFile.getContent()) { controlledAttributes.add(generator.getAttributeByNameOnData(row.get(0))); }	
+		GenstarCSVFile controlAttributesListFile = new GenstarCSVFile(controlAttributesListFilePath, false);
+		for (List<String> row : controlAttributesListFile.getContent()) { controlledAttributes.add(generator.getAttributeByNameOnData(row.get(0))); }	
 		
-		final GenstarCSVFile sampleDataFile = new GenstarCSVFile(_sampleDataFileName, true);
-		final GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/four_way/control_totals.csv", false);
+		final GenstarCSVFile sampleDataFile = new GenstarCSVFile(_sampleDataFilePath, true);
+		final GenstarCSVFile controlTotalsCSVFile = new GenstarCSVFile(controlTotalsFilePath, false);
 		
 		new NonStrictExpectations() {{
 			generationRule.getGenerator(); result = generator;
@@ -88,7 +103,7 @@ public class FourWayIPFTest {
 			};
 			
 			generationRule.getControlTotalsFile();
-			result = controlTotalsFile;
+			result = controlTotalsCSVFile;
 			
 			generationRule.getControlTotals();
 			result = new Delegate() {

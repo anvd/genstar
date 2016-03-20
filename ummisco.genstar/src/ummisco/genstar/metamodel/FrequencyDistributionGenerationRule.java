@@ -14,7 +14,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
-import ummisco.genstar.util.GenstarFactoryUtils;
+import ummisco.genstar.util.GenstarUtils;
 import ummisco.genstar.util.SharedInstances;
 
 import com.google.common.collect.Sets;
@@ -355,7 +355,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		allAttributes.addAll(outputAttributes.values());
 		Set<List<AttributeValue>> cartesianSet = Sets.cartesianProduct(attributesPossibleValues);
 		for (List<AttributeValue> cartesian : cartesianSet) {
-			attributeValuesFrequencies.add(new AttributeValuesFrequency(GenstarFactoryUtils.buildAttributeValueMap(allAttributes, cartesian)));
+			attributeValuesFrequencies.add(new AttributeValuesFrequency(GenstarUtils.buildAttributeValueMap(allAttributes, cartesian)));
 		}
 	}
 	
@@ -364,7 +364,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		List<AttributeValuesFrequency> retVal = new ArrayList<AttributeValuesFrequency>();
 		for (AttributeValuesFrequency e : attributeValuesFrequencies) {
-			if (e.isMatch(attributeValues)) { retVal.add(e); }
+			if (e.matchAttributeValues(attributeValues)) { retVal.add(e); }
 		}
 		
 		return retVal;
@@ -388,7 +388,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		List<AttributeValuesFrequency> matchingAttributeValuesFrequencies = new ArrayList<AttributeValuesFrequency>();
 		for (AttributeValuesFrequency e : attributeValuesFrequencies) {
-			if (e.isMatchEntity(inputAttributes.values(), entity)) { matchingAttributeValuesFrequencies.add(e); }
+			if (e.matchEntity(inputAttributes.values(), entity)) { matchingAttributeValuesFrequencies.add(e); }
 		}
 		
 		int total = 0;

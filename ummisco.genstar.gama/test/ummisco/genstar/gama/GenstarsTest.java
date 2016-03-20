@@ -66,7 +66,7 @@ import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.util.CsvWriter;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarFactoryUtils;
+import ummisco.genstar.util.GenstarUtils;
 
 @RunWith(JMockit.class)
 public class GenstarsTest {
@@ -168,7 +168,7 @@ public class GenstarsTest {
 			writer.writeRecord((String[])any); times = 57;
 			
 			// verify that one instance of GamaCSVFile is created
-			new GamaCSVFile(scope, resultDistributionCSVFilePath, GenstarFactoryUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.FIELD_DELIMITER, Types.STRING, true);
+			new GamaCSVFile(scope, resultDistributionCSVFilePath, GenstarUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.FIELD_DELIMITER, Types.STRING, true);
 		}};
 		
 		
@@ -573,7 +573,7 @@ public class GenstarsTest {
 		// dataSet1
 		final ISyntheticPopulationGenerator dataSet1Generator = new SingleRuleGenerator("dummy generator");
 		GenstarCSVFile dataSet1AttributesFile = new GenstarCSVFile(dataSet1AttributesFilePath, true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(dataSet1Generator, dataSet1AttributesFile);
+		GenstarUtils.createAttributesFromCSVFile(dataSet1Generator, dataSet1AttributesFile);
 		
 		AbstractAttribute householdSizeAttr = dataSet1Generator.getAttributeByNameOnData("Household Size");
 		AttributeValue size1 = new UniqueValue(DataType.INTEGER, "1");
@@ -725,7 +725,7 @@ public class GenstarsTest {
 		// dataSet2
 		final ISyntheticPopulationGenerator dataSet2Generator = new SingleRuleGenerator("dummy generator");
 		GenstarCSVFile dataSet2AttributesFile = new GenstarCSVFile(dataSet2AttributesFilePath, true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(dataSet2Generator, dataSet2AttributesFile);
+		GenstarUtils.createAttributesFromCSVFile(dataSet2Generator, dataSet2AttributesFile);
 		
 		AbstractAttribute ageAttr = dataSet2Generator.getAttributeByNameOnData("Age");
 		// 0:15; 16:20; 21:25; 26:30; 31:50; 51:60; 61:75; 76:80; 81:100

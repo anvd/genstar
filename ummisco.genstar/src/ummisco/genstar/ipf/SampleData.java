@@ -11,7 +11,7 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarFactoryUtils;
+import ummisco.genstar.util.GenstarUtils;
 
 public class SampleData extends AbstractSampleData implements ISampleData { // TODO change to CSVSampleData
 	
@@ -103,7 +103,7 @@ public class SampleData extends AbstractSampleData implements ISampleData { // T
 					sampleAttributes.put(attributeIndexes.get(attributeColumn).getNameOnEntity(), value);
 				} else {
 					sampleAttributes.put(attributeIndexes.get(attributeColumn).getNameOnEntity(), 
-							GenstarFactoryUtils.createAttributeValue(attribute.getValueClassOnEntity(), attribute.getDataType(), valueStrList));
+							GenstarUtils.createAttributeValue(attribute.getValueClassOnEntity(), attribute.getDataType(), valueStrList));
 				}
 			}
 			sampleEntitiesAttributeValues.add(sampleAttributes);

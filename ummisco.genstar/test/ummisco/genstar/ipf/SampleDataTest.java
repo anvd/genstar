@@ -20,7 +20,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarFactoryUtils;
+import ummisco.genstar.util.GenstarUtils;
 
 @RunWith(JMockit.class)
 public class SampleDataTest {
@@ -30,7 +30,7 @@ public class SampleDataTest {
 		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testGetSampleEntities/attributes.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testGetSampleEntities/people_sample.csv", true);
 		
@@ -42,7 +42,7 @@ public class SampleDataTest {
 		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 10);
 		
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testCountMatchingEntities/attributes.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testCountMatchingEntities/people_sample.csv", true);
 		
@@ -114,7 +114,7 @@ public class SampleDataTest {
 		ISingleRuleGenerator generator = new SingleRuleGenerator("generator");
 		
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testInitializeSampleEntitiesWithMismatchedAttributes/attributes.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		GenstarCSVFile data = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testInitializeSampleEntitiesWithMismatchedAttributes/PICURS_People_SampleData.csv", true);
 		

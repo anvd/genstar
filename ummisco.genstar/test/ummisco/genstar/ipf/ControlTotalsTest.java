@@ -1,7 +1,7 @@
 package ummisco.genstar.ipf;
 
-import static org.junit.Assert.*;
-import static mockit.Deencapsulation.*;
+import static mockit.Deencapsulation.getField;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
@@ -26,7 +25,7 @@ import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarFactoryUtils;
+import ummisco.genstar.util.GenstarUtils;
 
 @RunWith(JMockit.class)
 public class ControlTotalsTest {
@@ -34,7 +33,7 @@ public class ControlTotalsTest {
 	@Test public void testGetMatchingAttributeValuesFrequenciesForUniqueValue(@Mocked final SampleDataGenerationRule rule1, @Mocked final SampleDataGenerationRule rule2) throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		final GenstarCSVFile frequencyFile1 = new GenstarCSVFile("test_data/ummisco/genstar/ipf/control_totals1.csv", false);
 
@@ -46,7 +45,6 @@ public class ControlTotalsTest {
 		rule1ControlledAttributes.add(householdIncomeAttr);
 
 		new Expectations() {{
-			onInstance(rule1).getGenerator(); result = generator;
 			onInstance(rule1).getControlledAttributes(); result = rule1ControlledAttributes;
 			onInstance(rule1).getControlTotalsFile(); result = frequencyFile1;
 		}};
@@ -108,7 +106,6 @@ public class ControlTotalsTest {
 		
 		
 		new Expectations() {{
-			onInstance(rule2).getGenerator(); result = generator;
 			onInstance(rule2).getControlledAttributes(); result = rule2ControlledAttributes;
 			onInstance(rule2).getControlTotalsFile(); result = frequencyFile2;
 		}};
@@ -154,14 +151,14 @@ public class ControlTotalsTest {
 		matchingCriteria.clear();
 		matchingCriteria.put(householdSize, householdSizeTwo);
 		List<AttributeValuesFrequency> result9 = avfCSVFile2.getMatchingAttributeValuesFrequencies(matchingCriteria);
-		assertTrue(result9.size() == 0);
+		assertTrue(result9.size() == 6);
 	}
 	
 	@Test public void testParseAttributeValuesFrequencyForUniqueValue(@Mocked final SampleDataGenerationRule rule1, @Mocked final SampleDataGenerationRule rule2) throws GenstarException {
 		
 		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 
 		AbstractAttribute householdSizeAttr = generator.getAttributeByNameOnData("Household Size");
 		AbstractAttribute householdIncomeAttr = generator.getAttributeByNameOnData("Household Income");
@@ -173,7 +170,6 @@ public class ControlTotalsTest {
 		final GenstarCSVFile frequencyFile1 = new GenstarCSVFile("test_data/ummisco/genstar/ipf/control_totals1.csv", false);
 
 		new Expectations() {{
-			onInstance(rule1).getGenerator(); result = generator;
 			onInstance(rule1).getControlledAttributes(); result = rule1ControlledAttributes;
 			onInstance(rule1).getControlTotalsFile(); result = frequencyFile1;
 		}};
@@ -192,7 +188,6 @@ public class ControlTotalsTest {
 		final GenstarCSVFile frequencyFile2 = new GenstarCSVFile("test_data/ummisco/genstar/ipf/control_totals2.csv", false);
 
 		new Expectations() {{
-			onInstance(rule2).getGenerator(); result = generator;
 			onInstance(rule2).getControlledAttributes(); result = rule2ControlledAttributes;
 			onInstance(rule2).getControlTotalsFile(); result = frequencyFile2;
 		}};
@@ -205,7 +200,7 @@ public class ControlTotalsTest {
 	@Test public void testGetMatchingAttributeValuesFrequenciesForRangeValue(@Mocked final SampleDataGenerationRule rule) throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes1.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		final GenstarCSVFile frequencyFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/control_totals3.csv", false);
 		
@@ -217,7 +212,6 @@ public class ControlTotalsTest {
 		controlledAttributes.add(genderAttr);
 				
 		new Expectations() {{
-			rule.getGenerator(); result = generator;
 			rule.getControlledAttributes(); result = controlledAttributes;
 			rule.getControlTotalsFile(); result = frequencyFile;
 		}};
@@ -275,7 +269,7 @@ public class ControlTotalsTest {
 	@Test(expected = GenstarException.class) public void testAttributeValuesFrequenciesFileContainsInvalidAttribute(@Mocked final SampleDataGenerationRule rule) throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes1.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age");
 		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
@@ -287,7 +281,6 @@ public class ControlTotalsTest {
 		final GenstarCSVFile frequencyFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/control_totals4.csv", false);
 		
 		new Expectations() {{
-			rule.getGenerator(); result = generator;
 			rule.getControlledAttributes(); result = controlledAttributes;
 			rule.getControlTotalsFile(); result = frequencyFile;
 		}};
@@ -320,7 +313,7 @@ public class ControlTotalsTest {
 	@Test(expected = GenstarException.class) public void testAttributeValuesFrequenciesFileContainsInvalidControlledAttribute(@Mocked final SampleDataGenerationRule rule) throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes1.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age");
 		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
@@ -332,7 +325,6 @@ public class ControlTotalsTest {
 		final GenstarCSVFile frequencyFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/control_totals5.csv", false);
 		
 		new Expectations() {{
-			rule.getGenerator(); result = generator;
 			rule.getControlledAttributes(); result = controlledAttributes;
 			rule.getControlTotalsFile(); result = frequencyFile;
 		}};
@@ -344,29 +336,5 @@ public class ControlTotalsTest {
 		 */
 		new ControlTotals(rule);		
 	}
-	
-	
-	@Test public void testGetTotal(@Mocked final SampleDataGenerationRule rule) throws GenstarException {
-		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/attributes.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 
-		AbstractAttribute householdSizeAttr = generator.getAttributeByNameOnData("Household Size");
-		AbstractAttribute householdIncomeAttr = generator.getAttributeByNameOnData("Household Income");
-		
-		final List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
-		controlledAttributes.add(householdSizeAttr);
-		controlledAttributes.add(householdIncomeAttr);
-
-		final GenstarCSVFile frequencyFile1 = new GenstarCSVFile("test_data/ummisco/genstar/ipf/control_totals1.csv", false);
-		
-		new Expectations() {{
-			rule.getGenerator(); result = generator;
-			rule.getControlledAttributes(); result = controlledAttributes;
-			rule.getControlTotalsFile(); result = frequencyFile1;
-		}};
-
-		ControlTotals avfCSVFile1 = new ControlTotals(rule);
-		assertTrue(avfCSVFile1.getTotal() == 200);
-	}
 }

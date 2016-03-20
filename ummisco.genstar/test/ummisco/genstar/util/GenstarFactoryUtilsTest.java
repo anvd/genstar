@@ -1,6 +1,6 @@
 package ummisco.genstar.util;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -40,6 +41,7 @@ import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
+import ummisco.genstar.util.GenstarUtils.CSV_FILE_FORMATS;
 
 @RunWith(JMockit.class)
 public class GenstarFactoryUtilsTest {
@@ -61,7 +63,7 @@ public class GenstarFactoryUtilsTest {
 			times = 1;
 		}};
 		
-		GenstarFactoryUtils.createUniqueValueAttribute(mockedGenerator, "Category", "category", DataType.STRING, "C0; C1; C2; C3; C4; C5; C6; C7", UniqueValue.class);
+		GenstarUtils.createUniqueValueAttribute(mockedGenerator, "Category", "category", DataType.STRING, "C0; C1; C2; C3; C4; C5; C6; C7", UniqueValue.class);
 	}
 
 
@@ -85,7 +87,7 @@ public class GenstarFactoryUtilsTest {
 		}};
 		
 		// replay
-		GenstarFactoryUtils.createRangeValueAttribute(mockedGenerator, "Age", "age", DataType.INTEGER, "0:4; 5:17; 18:24; 25:34; 35:49; 50:64; 65:100", 
+		GenstarUtils.createRangeValueAttribute(mockedGenerator, "Age", "age", DataType.INTEGER, "0:4; 5:17; 18:24; 25:34; 35:49; 50:64; 65:100", 
 				UniqueValue.class);
 	}
 
@@ -143,13 +145,13 @@ public class GenstarFactoryUtilsTest {
 			result = "Dummy CSV File";
 			
 			mockedAttributesCSVFile.getColumns();
-			result = GenstarFactoryUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS;
+			result = GenstarUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS;
 
 			generator.addAttribute((AbstractAttribute) any);
 			times = 3;
 		}};
 		
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, mockedAttributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, mockedAttributesCSVFile);
 	}	
 	
 	
@@ -159,13 +161,13 @@ public class GenstarFactoryUtilsTest {
 		
 		ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("dummy generator", 10);
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateFrequencyDistributionGenerationFromSampleData/attributes.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		
 		GenstarCSVFile distributionFormatCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateFrequencyDistributionGenerationFromSampleData/distributionFormat.csv", true);
 		GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateFrequencyDistributionGenerationFromSampleData/sampleData.csv", true);
 		
-		FrequencyDistributionGenerationRule rule = GenstarFactoryUtils.createFrequencyDistributionFromSampleData(generator, distributionFormatCSVFile, sampleDataCSVFile);
+		FrequencyDistributionGenerationRule rule = GenstarUtils.createFrequencyDistributionFromSampleData(generator, distributionFormatCSVFile, sampleDataCSVFile);
 		assertTrue(rule.getAttributes().size() == 2);
 		assertTrue(rule.getInputAttributeAtOrder(0) == null);
 		assertTrue(rule.getOutputAttributeAtOrder(0).getNameOnData().equals("Category"));
@@ -207,7 +209,7 @@ public class GenstarFactoryUtilsTest {
 
 		boolean isMatchMap1 = false;
 		for (AttributeValuesFrequency f : attributeValuesFrequencies) {
-			if (f.isMatch(map1)) {
+			if (f.matchAttributeValues(map1)) {
 				if (isMatchMap1) { Assert.fail("Attributevalue is matched several times (map1)"); }
 				
 				assertTrue(f.getFrequency() == 1);
@@ -224,7 +226,7 @@ public class GenstarFactoryUtilsTest {
 		
 		boolean isMatchMap2 = false;
 		for (AttributeValuesFrequency f : attributeValuesFrequencies) {
-			if (f.isMatch(map2)) {
+			if (f.matchAttributeValues(map2)) {
 				if (isMatchMap2) { Assert.fail("Attributevalue is matched several times (map2)"); }
 				
 				assertTrue(f.getFrequency() == 2);
@@ -235,21 +237,21 @@ public class GenstarFactoryUtilsTest {
 	}		
 	
 	@Test(expected = GenstarException.class) public void testGenerateRandomSinglePopulationWithNullAttributesFile() throws GenstarException {
-		GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", null, 1);
+		GenstarUtils.generateRandomSinglePopulation("dummy population", null, 1);
 	}
 	
 	@Test(expected = GenstarException.class) public void testGenerateRandomSinglePopulationWithNegativeEntities(@Mocked final GenstarCSVFile attributesFile) throws GenstarException {
-		GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", attributesFile, 0);
+		GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile, 0);
 	}
 	
 	@Test public void testBuildControlledAttributesValuesSubsets() throws GenstarException {
 		// test_data/ummisco/genstar/util/testBuildControlledAttributesValuesSubsets/controlled_attributes1.csv
 		GenstarCSVFile controlledAttributesFile1 = new GenstarCSVFile("test_data/ummisco/genstar/util/testBuildControlledAttributesValuesSubsets/controlled_attributes1.csv", true);
 		ISingleRuleGenerator generator1 = new SingleRuleGenerator("dummy single rule generator");
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator1, controlledAttributesFile1);
+		GenstarUtils.createAttributesFromCSVFile(generator1, controlledAttributesFile1);
 		
 		// generate frequencies / control totals
-		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets1 = GenstarFactoryUtils.buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(generator1.getAttributes()));
+		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets1 = GenstarUtils.buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(generator1.getAttributes()));
 		
 		// 4 controlled attributes
 		assertTrue(controlledAttributesValuesSubsets1.size() == 4);
@@ -268,26 +270,26 @@ public class GenstarFactoryUtilsTest {
 		// test_data/ummisco/genstar/util/testBuildControlledAttributesValuesSubsets/controlled_attributes2.csv
 		GenstarCSVFile controlledAttributesFile2 = new GenstarCSVFile("test_data/ummisco/genstar/util/testBuildControlledAttributesValuesSubsets/controlled_attributes2.csv", true);
 		ISingleRuleGenerator generator2 = new SingleRuleGenerator("dummy single rule generator");
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator2, controlledAttributesFile2);
+		GenstarUtils.createAttributesFromCSVFile(generator2, controlledAttributesFile2);
 		
 		// generate frequencies / control totals
-		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets2 = GenstarFactoryUtils.buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(generator2.getAttributes()));
+		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets2 = GenstarUtils.buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(generator2.getAttributes()));
 
 		// 3 controlled attributes
 		assertTrue(controlledAttributesValuesSubsets2.size() == 3);
 	}
 	
 	@Test(expected = GenstarException.class) public void testGenerateControlTotalsWithNullControlledAttributesFile() throws GenstarException {
-		GenstarFactoryUtils.generateControlTotals(null, 1);
+		GenstarUtils.generateControlTotals(null, 1);
 	}
 	
 	@Test(expected = GenstarException.class) public void testGenerateControlTotalsWithNonPositiveTotal(@Mocked final GenstarCSVFile controlledAttributesFile) throws GenstarException {
-		GenstarFactoryUtils.generateControlTotals(controlledAttributesFile, 0);
+		GenstarUtils.generateControlTotals(controlledAttributesFile, 0);
 	}
 	
 	@Test public void testGenerateControlTotals() throws GenstarException {
 		GenstarCSVFile controlledAttributesFile1 = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateControlTotals/controlled_attributes1.csv", true);
-		List<List<String>> result1 = GenstarFactoryUtils.generateControlTotals(controlledAttributesFile1, 1000);
+		List<List<String>> result1 = GenstarUtils.generateControlTotals(controlledAttributesFile1, 1000);
 		
 		/*
 			Household Size, Household Income, Household Type: 3*2*3 = 18
@@ -300,7 +302,7 @@ public class GenstarFactoryUtilsTest {
 		for (List<String> row1 : result1) { assertTrue(row1.size() == 7); }
 
 		GenstarCSVFile controlledAttributesFile2 = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateControlTotals/controlled_attributes2.csv", true);
-		List<List<String>> result3 = GenstarFactoryUtils.generateControlTotals(controlledAttributesFile2, 10000);
+		List<List<String>> result3 = GenstarUtils.generateControlTotals(controlledAttributesFile2, 10000);
 		
 		/*
 			Household Size, Household Income: 3*2 = 6
@@ -313,23 +315,23 @@ public class GenstarFactoryUtilsTest {
 	}
 	
 	@Test(expected = GenstarException.class) public void testWriteControlTotalsToCsvFileWithNullControlTotals() throws GenstarException {
-		GenstarFactoryUtils.writeControlTotalsToCsvFile(null, "");
+		GenstarUtils.writeControlTotalsToCsvFile(null, "");
 	}
 	
 	@Test(expected = GenstarException.class) public void testWriteControlTotalsToCsvFileWithNullCsvFilePath() throws GenstarException {
-		GenstarFactoryUtils.writeControlTotalsToCsvFile(new ArrayList<List<String>>(), null);
+		GenstarUtils.writeControlTotalsToCsvFile(new ArrayList<List<String>>(), null);
 	}
 	
 	@Test public void testWriteControlTotalsToCsvFile() throws GenstarException {
 		GenstarCSVFile controlledAttributesFile1 = new GenstarCSVFile("test_data/ummisco/genstar/util/testWriteControlTotalsToCsvFile/controlled_attributes1.csv", true);
-		List<List<String>> controlTotals = GenstarFactoryUtils.generateControlTotals(controlledAttributesFile1, 500);
+		List<List<String>> controlTotals = GenstarUtils.generateControlTotals(controlledAttributesFile1, 500);
 		
 		String controlTotalsFilePath = "test_data/ummisco/genstar/util/testWriteControlTotalsToCsvFile/control_totals1.csv";
 		File controlTotalsFile = new File(controlTotalsFilePath);
 		if (controlTotalsFile.exists()) { controlTotalsFile.delete(); }
 		controlTotalsFile = null;
 		
-		GenstarFactoryUtils.writeControlTotalsToCsvFile(controlTotals, controlTotalsFilePath);
+		GenstarUtils.writeControlTotalsToCsvFile(controlTotals, controlTotalsFilePath);
 
 		GenstarCSVFile controlTotalsCsvFile = new GenstarCSVFile(controlTotalsFilePath, false);
 		assertTrue(controlTotalsCsvFile.getRows() == controlTotals.size()); // number of rows
@@ -338,21 +340,21 @@ public class GenstarFactoryUtilsTest {
 	
 	@Test public void testGenerateRandomSinglePopulationSuccessfully1() throws GenstarException {
 		GenstarCSVFile attributesFile1 = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateRandomSinglePopulation1/attributes1.csv", true);
-		ISyntheticPopulation generatedPopulation = GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", attributesFile1, 1, 1);
+		ISyntheticPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile1, 1, 1);
 		
 		int nbOfEntities1 = 1;
 		for (AbstractAttribute attribute : generatedPopulation.getAttributes()) { nbOfEntities1 *= attribute.values().size(); }
 		assertTrue(generatedPopulation.getEntities().size() == nbOfEntities1);
 		
-		generatedPopulation = GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", attributesFile1, 2, 2);
+		generatedPopulation = GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile1, 2, 2);
 		assertTrue(generatedPopulation.getEntities().size() == 2 * nbOfEntities1);
 		
-		generatedPopulation = GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", attributesFile1, 1, 2);
+		generatedPopulation = GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile1, 1, 2);
 		assertTrue((generatedPopulation.getEntities().size() <= 2 * nbOfEntities1) && (generatedPopulation.getEntities().size() >= nbOfEntities1));
 
 	
 		GenstarCSVFile attributesFile2 = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateRandomSinglePopulation1/attributes2.csv", true);
-		ISyntheticPopulation generatedPopulation2 = GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", attributesFile2, 1, 1);
+		ISyntheticPopulation generatedPopulation2 = GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile2, 1, 1);
 		
 		int nbOfEntities2 = 1;
 		for (AbstractAttribute attribute : generatedPopulation2.getAttributes()) { nbOfEntities2 *= attribute.values().size(); }
@@ -363,7 +365,7 @@ public class GenstarFactoryUtilsTest {
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateRandomSinglePopulation/attributes.csv", true);
 		int nbEntities = 100 + SharedInstances.RandomNumberGenerator.nextInt(100);
 		
-		ISyntheticPopulation generatedPopulation = GenstarFactoryUtils.generateRandomSinglePopulation("dummy population", attributesFile, nbEntities);
+		ISyntheticPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile, nbEntities);
 		
 		assertTrue(generatedPopulation.getEntities().size() == nbEntities);
 		assertTrue(generatedPopulation.getEntities().get(0).getEntityAttributeValues().size() == generatedPopulation.getAttributes().size());
@@ -375,14 +377,14 @@ public class GenstarFactoryUtilsTest {
 		String populationName = "household";
 		
 		ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group dummy generator");
-		GenstarFactoryUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
+		GenstarUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
 		List<AbstractAttribute> groupAttributes = new ArrayList<AbstractAttribute>(groupGenerator.getAttributes());
 		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttributeByNameOnData("Household ID");
 		groupIdAttributeOnGroupEntity.setIdentity(true);
 		
 		int nbOfGroups = 100;
 		
-		ISyntheticPopulation groupPopulation = Deencapsulation.invoke(GenstarFactoryUtils.class, "generateGroupPopulation", populationName, groupAttributes, 
+		ISyntheticPopulation groupPopulation = Deencapsulation.invoke(GenstarUtils.class, "generateGroupPopulation", populationName, groupAttributes, 
 				groupIdAttributeOnGroupEntity, nbOfGroups);
 		
 		assertTrue(groupPopulation.getEntities().size() == nbOfGroups);
@@ -397,14 +399,14 @@ public class GenstarFactoryUtilsTest {
 		GenstarCSVFile groupAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateComponentPopulation/group_attributes.csv", true);
 
 		ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group dummy generator");
-		GenstarFactoryUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
+		GenstarUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
 		List<AbstractAttribute> groupAttributes = new ArrayList<AbstractAttribute>(groupGenerator.getAttributes());
 		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttributeByNameOnData("Household ID");
 		groupIdAttributeOnGroupEntity.setIdentity(true);
 		AbstractAttribute groupSizeAttribute = groupGenerator.getAttributeByNameOnData("Household Size");
 		
 		int nbOfGroups = 100;
-		ISyntheticPopulation groupPopulation = Deencapsulation.invoke(GenstarFactoryUtils.class, "generateGroupPopulation", groupPopulationName, groupAttributes, 
+		ISyntheticPopulation groupPopulation = Deencapsulation.invoke(GenstarUtils.class, "generateGroupPopulation", groupPopulationName, groupAttributes, 
 				groupIdAttributeOnGroupEntity, nbOfGroups);
 		
 		// assert empty component populations
@@ -422,13 +424,13 @@ public class GenstarFactoryUtilsTest {
 		GenstarCSVFile componentAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testGenerateComponentPopulation/component_attributes.csv", true);
 		
 		ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("component dummy generator");
-		GenstarFactoryUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		GenstarUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		List<AbstractAttribute> componentAttributes = new ArrayList<AbstractAttribute>(componentGenerator.getAttributes());
 		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttributeByNameOnData("Household ID"); 
 		groupIdAttributeOnComponentEntity.setIdentity(true);
 		
 		// generate component entities
-		Deencapsulation.invoke(GenstarFactoryUtils.class, "generateComponentPopulation",  groupPopulation, componentPopulationName, 
+		Deencapsulation.invoke(GenstarUtils.class, "generateComponentPopulation",  groupPopulation, componentPopulationName, 
 				componentAttributes, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, groupSizeAttribute);		
 		
 		// assert that the number of generated component entities is correct
@@ -456,7 +458,7 @@ public class GenstarFactoryUtilsTest {
 		String groupSizeAttributeName = "Household Size";
 		int nbOfGroupEntities = 100;
 		
-		ISyntheticPopulation generatedCompoundPopulation = GenstarFactoryUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
+		ISyntheticPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
 				groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities);
 		
 		assertTrue(generatedCompoundPopulation.getEntities().size() == nbOfGroupEntities);
@@ -479,7 +481,7 @@ public class GenstarFactoryUtilsTest {
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateSampleDataGenerationRule/attributes.csv", true);
 		
 		ISingleRuleGenerator generator = new SingleRuleGenerator("single rule generator");
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		GenstarCSVFile sampleFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateSampleDataGenerationRule/sample_data.csv", true);
 		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateSampleDataGenerationRule/controlled_attributes.csv", false);
@@ -489,7 +491,7 @@ public class GenstarFactoryUtilsTest {
 		
 		AbstractAttribute householdIdAttribute = generator.getAttributeByNameOnEntity("householdID");
 		
-		GenstarFactoryUtils.createSampleDataGenerationRule(generator, "sample data generation rule", sampleFile, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile, householdIdAttribute);
+		GenstarUtils.createSampleDataGenerationRule(generator, "sample data generation rule", sampleFile, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile, householdIdAttribute);
 		
 		SampleDataGenerationRule rule = (SampleDataGenerationRule) generator.getGenerationRule();
 		assertTrue(rule.getSampleData() instanceof SampleData);
@@ -501,7 +503,7 @@ public class GenstarFactoryUtilsTest {
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateGroupComponentSampleDataGenerationRule/group_attributes.csv", true);
 		
 		ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group rule generator");
-		GenstarFactoryUtils.createAttributesFromCSVFile(groupGenerator, attributesFile);
+		GenstarUtils.createAttributesFromCSVFile(groupGenerator, attributesFile);
 		
 		
 		GenstarCSVFile groupSampleFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testCreateGroupComponentSampleDataGenerationRule/group_sample.csv", true);
@@ -518,11 +520,11 @@ public class GenstarFactoryUtilsTest {
 		
 		// optional/supplementary properties (COMPONENT_REFERENCE_ON_GROUP, GROUP_REFERENCE_ON_COMPONENT)
 		Map<String, String> supplementaryProperties = new HashMap<String, String>();
-		supplementaryProperties.put(GenstarFactoryUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY, groupIdAttributeNameOnGroup);
-		supplementaryProperties.put(GenstarFactoryUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY, groupIdAttributeNameOnComponent);
+		supplementaryProperties.put(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY, groupIdAttributeNameOnGroup);
+		supplementaryProperties.put(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY, groupIdAttributeNameOnComponent);
 		 
 		
-		GenstarFactoryUtils.createGroupComponentSampleDataGenerationRule(groupGenerator, "group component sample data generation rule", groupSampleFile, groupControlledAttributesFile, groupControlledTotalsFile, 
+		GenstarUtils.createGroupComponentSampleDataGenerationRule(groupGenerator, "group component sample data generation rule", groupSampleFile, groupControlledAttributesFile, groupControlledTotalsFile, 
 				groupSupplementaryAttributesFile, componentSampleFile, componentAttributesFile, componentPopulationName, supplementaryProperties);
 		
 		SampleDataGenerationRule rule = (SampleDataGenerationRule)groupGenerator.getGenerationRule();
@@ -543,8 +545,8 @@ public class GenstarFactoryUtilsTest {
 		generatedSinglePopulationFilePaths.put(singlePopulationName, singlePopulationOutputFile);
 		
 		
-		ISyntheticPopulation generatedSinglePopulation = GenstarFactoryUtils.generateRandomSinglePopulation(singlePopulationName, attributesFile, nbEntities);
-		Map<String, String> resultSingleFilePaths = GenstarFactoryUtils.writePopulationToCSVFile(generatedSinglePopulation, generatedSinglePopulationFilePaths);
+		ISyntheticPopulation generatedSinglePopulation = GenstarUtils.generateRandomSinglePopulation(singlePopulationName, attributesFile, nbEntities);
+		Map<String, String> resultSingleFilePaths = GenstarUtils.writePopulationToCSVFile(generatedSinglePopulation, generatedSinglePopulationFilePaths);
 		
 		assertTrue(resultSingleFilePaths.size() == 1);
 		assertTrue(resultSingleFilePaths.get(singlePopulationName).equals(singlePopulationOutputFile));
@@ -575,7 +577,7 @@ public class GenstarFactoryUtilsTest {
 		String groupSizeAttributeName = "Household Size";
 		int nbOfGroupEntities = 100;
 		
-		ISyntheticPopulation generatedCompoundPopulation = GenstarFactoryUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
+		ISyntheticPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
 				groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities);
 		
 		List<AbstractAttribute> componentPopulationAttributes = null;
@@ -596,7 +598,7 @@ public class GenstarFactoryUtilsTest {
 		generatedCompoundPopulationFilePaths.put(componentPopulationName, componentPopulationOutputFile);
 		
 
-		Map<String, String> resultCompoundFilePaths = GenstarFactoryUtils.writePopulationToCSVFile(generatedCompoundPopulation, generatedCompoundPopulationFilePaths);
+		Map<String, String> resultCompoundFilePaths = GenstarUtils.writePopulationToCSVFile(generatedCompoundPopulation, generatedCompoundPopulationFilePaths);
 		
 		assertTrue(resultCompoundFilePaths.size() == 2);
 		assertTrue(resultCompoundFilePaths.get(groupPopulationName).equals(groupPopulationOutputFile));
@@ -629,22 +631,22 @@ public class GenstarFactoryUtilsTest {
 	
 	
 	@Test(expected = GenstarException.class) public void testFindSubsetSumWithNonPositiveTotal() throws GenstarException {
-		GenstarFactoryUtils.findSubsetSum(0, 10);
+		GenstarUtils.findSubsetSum(0, 10);
 	}
 	
 	
 	@Test(expected = GenstarException.class) public void testFindSubsetSumWithNonPositiveN() throws GenstarException {
-		GenstarFactoryUtils.findSubsetSum(10, 0);
+		GenstarUtils.findSubsetSum(10, 0);
 	}
 	
 	
 	@Test(expected = GenstarException.class) public void testFindSubsetSumWithTotalSmallerThanN() throws GenstarException {
-		GenstarFactoryUtils.findSubsetSum(9, 10);
+		GenstarUtils.findSubsetSum(9, 10);
 	}
 	
 	
 	@Test public void testFindSubsetSum() throws GenstarException {
-		List<Integer> subset1 = GenstarFactoryUtils.findSubsetSum(100000, 10);
+		List<Integer> subset1 = GenstarUtils.findSubsetSum(100000, 10);
 		assertTrue(subset1.size() == 10);
 		int sumSubset1 = 0;
 		for (int i=0; i<subset1.size(); i++) { 
@@ -654,7 +656,7 @@ public class GenstarFactoryUtilsTest {
 		assertTrue(sumSubset1 == 100000);
 		
 		
-		List<Integer> subset2 = GenstarFactoryUtils.findSubsetSum(1000000, 15);
+		List<Integer> subset2 = GenstarUtils.findSubsetSum(1000000, 15);
 		assertTrue(subset2.size() == 15);
 		int sumSubset2 = 0;
 		for (int i=0; i<subset2.size(); i++) {
@@ -663,13 +665,147 @@ public class GenstarFactoryUtilsTest {
 		}
 		assertTrue(sumSubset2 == 1000000);
 		
-		List<Integer> subset3 = GenstarFactoryUtils.findSubsetSum(2, 1);
+		List<Integer> subset3 = GenstarUtils.findSubsetSum(2, 1);
 		assertTrue(subset3.size() == 1);
 		assertTrue(subset3.get(subset3.size() - 1) == 2);
 		
-		List<Integer> subset4 = GenstarFactoryUtils.findSubsetSum(2, 2);
+		List<Integer> subset4 = GenstarUtils.findSubsetSum(2, 2);
 		assertTrue(subset4.size() == 2);
 		assertTrue(subset4.get(subset4.size() - 1) == 1);
 		assertTrue(subset4.get(0) == 1);
+	}
+	
+	
+	@Test public void testReadAttributeValuesFrequenciesFromControlTotalsFile() throws GenstarException {
+		
+		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
+		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testReadAttributeValuesFrequenciesFromControlTotalsFile/controlled_attributes1.csv", true);
+		GenstarUtils.createAttributesFromCSVFile(generator, controlledAttributesFile);
+		
+		GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testReadAttributeValuesFrequenciesFromControlTotalsFile/control_totals1.csv", false);
+		
+		List<AttributeValuesFrequency> avfs = GenstarUtils.readAttributeValuesFrequenciesFromControlTotalsFile(controlTotalsFile, generator.getAttributes());
+		
+		assertTrue(avfs.size() == controlTotalsFile.getRows());
+		
+		// verify order
+		int line = 0;
+		AbstractAttribute attribute;
+		AttributeValue attributeValue;
+		List<String> valueList = new ArrayList<String>();
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>(); ;
+		for (List<String> aRow : controlTotalsFile.getContent()) {
+			
+			attributeValues.clear();
+			for (int col=0; col<(aRow.size() - 1); col+=2) { // Parse each line of the file
+				// 1. parse the attribute name column
+				attribute = generator.getAttributeByNameOnData(aRow.get(col));
+				
+				// 2. parse the attribute value column
+				valueList.clear();
+				String attributeValueString = aRow.get(col+1);
+				if (attributeValueString.contains(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER)) { // range value
+					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER);
+					valueList.add(rangeValueToken.nextToken());
+					valueList.add(rangeValueToken.nextToken());
+				} else { // unique value
+					valueList.add(attributeValueString);
+				}
+				
+				attributeValue = attribute.findCorrespondingAttributeValue(valueList);
+				attributeValues.put(attribute, attributeValue);
+			}
+			
+			assertTrue(avfs.get(line).matchAttributeValues(attributeValues));
+			
+			// "frequency" is the last column
+			assertTrue(avfs.get(line).getFrequency() == Integer.parseInt(aRow.get(aRow.size() - 1)));
+			line++;
+		}		
+	}
+	
+	
+	@Test public void testAnalyseIpfPopulation() throws GenstarException {
+		
+		// delete the csvOutputFile if is exists
+		String csvOutputFilePath = "test_data/ummisco/genstar/util/testAnalyseIpfPopulation/analysis_result.csv";
+		File outputFile = new File(csvOutputFilePath);
+		if (outputFile.exists()) { outputFile.delete(); }
+		
+		// generate the sample data if necessary
+		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testAnalyseIpfPopulation/attributes.csv", true);
+		String sampleFilePath = "test_data/ummisco/genstar/util/testAnalyseIpfPopulation/sample_data.csv";
+		File sampleFile = new File(sampleFilePath);
+		if (!sampleFile.exists()) {
+			String populationName = "household population";
+			ISyntheticPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation(populationName, attributesFile, 1, 3);
+			
+			Map<String, String> csvFilePathsByPopulationNames = new HashMap<String, String>();
+			csvFilePathsByPopulationNames.put(populationName, sampleFilePath);
+			GenstarUtils.writePopulationToCSVFile(generatedPopulation, csvFilePathsByPopulationNames);
+		}
+		
+		
+		// 1. create the generator and the attributes
+		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy generator");
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesFile);
+		
+		// 2. create sample data generation rule (GenstarFactoryUtils.createSampleDataGenerationRule)
+		GenstarCSVFile sampleCSVFile = new GenstarCSVFile(sampleFilePath, true);
+		GenstarCSVFile controlledAttributesListFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testAnalyseIpfPopulation/controlled_attributes_list.csv", false);
+		GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testAnalyseIpfPopulation/control_totals.csv", false);
+		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testAnalyseIpfPopulation/supplementary_attributes_list.csv", false);
+		GenstarUtils.createSampleDataGenerationRule(generator, "dummy rule", sampleCSVFile, controlledAttributesListFile, controlTotalsFile, supplementaryAttributesFile, null);
+		
+		// 3. generate the population
+		ISyntheticPopulation population = generator.generate();
+		
+		// 4. do the analysis
+		List<Integer> analsysisResult = GenstarUtils.analyseIpfPopulation(population, controlledAttributesListFile, controlTotalsFile);
+		
+		assertTrue(analsysisResult.size() == controlTotalsFile.getRows());
+	}
+	
+	
+	@Test public void testWriteAnalsysisResultToFile() throws GenstarException {
+		
+		// delete the result file if necessary
+		String csvOutputFilePath = "test_data/ummisco/genstar/util/testWriteAnalsysisResultToFile/analysis_result.csv";
+		File resultFile = new File(csvOutputFilePath);
+		if (resultFile.exists()) { resultFile.delete(); }
+
+		
+		List<Integer> analysisResult = new ArrayList<Integer>();
+		analysisResult.add(1);
+		analysisResult.add(2);
+		analysisResult.add(3);
+		
+		String controlTotalsFilePath = "test_data/ummisco/genstar/util/testWriteAnalsysisResultToFile/control_totals.csv";
+		GenstarCSVFile controlTotalsFile = new GenstarCSVFile(controlTotalsFilePath, false);
+		
+		GenstarCSVFile resultingFile = GenstarUtils.writeAnalsysisResultToFile(controlTotalsFile, analysisResult, csvOutputFilePath);
+		
+		assertTrue(resultingFile.getRows() == 3);
+		assertTrue(resultingFile.getColumns() == 3);
+
+		// row1 verification
+		List<String> resultingRow1 = resultingFile.getRow(0);
+		assertTrue(resultingRow1.get(0).equals("A"));
+		assertTrue(resultingRow1.get(1).equals("1"));
+		assertTrue(resultingRow1.get(2).equals("1"));
+
+	
+		// row2 verification
+		List<String> resultingRow2 = resultingFile.getRow(1);
+		assertTrue(resultingRow2.get(0).equals("B"));
+		assertTrue(resultingRow2.get(1).equals("2"));
+		assertTrue(resultingRow2.get(2).equals("2"));
+
+	
+		// row3 verification
+		List<String> resultingRow3 = resultingFile.getRow(2);
+		assertTrue(resultingRow3.get(0).equals("C"));
+		assertTrue(resultingRow3.get(1).equals("3"));
+		assertTrue(resultingRow3.get(2).equals("3"));
 	}
 }

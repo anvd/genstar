@@ -25,7 +25,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarFactoryUtils;
+import ummisco.genstar.util.GenstarUtils;
 
 @RunWith(JMockit.class)
 public class ThreeWayIPFTest {
@@ -43,7 +43,7 @@ public class ThreeWayIPFTest {
 		
 		generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/attributes.csv", true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		GenstarCSVFile controlAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/controlled_attributes.csv", false);
 		for (List<String> row : controlAttributesFile.getContent()) { controlledAttributes.add(generator.getAttributeByNameOnData(row.get(0))); }	

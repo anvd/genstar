@@ -27,19 +27,5 @@ public class IPFFactory {
 			
 			default: { throw new GenstarException("Can not handle " + nbOfControlledAttributes + " controlled attributes."); }
 		}
-		
-//		if (controlledAttributes.size() == 2) {
-//			return new TwoWayIPF(generationRule);
-//		} else if (controlledAttributes.size() == 3) {
-//			return new ThreeWayIPF(generationRule);
-//		} else if (controlledAttributes.size() == 4) {
-//			return new FourWayIPF(generationRule);
-//		} else if  (controlledAttributes.size() == 5) {
-//			return new FiveWayIPF(generationRule);
-//		} else if (controlledAttributes.size() == 6) {
-//			return new SixWayIPF(generationRule);
-//		} else {
-//			throw new GenstarException("Can not handle " + controlledAttributes.size() + " controlled attributes.");
-//		}
 	}
 }

@@ -26,7 +26,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarFactoryUtils;
+import ummisco.genstar.util.GenstarUtils;
 
 @RunWith(JMockit.class)
 public class FiveWayIPFTest {
@@ -57,8 +57,8 @@ public class FiveWayIPFTest {
 		File householdControlTotalsFile = new File(householdControlTotalsFilePath);
 		if (!householdControlTotalsFile.exists()) {
 			int numberOfHouseholds = 1000;
-			List<List<String>> householdControlTotals = GenstarFactoryUtils.generateControlTotals(householdControlAttributesFile, numberOfHouseholds);
-			GenstarFactoryUtils.writeControlTotalsToCsvFile(householdControlTotals, householdControlTotalsFilePath);
+			List<List<String>> householdControlTotals = GenstarUtils.generateControlTotals(householdControlAttributesFile, numberOfHouseholds);
+			GenstarUtils.writeControlTotalsToCsvFile(householdControlTotals, householdControlTotalsFilePath);
 		}
 		
 		
@@ -70,17 +70,17 @@ public class FiveWayIPFTest {
 			int minEntitiesOfEachAttributeValuesSet = 1;
 			int maxEntitiesOfEachAttributeValuesSet = 3;
 			
-			ISyntheticPopulation generatedSamplePopulation = GenstarFactoryUtils.generateRandomSinglePopulation(householdPopulationName, _householdAttributesFile, minEntitiesOfEachAttributeValuesSet, maxEntitiesOfEachAttributeValuesSet);
+			ISyntheticPopulation generatedSamplePopulation = GenstarUtils.generateRandomSinglePopulation(householdPopulationName, _householdAttributesFile, minEntitiesOfEachAttributeValuesSet, maxEntitiesOfEachAttributeValuesSet);
 			
 			Map<String, String> csvFilePaths = new HashMap<String, String>();
 			csvFilePaths.put(householdPopulationName, _householdSampleDataFileNamePath);
 			
-			GenstarFactoryUtils.writePopulationToCSVFile(generatedSamplePopulation, csvFilePaths);
+			GenstarUtils.writePopulationToCSVFile(generatedSamplePopulation, csvFilePaths);
 		}
 		 
 		householdGenerator = new SingleRuleGenerator("household generator");
 		GenstarCSVFile householdAttributesCSVFile = new GenstarCSVFile(householdAttributesFilePath, true);
-		GenstarFactoryUtils.createAttributesFromCSVFile(householdGenerator, householdAttributesCSVFile);
+		GenstarUtils.createAttributesFromCSVFile(householdGenerator, householdAttributesCSVFile);
 		
 		for (List<String> row : householdControlAttributesListFile.getContent()) { householdControlledAttributes.add(householdGenerator.getAttributeByNameOnData(row.get(0))); }	
 		
