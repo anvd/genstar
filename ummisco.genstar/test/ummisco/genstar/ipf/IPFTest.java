@@ -4,7 +4,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import mockit.Delegate;
 import mockit.Mocked;
+import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
 
 import org.junit.Test;
@@ -91,12 +93,4 @@ public class IPFTest {
 		new MockIPF(null);
 	}
 	
-	@Test public void testMaxIterationIsSetCorrectly(@Mocked SampleDataGenerationRule generationRule) throws GenstarException {
-		
-		IPF ipf = new MockIPF(generationRule);
-		
-		assertTrue(ipf.getMaxIteration() == 3);
-		ipf.setMaxIteration(5);
-		assertTrue(ipf.getMaxIteration() == 5);
-	}
 }

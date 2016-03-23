@@ -76,6 +76,9 @@ public class TwoWayIPFTest {
 					return new ControlTotals(generationRule);
 				}
 			};
+			
+			generationRule.getMaxIterations();
+			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
 		ipf = new TwoWayIPF(generationRule);
@@ -175,7 +178,7 @@ public class TwoWayIPFTest {
 		assertTrue(iterations0 == null);
 		ipf1.fit();
 		iterations0 = Deencapsulation.getField(ipf1, "iterations");
-		assertTrue(iterations0.size() == ipf1.getMaxIteration() + 1);
+		assertTrue(iterations0.size() == generationRule.getMaxIterations() + 1);
 
 		// DEBUG
 		//ipf1.printDebug();
@@ -189,7 +192,7 @@ public class TwoWayIPFTest {
 		
 		List<AttributeValuesFrequency> selectionProbabilities = ipf1.getSelectionProbabilitiesOfLastIPFIteration();
 		iterations = Deencapsulation.getField(ipf1, "iterations");
-		assertTrue(iterations.size() == ipf1.getMaxIteration() + 1);
+		assertTrue(iterations.size() == generationRule.getMaxIterations() + 1);
 		assertTrue(selectionProbabilities.size() == rowAttributeValues.size() * colAttributeValues.size());
 		
 		

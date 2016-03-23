@@ -33,7 +33,7 @@ public class SampleDataGenerationRuleTest {
 		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
-				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
+				controlledAttributesFile, controlsFile, supplementaryAttributesFile, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
 		ISampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataFile);
 		rule.setSampleData(sampleData);
 		
@@ -54,7 +54,7 @@ public class SampleDataGenerationRuleTest {
 		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule", 
-				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
+				controlledAttributesFile, controlsFile, supplementaryAttributesFile, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
 		ISampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataFile);
 		rule.setSampleData(sampleData);
 		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
@@ -102,7 +102,7 @@ public class SampleDataGenerationRuleTest {
 		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
-				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
+				controlledAttributesFile, controlsFile, supplementaryAttributesFile, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
 		ISampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataFile);
 		rule.setSampleData(sampleData);
 		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
@@ -125,7 +125,7 @@ public class SampleDataGenerationRuleTest {
 		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
-				controlledAttributesFile, controlsFile, supplementaryAttributesFile);
+				controlledAttributesFile, controlsFile, supplementaryAttributesFile, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
 		ISampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataFile);
 		rule.setSampleData(sampleData);
 		
@@ -145,5 +145,26 @@ public class SampleDataGenerationRuleTest {
 		for (AttributeValuesFrequency avf : sampleEntityCategories.keySet()) {
 			assertTrue(selectionProbabilities.contains(avf));
 		}
+	}
+
+
+	@Test public void testMaxIterationIsSetCorrectly() throws GenstarException {
+		
+		ISingleRuleGenerator generator = new SingleRuleGenerator("generator"); 
+		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
+		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		
+		GenstarCSVFile sampleDataFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/people_sample.csv", true);
+		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/controlled_attributes.csv", false);
+		GenstarCSVFile controlsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
+		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
+		
+		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
+				controlledAttributesFile, controlsFile, supplementaryAttributesFile, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
+
+		assertTrue(rule.getMaxIterations() == SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
+		
+		rule.setMaxIterations(5);
+		assertTrue(rule.getMaxIterations() == 5);
 	}
 }

@@ -12,39 +12,9 @@ import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 
 public class TwoWayIPF extends IPF<double[][], int[], double[]> {
 	
-//	private AbstractAttribute rowAttribute, columnAttribute;
-	
-//	private List<AttributeValue> rowAttributeValues;
-	
-//	private List<AttributeValue> columnAttributeValues;
-	
-//	private double[][] data;
-	
-//	private int[] rowControls;
-	
-//	private int[] columnControls;
-	
 	
 	public TwoWayIPF(final SampleDataGenerationRule generationRule) throws GenstarException {
 		super(generationRule);
-		
-//		// input parameters validation
-//		List<AbstractAttribute> controlledAttributes = generationRule.getControlledAttributes();
-//		
-//		if (controlledAttributes.size() != 2) { throw new GenstarException("TwoWayIPF only accepts two controlled attributes."); }
-//		Set<AbstractAttribute> attributeSet = new HashSet<AbstractAttribute>(controlledAttributes);
-//		if (attributeSet.size() != 2) { throw new GenstarException("Some controlled attributes are duplicated"); }
-//		
-//		this.controlledAttributes.addAll(controlledAttributes);
-//		
-//		this.rowAttribute = controlledAttributes.get(0);
-//		this.columnAttribute = controlledAttributes.get(1);
-//		
-//		this.rowAttributeValues = new ArrayList<AttributeValue>(rowAttribute.values());
-//		this.columnAttributeValues = new ArrayList<AttributeValue>(columnAttribute.values());
-//		
-//		initializeData();
-//		computeControls();
 	}
 
 	@Override
@@ -113,48 +83,6 @@ public class TwoWayIPF extends IPF<double[][], int[], double[]> {
 		return new TwoWayIteration(this);
 	}
 	
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public double[][] getData() {
-//		double[][] copy = new double[data.length][data[0].length];
-//		for (int row=0; row<copy.length; row++) { copy[row] = Arrays.copyOf(data[row], data[row].length); }
-//		
-//		return copy;
-//	}
-	
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public int[] getControls(final int dimension) throws GenstarException {
-//		if (dimension == 0) { return rowControls; }
-//		if (dimension == 1) { return columnControls; }
-//		throw new GenstarException("Invalid 'dimension' value (valid values: 0, 1)");
-//	}
-	
-//	@Override
-//	public AbstractAttribute getControlledAttribute(final int dimension) throws GenstarException {
-//		if (dimension == 0) { return rowAttribute; }
-//		if (dimension == 1) { return columnAttribute; }
-//		
-//		throw new GenstarException("Invalid dimension value (accepted values: 0, 1).");
-//	}
-	
-	
-	// TODO move to superclass
-//	@Override
-//	public List<AttributeValue> getAttributeValues(final int dimension) throws GenstarException {
-//		if (dimension == 0) { 
-//			List<AttributeValue> copy = new ArrayList<AttributeValue>(rowAttributeValues);
-//			return copy;
-//		}
-//		
-//		if (dimension == 1) {
-//			List<AttributeValue> copy = new ArrayList<AttributeValue>(columnAttributeValues);
-//			return copy;
-//		}
-//		
-//		throw new GenstarException("Invalid dimension value (accepted values: 0, 1).");
-//	}
-
 
 	@Override
 	public List<AttributeValuesFrequency> getSelectionProbabilitiesOfLastIPFIteration() throws GenstarException {

@@ -44,7 +44,7 @@ import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 import ummisco.genstar.util.GenstarUtils.CSV_FILE_FORMATS;
 
 @RunWith(JMockit.class)
-public class GenstarFactoryUtilsTest {
+public class GenstarUtilsTest {
 
 	@Test
 	public final void testCreateUniqueValueAttribut(@Mocked final UniqueValuesAttribute attribute, @Mocked final UniqueValue uValue, @Mocked final ISyntheticPopulationGenerator mockedGenerator) throws GenstarException {
@@ -491,7 +491,7 @@ public class GenstarFactoryUtilsTest {
 		
 		AbstractAttribute householdIdAttribute = generator.getAttributeByNameOnEntity("householdID");
 		
-		GenstarUtils.createSampleDataGenerationRule(generator, "sample data generation rule", sampleFile, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile, householdIdAttribute);
+		GenstarUtils.createSampleDataGenerationRule(generator, "sample data generation rule", sampleFile, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile, householdIdAttribute, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
 		
 		SampleDataGenerationRule rule = (SampleDataGenerationRule) generator.getGenerationRule();
 		assertTrue(rule.getSampleData() instanceof SampleData);
@@ -525,7 +525,7 @@ public class GenstarFactoryUtilsTest {
 		 
 		
 		GenstarUtils.createGroupComponentSampleDataGenerationRule(groupGenerator, "group component sample data generation rule", groupSampleFile, groupControlledAttributesFile, groupControlledTotalsFile, 
-				groupSupplementaryAttributesFile, componentSampleFile, componentAttributesFile, componentPopulationName, supplementaryProperties);
+				groupSupplementaryAttributesFile, componentSampleFile, componentAttributesFile, componentPopulationName, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS, supplementaryProperties);
 		
 		SampleDataGenerationRule rule = (SampleDataGenerationRule)groupGenerator.getGenerationRule();
 		assertTrue(rule.getSampleData() instanceof GroupComponentSampleData);
@@ -675,6 +675,10 @@ public class GenstarFactoryUtilsTest {
 		assertTrue(subset4.get(0) == 1);
 	}
 	
+	@Test public void testReadAttributeValuesFrequenciesFromControlTotalsFileFailed() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
 	
 	@Test public void testReadAttributeValuesFrequenciesFromControlTotalsFile() throws GenstarException {
 		
@@ -755,7 +759,7 @@ public class GenstarFactoryUtilsTest {
 		GenstarCSVFile controlledAttributesListFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testAnalyseIpfPopulation/controlled_attributes_list.csv", false);
 		GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testAnalyseIpfPopulation/control_totals.csv", false);
 		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/testAnalyseIpfPopulation/supplementary_attributes_list.csv", false);
-		GenstarUtils.createSampleDataGenerationRule(generator, "dummy rule", sampleCSVFile, controlledAttributesListFile, controlTotalsFile, supplementaryAttributesFile, null);
+		GenstarUtils.createSampleDataGenerationRule(generator, "dummy rule", sampleCSVFile, controlledAttributesListFile, controlTotalsFile, supplementaryAttributesFile, null, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
 		
 		// 3. generate the population
 		ISyntheticPopulation population = generator.generate();

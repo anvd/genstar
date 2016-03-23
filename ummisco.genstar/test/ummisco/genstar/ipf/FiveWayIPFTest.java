@@ -114,6 +114,9 @@ public class FiveWayIPFTest {
 					return new ControlTotals(householdGenerationRule);
 				}
 			};
+			
+			onInstance(householdGenerationRule).getMaxIterations();
+			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
 		householdIPF = new FiveWayIPF(householdGenerationRule);
@@ -359,7 +362,7 @@ public class FiveWayIPFTest {
 		assertTrue(iterations0 == null);
 		ipf1.fit();
 		iterations0 = Deencapsulation.getField(ipf1, "iterations");
-		assertTrue(iterations0.size() == ipf1.getMaxIteration() + 1);
+		assertTrue(iterations0.size() == householdGenerationRule.getMaxIterations() + 1);
 	}
 
 	@Test public void testGetSelectionProbabilities() throws GenstarException {
@@ -370,7 +373,7 @@ public class FiveWayIPFTest {
 		
 		List<AttributeValuesFrequency> selectionProbabilities = ipf1.getSelectionProbabilitiesOfLastIPFIteration();
 		iterations = Deencapsulation.getField(ipf1, "iterations");
-		assertTrue(iterations.size() == ipf1.getMaxIteration() + 1);
+		assertTrue(iterations.size() == householdGenerationRule.getMaxIterations() + 1);
 		assertTrue(selectionProbabilities.size() == householdRowAttributeValues.size() * householdColumnAttributeValues.size() * householdLayerAttributeValues.size() * householdStackAttributeValues.size() * householdFifthAttributeValues.size());
 		
 		

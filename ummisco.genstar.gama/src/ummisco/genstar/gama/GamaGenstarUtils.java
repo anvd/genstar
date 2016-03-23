@@ -31,7 +31,7 @@ import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarUtils;
 
-public class GamaGenstarFactoryUtils {
+public class GamaGenstarUtils {
 
 	static void createSampleDataGenerationRule(final IScope scope, final ISingleRuleGenerator generator, final String ruleName, final Properties sampleDataProperties) throws GenstarException {
 		
@@ -45,7 +45,7 @@ public class GamaGenstarFactoryUtils {
 			if (idAttribute == null) { throw new GenstarException(idAttributeName + " is not recognized as an attribute on the generator"); }
 		}
 		
-		// POPULATION_PROPERTY
+		// POPULATION_NAME_PROPERTY
 		String populationName = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.POPULATION_NAME_PROPERTY);
 		if (populationName == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.POPULATION_NAME_PROPERTY + "' not found in the property file."); };
 		generator.setPopulationName(populationName);
@@ -69,13 +69,18 @@ public class GamaGenstarFactoryUtils {
 		String supplementaryAttributesFilePath = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.SUPPLEMENTARY_ATTRIBUTES_PROPERTY);
 		if (supplementaryAttributesFilePath == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.SUPPLEMENTARY_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
 		GenstarCSVFile supplementaryAttributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, supplementaryAttributesFilePath, true), false);
+		
+		// MAX_ITERATIONS_PROPERTY
+		String maxIterationsValue = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.MAX_ITERATIONS_PROPERTY);
+		int maxIterations = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
+		if (maxIterationsValue != null) { maxIterations = Integer.parseInt(maxIterationsValue); }
+		
+
+		// COMPONENT_POPULATION_PROPERTY.
+		String componentPopulationName = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_POPULATION_NAME_PROPERTY);
 
 		// with component populations
-		if (sampleDataProperties.size() >= GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_COMPONENT_SAMPLE_DATA_NUMBER_OF_PROPERTIES) {
-
-			// COMPONENT_POPULATION_PROPERTY
-			String componentPopulationName = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_POPULATION_NAME_PROPERTY);
-			if (componentPopulationName == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_POPULATION_NAME_PROPERTY + "' not found in the property file."); }
+		if (componentPopulationName != null) { // If COMPONENT_POPULATION_PROPERTY exists, then this is a group_component sample data
 			
 			// COMPONENT_SAMPLE_DATA_PROPERTY
 			String componentSampleDataFilePath = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_SAMPLE_DATA_PROPERTY);
@@ -107,10 +112,10 @@ public class GamaGenstarFactoryUtils {
 			
 			GenstarUtils.createGroupComponentSampleDataGenerationRule(generator, ruleName, sampleCSVFile,
 					controlledAttributesCSVFile, controlledTotalsCSVFile, supplementaryAttributesCSVFile,
-					componentSampleDataFile, componentAttributesFile, componentPopulationName, supplementaryProperties);
+					componentSampleDataFile, componentAttributesFile, componentPopulationName, maxIterations, supplementaryProperties);
 			
 		} else { // without component populations
-			GenstarUtils.createSampleDataGenerationRule(generator, ruleName, sampleCSVFile, controlledAttributesCSVFile, controlledTotalsCSVFile, supplementaryAttributesCSVFile, idAttribute);
+			GenstarUtils.createSampleDataGenerationRule(generator, ruleName, sampleCSVFile, controlledAttributesCSVFile, controlledTotalsCSVFile, supplementaryAttributesCSVFile, idAttribute, maxIterations);
 		}
 		
 	}

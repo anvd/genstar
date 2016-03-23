@@ -28,7 +28,7 @@ import msi.gama.common.util.FileUtils;
 import msi.gama.runtime.IScope;
 
 @RunWith(JMockit.class)
-public class GamaGenstarFactoryUtilsTest {
+public class GamaGenstarUtilsTest {
 
 	@Test public void testCreateGroupComponentSampleDataGenerationRule(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
 		
@@ -98,7 +98,7 @@ public class GamaGenstarFactoryUtilsTest {
 		GenstarCSVFile attributesFile = new GenstarCSVFile(groupAttributesFilePath, true);
 		GenstarUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
-		GamaGenstarFactoryUtils.createSampleDataGenerationRule(scope, generator, ruleName, sampleDataProperties);
+		GamaGenstarUtils.createSampleDataGenerationRule(scope, generator, ruleName, sampleDataProperties);
 		
 		assertTrue(generator.getGenerationRule() instanceof SampleDataGenerationRule);
 
@@ -163,7 +163,7 @@ public class GamaGenstarFactoryUtilsTest {
 		GenstarCSVFile attributesFile = new GenstarCSVFile(attributesFilePath, true);
 		GenstarUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
-		GamaGenstarFactoryUtils.createSampleDataGenerationRule(scope, generator, ruleName, sampleDataProperties);
+		GamaGenstarUtils.createSampleDataGenerationRule(scope, generator, ruleName, sampleDataProperties);
 		
 		assertTrue(generator.getGenerationRule() instanceof SampleDataGenerationRule);
 

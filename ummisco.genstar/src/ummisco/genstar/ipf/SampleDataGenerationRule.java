@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.Entity;
@@ -19,6 +20,9 @@ import ummisco.genstar.util.SharedInstances;
 public class SampleDataGenerationRule extends GenerationRule {
 
 	public static final String RULE_TYPE_NAME = "Sample Data";
+	
+	public static final int DEFAULT_MAX_ITERATIONS = 3;
+	
 	
 	private IPF ipf;
 	
@@ -36,6 +40,8 @@ public class SampleDataGenerationRule extends GenerationRule {
 	
 	private List<AbstractAttribute> attributes;
 	
+	private int maxIterations = DEFAULT_MAX_ITERATIONS;
+	
 	private boolean ipfRun = false;
 	
 	private List<AttributeValuesFrequency> selectionProbabilities;
@@ -50,7 +56,8 @@ public class SampleDataGenerationRule extends GenerationRule {
 	
 	
 	public SampleDataGenerationRule(final ISingleRuleGenerator populationGenerator, final String name,
-			final GenstarCSVFile controlledAttributesFile, final GenstarCSVFile controlTotalsFile, final GenstarCSVFile supplementaryAttributesFile) throws GenstarException {
+			final GenstarCSVFile controlledAttributesFile, final GenstarCSVFile controlTotalsFile, 
+			final GenstarCSVFile supplementaryAttributesFile, final int maxIterations) throws GenstarException {
 		
 		super(populationGenerator, name);
 		
@@ -64,6 +71,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 		
 		this.controlledAndSupplementaryAttributes = new ControlledAndSupplementaryAttributes(this);
 		this.controlTotals = new ControlTotals(this);
+		this.setMaxIterations(maxIterations);
 	}
 
 	@Override
@@ -260,4 +268,13 @@ public class SampleDataGenerationRule extends GenerationRule {
 		return (ISingleRuleGenerator) populationGenerator;
 	}
 	
+	public void setMaxIterations(final int maxIterations) {
+		if (maxIterations <= 0) { throw new IllegalArgumentException("'maxIterations' parameter must be a positive integer."); }
+		
+		this.maxIterations = maxIterations;
+	}
+	
+	public int getMaxIterations() {
+		return maxIterations;
+	}
 }

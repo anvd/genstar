@@ -111,6 +111,9 @@ public class FourWayIPFTest {
 					return new ControlTotals(generationRule);
 				}
 			};
+			
+			generationRule.getMaxIterations();
+			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
 		ipf = new FourWayIPF(generationRule);
@@ -404,7 +407,7 @@ public class FourWayIPFTest {
 		assertTrue(iterations0 == null);
 		ipf1.fit();
 		iterations0 = Deencapsulation.getField(ipf1, "iterations");
-		assertTrue(iterations0.size() == ipf1.getMaxIteration() + 1);
+		assertTrue(iterations0.size() == generationRule.getMaxIterations() + 1);
 	}
 
 	@Test public void testGetSelectionProbabilities() throws GenstarException {
@@ -415,7 +418,7 @@ public class FourWayIPFTest {
 		
 		List<AttributeValuesFrequency> selectionProbabilities = ipf1.getSelectionProbabilitiesOfLastIPFIteration();
 		iterations = Deencapsulation.getField(ipf1, "iterations");
-		assertTrue(iterations.size() == ipf1.getMaxIteration() + 1);
+		assertTrue(iterations.size() == generationRule.getMaxIterations() + 1);
 		assertTrue(selectionProbabilities.size() == rowAttributeValues.size() * columnAttributeValues.size() * layerAttributeValues.size() * stackAttributeValues.size());
 		
 		

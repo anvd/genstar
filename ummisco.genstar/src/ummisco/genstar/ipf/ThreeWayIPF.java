@@ -115,20 +115,6 @@ public class ThreeWayIPF extends IPF<double[][][], int[][], double[][]> {
 	}
 
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public double[][][] getData() {
-//		double[][][] copy = new double[data.length][data[0].length][data[0][0].length];
-//		for (int row=0; row<data.length; row++) {
-//			for (int column=0; column<data[0].length; column++) {
-//				copy[row][column] = Arrays.copyOf(data[row][column], data[row][column].length);
-//			}
-//		}
-//		
-//		return copy;
-//	}
-
-
 	@Override
 	public List<AttributeValuesFrequency> getSelectionProbabilitiesOfLastIPFIteration() throws GenstarException {
 		if (iterations == null) { fit(); }

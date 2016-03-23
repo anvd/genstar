@@ -13,9 +13,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 
 public abstract class IPF<D, C, M> {
-	
-	protected int maxIteration = 3;
-	
+		
 	protected D data;
 	
 	protected List<C> controls;
@@ -61,15 +59,6 @@ public abstract class IPF<D, C, M> {
 	
 	protected abstract void computeControls() throws GenstarException;
 	
-	public void setMaxIteration(final int maxIteration) {
-		if (maxIteration <= 0) { throw new IllegalArgumentException("'maxIteration' must be a positive integer."); }
-		
-		this.maxIteration = maxIteration;
-	}
-	
-	public int getMaxIteration() {
-		return maxIteration;
-	}
 	
 	public SampleDataGenerationRule getGenerationRule() {
 		return generationRule;
@@ -108,7 +97,8 @@ public abstract class IPF<D, C, M> {
 		
 		IPFIteration iteration = createIPFIteration();
 		iterations.add(iteration);
-		for (int iter=0; iter<maxIteration; iter++) {
+		int maxIterations = generationRule.getMaxIterations();
+		for (int iter=0; iter<maxIterations; iter++) {
 			iteration = iteration.nextIteration();
 			iterations.add(iteration);
 		}		

@@ -346,6 +346,13 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		attributeValuesFrequencies.clear(); // do the clean up
 		
+		
+		Set<AbstractAttribute> allAttributes = new HashSet<AbstractAttribute>();
+		allAttributes.addAll(inputAttributes.values());
+		allAttributes.addAll(outputAttributes.values());
+		attributeValuesFrequencies = GenstarUtils.generateAttributeValuesFrequencies(allAttributes);
+		
+		/*
 		List<Set<AttributeValue>> attributesPossibleValues = new ArrayList<Set<AttributeValue>>();
 		for (AbstractAttribute inputAttr : inputAttributes.values()) { attributesPossibleValues.add(inputAttr.values()); }
 		for (AbstractAttribute outputAttr : outputAttributes.values()) { attributesPossibleValues.add(outputAttr.values()); }
@@ -357,6 +364,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		for (List<AttributeValue> cartesian : cartesianSet) {
 			attributeValuesFrequencies.add(new AttributeValuesFrequency(GenstarUtils.buildAttributeValueMap(allAttributes, cartesian)));
 		}
+		*/
 	}
 	
 	public List<AttributeValuesFrequency> findAttributeValuesFrequencies(final Map<AbstractAttribute, AttributeValue> attributeValues) throws GenstarException {

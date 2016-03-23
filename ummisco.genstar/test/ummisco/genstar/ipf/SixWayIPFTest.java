@@ -116,6 +116,9 @@ public class SixWayIPFTest {
 					return new ControlTotals(householdGenerationRule);
 				}
 			};
+			
+			onInstance(householdGenerationRule).getMaxIterations();
+			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
 		householdIPF = new SixWayIPF(householdGenerationRule);
@@ -438,7 +441,7 @@ public class SixWayIPFTest {
 		assertTrue(iterations0 == null);
 		ipf1.fit();
 		iterations0 = Deencapsulation.getField(ipf1, "iterations");
-		assertTrue(iterations0.size() == ipf1.getMaxIteration() + 1);
+		assertTrue(iterations0.size() == householdGenerationRule.getMaxIterations() + 1);
 	}
 
 
@@ -451,7 +454,7 @@ public class SixWayIPFTest {
 		
 		List<AttributeValuesFrequency> selectionProbabilities = ipf1.getSelectionProbabilitiesOfLastIPFIteration();
 		iterations = Deencapsulation.getField(ipf1, "iterations");
-		assertTrue(iterations.size() == ipf1.getMaxIteration() + 1);
+		assertTrue(iterations.size() == householdGenerationRule.getMaxIterations() + 1);
 		assertTrue(selectionProbabilities.size() == householdRowAttributeValues.size() * householdColumnAttributeValues.size() * householdLayerAttributeValues.size() * householdStackAttributeValues.size() * householdFifthAttributeValues.size() * householdSixthAttributeValues.size());
 		
 		
