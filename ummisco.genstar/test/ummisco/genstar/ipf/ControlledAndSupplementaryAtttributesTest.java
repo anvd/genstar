@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import mockit.Expectations;
 import mockit.Mocked;
@@ -15,11 +14,10 @@ import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarUtils;
 
 @RunWith(JMockit.class)
 public class ControlledAndSupplementaryAtttributesTest {
@@ -29,7 +27,7 @@ public class ControlledAndSupplementaryAtttributesTest {
 		try {
 			generator = new SingleRuleGenerator("generator");
 			GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/attributes.csv", true);
-			GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		} catch (final GenstarException e) {
 			e.printStackTrace();
 		} 

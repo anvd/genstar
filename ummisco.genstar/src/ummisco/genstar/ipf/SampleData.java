@@ -21,8 +21,6 @@ public class SampleData extends AbstractSampleData implements ISampleData { // T
 	
 	private SortedMap<Integer, AbstractAttribute> attributeIndexes;
 	
-	private String populationName;
-	
 	private SampleEntityPopulation sampleEntityPopulation;
 
 	

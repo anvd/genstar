@@ -45,7 +45,7 @@ public class TwoWayIPF extends IPF<double[][], int[], double[]> {
 	
 	@Override
 	protected void computeControls() throws GenstarException {
-		ControlTotals controlTotals = generationRule.getControlTotals();
+		IpfControlTotals controlTotals = generationRule.getControlTotals();
 		
 		// 1. compute row controls
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();

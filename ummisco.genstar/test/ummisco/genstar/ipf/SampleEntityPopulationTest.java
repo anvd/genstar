@@ -1,6 +1,6 @@
 package ummisco.genstar.ipf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,8 +18,8 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarUtils;
 
 public class SampleEntityPopulationTest {
 
@@ -42,7 +42,7 @@ public class SampleEntityPopulationTest {
 		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
 		
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_entity/testSetValidAttributeValues/attributes.csv", true);
-		GenstarUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		SampleEntityPopulation population = new SampleEntityPopulation("dummy population", generator.getAttributes());
 		
@@ -72,7 +72,7 @@ public class SampleEntityPopulationTest {
 		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
 		
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_entity/testSetValidAttributeValues/attributes.csv", true);
-		GenstarUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		SampleEntityPopulation population = new SampleEntityPopulation("dummy population", generator.getAttributes());
 		
@@ -97,7 +97,7 @@ public class SampleEntityPopulationTest {
 		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
 		
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_entity/testSetValidAttributeValues/attributes.csv", true);
-		GenstarUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		SampleEntityPopulation population = new SampleEntityPopulation("dummy population", generator.getAttributes());
 		

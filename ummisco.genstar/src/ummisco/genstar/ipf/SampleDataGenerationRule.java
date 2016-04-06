@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.Entity;
@@ -17,6 +16,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.SharedInstances;
 
+// TODO make SampleDataGenerationRule a super class (of IpfGenerationRule and IpuGenerationRule), change this class to IpfGenerationRule
 public class SampleDataGenerationRule extends GenerationRule {
 
 	public static final String RULE_TYPE_NAME = "Sample Data";
@@ -30,7 +30,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 	
 	private GenstarCSVFile controlTotalsFile;
 	
-	private ControlTotals controlTotals;
+	private IpfControlTotals controlTotals;
 	
 	private GenstarCSVFile controlledAttributesFile;
 	
@@ -62,7 +62,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 		super(populationGenerator, name);
 		
 		if (controlledAttributesFile == null) { throw new GenstarException("'controlledAttributesFile' can not be null"); }
-		if (controlTotalsFile == null) { throw new GenstarException("'controlsFile' can not be null"); }
+		if (controlTotalsFile == null) { throw new GenstarException("'controlTotalsFile' can not be null"); }
 		if (supplementaryAttributesFile == null) { throw new GenstarException("'supplementaryAttributesFile' can not be null"); }
 		
 		this.controlledAttributesFile = controlledAttributesFile;
@@ -70,7 +70,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 		this.supplementaryAttributesFile = supplementaryAttributesFile;
 		
 		this.controlledAndSupplementaryAttributes = new ControlledAndSupplementaryAttributes(this);
-		this.controlTotals = new ControlTotals(this);
+		this.controlTotals = new IpfControlTotals(this);
 		this.setMaxIterations(maxIterations);
 	}
 
@@ -244,7 +244,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 		return controlTotalsFile;
 	}
 	
-	public ControlTotals getControlTotals() {
+	public IpfControlTotals getControlTotals() {
 		 return controlTotals;
 	}
 	

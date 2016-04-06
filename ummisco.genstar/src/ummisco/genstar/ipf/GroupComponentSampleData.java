@@ -141,4 +141,13 @@ public class GroupComponentSampleData extends AbstractSampleData implements ISam
 		return nextId;
 	}
 	
+	public String getGroupPopulationName() {
+		return groupSampleData.getPopulationName();
+	}
+	
+	public String getComponentPopulationName() {
+		return componentSampleData.getPopulationName();
+	}
+	
+	
 }

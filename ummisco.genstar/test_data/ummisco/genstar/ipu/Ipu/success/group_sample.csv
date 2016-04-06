@@ -1,0 +1,9 @@
+householdID,householdSize,householdIncome,householdType
+0,1,High,type1
+1,1,High,type2
+2,1,Low,type1
+3,1,Low,type2
+4,2,High,type1
+5,2,High,type2
+6,2,Low,type1
+7,2,Low,type2

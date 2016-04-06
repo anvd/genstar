@@ -9,6 +9,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValue;
 
 public interface ISyntheticPopulation {
 	
+	
 	public abstract List<AbstractAttribute> getAttributes();
 	
 	public abstract AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData) throws GenstarException;
@@ -21,6 +22,7 @@ public interface ISyntheticPopulation {
 	
 	public abstract List<Entity> getEntities();
 
+	// TODO remove as of not use
 	public abstract List<Entity> getMatchingEntitiesByAttributeValuesOnEntity(final Map<String, AttributeValue> matchingCriteria) throws GenstarException;
 
 	public abstract boolean isCompatible(final ISyntheticPopulation otherPopulation);

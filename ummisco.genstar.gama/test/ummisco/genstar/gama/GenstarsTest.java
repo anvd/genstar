@@ -19,7 +19,6 @@ import msi.gama.runtime.IScope;
 import msi.gama.util.GamaFont;
 import msi.gama.util.IList;
 import msi.gama.util.file.GamaCSVFile;
-import msi.gama.util.file.IGamaFile;
 import msi.gama.util.matrix.GamaFloatMatrix;
 import msi.gama.util.matrix.GamaIntMatrix;
 import msi.gama.util.matrix.GamaObjectMatrix;
@@ -52,11 +51,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.ipf.ControlTotals;
+import ummisco.genstar.ipf.IpfControlTotals;
 import ummisco.genstar.ipf.SampleDataGenerationRule;
 import ummisco.genstar.metamodel.ISyntheticPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
@@ -64,6 +62,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.CsvWriter;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarUtils;
@@ -573,7 +572,7 @@ public class GenstarsTest {
 		// dataSet1
 		final ISyntheticPopulationGenerator dataSet1Generator = new SingleRuleGenerator("dummy generator");
 		GenstarCSVFile dataSet1AttributesFile = new GenstarCSVFile(dataSet1AttributesFilePath, true);
-		GenstarUtils.createAttributesFromCSVFile(dataSet1Generator, dataSet1AttributesFile);
+		AttributeUtils.createAttributesFromCSVFile(dataSet1Generator, dataSet1AttributesFile);
 		
 		AbstractAttribute householdSizeAttr = dataSet1Generator.getAttributeByNameOnData("Household Size");
 		AttributeValue size1 = new UniqueValue(DataType.INTEGER, "1");
@@ -608,7 +607,7 @@ public class GenstarsTest {
 		}};
 		
 		
-		ControlTotals dataSet1ControlTotals = new ControlTotals(generationRule);
+		IpfControlTotals dataSet1ControlTotals = new IpfControlTotals(generationRule);
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		// Household Size,1,Household Income,High,3
@@ -725,7 +724,7 @@ public class GenstarsTest {
 		// dataSet2
 		final ISyntheticPopulationGenerator dataSet2Generator = new SingleRuleGenerator("dummy generator");
 		GenstarCSVFile dataSet2AttributesFile = new GenstarCSVFile(dataSet2AttributesFilePath, true);
-		GenstarUtils.createAttributesFromCSVFile(dataSet2Generator, dataSet2AttributesFile);
+		AttributeUtils.createAttributesFromCSVFile(dataSet2Generator, dataSet2AttributesFile);
 		
 		AbstractAttribute ageAttr = dataSet2Generator.getAttributeByNameOnData("Age");
 		// 0:15; 16:20; 21:25; 26:30; 31:50; 51:60; 61:75; 76:80; 81:100
@@ -761,7 +760,7 @@ public class GenstarsTest {
 		}};
 		
 		
-		ControlTotals dataSet2ControlTotals = new ControlTotals(generationRule);
+		IpfControlTotals dataSet2ControlTotals = new IpfControlTotals(generationRule);
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		// Age,0:15,1

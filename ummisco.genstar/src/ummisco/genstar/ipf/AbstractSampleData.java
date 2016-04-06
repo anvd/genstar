@@ -7,6 +7,8 @@ import java.util.Map;
 import ummisco.genstar.exception.GenstarException;
 
 public abstract class AbstractSampleData implements ISampleData {
+	
+	protected String populationName;
 
 	private Map<String, String> groupReferences = Collections.EMPTY_MAP; // population_name :: GAMA_attribute_name
 	
@@ -55,5 +57,10 @@ public abstract class AbstractSampleData implements ISampleData {
 		
 		if (componentReferences == Collections.EMPTY_MAP) { componentReferences = new HashMap<String, String>(); }
 		componentReferences.put(populationName, referenceAttribute);
+	}
+
+	@Override
+	public String getPopulationName() {
+		return populationName;
 	}
 }

@@ -14,7 +14,7 @@ public class AttributeValuesFrequency {
 	
 	private int attributeValuesFrequencyID = PersistentObject.NEW_OBJECT_ID;
 	
-	private Map<AbstractAttribute, AttributeValue> attributeValues; // TODO change to Map<String, AttributeValue> <attribute name on data, attribute value>
+	private Map<AbstractAttribute, AttributeValue> attributeValuesOnData; // TODO change to Map<String, AttributeValue> <attribute name on data, attribute value>
 	
 	private int frequency = 0;
 	
@@ -36,17 +36,17 @@ public class AttributeValuesFrequency {
 			}
 		}
 		
-		this.attributeValues = new HashMap<AbstractAttribute, AttributeValue>(attributeValues);
+		this.attributeValuesOnData = new HashMap<AbstractAttribute, AttributeValue>(attributeValues);
 		this.attributes = new HashSet<AbstractAttribute>(attributeValues.keySet());
 	}
 	
 	public AttributeValue getAttributeValue(final AbstractAttribute attribute) {
-		return attributeValues.get(attribute);
+		return attributeValuesOnData.get(attribute);
 	}
 	
 	public Map<AbstractAttribute, AttributeValue> getAttributeValues() {
 		Map<AbstractAttribute, AttributeValue> copy = new HashMap<AbstractAttribute, AttributeValue>();
-		copy.putAll(attributeValues);
+		copy.putAll(attributeValuesOnData);
 		
 		return copy;
 	}
@@ -54,8 +54,8 @@ public class AttributeValuesFrequency {
 	public Map<String, AttributeValue> getAttributeValuesWithNamesOnEntityAsKey() {
 		Map<String, AttributeValue> result = new HashMap<String, AttributeValue>();
 		
-		for (AbstractAttribute attr : attributeValues.keySet()) {
-			result.put(attr.getNameOnEntity(), attributeValues.get(attr));
+		for (AbstractAttribute attr : attributeValuesOnData.keySet()) {
+			result.put(attr.getNameOnEntity(), attributeValuesOnData.get(attr));
 		}
 		
 		return result;
@@ -63,6 +63,10 @@ public class AttributeValuesFrequency {
 
 	public int getFrequency() {
 		return frequency;
+	}
+	
+	public void increaseFrequency() {
+		frequency += 1;
 	}
 
 	public void setFrequency(final int frequency) {
@@ -89,7 +93,7 @@ public class AttributeValuesFrequency {
 		AttributeValue attributeValueOnData;
 		Map<AbstractAttribute, AttributeValue> inputAttributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		for (AbstractAttribute attribute : inputAttributes) {
-			attributeValueOnData = attributeValues.get(attribute);
+			attributeValueOnData = attributeValuesOnData.get(attribute);
 			
 			if (attributeValueOnData == null) { return false; } // or throw exception?
 			inputAttributeValues.put(attribute, attributeValueOnData); 
@@ -111,13 +115,13 @@ public class AttributeValuesFrequency {
 		return this.matchEntity(attributes, entity);
 	}
 	
-	public boolean matchAttributeValues(final Map<AbstractAttribute, ? extends AttributeValue> otherAttributeValues) {
-		if (otherAttributeValues == null || otherAttributeValues.isEmpty()) { throw new IllegalArgumentException("'otherAttributeValues' parameter can not be null or empty"); }
+	public boolean matchAttributeValues(final Map<AbstractAttribute, ? extends AttributeValue> otherAttributeValuesOnData) {
+		if (otherAttributeValuesOnData == null || otherAttributeValuesOnData.isEmpty()) { throw new IllegalArgumentException("'otherAttributeValuesOnData' parameter can not be null or empty"); }
 		
 		AttributeValue attributeValue;
-		for (AbstractAttribute attribute : otherAttributeValues.keySet()) {
-			attributeValue = attributeValues.get(attribute);
-			if (attributeValue == null || attributeValue.compareTo(otherAttributeValues.get(attribute)) != 0) { return false; }
+		for (AbstractAttribute attribute : otherAttributeValuesOnData.keySet()) {
+			attributeValue = attributeValuesOnData.get(attribute);
+			if (attributeValue == null || attributeValue.compareTo(otherAttributeValuesOnData.get(attribute)) != 0) { return false; }
 		}
 		
 		return true;
@@ -134,8 +138,8 @@ public class AttributeValuesFrequency {
 	@Override
 	public String toString() {
 		StringBuffer retVal = new StringBuffer("AttributeValuesFrequency with : ");
-		for (AbstractAttribute attr : attributeValues.keySet()) {
-			retVal.append("[ attribute : " + attr.getNameOnData() + ", value : " + attributeValues.get(attr) + "], ");
+		for (AbstractAttribute attr : attributeValuesOnData.keySet()) {
+			retVal.append("[ attribute : " + attr.getNameOnData() + ", value : " + attributeValuesOnData.get(attr) + "], ");
 		}
 		
 		retVal.append("WITH frequency = " + frequency);

@@ -95,7 +95,7 @@ public abstract class IPF<D, C, M> {
 			selectionProbabilities = null;
 		}
 		
-		IPFIteration iteration = createIPFIteration();
+		IPFIteration<D, C, M> iteration = createIPFIteration();
 		iterations.add(iteration);
 		int maxIterations = generationRule.getMaxIterations();
 		for (int iter=0; iter<maxIterations; iter++) {

@@ -1,0 +1,13 @@
+gender,work,householdID
+true,work1,0
+true,work1,1
+true,work2,2
+true,work2,3
+false,work1,4
+true,work1,4
+false,work2,5
+true,work2,5
+false,work1,6
+true,work2,6
+true,work1,7
+false,work2,7

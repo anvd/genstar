@@ -26,8 +26,10 @@ import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarUtils;
+import ummisco.genstar.util.IpfUtils;
 
 @RunWith(JMockit.class)
 public class SixWayIPFTest {
@@ -59,8 +61,8 @@ public class SixWayIPFTest {
 		File householdControlTotalsFile = new File(householdControlTotalsFilePath);
 		if (!householdControlTotalsFile.exists()) {
 			int numberOfHouseholds = 10000;
-			List<List<String>> householdControlTotals = GenstarUtils.generateControlTotals(householdControlAttributesFile, numberOfHouseholds);
-			GenstarUtils.writeControlTotalsToCsvFile(householdControlTotals, householdControlTotalsFilePath);
+			List<List<String>> householdControlTotals = IpfUtils.generateIpfControlTotals(householdControlAttributesFile, numberOfHouseholds);
+			GenstarUtils.writeContentToCsvFile(householdControlTotals, householdControlTotalsFilePath);
 		}
 		
 		
@@ -82,7 +84,7 @@ public class SixWayIPFTest {
 		 
 		householdGenerator = new SingleRuleGenerator("household generator");
 		GenstarCSVFile householdAttributesCSVFile = new GenstarCSVFile(householdAttributesFilePath, true);
-		GenstarUtils.createAttributesFromCSVFile(householdGenerator, householdAttributesCSVFile);
+		AttributeUtils.createAttributesFromCSVFile(householdGenerator, householdAttributesCSVFile);
 		
 		for (List<String> row : householdControlAttributesListFile.getContent()) { householdControlledAttributes.add(householdGenerator.getAttributeByNameOnData(row.get(0))); }	
 		
@@ -112,8 +114,8 @@ public class SixWayIPFTest {
 			
 			onInstance(householdGenerationRule).getControlTotals();
 			result = new Delegate() {
-				ControlTotals getControlTotalsDelegate() throws GenstarException {
-					return new ControlTotals(householdGenerationRule);
+				IpfControlTotals getControlTotalsDelegate() throws GenstarException {
+					return new IpfControlTotals(householdGenerationRule);
 				}
 			};
 			
@@ -257,7 +259,7 @@ public class SixWayIPFTest {
 		assertTrue(sixthAttributeControls[0][0][0][0].length == householdFifthAttributeValues.size());
 		
 		
-		ControlTotals controls = householdGenerationRule.getControlTotals();
+		IpfControlTotals controls = householdGenerationRule.getControlTotals();
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		// 1. row controls verification

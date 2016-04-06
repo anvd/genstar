@@ -11,8 +11,8 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarUtils;
 
 public class SyntheticPopulationTest {
 
@@ -20,7 +20,7 @@ public class SyntheticPopulationTest {
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/metamodel/synthetic_population/attributes.csv", true);
 		
 		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy generator");
-		GenstarUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		ISyntheticPopulation population = new SyntheticPopulation("people", generator.getAttributes());
 		

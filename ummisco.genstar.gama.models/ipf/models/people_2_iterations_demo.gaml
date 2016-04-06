@@ -13,7 +13,7 @@ global {
 		string attributesFilePath <- '../includes/people/attributes.csv';
 		string controlledAttributesListFilePath <- '../includes/people/controlled_attributes.csv';
 		string controlTotalsFilePath <- '../includes/people/controlled_totals.csv';
-		string outputFilePath_1iteration <- '../outputs/1iteration.csv';
+		string outputFilePath_1iteration <- '../outputs/people_2_iterations_demo/1iteration.csv';
 
 	 	write 'Start generating \'people\' population (1 iteration) ... ';
 	 	float begining_time <- machine_time;
@@ -26,15 +26,15 @@ global {
 		write 'Finished writing analyzing result ';
 
 
-		write '\nStart generating \'people\' population (1000 iterations) ... ';
+		write '\nStart generating \'people\' population (10 iterations) ... ';
 	 	begining_time <- machine_time;
-		list people_population_1000iterations <- ipf_population('../includes/people/ipf_configuration_1000iterations.properties');
-		write 'Finished generating the population (1000 iterations). Duration: ' + (machine_time - begining_time) + ' miliseconds';
+		list people_population_10iterations <- ipf_population('../includes/people/ipf_configuration_10iterations.properties');
+		write 'Finished generating the population (10 iterations). Duration: ' + (machine_time - begining_time) + ' miliseconds';
 
 		// analyze the generated population 
-		string outputFilePath_1000iterations <- '../outputs/1000iterations.csv';
-		write 'Start writing analyzing result to ' + outputFilePath_1000iterations;
-		analysisResult <- analyse_ipf_population_to_file(people_population_1000iterations, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath, outputFilePath_1000iterations);
+		string outputFilePath_10iterations <- '../outputs/people_2_iterations_demo/10iterations.csv';
+		write 'Start writing analyzing result to ' + outputFilePath_10iterations;
+		analysisResult <- analyse_ipf_population_to_file(people_population_10iterations, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath, outputFilePath_10iterations);
 		write 'Finished writing analyzing result ';
 	}
 }

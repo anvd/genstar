@@ -24,8 +24,8 @@ import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCSVFile;
-import ummisco.genstar.util.GenstarUtils;
 
 @RunWith(JMockit.class)
 public class ThreeWayIPFTest {
@@ -43,7 +43,7 @@ public class ThreeWayIPFTest {
 		
 		generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/attributes.csv", true);
-		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		GenstarCSVFile controlAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/controlled_attributes.csv", false);
 		for (List<String> row : controlAttributesFile.getContent()) { controlledAttributes.add(generator.getAttributeByNameOnData(row.get(0))); }	
@@ -74,8 +74,8 @@ public class ThreeWayIPFTest {
 			
 			generationRule.getControlTotals();
 			result = new Delegate() {
-				ControlTotals getControlTotalsDelegate() throws GenstarException {
-					return new ControlTotals(generationRule);
+				IpfControlTotals getControlTotalsDelegate() throws GenstarException {
+					return new IpfControlTotals(generationRule);
 				}
 			};
 			
@@ -186,7 +186,7 @@ public class ThreeWayIPFTest {
 		 */
 		
 		
-		ControlTotals controls = generationRule.getControlTotals();
+		IpfControlTotals controls = generationRule.getControlTotals();
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 
 		// 1. row controls verification

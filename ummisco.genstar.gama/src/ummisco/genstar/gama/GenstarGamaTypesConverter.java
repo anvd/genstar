@@ -94,6 +94,10 @@ public class GenstarGamaTypesConverter {
 		
 		UniqueValue genstarValue = new UniqueValue(genstarAttribute.getDataType(), gamaStringRepresentation);
 		
+		if (genstarAttribute.getNameOnData().equals("Household_ID")) {
+			System.out.println("genstarAttribute.getPopulationGenerator().getPopulationName(): " + genstarAttribute.getPopulationGenerator().getPopulationName() + ", genstarAttribute.isIdentity(): " + genstarAttribute.isIdentity());
+		}
+		
 		if (genstarAttribute.isIdentity()) {
 			if (genstarAttribute.getValueClassOnEntity().equals(UniqueValue.class)) { return genstarValue; }
 			else { // valueClassOnEntity == RangeValue.class
@@ -103,7 +107,7 @@ public class GenstarGamaTypesConverter {
 		
 		// Not an identity attribute then ensure the validity of the value
 		AttributeValue matchingGenstarValue = genstarAttribute.findMatchingAttributeValue(genstarValue);
-		if (matchingGenstarValue == null) { throw new GenstarException(genstarAttribute.getNameOnEntity() + " doesn't accept " + gamaStringRepresentation + " as a valid value."); }
+		if (matchingGenstarValue == null) { throw new GenstarException(genstarAttribute.getNameOnEntity() + " isn't accepted " + gamaStringRepresentation + " as a valid value."); }
 		
 		if (genstarAttribute.getValueClassOnEntity().equals(UniqueValue.class)) { return genstarValue; }
 		else { // valueClassOnEntity == RangeValue.class

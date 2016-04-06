@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,13 +37,12 @@ import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
-import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
 import com.google.common.collect.Sets;
 
 
 // TODO refactoring
-// divide this class into two: GenstarFactory & GenstarUtils
+// divide this class into several util classes
 public class GenstarUtils {
 
 	public static class AttributeValuesFrequencyComparator implements Comparator<AttributeValuesFrequency> {
@@ -219,131 +217,6 @@ public class GenstarUtils {
 	}
 
 	
-	/**
-	 * Creates a range value attributes.
-	 * 
-	 * Values are encoded as follows: "0:4, 5:17, 18:24, 25:34, 35:49, 50:64, 65:100".
-	 * Each pair (e.g., "0:4") is a range value delimited by a ":" in which min value on the left of the colon while max value is on the right.
-	 * 
-	 * @param generator
-	 * @param attributeNameOnData
-	 * @param attributeNameOnEntity
-	 * @param dataType
-	 * @param values
-	 * @param valueClassOnEntity
-	 * @throws GenstarException
-	 */
-	static void createRangeValueAttribute(final ISyntheticPopulationGenerator generator, final String attributeNameOnData, final String attributeNameOnEntity, 
-			final DataType dataType, final String values, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		
-		RangeValuesAttribute rangeAttribute = new RangeValuesAttribute(generator, attributeNameOnData, attributeNameOnEntity, dataType, UniqueValue.class);
-		
-		// 1. Parse and accumulate each range value token into a list.
-		StringTokenizer valueTokens = new StringTokenizer(values, CSV_FILE_FORMATS.ATTRIBUTE_METADATA.ATTRIBUTE_VALUE_DELIMITER);
-		if (valueTokens.countTokens() == 0) { throw new GenstarException("No value is defined for the attribute '" + attributeNameOnData + "'"); }
-		List<String> rangeTokens = new ArrayList<String>();
-		while (valueTokens.hasMoreTokens()) { rangeTokens.add(valueTokens.nextToken()); }
-		
-		// 2. Created range values from the parsed tokens.
-		for (String t : rangeTokens) {
-			StringTokenizer minMaxValueTokens = new StringTokenizer(t, CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER);
-			if (minMaxValueTokens.countTokens() != 2) { throw new GenstarException("Invalid attribute range value format (file: " + minMaxValueTokens.toString() + ")"); }
-			
-			rangeAttribute.add(new RangeValue(dataType, minMaxValueTokens.nextToken().trim(), minMaxValueTokens.nextToken().trim()));
-		}
-		
-		generator.addAttribute(rangeAttribute);
-	}
-
-	/**
-	 * Create an unique value attribute.
-	 * 
-	 * Values are encoded as follows: "C0, C1, C2, C3, C4, C5, C6, C7"
-	 * 
-	 * @param generator
-	 * @param attributeNameOnData
-	 * @param attributeNameOnEntity
-	 * @param dataType
-	 * @param values
-	 * @param valueClassOnEntity
-	 * @throws GenstarException
-	 */
-	static void createUniqueValueAttribute(final ISyntheticPopulationGenerator generator, final String attributeNameOnData, final String attributeNameOnEntity, 
-			final DataType dataType, final String values, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		
-		UniqueValuesAttribute uniqueValueAttribute = new UniqueValuesAttribute(generator, attributeNameOnData, attributeNameOnEntity, dataType, valueClassOnEntity);
-		
-		// 1. Parse and accumulate each unique value token into a list.
-		StringTokenizer valueTokenizers = new StringTokenizer(values, CSV_FILE_FORMATS.ATTRIBUTE_METADATA.ATTRIBUTE_VALUE_DELIMITER);
-		if (valueTokenizers.countTokens() == 0) { throw new GenstarException("No value is defined for the attribute '" + attributeNameOnData + "'"); }
-		List<String> uniqueValueTokens = new ArrayList<String>();
-		while (valueTokenizers.hasMoreTokens()) { uniqueValueTokens.add(valueTokenizers.nextToken()); }
-		
-		// 2. Create unique values from the parsed tokens.
-		for (String t : uniqueValueTokens) { uniqueValueAttribute.add(new UniqueValue(dataType, t.trim())); }
-		
-		generator.addAttribute(uniqueValueAttribute);
-	}
-	
-	
-	public static void createAttributesFromCSVFile(final ISyntheticPopulationGenerator generator, final GenstarCSVFile attributesFile) throws GenstarException {
-		
-		List<List<String>> fileContent = attributesFile.getContent();
-		if ( fileContent == null || fileContent.isEmpty() ) { throw new GenstarException("Empty attribute file. File: " + attributesFile.getPath()); }
-		
-		if (attributesFile.getColumns() != CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS) { 
-			throw new GenstarException("Attributes file must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns. File: " + attributesFile.getPath()); 
-		}
-		
-		// 1. Parse the header
-		List<String> fileHeader = attributesFile.getHeaders();
-		if (fileHeader.size() != CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS) {
-			throw new GenstarException("Attributes file header must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns. File: " + attributesFile.getPath());
-		}
-		for (int i=0; i<fileHeader.size(); i++) {
-			if (!fileHeader.get(i).equals(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.HEADERS[i])) {
-				throw new GenstarException("Invalid attribute file header must be " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.HEADER_STR + ". File: " + attributesFile.getPath());
-			}
-		}
-		
-		// 2. Parse and initialize attributes
-		for ( List<String> attributeInfo : fileContent) {
-			
-			if (attributeInfo.size() != CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS) { throw new GenstarException("Invalid attribute file format: each row must have " + CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS + " columns (file: " + attributesFile.getPath() + "."); }
-			
-			String attributeNameOnData = (String)attributeInfo.get(0);
-			String attributeNameOnEntity = (String)attributeInfo.get(1);
-			
-			String dataTypeStr = (String)attributeInfo.get(2);
-			DataType dataType = DataType.fromName(dataTypeStr);
-			if (dataType == null) { throw new GenstarException(dataTypeStr + " is not a supported data type."); }
-			
-			String valueTypeOnDataStr = (String)attributeInfo.get(3);
-			String values = (String)attributeInfo.get(4);
-			
-			String valueTypeOnEntityStr = (String)attributeInfo.get(5);
-			Class<? extends AttributeValue> valueClassOnEntity = AttributeValue.getClassByName(valueTypeOnEntityStr);
-			
-			
-			String attributesFilePath = attributesFile.getPath();
-			if (valueTypeOnDataStr.equals(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.RANGE_VALUE_NAME)) {
-				try {
-					createRangeValueAttribute(generator, attributeNameOnData, attributeNameOnEntity, dataType, values, valueClassOnEntity);
-				} catch (Exception ex) {
-					throw new GenstarException("Can not create range value attribute. File: " + attributesFilePath, ex);
-				}
-			} else if (valueTypeOnDataStr.equals(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.UNIQUE_VALUE_NAME)) {
-				try {
-					createUniqueValueAttribute(generator, attributeNameOnData, attributeNameOnEntity, dataType, values, valueClassOnEntity);
-				} catch (Exception ex) {
-					throw new GenstarException("Can not create unique value attribute. File: " + attributesFilePath, ex);
-				}
-			} else {
-				throw new GenstarException("Invalid attribute file: unsupported value type (file: " + attributesFilePath + ")");
-			}
-		}
-	}
-	
 	public static void createFrequencyDistributionGenerationRule(final IMultipleRulesGenerator generator, final String ruleName, final GenstarCSVFile ruleFile) throws GenstarException {
 		
 		List<List<String>> fileContent = ruleFile.getContent();
@@ -516,7 +389,7 @@ public class GenstarUtils {
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(groupGenerator, ruleName, groupControlledAttributesFile, groupControlledTotalsFile, groupSupplementaryAttributesFile, maxIterations);
 
 		ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("Component Generator");
-		createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		componentGenerator.setPopulationName(componentPopulationName);
 		
 		String groupIdAttributeNameOnGroup = generatorProperties.get(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY);
@@ -684,127 +557,14 @@ public class GenstarUtils {
 	}
 	
 	
-	// TODO improve this algo to remove bias
-	public static List<Integer> findSubsetSum(final int total, final int numberOfElements) throws GenstarException {
+	public static void writeContentToCsvFile(final List<List<String>> fileContent, final String csvFilePath) throws GenstarException {
 		// parameters validation
-		if (total < 1) { throw new GenstarException("Parameter total must be positive"); }
-		if (numberOfElements < 1) { throw new GenstarException("Parameter numberOfElements must be positive"); }
-		if (total < numberOfElements) { throw new GenstarException("total can not be smaller than numberOfElements"); }
-		
-		int internalTotal = total; 
-		
-		internalTotal -= (1 * numberOfElements);
-		
-		List<Integer> result = new ArrayList<Integer>();
-		for (int i=0; i<numberOfElements-1; i++) {
-			if (internalTotal == 0) { result.add(1); }
-			else {
-
-				int centerNumber = internalTotal / (numberOfElements - i);
-				
-//				int rndNumber = SharedInstances.RandomNumberGenerator.nextInt(internalTotal);
-				int rndNumber = SharedInstances.RandomNumberGenerator.nextInt(centerNumber);
-				result.add(1 + rndNumber);
-				internalTotal -= rndNumber;
-			}
-		}
-		
-		result.add(1 + internalTotal);
-		
-		return result;
-	}
-	
-	
-	public static List<List<Map<AbstractAttribute, AttributeValue>>> buildControlledAttributesValuesSubsets(final Set<AbstractAttribute> controlledAttributes) throws GenstarException {
-		
-		// parameters validation
-		if (controlledAttributes == null) { throw new GenstarException("Parameter controlledAttributes can not be null"); }
-		if (controlledAttributes.size() < 2) { throw new GenstarException("controlledAttributes must contain at least 2 attributes"); }
-		
-		Set<Set<AbstractAttribute>> controlledAttributesSubsets = Sets.powerSet(controlledAttributes);
-		
-		Set<Set<AbstractAttribute>> validControlledAttributesSubSets = new HashSet<Set<AbstractAttribute>>();
-		int validSubsetSize = controlledAttributes.size() - 1;
-		for (Set<AbstractAttribute> subset : controlledAttributesSubsets) {
-			if (subset.size() == validSubsetSize) { validControlledAttributesSubSets.add(subset); }
-		}
-		
-		List<List<Map<AbstractAttribute, AttributeValue>>> resultingControlledAttributesValuesSubsets = new ArrayList<List<Map<AbstractAttribute, AttributeValue>>>();
-		for (Set<AbstractAttribute> validSubsetAttributes : validControlledAttributesSubSets) {
-			
-			// build attributesValuesMaps
-			List<Set<AttributeValue>> attributesPossibleValues = new ArrayList<Set<AttributeValue>>();
-			for (AbstractAttribute attribute : validSubsetAttributes) {  attributesPossibleValues.add(attribute.values());  }
-			List<Map<AbstractAttribute, AttributeValue>> attributeValuesMaps = new ArrayList<Map<AbstractAttribute, AttributeValue>>();
-			for (List<AttributeValue> cartesian : Sets.cartesianProduct(attributesPossibleValues)) {
-				attributeValuesMaps.add(buildAttributeValueMap(validSubsetAttributes, cartesian));
-			}
-			
-			
-			List<Map<AbstractAttribute, AttributeValue>> controlledAttributesValuesSubset = new ArrayList<Map<AbstractAttribute, AttributeValue>>();
-			
-			for (Map<AbstractAttribute, AttributeValue> attributeValuesMap : attributeValuesMaps) {
-				Set<AbstractAttribute> subsetAttributes = attributeValuesMap.keySet();
-				
-//				if (validSubsetAttributes.size() == subsetAttributes.size() && subsetAttributes.containsAll(validSubsetAttributes)) { // TODO redundant condition: validSubsetAttributes.size() == subsetAttributes.size()
-				if (subsetAttributes.containsAll(validSubsetAttributes)) {
-					controlledAttributesValuesSubset.add(attributeValuesMap);
-				}
-			}
-			
-			if (!controlledAttributesValuesSubset.isEmpty()) {
-				resultingControlledAttributesValuesSubsets.add(controlledAttributesValuesSubset);
-			}
-		}
-		
-		return resultingControlledAttributesValuesSubsets;
-	}
-	
-	
-	public static List<List<String>> generateControlTotals(final GenstarCSVFile attributesFile, final int total) throws GenstarException {
-		// parameters validation
-		if (attributesFile == null) { throw new GenstarException("Parameter attributesFile can not be null"); }
-		if (total < 1) { throw new GenstarException("Parameter controlTotal must be positive"); }
-		
-		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy single rule generator");
-		createAttributesFromCSVFile(generator, attributesFile);
-		
-		// generate frequencies / control totals
-		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets = buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(generator.getAttributes()));
-		List<List<String>> controlTotals = new ArrayList<List<String>>();
-		for (List<Map<AbstractAttribute, AttributeValue>> controlledAttributesValuesSubset : controlledAttributesValuesSubsets) {
-
-			List<Integer> subsetSum = findSubsetSum(total, controlledAttributesValuesSubset.size());
-			int i=0;
-			for (Map<AbstractAttribute, AttributeValue> attributeValueMap : controlledAttributesValuesSubset) {
-				
-				// write each row
-				List<String> controlTotal = new ArrayList<String>();
-				for (Map.Entry<AbstractAttribute, AttributeValue> entry : attributeValueMap.entrySet()) {
-					controlTotal.add(entry.getKey().getNameOnData());
-					controlTotal.add(entry.getValue().toCsvString());
-				}
-				
-				// write frequency
-				controlTotal.add(Integer.toString(subsetSum.get(i)));
-				i++;
-
-				controlTotals.add(controlTotal);
-			}
-		}
-		
-		return controlTotals;
-	}
-	
-	
-	public static void writeControlTotalsToCsvFile(final List<List<String>> controlTotals, final String csvFilePath) throws GenstarException {
-		// parameters validation
-		if( controlTotals == null) { throw new GenstarException("Parameter controlTotals can not be null"); }
+		if( fileContent == null) { throw new GenstarException("Parameter fileContent can not be null"); }
 		if (csvFilePath == null) { throw new GenstarException("Parameter csvFilePath can not be null"); }
 		
 		try {
 			CsvWriter writer = new CsvWriter(csvFilePath);
-			for (List<String> row : controlTotals) {
+			for (List<String> row : fileContent) {
 				writer.writeRecord(row.toArray(new String[0]));
 			}
 			
@@ -825,7 +585,7 @@ public class GenstarUtils {
 		if (maxEntitiesOfEachAttributeValuesSet < minEntitiesOfEachAttributeValuesSet) { throw new GenstarException("maxEntitiesOfEachAttributeValuesSet can not be smaller than minEntitiesOfEachAttributeValuesSet"); }
 		
 		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy single rule generator");
-		createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 
 		Set<AbstractAttribute> attributes = new HashSet<AbstractAttribute>(generator.getAttributes());
 		ISyntheticPopulation syntheticPopulation = new SyntheticPopulation(populationName, generator.getAttributes());
@@ -893,7 +653,7 @@ public class GenstarUtils {
 		if (entities <= 0) { throw new GenstarException("Parameter entities must be positive"); }
 		
 		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy single rule generator");
-		createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		List<AbstractAttribute> attributes = new ArrayList<AbstractAttribute>(generator.getAttributes());
 		
@@ -955,7 +715,7 @@ public class GenstarUtils {
 		
 		// 1. create group attributes from groupAttributesFile
 		ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group dummy generator");
-		createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
+		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
 		List<AbstractAttribute> groupAttributes = new ArrayList<AbstractAttribute>(groupGenerator.getAttributes());
 		
 		// 2. retrieve reference to groupIdAttributeOnGroupEntity
@@ -976,7 +736,7 @@ public class GenstarUtils {
 
 		// 5. create component attributes from componentAttributesFile
 		ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("component dummy generator");
-		createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		List<AbstractAttribute> componentAttributes = new ArrayList<AbstractAttribute>(componentGenerator.getAttributes());
 
 		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttributeByNameOnData(groupIdAttributeNameOnComponentEntity);
@@ -1237,76 +997,6 @@ public class GenstarUtils {
 		return retVal;
 	}
 	
-	
-	public static List<Integer> analyseIpfPopulation(final ISyntheticPopulation population, final GenstarCSVFile controlledAttributesListFile, 
-			final GenstarCSVFile controlTotalsFile) throws GenstarException {
-		
-		// parameters validation
-		if (population == null || controlledAttributesListFile == null || controlTotalsFile == null) {
-			throw new GenstarException("Parameters population, controlledAttributesListFile, controlTotalsFile can not be null");
-		}
-		
-		List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
-		List<List<String>> controlledAttributesList = controlledAttributesListFile.getContent();
-		if (controlledAttributesList.size() < 2) { throw new GenstarException("The number of controlled attributes must be at least 2 (file: " + controlledAttributesListFile.getPath() + ")."); }
-		for (int line=0; line<controlledAttributesList.size(); line++) {
-			List<String> row = controlledAttributesList.get(line);
-			if (row.size() > 1) { throw new GenstarException("Invalid controlledAttributesListFile file format (file: " + controlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
-			
-			String controlledAttrName = row.get(0);
-			AbstractAttribute controlledAttribute = population.getAttributeByNameOnData(controlledAttrName);
-			if (controlledAttribute == null) { throw new GenstarException("Invalid controlled attribute: " + controlledAttrName + ". File: " + controlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
-			if (controlledAttributes.contains(controlledAttribute)) { throw new GenstarException("Duplicated controlled attribute: " + controlledAttrName + ". File: " + controlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
-			
-			controlledAttributes.add(controlledAttribute);
-		}
-
-		// read attribute values frequencies from control totals file then do the analysis
-		List<AttributeValuesFrequency> attributeValuesFrequencies = readAttributeValuesFrequenciesFromControlTotalsFile(controlTotalsFile, controlledAttributes);
-		List<Integer> generatedFrequencies = new ArrayList<Integer>();
-		List<Entity> entities = population.getEntities();
-		for (AttributeValuesFrequency avf : attributeValuesFrequencies) {
-			int matched = 0;
-			for (Entity e : entities) { if (avf.matchEntity(e)) { matched++; } }
-			generatedFrequencies.add(matched);
-		}
-		
-		return generatedFrequencies;
-	}
-	
-	
-	public static GenstarCSVFile writeAnalsysisResultToFile(final GenstarCSVFile controlTotalsFile, final List<Integer> analysisResult, final String csvOutputFilePath) throws GenstarException {
-		
-		// parameters validation
-		if (controlTotalsFile == null || analysisResult == null || csvOutputFilePath == null) {
-			throw new GenstarException("Parameters controlTotalsFile, analysisResult, csvOutputFilePath can not be null");
-		}
-		
-		if (controlTotalsFile.getRows() != analysisResult.size()) {
-			throw new GenstarException("controlTotalsFile's row is different from analsysisResult's size (" + controlTotalsFile.getRows() + " v.s. " + analysisResult.size() + ")");
-		}
-		
-		// write analysis result to file
-		CsvWriter writer = new CsvWriter(csvOutputFilePath);
-		try {
-			int line=0;
-			for (List<String> row : controlTotalsFile.getContent()) {
-				String[] newRow = new String[row.size() + 1];
-				newRow = Arrays.copyOf(row.toArray(new String[0]), newRow.length);
-				newRow[newRow.length - 1] = analysisResult.get(line).toString();
-				
-				writer.writeRecord(newRow);
-				line++;
-			}
-		} catch (IOException ioe) {
-			throw new GenstarException(ioe);
-		} finally {
-			writer.close();
-		}
-		
-		return new GenstarCSVFile(csvOutputFilePath, false);
-	}
-	
 
 	public static Set<AttributeValuesFrequency> generateAttributeValuesFrequencies(final Set<AbstractAttribute> attributes) throws GenstarException {
 		
@@ -1322,161 +1012,5 @@ public class GenstarUtils {
 		return avfs;
 	}
 	
-	
-	public static List<AttributeValuesFrequency> readAttributeValuesFrequenciesFromControlTotalsFile(final GenstarCSVFile controlTotalsFile, 
-			final List<AbstractAttribute> controlledAttributes) throws GenstarException {
-		
-		// parameters validation
-		if (controlTotalsFile == null || controlledAttributes == null) {
-			throw new GenstarException("Parameters controlTotalsFile, controlledAttributes can not be null");
-		}
-		
-		if (controlledAttributes.size() < 2) { throw new GenstarException("controlledAttributes must have at least two attributes/elements"); }
-		
-		// ensure that controlledAttributes doesn't contain duplicated (controlled) attributes
-		ISyntheticPopulationGenerator generator = controlledAttributes.get(0).getPopulationGenerator();
-		Map<String, AbstractAttribute> controlledAttributesMap = new HashMap<String, AbstractAttribute>();
-		for (AbstractAttribute controlledAttr : controlledAttributes) {
-			if (controlledAttributesMap.containsKey(controlledAttr.getNameOnData())) { throw new GenstarException("Duplicated controlled attributes (" + controlledAttr.getNameOnData() + ")"); }
-			if (!controlledAttr.getPopulationGenerator().equals(generator)) { throw new GenstarException("Controlled attributes belong to different population generator"); }
-			
-			controlledAttributesMap.put(controlledAttr.getNameOnData(), controlledAttr);
-		}
-		
-		
-		// build controlled attributes values subsets to verify the validity of control totals (file content)
-		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets = GenstarUtils.buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(controlledAttributes));
-		int controlledAttributesValuesSubsetsSize = 0;
-		for (List<Map<AbstractAttribute, AttributeValue>> subset : controlledAttributesValuesSubsets) { controlledAttributesValuesSubsetsSize += subset.size(); }
-		
-		// size verification
-		List<List<String>> controlTotalsFileContent = controlTotalsFile.getContent();
-		if (controlledAttributesValuesSubsetsSize != controlTotalsFileContent.size()) {
-			throw new GenstarException("Mismatched between required/valid number of controlled totals and supplied number of controlled totals. Required values: " + controlledAttributesValuesSubsetsSize + ", supplied values (in control total file): " + controlTotalsFileContent.size());
-		}
-		
-		
-		// build generatedAvfsByGroups from controlledAttributesValuesSubsets
-		Map<Integer, List<AttributeValuesFrequency>> generatedAvfsByGroups = new HashMap<Integer, List<AttributeValuesFrequency>>();
-		Map<Integer, List<AttributeValuesFrequency>> alreadyValidAvfsByGroups = new HashMap<Integer, List<AttributeValuesFrequency>>();
-		Map<Integer, Integer> parsedAvfsByGroupsTotalFrequencies = new HashMap<Integer, Integer>();
-		int groupId = 0;
-		for (List<Map<AbstractAttribute, AttributeValue>> subset : controlledAttributesValuesSubsets) {
-			List<AttributeValuesFrequency> avfs = new ArrayList<AttributeValuesFrequency>();
-			for (Map<AbstractAttribute, AttributeValue> attributeValues : subset) {
-				avfs.add(new AttributeValuesFrequency(attributeValues));
-			}
-			
-			generatedAvfsByGroups.put(groupId, avfs);
-			alreadyValidAvfsByGroups.put(groupId, new ArrayList<AttributeValuesFrequency>());
-			parsedAvfsByGroupsTotalFrequencies.put(groupId, 0);
-			groupId++;
-		}
-		
-		
-		int controlTotalLineLength = ((controlledAttributes.size() - 1) * 2) + 1;
-		
-
-		// read the control totals file line by line to initialize AttributeValueFrequencies
-		List<AttributeValuesFrequency> avFrequencies = new ArrayList<AttributeValuesFrequency>();
-		
-		AbstractAttribute attribute;
-		AttributeValue attributeValue;
-		List<String> valueList = new ArrayList<String>();
-		int line = 1;
-		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
-		for (List<String> aRow : controlTotalsFileContent) {
-			if (aRow.size() != controlTotalLineLength) throw new GenstarException("Invalid attribute values frequency format. File: " + controlTotalsFile.getPath() + ", line: " + line);
-			line++;
-			
-			attributeValues.clear();
-			for (int col=0; col<(aRow.size() - 1); col+=2) { // Parse each line of the file
-				// 1. parse the attribute name column
-				attribute = generator.getAttributeByNameOnData(aRow.get(col));
-				if (attribute == null) { throw new GenstarException("'" + aRow.get(col) + "' is not a valid attribute. File: " + controlTotalsFile.getPath() + ", line: " + line + "."); }
-				if (!controlledAttributes.contains(attribute)) { throw new GenstarException("'" + aRow.get(col) + "' is not a controlled attribute."); }
-				if (attributeValues.containsKey(attribute)) { throw new GenstarException("Duplicated attribute : '" + attribute.getNameOnData() + "'"); }
-				
-				// 2. parse the attribute value column
-				valueList.clear();
-				String attributeValueString = aRow.get(col+1);
-				if (attributeValueString.contains(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER)) { // range value
-					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER);
-					if (rangeValueToken.countTokens() != 2) { throw new GenstarException("Invalid range attribute value: '" + attributeValueString + "'. File: " + controlTotalsFile.getPath()); }
-					valueList.add(rangeValueToken.nextToken());
-					valueList.add(rangeValueToken.nextToken());
-				} else { // unique value
-					valueList.add(attributeValueString);
-				}
-				
-				
-				attributeValue = attribute.findCorrespondingAttributeValue(valueList);
-				if (attributeValue == null) { throw new GenstarException("Attribute value '" + aRow.get(col+1) + "' not found in valid attribute values of " + attribute.getNameOnData()
-						+ ". File: " + controlTotalsFile.getPath() + ", line: " + line); }
-				
-				attributeValues.put(attribute, attributeValue);
-			}
-			
-			// "frequency" is the last column
-			int frequency = Integer.parseInt(aRow.get(aRow.size() - 1));
-			if (frequency <= 0) { throw new GenstarException("frequency value must be positiv. File: " + controlTotalsFile.getPath() + ", line: " + line); }
-			
-			
-			// TODO verify attributeValues
-			AttributeValuesFrequency matched = null;
-			int matchedGroupIdentity = -1;
-			for (Integer groupIdentity : generatedAvfsByGroups.keySet()) {
-				for (AttributeValuesFrequency avf : generatedAvfsByGroups.get(groupIdentity)) {
-					if (avf.matchAttributeValues(attributeValues)) {
-						matched = avf;
-						matchedGroupIdentity = groupIdentity;
-						break;
-					}
-				}
-				
-				if (matched != null) { break; }
-			}
-			
-			
-			// attribute values is not recognized
-			if (matched == null) { throw new GenstarException("Line " + line + " is not a valid controlled total. File: " + controlTotalsFile.getPath()); }
-			
-			// duplication
-			for (Integer groupIdentity : alreadyValidAvfsByGroups.keySet()) {
-				for (AttributeValuesFrequency avf : alreadyValidAvfsByGroups.get(groupIdentity)) {
-					if (avf.matchAttributeValues(attributeValues)) {
-						throw new GenstarException("Duplicated control total. Line: " + line + ", file: " + controlTotalsFile.getPath());
-					}
-				}
-			}
-			
-			alreadyValidAvfsByGroups.get(matchedGroupIdentity).add(matched);
-			generatedAvfsByGroups.get(matchedGroupIdentity).remove(matched);
-			
-			avFrequencies.add(new AttributeValuesFrequency(attributeValues, frequency));
-			int groupTotalFrequency = parsedAvfsByGroupsTotalFrequencies.get(matchedGroupIdentity) + frequency;
-			parsedAvfsByGroupsTotalFrequencies.put(matchedGroupIdentity, groupTotalFrequency);
-		}		
-		
-
-		// verify that totals of all groups are equal 
-		int groupTotal = -1;
-		boolean allTotalsAreEqual = true;
-		for (Integer groupIdentity : parsedAvfsByGroupsTotalFrequencies.keySet()) {
-			if (groupTotal == -1) {
-				groupTotal = parsedAvfsByGroupsTotalFrequencies.get(groupIdentity);
-			} else {
-				if (groupTotal != parsedAvfsByGroupsTotalFrequencies.get(groupIdentity)) {
-					allTotalsAreEqual = false;
-					break;
-				}
-			}
-		}
-		
-		if (!allTotalsAreEqual) { throw new GenstarException("Sum control totals of controlled attribute groups are not equal"); }
-
-		
-		return avFrequencies;
-	}
 	
 }

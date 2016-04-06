@@ -113,4 +113,22 @@ public class SampleEntity { // TODO in the future, remove this class, use Entity
 	public SampleEntityPopulation getPopulation() {
 		return population;
 	}
+
+	public Map<AbstractAttribute, AttributeValue> getAttributesValuesOnData(final List<AbstractAttribute> attributes) throws GenstarException {
+		if (attributes == null) { throw new GenstarException("Parameter attributes can not be null"); }
+		if (!population.getAttributes().containsAll(attributes)) { throw new GenstarException("One or several attributes are not valid"); }
+		
+		Map<AbstractAttribute, AttributeValue> controlledAttributesValuesOnData = new HashMap<AbstractAttribute, AttributeValue>();
+		for (AbstractAttribute attr : attributes) {
+			AttributeValue valueOnEntity = attributeValuesOnEntity.get(attr.getNameOnEntity());
+			AttributeValue valueOnData = attr.findMatchingAttributeValue(valueOnEntity);
+			if (valueOnData == null) { throw new GenstarException("No valueOnData found for " + attr.getNameOnEntity() + " attribute."); }
+			
+			controlledAttributesValuesOnData.put(attr, valueOnData);
+		}
+		
+		
+		return controlledAttributesValuesOnData;
+	}
+
 }

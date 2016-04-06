@@ -68,7 +68,7 @@ public class SixWayIPF extends IPF<double[][][][][][], int[][][][][], double[][]
 
 	@Override
 	protected void computeControls() throws GenstarException {
-		ControlTotals controlTotals = generationRule.getControlTotals();
+		IpfControlTotals controlTotals = generationRule.getControlTotals();
 		
 		AbstractAttribute rowAttribute = getControlledAttribute(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);
 		List<AttributeValue> rowAttributeValues = getAttributeValues(IPF_ATTRIBUTE_INDEXES.ROW_ATTRIBUTE_INDEX);

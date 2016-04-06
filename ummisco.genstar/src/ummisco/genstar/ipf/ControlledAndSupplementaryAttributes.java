@@ -1,21 +1,20 @@
 package ummisco.genstar.ipf;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.util.GenstarCSVFile;
 
+// TODO change name to IpfControlledAndSupplementaryAttributes
 public class ControlledAndSupplementaryAttributes {
 	
 	private SampleDataGenerationRule generationRule;
 	
-	private GenstarCSVFile controlledAttributesData;
+	private GenstarCSVFile controlledAttributesFile;
 	
-	private GenstarCSVFile supplementaryAttributesData;
+	private GenstarCSVFile supplementaryAttributesFile;
 	
 	private List<AbstractAttribute> controlledAttributes;
 	
@@ -26,14 +25,14 @@ public class ControlledAndSupplementaryAttributes {
 		if (generationRule == null) { throw new GenstarException("'generationRule' can not be null"); }
 		
 		this.generationRule = generationRule;
-		this.controlledAttributesData = generationRule.getControlledAttributesFile();
-		this.supplementaryAttributesData = generationRule.getSupplementaryAttributesFile();
+		this.controlledAttributesFile = generationRule.getControlledAttributesFile();
+		this.supplementaryAttributesFile = generationRule.getSupplementaryAttributesFile();
 		
 		parseAttributes();
 	}
 	
 	private void parseAttributes() throws GenstarException {
-		if (controlledAttributesData.getRows() == 0) { throw new GenstarException("Controlled attributes file doesn't contain any controlled attribute. (File: " + controlledAttributesData.getPath() + ")"); }
+		if (controlledAttributesFile.getRows() == 0) { throw new GenstarException("Controlled attributes file can not be empty. (File: " + controlledAttributesFile.getPath() + ")"); }
 		
 		controlledAttributes = new ArrayList<AbstractAttribute>();
 		
@@ -41,13 +40,13 @@ public class ControlledAndSupplementaryAttributes {
 		String attrName;
 		AbstractAttribute controlledAttr;
 		int lineNo = 1;
-		for (List<String> line : controlledAttributesData.getContent()) {
-			if (line.size() != 1) { throw new GenstarException("Invalid controlled attribute file format. One line can only contain one attribute. File: " + controlledAttributesData.getPath() + ", line: " + lineNo); }
+		for (List<String> line : controlledAttributesFile.getContent()) {
+			if (line.size() != 1) { throw new GenstarException("Invalid controlled attribute file format. One line can only contain one attribute. File: " + controlledAttributesFile.getPath() + ", line: " + lineNo); }
 			
 			attrName = line.get(0);
 			controlledAttr = generationRule.getGenerator().getAttributeByNameOnData(attrName);
 			if (controlledAttr == null) { 
-				throw new GenstarException("'" + attrName + "' attribute not found in the generator. \n\tFile: " + controlledAttributesData.getPath() + ", line: " + lineNo); 
+				throw new GenstarException("'" + attrName + "' attribute not found in the generator. \n\tFile: " + controlledAttributesFile.getPath() + ", line: " + lineNo); 
 			}
 			if (!controlledAttributes.contains(controlledAttr)) { controlledAttributes.add(controlledAttr); }
 			
@@ -58,13 +57,13 @@ public class ControlledAndSupplementaryAttributes {
 		supplementaryAttributes = new ArrayList<AbstractAttribute>();
 		AbstractAttribute supplementaryAttr;
 		lineNo=1;
-		for (List<String> line : supplementaryAttributesData.getContent()) {
-			if (line.size() != 1) { throw new GenstarException("Invalid supplementary attribute file format. One line can only contain one attribute. File: " + supplementaryAttributesData.getPath() + ", line: " + lineNo); }
+		for (List<String> line : supplementaryAttributesFile.getContent()) {
+			if (line.size() != 1) { throw new GenstarException("Invalid supplementary attribute file format. One line can only contain one attribute. File: " + supplementaryAttributesFile.getPath() + ", line: " + lineNo); }
 			
 			attrName = line.get(0);
 			supplementaryAttr = generationRule.getGenerator().getAttributeByNameOnData(attrName);
-			if (supplementaryAttr == null) { throw new GenstarException("'" + attrName + "' attribute not found in the generator. File: " + supplementaryAttributesData.getPath() + ", line: " + lineNo); }
-			if (controlledAttributes.contains(supplementaryAttr)) { throw new GenstarException("'" + attrName + "' attribute has already been a controlled attribute. File: " + supplementaryAttributesData.getPath() + ", line: " + lineNo); }
+			if (supplementaryAttr == null) { throw new GenstarException("'" + attrName + "' attribute not found in the generator. File: " + supplementaryAttributesFile.getPath() + ", line: " + lineNo); }
+			if (controlledAttributes.contains(supplementaryAttr)) { throw new GenstarException("'" + attrName + "' attribute has already been a controlled attribute. File: " + supplementaryAttributesFile.getPath() + ", line: " + lineNo); }
 			if (!supplementaryAttributes.contains(supplementaryAttr)) supplementaryAttributes.add(supplementaryAttr);
 			
 			lineNo++;

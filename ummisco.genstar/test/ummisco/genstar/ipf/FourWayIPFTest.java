@@ -26,8 +26,10 @@ import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarUtils;
+import ummisco.genstar.util.IpfUtils;
 
 @RunWith(JMockit.class)
 public class FourWayIPFTest {
@@ -55,8 +57,8 @@ public class FourWayIPFTest {
 		File controlTotalsFile = new File(controlTotalsFilePath);
 		if (!controlTotalsFile.exists()) {
 			int numberOfHouseholds = 1000;
-			List<List<String>> householdControlTotals = GenstarUtils.generateControlTotals(controlAttributesFile, numberOfHouseholds);
-			GenstarUtils.writeControlTotalsToCsvFile(householdControlTotals, controlTotalsFilePath);
+			List<List<String>> householdControlTotals = IpfUtils.generateIpfControlTotals(controlAttributesFile, numberOfHouseholds);
+			GenstarUtils.writeContentToCsvFile(householdControlTotals, controlTotalsFilePath);
 		}
 		
 		// generate sample data if necessary
@@ -76,7 +78,7 @@ public class FourWayIPFTest {
 		
 		generator = new SingleRuleGenerator("generator");
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/four_way/attributes.csv", true);
-		GenstarUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
 		GenstarCSVFile controlAttributesListFile = new GenstarCSVFile(controlAttributesListFilePath, false);
 		for (List<String> row : controlAttributesListFile.getContent()) { controlledAttributes.add(generator.getAttributeByNameOnData(row.get(0))); }	
@@ -107,8 +109,8 @@ public class FourWayIPFTest {
 			
 			generationRule.getControlTotals();
 			result = new Delegate() {
-				ControlTotals getControlTotalsDelegate() throws GenstarException {
-					return new ControlTotals(generationRule);
+				IpfControlTotals getControlTotalsDelegate() throws GenstarException {
+					return new IpfControlTotals(generationRule);
 				}
 			};
 			
@@ -313,7 +315,7 @@ public class FourWayIPFTest {
 		 */
 
 		
-		ControlTotals controls = generationRule.getControlTotals();
+		IpfControlTotals controls = generationRule.getControlTotals();
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 
 		// 1. row controls verification

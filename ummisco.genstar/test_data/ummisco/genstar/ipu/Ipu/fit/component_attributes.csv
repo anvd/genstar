@@ -1,0 +1,4 @@
+Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On Entity
+Gender,gender,bool,Unique,true; false,Unique
+Work,work,string,Unique,work1; work2,Unique
+Household ID,householdID,int,Unique,1;2;3,Unique

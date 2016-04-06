@@ -24,4 +24,6 @@ public interface ISampleData {
 	public abstract void addComponentReference(final String populationName, final String referenceAttribute) throws GenstarException;
 
 	public abstract void recodeIdAttributes(final SampleEntity targetEntity) throws GenstarException;
+	
+	public abstract String getPopulationName();
 }
