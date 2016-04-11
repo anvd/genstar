@@ -13,59 +13,68 @@ import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 
 public class Entity {
 
-	private ISyntheticPopulation population;
+	private IPopulation population;
 
-	private Map<String, EntityAttributeValue> entityAttributeValues = Collections.EMPTY_MAP; // <attribute name on data, entity attribute value>; lazy initialization
+	private Map<AbstractAttribute, EntityAttributeValue> entityAttributeValues = Collections.EMPTY_MAP;
 	
-	private Map<String, ISyntheticPopulation> componentPopulations = Collections.EMPTY_MAP; // <population name, population>
+	private Map<String, IPopulation> componentPopulations = Collections.EMPTY_MAP; // <population name, population>
 	
 	
-	public Entity(final ISyntheticPopulation population) {
+	public Entity(final IPopulation population) {
 		if (population == null) { throw new IllegalArgumentException("Parameter 'population' can not be null"); }
 		
 		this.population = population;
 	}
 	
-	public ISyntheticPopulation getPopulation() {
+	public IPopulation getPopulation() {
 		return population;
 	}
 	
-	public ISyntheticPopulation getComponentPopulation(final String componentPopulationName) {
+	public IPopulation getComponentPopulation(final String componentPopulationName) {
 		return componentPopulations.get(componentPopulationName);
 	}
 	
-	public ISyntheticPopulation createComponentPopulation(final String populationName, final List<AbstractAttribute> attributes) throws GenstarException {
+	public IPopulation createComponentPopulation(final String populationName, final List<AbstractAttribute> attributes) throws GenstarException {
 		if (populationName == null || populationName.isEmpty()) { throw new GenstarException("Parameter populationName can neither be null nor empty"); }
 		if (attributes == null || attributes.isEmpty()) { throw new GenstarException("Parameter attributes can neither be null nor empty"); }
 		
 		if (componentPopulations == Collections.EMPTY_MAP) {
-			componentPopulations = new HashMap<String, ISyntheticPopulation>();
+			componentPopulations = new HashMap<String, IPopulation>();
 		}
 		
 		if (componentPopulations.get(populationName) != null) {
 			throw new GenstarException("Sample Entity Population " + populationName + " has already existed");
 		}
 		
-		ISyntheticPopulation population = new SyntheticPopulation(populationName, attributes);
-		componentPopulations.put(populationName, population);
+		IPopulation componentPopulation = new Population(this.population.getPopulationType(), populationName, attributes);
+		componentPopulations.put(populationName, componentPopulation);
 		
-		return population;
+		return componentPopulation;
 	}
 	
-	public Map<String, EntityAttributeValue> getEntityAttributeValues() {
-		return new HashMap<String, EntityAttributeValue>(entityAttributeValues);
+	public List<EntityAttributeValue> getEntityAttributeValues() {
+		return new ArrayList<EntityAttributeValue>(entityAttributeValues.values());
+	}
+	
+	public EntityAttributeValue getEntityAttributeValue(final AbstractAttribute attribute) throws GenstarException {
+		if (attribute == null) { throw new GenstarException("'attribute' parameter can not be null"); }
+		
+		return entityAttributeValues.get(attribute);
 	}
 	
 	public EntityAttributeValue getEntityAttributeValueByNameOnData(final String attributeNameOnData) throws GenstarException {
 		if (attributeNameOnData == null) { throw new GenstarException("'attributeNameOnData' parameter can not be null"); }
+		AbstractAttribute attribute = population.getAttributeByNameOnData(attributeNameOnData);
+		if (attribute == null) { return null; }
 		
-		return entityAttributeValues.get(attributeNameOnData);
+		return entityAttributeValues.get(attribute);
 	}
 	
+	// not really used -> remove
 	public EntityAttributeValue getEntityAttributeValueByNameOnEntity(final String attributeNameOnEntity) throws GenstarException {
 		if (attributeNameOnEntity == null) { throw new GenstarException("'attributeNameOnEntity' parameter can not be null"); }
 		
-		AbstractAttribute attribute = population.getAttributebyNameOnEntity(attributeNameOnEntity);
+		AbstractAttribute attribute = population.getAttributeByNameOnEntity(attributeNameOnEntity);
 		if (attribute == null) { return null; }
 		
 		return entityAttributeValues.get(attribute.getNameOnData());
@@ -82,55 +91,42 @@ public class Entity {
 		
 		
 		if (this.entityAttributeValues == Collections.EMPTY_MAP) {
-			this.entityAttributeValues = new HashMap<String, EntityAttributeValue>();
+			this.entityAttributeValues = new HashMap<AbstractAttribute, EntityAttributeValue>();
 		}
 		
 		for (EntityAttributeValue eav : eAttributeValues) { 
-			this.entityAttributeValues.put(eav.getAttribute().getNameOnEntity(), eav);
+			this.entityAttributeValues.put(eav.getAttribute(), eav);
 		}
 	}
 	
-	public void setAttributeValuesOnData(final Map<String, AttributeValue> attributeValuesOnData) throws GenstarException {
-		if (attributeValuesOnData == null) { throw new GenstarException("Parameter values can not be null"); }
-		
-		if (entityAttributeValues == Collections.EMPTY_MAP) {
-			entityAttributeValues = new HashMap<String, EntityAttributeValue>();
-			for (AbstractAttribute attr : population.getAttributes()) { entityAttributeValues.put(attr.getNameOnData(), null); }
-		}
-		
-		for (String attrNameOnData : attributeValuesOnData.keySet()) {
-			// TODO verify valid AttributeValue
-			AbstractAttribute attribute = population.getAttributeByNameOnData(attrNameOnData);
-			if (attribute == null) { throw new GenstarException(attrNameOnData + " attribute is not found on entity"); }
-			
-			EntityAttributeValue eav = new EntityAttributeValue(attribute, attributeValuesOnData.get(attrNameOnData));
-			if (entityAttributeValues.containsKey(attrNameOnData)) { entityAttributeValues.put(attrNameOnData, eav); }
-		}
-	}
-	
-	public void setAttributeValueOnData(final String attributeNameOnData, final AttributeValue attributeValueOnData) throws GenstarException {
-		if (attributeNameOnData == null) { throw new GenstarException("Parameter attributeNameOnData can not be null"); }
+
+	public void setAttributeValueOnData(final AbstractAttribute attribute, final AttributeValue attributeValueOnData) throws GenstarException {
+		if (attribute == null) { throw new GenstarException("Parameter attribute can not be null"); }
 		if (attributeValueOnData == null) { throw new GenstarException("Parameter attributeValueOnData can not be null"); }
 		
-		AbstractAttribute attribute = population.getAttributeByNameOnData(attributeNameOnData);
-		if (attribute == null) { throw new GenstarException(attributeNameOnData + " attribute is not found on " + population.getName() + " entity"); }
+		if (!population.containAttribute(attribute)) { throw new GenstarException(attribute.getNameOnData() + " attribute is not found on " + population.getName() + " entity"); }
 		
 		if (entityAttributeValues == Collections.EMPTY_MAP) {
-			entityAttributeValues = new HashMap<String, EntityAttributeValue>();
-			for (AbstractAttribute attr : population.getAttributes()) { entityAttributeValues.put(attr.getNameOnData(), null); }
+			entityAttributeValues = new HashMap<AbstractAttribute, EntityAttributeValue>();
+			for (AbstractAttribute attr : population.getAttributes()) { entityAttributeValues.put(attr, null); }
 		}
 
 		EntityAttributeValue eav = new EntityAttributeValue(attribute, attributeValueOnData);
-		entityAttributeValues.put(attributeNameOnData, eav);
+		entityAttributeValues.put(attribute, eav);
 	}
 	
-	public void setAttributeValueOnEntity(final String attributeNameOnEntity, final AttributeValue attributeValueOnEntity) throws GenstarException {
-		if (attributeNameOnEntity == null || attributeValueOnEntity == null) {
-			throw new GenstarException("Parameters attributeNameOnData, attributevalueOnEntity can not be null");
+	public void setAttributeValuesOnData(final Map<AbstractAttribute, AttributeValue> attributeValuesOnData) throws GenstarException {
+		if (attributeValuesOnData == null) { throw new GenstarException("'attributeValuesOnData' parameter can not be null"); }
+		
+		for (AbstractAttribute attr : attributeValuesOnData.keySet()) { this.setAttributeValueOnData(attr, attributeValuesOnData.get(attr)); }
+	}
+	
+	public void setAttributeValueOnEntity(final AbstractAttribute attribute, final AttributeValue attributeValueOnEntity) throws GenstarException {
+		if (attribute == null || attributeValueOnEntity == null) {
+			throw new GenstarException("Parameters attribute, attributevalueOnEntity can not be null");
 		}
 		
-		AbstractAttribute attribute = population.getAttributebyNameOnEntity(attributeNameOnEntity);
-		if (attribute == null) { throw new GenstarException("No attribute found with " + attributeNameOnEntity + " as name on " + population.getName() + " entity"); }
+		if (!population.containAttribute(attribute)) { throw new GenstarException("No attribute found with " + attribute.getNameOnData() + " as name on " + population.getName() + " entity"); }
 		
 		AttributeValue attributeValueOnData = null;
 		
@@ -146,48 +142,74 @@ public class Entity {
 		
 		
 		if (entityAttributeValues == Collections.EMPTY_MAP) {
-			entityAttributeValues = new HashMap<String, EntityAttributeValue>();
-			for (AbstractAttribute attr : population.getAttributes()) { entityAttributeValues.put(attr.getNameOnData(), null); }
+			entityAttributeValues = new HashMap<AbstractAttribute, EntityAttributeValue>();
+			for (AbstractAttribute attr : population.getAttributes()) { entityAttributeValues.put(attr, null); }
 		}
 		
 		EntityAttributeValue eav = new EntityAttributeValue(attribute, attributeValueOnData, attributeValueOnEntity);
-		entityAttributeValues.put(attribute.getNameOnData(), eav);
+		entityAttributeValues.put(attribute, eav);
 	}
 	
-	public void setAttributeValuesOnEntity(Map<String, AttributeValue> attributeValuesOnEntity) throws GenstarException {
+	public void setAttributeValuesOnEntity(Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity) throws GenstarException {
 		if (attributeValuesOnEntity == null) {
 			throw new GenstarException("attributeValuesOnEntity parameter can not be null");
 		}
 		
-		for (String attributeNameOnEntity : attributeValuesOnEntity.keySet()) {
-			this.setAttributeValueOnEntity(attributeNameOnEntity, attributeValuesOnEntity.get(attributeNameOnEntity));
+		for (AbstractAttribute attribute : attributeValuesOnEntity.keySet()) {
+			this.setAttributeValueOnEntity(attribute, attributeValuesOnEntity.get(attribute));
 		}
 	}
 
-	public boolean containAttributeWithNameOnData(final String attributeNameOnData) {
-		return entityAttributeValues.get(attributeNameOnData) != null;
-	}
-	
-	public boolean areValuesOnEntityMatched(final Map<String, AttributeValue> matchingAttributeValuesOnEntity) throws GenstarException { // <attribute name on entity, attribute value on entity>
+	public boolean matchAttributeValuesOnEntity(final Map<AbstractAttribute, AttributeValue> matchingAttributeValuesOnEntity) throws GenstarException { // <attribute name on entity, attribute value on entity>
 		if (matchingAttributeValuesOnEntity == null || matchingAttributeValuesOnEntity.isEmpty()) { return true; }
 		
-		AbstractAttribute attribute;
 		EntityAttributeValue entityAttrValue;
-		for (String attributeNameOnEntity : matchingAttributeValuesOnEntity.keySet()) {
-			attribute = population.getAttributebyNameOnEntity(attributeNameOnEntity);
-			if (attribute == null) { throw new GenstarException("Attribute with " + attributeNameOnEntity + " as name on entity doesn't exist"); }
+		for (AbstractAttribute attribute : matchingAttributeValuesOnEntity.keySet()) {
+			if (!population.containAttribute(attribute)) { throw new GenstarException("Attribute with " + attribute.getNameOnEntity() + " as name on entity doesn't exist"); }
 			
-			entityAttrValue = entityAttributeValues.get(attribute.getNameOnData());
-			
+			entityAttrValue = entityAttributeValues.get(attribute);
 			if (entityAttrValue == null) { return false; }
-			if (!entityAttrValue.isAttributeValueOnEntityMatched(matchingAttributeValuesOnEntity.get(attributeNameOnEntity))) { return false; }
+			if (!entityAttrValue.isAttributeValueOnEntityMatched(matchingAttributeValuesOnEntity.get(attribute))) { return false; }
 		}
 		
 		return true;
 	}
 	
-	public List<ISyntheticPopulation> getComponentPopulations() {
-		return new ArrayList<ISyntheticPopulation>(componentPopulations.values());
+	public boolean matchAttributeValuesOnData(final Map<AbstractAttribute, AttributeValue> matchingAttributeValuesOnData) throws GenstarException {
+		if (matchingAttributeValuesOnData == null || matchingAttributeValuesOnData.isEmpty()) { return true; }
+		
+		EntityAttributeValue entityAttrValue;
+		for (AbstractAttribute attribute : matchingAttributeValuesOnData.keySet()) {
+			if (!population.containAttribute(attribute)) { throw new GenstarException("Attribute with " + attribute.getNameOnData() + " as name on data doesn't exist"); }
+			
+			entityAttrValue = entityAttributeValues.get(attribute);
+			if (entityAttrValue == null) { return false; }
+			if (!entityAttrValue.isAttributeValueOnDataMatched(matchingAttributeValuesOnData.get(attribute))) { return false; }
+		}
+		
+		return true;
+	}
+	
+	public Map<AbstractAttribute, AttributeValue> getAttributesValuesOnData(final List<AbstractAttribute> attributes) throws GenstarException {
+		if (attributes == null) { throw new GenstarException("Parameter attributes can not be null"); }
+		if (!population.getAttributes().containsAll(attributes)) { throw new GenstarException("One or several attributes are not valid"); }
+		
+		Map<AbstractAttribute, AttributeValue> controlledAttributesValuesOnData = new HashMap<AbstractAttribute, AttributeValue>();
+		for (AbstractAttribute attr : attributes) {
+			EntityAttributeValue entityAttributeValue = entityAttributeValues.get(attr.getNameOnData());
+			if (entityAttributeValue == null) { throw new GenstarException("Attribute " + attr.getNameOnData() + " not found in the entity"); }
+
+			AttributeValue valueOnData = entityAttributeValue.getAttributeValueOnData();
+			controlledAttributesValuesOnData.put(attr, valueOnData);
+		}
+		
+		
+		return controlledAttributesValuesOnData;
+	}
+	
+	
+	public List<IPopulation> getComponentPopulations() {
+		return new ArrayList<IPopulation>(componentPopulations.values());
 	}
 
 }

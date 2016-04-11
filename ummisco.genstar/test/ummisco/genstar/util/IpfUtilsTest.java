@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.SampleDataGenerationRule;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -265,7 +265,7 @@ public class IpfUtilsTest {
 				attributeValues.put(attribute, attributeValue);
 			}
 			
-			assertTrue(avfs.get(line).matchAttributeValues(attributeValues));
+			assertTrue(avfs.get(line).matchAttributeValuesOnData(attributeValues));
 			
 			// "frequency" is the last column
 			assertTrue(avfs.get(line).getFrequency() == Integer.parseInt(aRow.get(aRow.size() - 1)));
@@ -287,7 +287,7 @@ public class IpfUtilsTest {
 		File sampleFile = new File(sampleFilePath);
 		if (!sampleFile.exists()) {
 			String populationName = "household population";
-			ISyntheticPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation(populationName, attributesFile, 1, 3);
+			IPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation(populationName, attributesFile, 1, 3);
 			
 			Map<String, String> csvFilePathsByPopulationNames = new HashMap<String, String>();
 			csvFilePathsByPopulationNames.put(populationName, sampleFilePath);
@@ -307,7 +307,7 @@ public class IpfUtilsTest {
 		GenstarUtils.createSampleDataGenerationRule(generator, "dummy rule", sampleCSVFile, controlledAttributesListFile, controlTotalsFile, supplementaryAttributesFile, null, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
 		
 		// 3. generate the population
-		ISyntheticPopulation population = generator.generate();
+		IPopulation population = generator.generate();
 		
 		// 4. do the analysis
 		List<Integer> analsysisResult = IpfUtils.analyseIpfPopulation(population, controlledAttributesListFile, controlTotalsFile);

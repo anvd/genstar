@@ -23,8 +23,9 @@ import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 import ummisco.genstar.metamodel.IMultipleRulesGenerator;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
-import ummisco.genstar.metamodel.SyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
+import ummisco.genstar.metamodel.PopulationType;
+import ummisco.genstar.metamodel.Population;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
@@ -182,7 +183,7 @@ public class GamaGenstarUtils {
 	}	
 
 	
-	public static ISyntheticPopulation convertGamaPopulationToGenstarPopulation(final Entity host, final IList gamaPopulation, 
+	public static IPopulation convertGamaPopulationToGenstarPopulation(final Entity host, final IList gamaPopulation, 
 			final Map<String, List<AbstractAttribute>> populationsAttributes) throws GenstarException {
 		if (gamaPopulation == null) { throw new GenstarException("Parameter gamaPopulation can not be null"); }
 		if (gamaPopulation.size() < 3) { throw new GenstarException("gamaPopulation is not a valid gama synthetic population format"); }
@@ -194,9 +195,9 @@ public class GamaGenstarUtils {
 		Map<String, String> componentReferences = (Map<String, String>)gamaPopulation.get(2); // third element contains references to "component" agents
 		// what to do with group and component references?
 		
-		ISyntheticPopulation genstarPopulation = null; // 2. create the genstar population appropriately
+		IPopulation genstarPopulation = null; // 2. create the genstar population appropriately
 		if (host == null) {
-			genstarPopulation = new SyntheticPopulation(populationName, populationsAttributes.get(populationName));
+			genstarPopulation = new Population(PopulationType.SYNTHETIC_POPULATION, populationName, populationsAttributes.get(populationName));
 		} else {
 			genstarPopulation = host.createComponentPopulation(populationName, populationsAttributes.get(populationName));
 		}
@@ -210,20 +211,20 @@ public class GamaGenstarUtils {
 			
 			// extract the initial values
 			GamaMap<String, String> mirrorGamaEntityInitValues = null;
-			IList<IList> gamaComponentPopulations = (IList<IList>) gamaEntityInitValues.get(ISyntheticPopulation.class);
+			IList<IList> gamaComponentPopulations = (IList<IList>) gamaEntityInitValues.get(IPopulation.class);
 			if (gamaComponentPopulations == null) { // without Genstar component populations
 				mirrorGamaEntityInitValues = gamaEntityInitValues;
 			} else {
 				mirrorGamaEntityInitValues = GamaMapFactory.create();
 				mirrorGamaEntityInitValues.putAll(gamaEntityInitValues);
-				mirrorGamaEntityInitValues.remove(ISyntheticPopulation.class);
+				mirrorGamaEntityInitValues.remove(IPopulation.class);
 			}
 			
 			// convert string representation (of the initial values) to AttributeValue
-			Map<String, AttributeValue> attributeValuesOnEntity = new HashMap<String, AttributeValue>();
+			Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity = new HashMap<AbstractAttribute, AttributeValue>();
 			for (String attributeNameOnEntity : mirrorGamaEntityInitValues.keySet()) {
-				attributeValuesOnEntity.put(attributeNameOnEntity, 
-						GenstarGamaTypesConverter.convertGama2GenstarType(genstarPopulation.getAttributebyNameOnEntity(attributeNameOnEntity), 
+				attributeValuesOnEntity.put(genstarPopulation.getAttributeByNameOnEntity(attributeNameOnEntity), 
+						GenstarGamaTypesConverter.convertGama2GenstarType(genstarPopulation.getAttributeByNameOnEntity(attributeNameOnEntity), 
 								GenstarGamaTypesConverter.convertGamaAttributeValueToString(mirrorGamaEntityInitValues.get(attributeNameOnEntity) ) ) );
 			}
 			
@@ -239,7 +240,7 @@ public class GamaGenstarUtils {
 	}
 	
 	
-	public static IList convertGenstarPopulationToGamaPopulation(final ISyntheticPopulation genstarPopulation) throws GenstarException {
+	public static IList convertGenstarPopulationToGamaPopulation(final IPopulation genstarPopulation) throws GenstarException {
 		IList gamaPopulation = GamaListFactory.create();
 		
 		// First three elements of a GAMA synthetic population
@@ -251,7 +252,7 @@ public class GamaGenstarUtils {
 		GamaMap map;
 		for (Entity entity : genstarPopulation.getEntities()) {
 			map = GamaMapFactory.create();
-			for (EntityAttributeValue eav : entity.getEntityAttributeValues().values()) {
+			for (EntityAttributeValue eav : entity.getEntityAttributeValues()) {
 				map.put(eav.getAttribute().getNameOnEntity(), GenstarGamaTypesConverter.convertGenstar2GamaType(eav.getAttributeValueOnEntity()));
 			}
 
@@ -259,11 +260,11 @@ public class GamaGenstarUtils {
 			
 			// Recursively convert genstar component populations
 			IList componentPopulations = GamaListFactory.create();
-			for (ISyntheticPopulation componentPopulation : entity.getComponentPopulations()) {
+			for (IPopulation componentPopulation : entity.getComponentPopulations()) {
 				componentPopulations.add(convertGenstarPopulationToGamaPopulation(componentPopulation));
 			}
 			
-			if (!componentPopulations.isEmpty()) { map.put(ISyntheticPopulation.class, componentPopulations); }
+			if (!componentPopulations.isEmpty()) { map.put(IPopulation.class, componentPopulations); }
 		}
 
 		return gamaPopulation;

@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -93,11 +94,23 @@ public class IpuUtilsTest {
 					attributeValues.put(carsAttribute, car);
 					
 					AttributeValuesFrequency avf = avfs.get(avfsIndex); 
-					assertTrue(avf.matchAttributeValues(attributeValues));
+					assertTrue(avf.matchAttributeValuesOnData(attributeValues));
 					assertTrue(avf.getFrequency() == attributeValueFrequencies[avfsIndex]);
 					avfsIndex++;
 				}
 			}
 		}
+	}
+	
+	
+	@Test public void testBuildIpuControlTotalsOfCompoundPopulation() throws GenstarException {
+		/*
+	public void buildIpuControlTotalsOfCompoundPopulation(ISyntheticPopulation compoundPopulation, final String componentPopulationName, 
+	final GenstarCSVFile groupControlledAttributesListFile, 
+			final GenstarCSVFile componentControlledAttributesListFile, final List<List<String>> groupControlTotalsToBeBuilt, 
+			final List<List<String>> componentControlTotalsToBeBuilt) throws GenstarException {
+		 */
+		
+		
 	}
 }

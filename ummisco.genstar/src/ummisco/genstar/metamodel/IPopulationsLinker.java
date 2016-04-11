@@ -12,7 +12,7 @@ public interface IPopulationsLinker {
 	
 	public abstract int getCurrentRound();
 	
-	public abstract List<ISyntheticPopulation> getPopulations();
+	public abstract List<IPopulation> getPopulations();
 
-	public abstract void establishRelationship(final List<ISyntheticPopulation> populations) throws GenstarException;
+	public abstract void establishRelationship(final List<IPopulation> populations) throws GenstarException;
 }

@@ -9,6 +9,8 @@ import java.util.Map;
 import org.junit.Test;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.Entity;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -50,29 +52,29 @@ public class GroupComponentSampleDataTest {
 		ISampleData groupComponentSampleData = new GroupComponentSampleData(groupSampleData, componentSampleData, groupIdAttributeOnGroup, groupIdAttributeOnComponent);
 		
 
-		SampleEntityPopulation buildGroupEntityPopulation = groupComponentSampleData.getSampleEntityPopulation();
-		List<SampleEntity> builtGroupEntities = buildGroupEntityPopulation.getSampleEntities();
+		IPopulation buildGroupEntityPopulation = groupComponentSampleData.getSampleEntityPopulation();
+		List<Entity> builtGroupEntities = buildGroupEntityPopulation.getEntities();
 		
 		// verify that the number of sample entities in the built group population is equal to the number sample entities in the group population 
-		assertTrue(builtGroupEntities.size() == groupSampleData.getSampleEntityPopulation().getSampleEntities().size());
+		assertTrue(builtGroupEntities.size() == groupSampleData.getSampleEntityPopulation().getEntities().size());
 		
 		// verify that the number of sample entities in the built group population is "consistent" with the CSV sample file
 		assertTrue(builtGroupEntities.size() == groupSampleFile.getRows() - 1);
 
 		// verify that the number of people of households is consistent with "Household_ID" attribute value
-		Map<String, AttributeValue> matchingCriteria = new HashMap<String, AttributeValue>();
+		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		for (List<String> row : groupSampleFile.getContent()) {
 			// Header: Household_ID,Household Size,Household Income,Household Type,Number Of Cars
 			UniqueValue householdIdValue = new UniqueValue(DataType.INTEGER, row.get(0));			
 			Integer householdSize = Integer.parseInt(row.get(1));
 			
-			matchingCriteria.put(groupIdAttributeOnGroup.getNameOnEntity(), householdIdValue);
-			List<SampleEntity> matchingHouseholdEntities = buildGroupEntityPopulation.getMatchingEntities(matchingCriteria);
+			matchingCriteria.put(groupIdAttributeOnGroup, householdIdValue);
+			List<Entity> matchingHouseholdEntities = buildGroupEntityPopulation.getMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria);
 			
 			assertTrue(matchingHouseholdEntities.size() == 1);
 			
-			SampleEntityPopulation peopleComponentPopulation = matchingHouseholdEntities.get(0).getComponentPopulation("people");
-			assertTrue(peopleComponentPopulation.getSampleEntities().size() == householdSize);
+			IPopulation peopleComponentPopulation = matchingHouseholdEntities.get(0).getComponentPopulation("people");
+			assertTrue(peopleComponentPopulation.getEntities().size() == householdSize);
 		}
 	}
 }

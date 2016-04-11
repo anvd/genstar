@@ -41,19 +41,19 @@ public class FourWayIPF extends IPF<double[][][][], int[][][], double[][][]> {
 
 		data = new double[rowAttributeValues.size()][columnAttributeValues.size()][layerAttributeValues.size()][stackAttributeValues.size()];
 		
-		Map<String, AttributeValue> matchingCondition = new HashMap<String, AttributeValue>();
+		Map<AbstractAttribute, AttributeValue> matchingCondition = new HashMap<AbstractAttribute, AttributeValue>();
 		for (int row=0; row<rowAttributeValues.size(); row++) {
-			matchingCondition.put(rowAttribute.getNameOnEntity(), rowAttributeValues.get(row));
+			matchingCondition.put(rowAttribute, rowAttributeValues.get(row));
 			
 			for (int col=0; col<columnAttributeValues.size(); col++) {
-				matchingCondition.put(columnAttribute.getNameOnEntity(), columnAttributeValues.get(col));
+				matchingCondition.put(columnAttribute, columnAttributeValues.get(col));
 				
 				for (int layer=0; layer<layerAttributeValues.size(); layer++) {
-					matchingCondition.put(layerAttribute.getNameOnEntity(), layerAttributeValues.get(layer));
+					matchingCondition.put(layerAttribute, layerAttributeValues.get(layer));
 					
 					for (int stack=0; stack<stackAttributeValues.size(); stack++) {
-						matchingCondition.put(stackAttribute.getNameOnEntity(), stackAttributeValues.get(stack));
-						data[row][col][layer][stack] = sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCondition);
+						matchingCondition.put(stackAttribute, stackAttributeValues.get(stack));
+						data[row][col][layer][stack] = sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCondition);
 						// TODO if (data[row][col][layer][stack] == 0) raise warning
 					}
 				}

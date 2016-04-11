@@ -110,14 +110,14 @@ public class TwoWayIPFTest {
 		assertTrue(data[0].length == colAttributeValues.size());
 		
 		ISampleData sampleData = generationRule.getSampleData();
-		Map<String, AttributeValue> matchingCriteria = new HashMap<String, AttributeValue>();
+		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		int row=0, col=0;
 		for (AttributeValue rowValue : ipf.getAttributeValues(0)) {
-			matchingCriteria.put(rowAttr.getNameOnEntity(), rowValue);
+			matchingCriteria.put(rowAttr, rowValue);
 			
 			for (AttributeValue colValue : ipf.getAttributeValues(1)) {
-				matchingCriteria.put(colAttr.getNameOnEntity(), colValue);
-				assertTrue(data[row][col] == sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria));
+				matchingCriteria.put(colAttr, colValue);
+				assertTrue(data[row][col] == sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria));
 				
 				col++;
 			}
@@ -210,7 +210,7 @@ public class TwoWayIPFTest {
 		}
 		
 		for (AttributeValuesFrequency selectProba : selectionProbabilities) {
-			assertTrue(allAttributeValues.contains(selectProba.getAttributeValues()));
+			assertTrue(allAttributeValues.contains(selectProba.getAttributeValuesOnData()));
 		}
 	}
 }

@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
@@ -28,15 +29,15 @@ public class SyntheticPopulationTest_Bondy {
 		ISyntheticPopulationGenerator inhabitantPopulationGenerator = bondyData.getInhabitantPopGenerator();
 		inhabitantPopulationGenerator.setNbOfEntities(10);
 		
-		ISyntheticPopulation population = inhabitantPopulationGenerator.generate();
+		IPopulation population = inhabitantPopulationGenerator.generate();
 		Entity firstInhabitant = population.getEntities().get(0);
 		
 		int entitiesBefore = population.getEntities().size();
 		
 		EntityAttributeValue entityAgeAttrValue = firstInhabitant.getEntityAttributeValueByNameOnEntity("age");
 		AttributeValue ageAttrValue = entityAgeAttrValue.getAttributeValueOnEntity();
-		Map<String, AttributeValue> attributeValues = new HashMap<String, AttributeValue>();
-		attributeValues.put("age", ageAttrValue);
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues.put(population.getAttributeByNameOnEntity("age"), ageAttrValue);
 		List<Entity> pickedEntities = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValues);
 		
 		assertTrue(firstInhabitant.equals(pickedEntities.get(0)));
@@ -49,7 +50,7 @@ public class SyntheticPopulationTest_Bondy {
 		ISyntheticPopulationGenerator inhabitantPopulationGenerator = bondyData.getInhabitantPopGenerator();
 		inhabitantPopulationGenerator.setNbOfEntities(10);
 		
-		ISyntheticPopulation population = inhabitantPopulationGenerator.generate();
+		IPopulation population = inhabitantPopulationGenerator.generate();
 		Entity firstInhabitant = population.getEntities().get(0);
 		
 		int entitiesBefore = population.getEntities().size();
@@ -58,8 +59,8 @@ public class SyntheticPopulationTest_Bondy {
 		UniqueValue ageAttrValue = (UniqueValue) entityAgeAttrValue.getAttributeValueOnEntity();
 		UniqueValue queryAgeAttributeValue = new UniqueValue(DataType.INTEGER, ageAttrValue.getStringValue());
 		
-		Map<String, AttributeValue> attributeValues = new HashMap<String, AttributeValue>();
-		attributeValues.put("age", queryAgeAttributeValue);
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues.put(population.getAttributeByNameOnEntity("age"), queryAgeAttributeValue);
 		List<Entity> pickedEntities = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValues);
 		
 		assertTrue(firstInhabitant.equals(pickedEntities.get(0)));

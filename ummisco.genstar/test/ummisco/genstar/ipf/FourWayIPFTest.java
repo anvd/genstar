@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -68,7 +68,7 @@ public class FourWayIPFTest {
 			int minEntitiesOfEachAttributeValuesSet = 1;
 			int maxEntitiesOfEachAttributeValuesSet = 3;
 			
-			ISyntheticPopulation generatedSamplePopulation = GenstarUtils.generateRandomSinglePopulation(populationName, _attributesFile, minEntitiesOfEachAttributeValuesSet, maxEntitiesOfEachAttributeValuesSet);
+			IPopulation generatedSamplePopulation = GenstarUtils.generateRandomSinglePopulation(populationName, _attributesFile, minEntitiesOfEachAttributeValuesSet, maxEntitiesOfEachAttributeValuesSet);
 			
 			Map<String, String> csvFilePaths = new HashMap<String, String>();
 			csvFilePaths.put(populationName, _sampleDataFilePath);
@@ -164,21 +164,21 @@ public class FourWayIPFTest {
 		
 		
 		ISampleData sampleData = generationRule.getSampleData();
-		Map<String, AttributeValue> matchingCriteria = new HashMap<String, AttributeValue>();
+		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		for (int row=0; row<rowAttributeValues.size(); row++) {
-			matchingCriteria.put(rowAttribute.getNameOnEntity(), rowAttributeValues.get(row));
+			matchingCriteria.put(rowAttribute, rowAttributeValues.get(row));
 			
 			for (int col=0; col<columnAttributeValues.size(); col++) {
-				matchingCriteria.put(columnAttribute.getNameOnEntity(), columnAttributeValues.get(col));
+				matchingCriteria.put(columnAttribute, columnAttributeValues.get(col));
 				
 				for (int layer=0; layer<layerAttributeValues.size(); layer++) {
-					matchingCriteria.put(layerAttribute.getNameOnEntity(), layerAttributeValues.get(layer));
+					matchingCriteria.put(layerAttribute, layerAttributeValues.get(layer));
 					
 					for (int stack=0; stack<stackAttributeValues.size(); stack++) {
-						matchingCriteria.put(stackAttribute.getNameOnEntity(), stackAttributeValues.get(stack));
+						matchingCriteria.put(stackAttribute, stackAttributeValues.get(stack));
 
-						assertTrue(data[row][col][layer][stack] == sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria));
+						assertTrue(data[row][col][layer][stack] == sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria));
 					}
 				}
 			}
@@ -443,7 +443,7 @@ public class FourWayIPFTest {
 		}
 		
 		for (AttributeValuesFrequency selectProba : selectionProbabilities) {
-			assertTrue(allAttributeValues.contains(selectProba.getAttributeValues()));
+			assertTrue(allAttributeValues.contains(selectProba.getAttributeValuesOnData()));
 		}
 	}
 }

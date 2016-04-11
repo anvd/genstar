@@ -8,7 +8,8 @@ import java.util.Map;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AbstractPopulationsLinker;
 import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
@@ -20,14 +21,14 @@ public class CanThoPopLinkers {
 	@populations_linker(name = "pops_linker2")
 	public class Scenario1PopLinker extends AbstractPopulationsLinker {
 		
-		private ISyntheticPopulation inhabitantPopulation, householdPopulation;
+		private IPopulation inhabitantPopulation, householdPopulation;
 
 		// internal data
 		private List<Entity> pickedHouseholds = null;
 		private List<Entity> pickedInhabitants = null;
 
 		@Override
-		public void establishRelationship(final List<ISyntheticPopulation> populations) throws GenstarException {
+		public void establishRelationship(final List<IPopulation> populations) throws GenstarException {
 			// populations:
 			// 		1. population 1: Scenario1's inhabitant population
 			//		2. population 2: Scenario1's household population
@@ -35,8 +36,8 @@ public class CanThoPopLinkers {
 			if (populations == null) { throw new IllegalArgumentException("'populations' parameter can not be null"); }
 			if (populations.size() != 2) { throw new IllegalArgumentException("'populations' must contain 2 populations"); }
 			
-			ISyntheticPopulation tmpPop1 = populations.get(0);
-			ISyntheticPopulation tmpPop2 = populations.get(1);
+			IPopulation tmpPop1 = populations.get(0);
+			IPopulation tmpPop2 = populations.get(1);
 			
 			if (tmpPop1.getName().equals("Scenario1's inhabitant population")) { 
 				inhabitantPopulation = tmpPop1; 
@@ -50,7 +51,7 @@ public class CanThoPopLinkers {
 				throw new IllegalArgumentException("'populations' doesn't contain required populations");
 			}
 			
-			this.populations = new ArrayList<ISyntheticPopulation>(populations);
+			this.populations = new ArrayList<IPopulation>(populations);
 			
 			// pick inhabitants into households
 			EntityAttributeValue hhSizeEntityAttrValue;
@@ -93,13 +94,13 @@ public class CanThoPopLinkers {
 			}
 		
 			if (size > 0) {
-				ISyntheticPopulation memberPopulation = members.get(0).getPopulation();
-				ISyntheticPopulation memberNewPopulation = householdEntity.getComponentPopulation(memberPopulation.getName());
+				IPopulation memberPopulation = members.get(0).getPopulation();
+				IPopulation memberNewPopulation = householdEntity.getComponentPopulation(memberPopulation.getName());
 				if (memberNewPopulation == null) {  memberNewPopulation = householdEntity.createComponentPopulation(memberPopulation.getName(), memberPopulation.getAttributes()); }
 				
 				List<Entity> membersOfNewPopulation = memberNewPopulation.createEntities(members.size());
 				for (int i=0; i<members.size(); i++) {
-					membersOfNewPopulation.get(i).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(members.get(i).getEntityAttributeValues().values()));
+					membersOfNewPopulation.get(i).setEntityAttributeValues(members.get(i).getEntityAttributeValues());
 				}
 
 				availableInhabitants.removeAll(members);
@@ -120,14 +121,14 @@ public class CanThoPopLinkers {
 	
 	public class Scenario2PopLinker extends AbstractPopulationsLinker {
 
-		private ISyntheticPopulation inhabitantPopulation, householdPopulation;
+		private IPopulation inhabitantPopulation, householdPopulation;
 
 		// internal data
 		private List<Entity> pickedHouseholds = null;
 		private List<Entity> pickedInhabitants = null;
 
 		@Override
-		public void establishRelationship(final List<ISyntheticPopulation> populations) throws GenstarException {
+		public void establishRelationship(final List<IPopulation> populations) throws GenstarException {
 			// populations:
 			// 		1. population 1: Scenario2's inhabitant population
 			//		2. population 2: Scenario2's household population
@@ -135,8 +136,8 @@ public class CanThoPopLinkers {
 			if (populations == null) { throw new IllegalArgumentException("'populations' parameter can not be null"); }
 			if (populations.size() != 2) { throw new IllegalArgumentException("'populations' must contain 2 populations"); }
 			
-			ISyntheticPopulation tmpPop1 = populations.get(0);
-			ISyntheticPopulation tmpPop2 = populations.get(1);
+			IPopulation tmpPop1 = populations.get(0);
+			IPopulation tmpPop2 = populations.get(1);
 			
 			if (tmpPop1.getName().equals("Scenario2's inhabitant population")) { 
 				inhabitantPopulation = tmpPop1; 
@@ -150,7 +151,7 @@ public class CanThoPopLinkers {
 				throw new IllegalArgumentException("'populations' doesn't contain required populations");
 			}
 			
-			this.populations = new ArrayList<ISyntheticPopulation>(populations);
+			this.populations = new ArrayList<IPopulation>(populations);
 			
 			// pick inhabitants into households
 			int hhSizeIntValue;
@@ -177,27 +178,28 @@ public class CanThoPopLinkers {
 		// put inhabitants into household basing on household's size and living_place
 		private void buildHousehold(final Entity householdEntity, final int size, final String livingPlace, final List<Entity> availableInhabitants) throws GenstarException {
 			if (size == 0) { return; }
+			if (availableInhabitants.isEmpty()) { return; }
 			
-			Map<String, AttributeValue> livingPlaceMap = new HashMap<String, AttributeValue>();
+			Map<AbstractAttribute, AttributeValue> livingPlaceMap = new HashMap<AbstractAttribute, AttributeValue>();
 			UniqueValue livingPlaceAttrValue = new UniqueValue(DataType.STRING, livingPlace);
-			livingPlaceMap.put("living_place", livingPlaceAttrValue);
+			livingPlaceMap.put(availableInhabitants.get(0).getPopulation().getAttributeByNameOnEntity("living_place"), livingPlaceAttrValue);
 
 			List<Entity> members = new ArrayList<Entity>();
 			
 			for (Entity inhabitant : availableInhabitants) {
-				if (inhabitant.areValuesOnEntityMatched(livingPlaceMap)) { members.add(inhabitant); }
+				if (inhabitant.matchAttributeValuesOnEntity(livingPlaceMap)) { members.add(inhabitant); }
 				if (members.size() == size) { break; }
 			}
 			
 			if (members.size() == size) {
 				
-				ISyntheticPopulation memberPopulation = members.get(0).getPopulation();
-				ISyntheticPopulation memberNewPopulation = householdEntity.getComponentPopulation(memberPopulation.getName());
+				IPopulation memberPopulation = members.get(0).getPopulation();
+				IPopulation memberNewPopulation = householdEntity.getComponentPopulation(memberPopulation.getName());
 				if (memberNewPopulation == null) {  memberNewPopulation = householdEntity.createComponentPopulation(memberPopulation.getName(), memberPopulation.getAttributes()); }
 				
 				List<Entity> membersOfNewPopulation = memberNewPopulation.createEntities(members.size());
 				for (int i=0; i<members.size(); i++) {
-					membersOfNewPopulation.get(i).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(members.get(i).getEntityAttributeValues().values()));
+					membersOfNewPopulation.get(i).setEntityAttributeValues(members.get(i).getEntityAttributeValues());
 				}
 				
 				availableInhabitants.removeAll(members);

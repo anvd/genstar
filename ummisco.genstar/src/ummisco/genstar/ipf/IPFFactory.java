@@ -10,7 +10,7 @@ public class IPFFactory {
 	public static IPF createIPF(final SampleDataGenerationRule generationRule) throws GenstarException {
 		if (generationRule == null) { throw new GenstarException("'generationRule' can not be null"); }
 		
-		// initialise nWayIPF basing on the number of controlled attributes
+		// initialize nWayIPF basing on the number of controlled attributes
 		List<AbstractAttribute> controlledAttributes = generationRule.getControlledAttributes();
 		int nbOfControlledAttributes = controlledAttributes.size();
 		

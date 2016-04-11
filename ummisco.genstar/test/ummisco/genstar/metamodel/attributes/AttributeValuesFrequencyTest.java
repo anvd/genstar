@@ -60,32 +60,32 @@ public class AttributeValuesFrequencyTest {
 		
 		Map<AbstractAttribute, AttributeValue> dataSet1 = new HashMap<AbstractAttribute, AttributeValue>();
 		dataSet1.put(ageRangesAttr1, ageRange1);
-		assertTrue(element.matchAttributeValues(dataSet1));
+		assertTrue(element.matchAttributeValuesOnData(dataSet1));
 		
 		dataSet1.put(sexAttr, maleValueOrigin);
-		assertTrue(element.matchAttributeValues(dataSet1));
+		assertTrue(element.matchAttributeValuesOnData(dataSet1));
 		
 		
 		Map<AbstractAttribute, AttributeValue> dataSet2 = new HashMap<AbstractAttribute, AttributeValue>();
 		dataSet2.put(ageRangesAttr1, ageRange2);
-		assertFalse(element.matchAttributeValues(dataSet2));
+		assertFalse(element.matchAttributeValuesOnData(dataSet2));
 		
 		
 		Map<AbstractAttribute, AttributeValue> dataSet3 = new HashMap<AbstractAttribute, AttributeValue>();
 		dataSet3.put(ageRangesAttr1, copyAgeRange1);
-		assertTrue(element.matchAttributeValues(dataSet3));
+		assertTrue(element.matchAttributeValuesOnData(dataSet3));
 		
 		
 		Map<AbstractAttribute, AttributeValue> dataSet4 = new HashMap<AbstractAttribute, AttributeValue>();
 		dataSet4.put(ageRangesAttr1, copyAgeRange1);
 		dataSet4.put(sexAttr, maleValueCopy);
-		assertTrue(element.matchAttributeValues(dataSet4));
+		assertTrue(element.matchAttributeValuesOnData(dataSet4));
 		
 		
 		Map<AbstractAttribute, AttributeValue> dataSet5 = new HashMap<AbstractAttribute, AttributeValue>();
 		dataSet5.put(ageRangesAttr1, copyAgeRange1);
 		dataSet5.put(sexAttr, femaleValue);
-		assertFalse(element.matchAttributeValues(dataSet5));
+		assertFalse(element.matchAttributeValuesOnData(dataSet5));
 	}
 	
 	@Test public void testMatchEntity() throws GenstarException {
@@ -105,8 +105,8 @@ public class AttributeValuesFrequencyTest {
 		
 		
 		Entity entity1 = new Entity(bondyPopulationGenerator.generate());
-		entity1.setAttributeValueOnData(ageRangesAttr1.getNameOnData(), ageRange1);
-		entity1.setAttributeValueOnData(sexAttr.getNameOnData(), maleValueOrigin);
+		entity1.setAttributeValueOnData(ageRangesAttr1, ageRange1);
+		entity1.setAttributeValueOnData(sexAttr, maleValueOrigin);
 		
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValues.put(ageRangesAttr1, ageRange1);
@@ -162,10 +162,10 @@ public class AttributeValuesFrequencyTest {
 		Entity entity1 = new Entity(bondyPopulationGenerator.generate());
 		assertFalse(avf1.matchEntity(entity1));
 		
-		entity1.setAttributeValueOnData(ageRangesAttr1.getNameOnData(), ageRange1);
+		entity1.setAttributeValueOnData(ageRangesAttr1, ageRange1);
 		assertFalse(avf1.matchEntity(entity1));
 
-		entity1.setAttributeValueOnData(sexAttr.getNameOnData(), maleValueOrigin);
+		entity1.setAttributeValueOnData(sexAttr, maleValueOrigin);
 		assertTrue(avf1.matchEntity(entity1));
 		
 		

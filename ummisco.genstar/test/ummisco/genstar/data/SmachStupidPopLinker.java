@@ -11,7 +11,8 @@ import java.util.TreeMap;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AbstractPopulationsLinker;
 import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
@@ -24,7 +25,7 @@ import ummisco.genstar.util.SharedInstances;
 public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 
 	// Required populations : "household" and "inhabitant"
-	private ISyntheticPopulation householdPopulation = null, inhabitantPopulation = null;
+	private IPopulation householdPopulation = null, inhabitantPopulation = null;
 	
 	private ProbabilityMassFunction coupleAgeDifferencePmf;
 	private ProbabilityMassFunction firstBirthOrderPmf, secondBirthOrderPmf, thirdBirthOrderPmf, fourthBirthOrderPmf;
@@ -34,12 +35,12 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 	List<Entity> successfulHouseholds = null;
 	List<Entity> successfulInhabitants = null;
 	
-	@Override public void establishRelationship(final List<ISyntheticPopulation> populations) throws GenstarException {
+	@Override public void establishRelationship(final List<IPopulation> populations) throws GenstarException {
 		if (populations == null) { throw new IllegalArgumentException("'populations' parameter can not be null"); }
 		if (populations.size() != 2) { throw new IllegalArgumentException("'populations' must contain 2 populations"); }
 
-		ISyntheticPopulation tmpPop1 = populations.get(0);
-		ISyntheticPopulation tmpPop2 = populations.get(1);
+		IPopulation tmpPop1 = populations.get(0);
+		IPopulation tmpPop2 = populations.get(1);
 		
 		if (tmpPop1.getName().equals("Population of Bondy's Households")) { 
 			householdPopulation = tmpPop1; 
@@ -109,16 +110,18 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 
 	
 	private void buildFamilyCoupleHousehold(final Entity householdEntity, final List<Entity> availableInhabitants) throws GenstarException {
+		if (availableInhabitants.isEmpty()) { return; }
 		
 		List<Entity> pickedInhabitants = new ArrayList<Entity>();
 		
 		// pick the householdHead by age(range)
 		UniqueValue headAgeOnHouseholdAttrValue = (UniqueValue) householdEntity.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity();
-		Map<String, AttributeValue> headAgeMap1 = new HashMap<String, AttributeValue>();
-		headAgeMap1.put("age", headAgeOnHouseholdAttrValue);
+		Map<AbstractAttribute, AttributeValue> headAgeMap1 = new HashMap<AbstractAttribute, AttributeValue>();
+		AbstractAttribute ageAttribute = availableInhabitants.get(0).getPopulation().getAttributeByNameOnEntity("age");
+		headAgeMap1.put(ageAttribute, headAgeOnHouseholdAttrValue);
 		Entity householdHead = null;
 		for (Entity inhabitant : availableInhabitants) {
-			if (inhabitant.areValuesOnEntityMatched(headAgeMap1)) {
+			if (inhabitant.matchAttributeValuesOnEntity(headAgeMap1)) {
 				availableInhabitants.remove(inhabitant);
 				householdHead = inhabitant;
 				pickedInhabitants.add(inhabitant);
@@ -141,13 +144,13 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 				isMaleHead = false;
 			}
 			
-			Map<String, AttributeValue> headPartnerAgeMap = new HashMap<String, AttributeValue>();
+			Map<AbstractAttribute, AttributeValue> headPartnerAgeMap = new HashMap<AbstractAttribute, AttributeValue>();
 			UniqueValue headPartnerAgeAttrValue = new UniqueValue(DataType.INTEGER, Integer.toString(headPartnerAge));
-			headPartnerAgeMap.put("age", headPartnerAgeAttrValue);
+			headPartnerAgeMap.put(ageAttribute, headPartnerAgeAttrValue);
 			
 			Entity headPartner = null;
 			for (Entity inhabitant : availableInhabitants) {
-				if (inhabitant.areValuesOnEntityMatched(headPartnerAgeMap)) {
+				if (inhabitant.matchAttributeValuesOnEntity(headPartnerAgeMap)) {
 					headPartner = inhabitant;
 					availableInhabitants.remove(headPartner);
 					pickedInhabitants.add(headPartner);
@@ -175,15 +178,15 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 				
 				// establish the relationship between the household and its members -> built-in variable "members"
 				
-				ISyntheticPopulation componentPopulation = householdEntity.getComponentPopulation(householdHead.getPopulation().getName());
+				IPopulation componentPopulation = householdEntity.getComponentPopulation(householdHead.getPopulation().getName());
 				if (componentPopulation == null) {
 					List<Entity> householdMembers = componentPopulation.createEntities(pickedChildren.size() + 2);
 					
-					householdMembers.get(0).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(householdHead.getEntityAttributeValues().values()));
-					householdMembers.get(1).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(headPartner.getEntityAttributeValues().values()));
+					householdMembers.get(0).setEntityAttributeValues(householdHead.getEntityAttributeValues());
+					householdMembers.get(1).setEntityAttributeValues(headPartner.getEntityAttributeValues());
 					
 					for (int i=2; i< householdMembers.size(); i++) {
-						householdMembers.get(i).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(pickedChildren.get(i-2).getEntityAttributeValues().values()));
+						householdMembers.get(i).setEntityAttributeValues(pickedChildren.get(i-2).getEntityAttributeValues());
 					}
 				}
 				
@@ -204,15 +207,17 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 	}
 	
 	private void buildFamilyMonoParentHousehold(final Entity householdEntity, final List<Entity> availableInhabitants) throws GenstarException {
+		if (availableInhabitants.isEmpty()) { return; }
+		AbstractAttribute ageAttribute = availableInhabitants.get(0).getPopulation().getAttributeByNameOnEntity("age");
 		
 		// pick the householdHead by age(range)
 		UniqueValue headAgeOnHouseholdAttrValue = (UniqueValue) householdEntity.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity();
-		Map<String, AttributeValue> headAgeMap1 = new HashMap<String, AttributeValue>();
-		headAgeMap1.put("age", headAgeOnHouseholdAttrValue);
+		Map<AbstractAttribute, AttributeValue> headAgeMap1 = new HashMap<AbstractAttribute, AttributeValue>();
+		headAgeMap1.put(ageAttribute, headAgeOnHouseholdAttrValue);
 		
 		Entity householdHead = null;
 		for (Entity inhabitant : availableInhabitants) {
-			if (inhabitant.areValuesOnEntityMatched(headAgeMap1)) {
+			if (inhabitant.matchAttributeValuesOnEntity(headAgeMap1)) {
 				householdHead = inhabitant;
 				availableInhabitants.remove(inhabitant);
 				break;
@@ -237,15 +242,15 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 			}
 			
 			// establish the relationship between the household and its members
-			ISyntheticPopulation memberPopulation = householdEntity.getComponentPopulation(householdHead.getPopulation().getName());
+			IPopulation memberPopulation = householdEntity.getComponentPopulation(householdHead.getPopulation().getName());
 			if (memberPopulation == null) {
 				memberPopulation = householdEntity.createComponentPopulation(householdHead.getPopulation().getName(), householdHead.getPopulation().getAttributes());
 			}
 			
 			List<Entity> householdMembers = memberPopulation.createEntities(1 + pickedChildren.size());
-			householdMembers.get(0).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(householdHead.getEntityAttributeValues().values()));
+			householdMembers.get(0).setEntityAttributeValues(householdHead.getEntityAttributeValues());
 			for (int i=1; i<householdMembers.size(); i++) {
-				householdMembers.get(i).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(pickedChildren.get(i-1).getEntityAttributeValues().values()));
+				householdMembers.get(i).setEntityAttributeValues(pickedChildren.get(i-1).getEntityAttributeValues());
 			}
 			
 			successfulInhabitants.add(householdHead);
@@ -260,15 +265,17 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 	}
 	
 	private void buildNonFamilySeveralMembersHousehold(final Entity householdEntity, final List<Entity> availableInhabitants) throws GenstarException {
+		if (availableInhabitants.isEmpty()) { return; }
+		AbstractAttribute ageAttribute = availableInhabitants.get(0).getPopulation().getAttributeByNameOnEntity("age");
 		
 		// pick the householdHead by age(range)
 		UniqueValue headAgeOnHouseholdAttrValue = (UniqueValue) householdEntity.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity();
-		Map<String, AttributeValue> headAgeMap1 = new HashMap<String, AttributeValue>();
-		headAgeMap1.put("age", headAgeOnHouseholdAttrValue);
+		Map<AbstractAttribute, AttributeValue> headAgeMap1 = new HashMap<AbstractAttribute, AttributeValue>();
+		headAgeMap1.put(ageAttribute, headAgeOnHouseholdAttrValue);
 		
 		Entity householdHead = null;
 		for (Entity inhabitant : availableInhabitants) {
-			if (inhabitant.areValuesOnEntityMatched(headAgeMap1)) {
+			if (inhabitant.matchAttributeValuesOnEntity(headAgeMap1)) {
 				householdHead = inhabitant;
 				availableInhabitants.remove(inhabitant);
 				break;
@@ -297,14 +304,14 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 			}
 			
 			// establish the relationship between the household and its members
-			ISyntheticPopulation memberPopulation = householdEntity.getComponentPopulation(householdHead.getPopulation().getName());
+			IPopulation memberPopulation = householdEntity.getComponentPopulation(householdHead.getPopulation().getName());
 			if (memberPopulation == null) {
 				memberPopulation = householdEntity.createComponentPopulation(householdHead.getPopulation().getName(), householdHead.getPopulation().getAttributes());
 			}
 			List<Entity> householdMembers = memberPopulation.createEntities(1 + otherMembers.size());
-			householdMembers.get(0).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(householdHead.getEntityAttributeValues().values()));
+			householdMembers.get(0).setEntityAttributeValues(householdHead.getEntityAttributeValues());
 			for (int i=1; i<householdMembers.size(); i++) {
-				householdMembers.get(i).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(otherMembers.get(i-1).getEntityAttributeValues().values()));
+				householdMembers.get(i).setEntityAttributeValues(otherMembers.get(i-1).getEntityAttributeValues());
 			}
 			
 			
@@ -317,15 +324,17 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 	}
 	
 	private void buildNonFamilyOneMemberHousehold(final Entity householdEntity, final List<Entity> availableInhabitants) throws GenstarException {
+		if (availableInhabitants.isEmpty()) { return; }
+		AbstractAttribute ageAttribute = availableInhabitants.get(0).getPopulation().getAttributeByNameOnEntity("age");
 		
 		// pick the householdHead by age(range)
 		UniqueValue headAgeOnHouseholdAttrValue = (UniqueValue) householdEntity.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity();
-		Map<String, AttributeValue> headAgeMap1 = new HashMap<String, AttributeValue>();
-		headAgeMap1.put("age", headAgeOnHouseholdAttrValue);
+		Map<AbstractAttribute, AttributeValue> headAgeMap1 = new HashMap<AbstractAttribute, AttributeValue>();
+		headAgeMap1.put(ageAttribute, headAgeOnHouseholdAttrValue);
 
 		Entity householdHead = null;
 		for (Entity inhabitant : availableInhabitants) {
-			if (inhabitant.areValuesOnEntityMatched(headAgeMap1)) {
+			if (inhabitant.matchAttributeValuesOnEntity(headAgeMap1)) {
 				householdHead = inhabitant;
 				availableInhabitants.remove(inhabitant);
 				break;
@@ -334,13 +343,13 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 		
 		if (householdHead != null) {
 			// establish the relationship
-			ISyntheticPopulation memberPopulation = householdEntity.getComponentPopulation(householdHead.getPopulation().getName());
+			IPopulation memberPopulation = householdEntity.getComponentPopulation(householdHead.getPopulation().getName());
 			if (memberPopulation == null) {
 				memberPopulation = householdEntity.createComponentPopulation(householdHead.getPopulation().getName(), householdHead.getPopulation().getAttributes());
 			}
 
 			List<Entity> householdMembers = memberPopulation.createEntities(1);
-			householdMembers.get(0).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(householdHead.getEntityAttributeValues().values()));
+			householdMembers.get(0).setEntityAttributeValues(householdHead.getEntityAttributeValues());
 
 			successfulInhabitants.add(householdHead);
 			successfulHouseholds.add(householdEntity);
@@ -350,6 +359,8 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 	}
 	
 	private Entity pickChild(final Entity mother, final int previousChildAge, final ProbabilityMassFunction liveBirthOrder, final List<Entity> availableInhabitants) throws GenstarException {
+		if (availableInhabitants.isEmpty()) { return null; }
+		AbstractAttribute ageAttribute = availableInhabitants.get(0).getPopulation().getAttributeByNameOnEntity("age");
 		
 		SortedMap<AttributeValue, UniqueValue> liveBirthData = liveBirthOrder.getData();
 		
@@ -398,11 +409,11 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 		
 		// pick a child according to the age from the InhabitantPopulation
 		UniqueValue childAgeValue = new UniqueValue(DataType.INTEGER, Integer.toString(childAge));
-		Map<String, AttributeValue> childAgeAttributeValues = new HashMap<String, AttributeValue>();
-		childAgeAttributeValues.put("age", childAgeValue);
+		Map<AbstractAttribute, AttributeValue> childAgeAttributeValues = new HashMap<AbstractAttribute, AttributeValue>();
+		childAgeAttributeValues.put(ageAttribute, childAgeValue);
 		
 		for (Entity inhabitant : availableInhabitants) {
-			if (inhabitant.areValuesOnEntityMatched(childAgeAttributeValues)) {
+			if (inhabitant.matchAttributeValuesOnEntity(childAgeAttributeValues)) {
 				availableInhabitants.remove(inhabitant);
 				return inhabitant;
 			}

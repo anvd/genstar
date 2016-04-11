@@ -203,7 +203,7 @@ public class GenstarGeneratorTest_CanTho2 {
 				for (int i=0; i<CanThoData.Scenario2.household_type2_values.length; i++) { householdTypes.put(CanThoData.Scenario2.household_type2_values[i], i + 1); }
 				
 				
-				ISyntheticPopulation householdPopulation = householdPopGenerator1.generate();
+				IPopulation householdPopulation = householdPopGenerator1.generate();
 				for (Entity household : householdPopulation.getEntities()) {
 					int size = ((UniqueValue) household.getEntityAttributeValueByNameOnData("size").getAttributeValueOnEntity()).getIntValue();
 					

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.IPopulationsLinker;
 
@@ -41,7 +41,7 @@ public class GenstarGenerator {
 	}
 	
 	public void run() throws GenstarException {
-		List<ISyntheticPopulation> populations = new ArrayList<ISyntheticPopulation>(); 
+		List<IPopulation> populations = new ArrayList<IPopulation>(); 
 		for (ISyntheticPopulationGenerator generator : populationGenerators) { populations.add(generator.generate()); }
 		
 		if (linker != null) { 

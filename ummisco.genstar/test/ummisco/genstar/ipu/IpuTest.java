@@ -18,7 +18,7 @@ import ummisco.genstar.ipf.ISampleData;
 import ummisco.genstar.ipf.SampleData;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.util.AttributeUtils;
@@ -51,7 +51,7 @@ public class IpuTest {
 		String groupSizeAttributeName = "Household Size";
 		int nbOfGroupEntities = 200;
 		
-		ISyntheticPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
+		IPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
 				groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities);
 		
 		
@@ -64,7 +64,8 @@ public class IpuTest {
 
 		GenstarUtils.writePopulationToCSVFile(generatedCompoundPopulation, generatedCompoundPopulationFilePaths);
 		
-		// TODO extract control totals
+		// TODO extract control totals, i.e., buildIpuControlTotalsOfCompoundPopulation
+		// write control totals tp CSVFile GenstarUtils.writeContentToCsvFile(fileContent, csvFilePath); 
 	}
 
 	@Test public void testInitializeIpuSuccessfully(@Mocked final IpuGenerationRule generationRule) throws GenstarException {

@@ -94,7 +94,7 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 		if (inferringAttrValueOnEntity != null) {
 			for (AttributeValue inferringAttrValueOnData : inferenceData.keySet()) {
 				if (inferringAttrValueOnEntity.isAttributeValueOnEntityMatched(inferringAttrValueOnData)) {
-					entity.setAttributeValueOnData(inferredAttribute.getNameOnData(), inferenceData.get(inferringAttrValueOnData));
+					entity.setAttributeValueOnData(inferredAttribute, inferenceData.get(inferringAttrValueOnData));
 					
 					break;
 				}

@@ -372,7 +372,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		
 		List<AttributeValuesFrequency> retVal = new ArrayList<AttributeValuesFrequency>();
 		for (AttributeValuesFrequency e : attributeValuesFrequencies) {
-			if (e.matchAttributeValues(attributeValues)) { retVal.add(e); }
+			if (e.matchAttributeValuesOnData(attributeValues)) { retVal.add(e); }
 		}
 		
 		return retVal;
@@ -411,7 +411,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 			for (int order=0; order < outputAttributes.size(); order++) {
 				outputAttribute = outputAttributes.get(order);
 //				entity.setAttributeValueOnData(outputAttribute.getNameOnData(), outputAttribute.getDefaultValue());
-				entity.setAttributeValueOnData(outputAttribute.getNameOnData(), outputAttribute.getDefaultValueOnData());
+				entity.setAttributeValueOnData(outputAttribute, outputAttribute.getDefaultValueOnData());
 			}
 			
 			return;
@@ -424,9 +424,9 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 			if (currentTotal >= selectedTotal) {
 				for (int order=0; order<outputAttributes.size(); order++) {
 					outputAttribute = outputAttributes.get(order);
-					attributeValue = de.getAttributeValue(outputAttribute);
+					attributeValue = de.getAttributeValueOnData(outputAttribute);
 
-					entity.setAttributeValueOnData(outputAttribute.getNameOnData(), attributeValue);
+					entity.setAttributeValueOnData(outputAttribute, attributeValue);
 				}
 				
 				break;

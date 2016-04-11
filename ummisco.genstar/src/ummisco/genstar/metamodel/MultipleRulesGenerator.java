@@ -186,8 +186,8 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		return retVal;
 	}
 
-	@Override public ISyntheticPopulation generate() throws GenstarException {
-		ISyntheticPopulation population = new SyntheticPopulation(populationName, this.getAttributes());
+	@Override public IPopulation generate() throws GenstarException {
+		IPopulation population = new Population(PopulationType.SYNTHETIC_POPULATION, populationName, this.getAttributes());
 		population.createEntities(nbOfEntities);
 		
 		for (Entity e : population.getEntities()) {

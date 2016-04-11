@@ -19,7 +19,7 @@ import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -72,7 +72,7 @@ public class FiveWayIPFTest {
 			int minEntitiesOfEachAttributeValuesSet = 1;
 			int maxEntitiesOfEachAttributeValuesSet = 3;
 			
-			ISyntheticPopulation generatedSamplePopulation = GenstarUtils.generateRandomSinglePopulation(householdPopulationName, _householdAttributesFile, minEntitiesOfEachAttributeValuesSet, maxEntitiesOfEachAttributeValuesSet);
+			IPopulation generatedSamplePopulation = GenstarUtils.generateRandomSinglePopulation(householdPopulationName, _householdAttributesFile, minEntitiesOfEachAttributeValuesSet, maxEntitiesOfEachAttributeValuesSet);
 			
 			Map<String, String> csvFilePaths = new HashMap<String, String>();
 			csvFilePaths.put(householdPopulationName, _householdSampleDataFileNamePath);
@@ -171,24 +171,24 @@ public class FiveWayIPFTest {
 		
 		
 		ISampleData sampleData = householdGenerationRule.getSampleData();
-		Map<String, AttributeValue> matchingCriteria = new HashMap<String, AttributeValue>();
+		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		for (int row=0; row<householdRowAttributeValues.size(); row++) {
-			matchingCriteria.put(householdRowAttribute.getNameOnEntity(), householdRowAttributeValues.get(row));
+			matchingCriteria.put(householdRowAttribute, householdRowAttributeValues.get(row));
 			
 			for (int col=0; col<householdColumnAttributeValues.size(); col++) {
-				matchingCriteria.put(householdColumnAttribute.getNameOnEntity(), householdColumnAttributeValues.get(col));
+				matchingCriteria.put(householdColumnAttribute, householdColumnAttributeValues.get(col));
 				
 				for (int layer=0; layer<householdLayerAttributeValues.size(); layer++) {
-					matchingCriteria.put(householdLayerAttribute.getNameOnEntity(), householdLayerAttributeValues.get(layer));
+					matchingCriteria.put(householdLayerAttribute, householdLayerAttributeValues.get(layer));
 					
 					for (int stack=0; stack<householdStackAttributeValues.size(); stack++) {
-						matchingCriteria.put(householdStackAttribute.getNameOnEntity(), householdStackAttributeValues.get(stack));
+						matchingCriteria.put(householdStackAttribute, householdStackAttributeValues.get(stack));
 						
 						for (int fifthDim=0; fifthDim<householdFifthAttributeValues.size(); fifthDim++) {
-							matchingCriteria.put(householdFifthAttribute.getNameOnEntity(), householdFifthAttributeValues.get(fifthDim));
+							matchingCriteria.put(householdFifthAttribute, householdFifthAttributeValues.get(fifthDim));
 						
-							assertTrue(data[row][col][layer][stack][fifthDim] == sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCriteria));
+							assertTrue(data[row][col][layer][stack][fifthDim] == sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria));
 						}
 					}
 				}
@@ -401,7 +401,7 @@ public class FiveWayIPFTest {
 		}
 		
 		for (AttributeValuesFrequency selectProba : selectionProbabilities) {
-			assertTrue(allAttributeValues.contains(selectProba.getAttributeValues()));
+			assertTrue(allAttributeValues.contains(selectProba.getAttributeValuesOnData()));
 		}
 	}
 }

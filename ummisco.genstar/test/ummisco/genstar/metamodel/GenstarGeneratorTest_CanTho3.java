@@ -380,11 +380,11 @@ public class GenstarGeneratorTest_CanTho3 {
 				System.out.println("\t\tStarted iteration : " + iteration);
 				
 				System.out.println("\t\t\tStarted generating 'inhabitant' population");
-				ISyntheticPopulation inhabitantPopulation = testInhabitantGenerator(iteration, percentageName, inhabitantPercentagePath);
+				IPopulation inhabitantPopulation = testInhabitantGenerator(iteration, percentageName, inhabitantPercentagePath);
 				System.out.println("\t\t\tFinished generating 'inhabitant' population");
 								
 				System.out.println("\t\t\tStarted generating 'household' population");
-				ISyntheticPopulation householdPopulation = testHouseholdGenerator(iteration, percentageName, householdPercentagePath);
+				IPopulation householdPopulation = testHouseholdGenerator(iteration, percentageName, householdPercentagePath);
 				System.out.println("\t\t\tFinished generating 'household' population");
 				
 				// only test the linkers on one iteration of 100% percent generation
@@ -393,7 +393,7 @@ public class GenstarGeneratorTest_CanTho3 {
 					if (iteration == 0) { linker = new PopLinker1(); }
 					if (iteration == 1) { linker = new PopLinker2(); }
 					
-					List<ISyntheticPopulation> populations = new ArrayList<ISyntheticPopulation>();
+					List<IPopulation> populations = new ArrayList<IPopulation>();
 					populations.add(inhabitantPopulation);
 					populations.add(householdPopulation);
 					testLinker(linker, populations);
@@ -409,7 +409,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		System.out.println("Finished test");
 	}
 	
-	private ISyntheticPopulation testInhabitantGenerator(final int iteration, final String percentageName, final String basePath) throws GenstarException {
+	private IPopulation testInhabitantGenerator(final int iteration, final String percentageName, final String basePath) throws GenstarException {
 
 		int[][] age_ranges_copy = new int[Data.age_ranges.length][6];
 		for (int rowIndex = 0; rowIndex < Data.age_ranges.length; rowIndex++) {
@@ -432,7 +432,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		}
 		
 		
-		ISyntheticPopulation inhabitantPopulation = inhabitantPopGenerator.generate();
+		IPopulation inhabitantPopulation = inhabitantPopGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
 			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
 			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
@@ -523,7 +523,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		return inhabitantPopulation;
 	}
 	
-	private ISyntheticPopulation testHouseholdGenerator( final int iteration, final String percentageName, final String basePath) throws GenstarException {
+	private IPopulation testHouseholdGenerator( final int iteration, final String percentageName, final String basePath) throws GenstarException {
 		
 		int[][] household_size_by_types_copy = new int[Data.household_size_by_types.length][11];
 		for (int rowIndex = 0; rowIndex < Data.household_size_by_types.length; rowIndex++) {
@@ -549,7 +549,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		for (int i=0; i<Data.household_type_values.length; i++) { householdTypes.put(Data.household_type_values[i], i + 1); }
 		
 		
-		ISyntheticPopulation householdPopulation = householdPopGenerator.generate();
+		IPopulation householdPopulation = householdPopGenerator.generate();
 		for (Entity household : householdPopulation.getEntities()) {
 			int size = ((UniqueValue) household.getEntityAttributeValueByNameOnData("size").getAttributeValueOnEntity()).getIntValue();
 			
@@ -609,7 +609,7 @@ public class GenstarGeneratorTest_CanTho3 {
 	}
 	
 	
-	private void testLinker(final MyPopLinker linker, final List<ISyntheticPopulation> populations) throws GenstarException {
+	private void testLinker(final MyPopLinker linker, final List<IPopulation> populations) throws GenstarException {
 		
 		// test and evaluate 2 linkers
 		// criteria :
@@ -618,7 +618,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		
 		System.out.println("Started establishing relationship between entities with " + linker.getClass().getName() + " as population linker");
 		System.out.println("Concerning populations : ");
-		for (ISyntheticPopulation p : populations) { System.out.println("\t+ " + p.getName() + " with " + p.getNbOfEntities() + " entities"); }
+		for (IPopulation p : populations) { System.out.println("\t+ " + p.getName() + " with " + p.getNbOfEntities() + " entities"); }
 		
 		linker.establishRelationship(populations);
 				
@@ -630,7 +630,7 @@ public class GenstarGeneratorTest_CanTho3 {
 	
 	private abstract class MyPopLinker extends AbstractPopulationsLinker {
 		
-		protected ISyntheticPopulation inhabitantPopulation, householdPopulation;
+		protected IPopulation inhabitantPopulation, householdPopulation;
 
 		// internal data
 		protected List<Entity> pickedHouseholds = null;
@@ -648,7 +648,7 @@ public class GenstarGeneratorTest_CanTho3 {
 	private class PopLinker1 extends MyPopLinker {
 		
 		@Override
-		public void establishRelationship(final List<ISyntheticPopulation> populations) throws GenstarException {
+		public void establishRelationship(final List<IPopulation> populations) throws GenstarException {
 			// populations:
 			// 		1. population 1: Inhabitant population
 			//		2. population 2: Household population
@@ -656,8 +656,8 @@ public class GenstarGeneratorTest_CanTho3 {
 			if (populations == null) { throw new IllegalArgumentException("'populations' parameter can not be null"); }
 			if (populations.size() != 2) { throw new IllegalArgumentException("'populations' must contain 2 populations"); }
 			
-			ISyntheticPopulation tmpPop1 = populations.get(0);
-			ISyntheticPopulation tmpPop2 = populations.get(1);
+			IPopulation tmpPop1 = populations.get(0);
+			IPopulation tmpPop2 = populations.get(1);
 			
 			if (tmpPop1.getName().equals(INHABITANT_POPULATION_NAME)) { 
 				inhabitantPopulation = tmpPop1; 
@@ -671,7 +671,7 @@ public class GenstarGeneratorTest_CanTho3 {
 				throw new IllegalArgumentException("'populations' doesn't contain required populations");
 			}
 			
-			this.populations = new ArrayList<ISyntheticPopulation>(populations);
+			this.populations = new ArrayList<IPopulation>(populations);
 			
 			// pick inhabitants into households
 			EntityAttributeValue hhSizeEntityAttrValue;
@@ -707,14 +707,14 @@ public class GenstarGeneratorTest_CanTho3 {
 			
 			if (members.size() == size) {
 				
-				ISyntheticPopulation memberPopulation = members.get(0).getPopulation();
-				ISyntheticPopulation memberNewPopulation = householdEntity.getComponentPopulation(memberPopulation.getName());
+				IPopulation memberPopulation = members.get(0).getPopulation();
+				IPopulation memberNewPopulation = householdEntity.getComponentPopulation(memberPopulation.getName());
 				if (memberNewPopulation == null) {
 					memberNewPopulation = householdEntity.createComponentPopulation(memberPopulation.getName(), memberPopulation.getAttributes());
 				}
 				List<Entity> newMembers = memberNewPopulation.createEntities(members.size());
 				for (int i=0; i<size; i++) {
-					newMembers.get(i).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(members.get(i).getEntityAttributeValues().values()));
+					newMembers.get(i).setEntityAttributeValues(members.get(i).getEntityAttributeValues());
 				}
 				
 				availableInhabitants.removeAll(members);
@@ -728,7 +728,7 @@ public class GenstarGeneratorTest_CanTho3 {
 	public class PopLinker2 extends MyPopLinker {
 
 		@Override
-		public void establishRelationship(final List<ISyntheticPopulation> populations) throws GenstarException {
+		public void establishRelationship(final List<IPopulation> populations) throws GenstarException {
 			// populations:
 			// 		1. population 1: Inhabitant population
 			//		2. population 2: Household population
@@ -736,8 +736,8 @@ public class GenstarGeneratorTest_CanTho3 {
 			if (populations == null) { throw new IllegalArgumentException("'populations' parameter can not be null"); }
 			if (populations.size() != 2) { throw new IllegalArgumentException("'populations' must contain 2 populations"); }
 			
-			ISyntheticPopulation tmpPop1 = populations.get(0);
-			ISyntheticPopulation tmpPop2 = populations.get(1);
+			IPopulation tmpPop1 = populations.get(0);
+			IPopulation tmpPop2 = populations.get(1);
 			
 			if (tmpPop1.getName().equals(INHABITANT_POPULATION_NAME)) { 
 				inhabitantPopulation = tmpPop1; 
@@ -751,7 +751,7 @@ public class GenstarGeneratorTest_CanTho3 {
 				throw new IllegalArgumentException("'populations' doesn't contain required populations");
 			}
 			
-			this.populations = new ArrayList<ISyntheticPopulation>(populations);
+			this.populations = new ArrayList<IPopulation>(populations);
 			
 			// pick inhabitants into households
 			int hhSizeIntValue;
@@ -777,27 +777,28 @@ public class GenstarGeneratorTest_CanTho3 {
 		
 		// put inhabitants into household basing on household's size and living_place
 		private void buildHousehold(final Entity householdEntity, final int size, final String livingPlace, final List<Entity> availableInhabitants) throws GenstarException {
-			Map<String, AttributeValue> livingPlaceMap = new HashMap<String, AttributeValue>();
+			Map<AbstractAttribute, AttributeValue> livingPlaceMap = new HashMap<AbstractAttribute, AttributeValue>();
 			UniqueValue livingPlaceAttrValue = new UniqueValue(DataType.STRING, livingPlace);
-			livingPlaceMap.put("living_place", livingPlaceAttrValue);
+//			livingPlaceMap.put("living_place", livingPlaceAttrValue);
+			livingPlaceMap.put(householdEntity.getPopulation().getAttributeByNameOnEntity("living_place"), livingPlaceAttrValue);
 
 			List<Entity> members = new ArrayList<Entity>();
 			
 			for (Entity inhabitant : availableInhabitants) {
 				if (members.size() == size) { break; }
-				if (inhabitant.areValuesOnEntityMatched(livingPlaceMap)) { members.add(inhabitant); }
+				if (inhabitant.matchAttributeValuesOnEntity(livingPlaceMap)) { members.add(inhabitant); }
 			}
 			
 			if (members.size() == size) {
 				
-				ISyntheticPopulation memberPopulation = members.get(0).getPopulation();
-				ISyntheticPopulation memberNewPopulation = householdEntity.getComponentPopulation(memberPopulation.getName());
+				IPopulation memberPopulation = members.get(0).getPopulation();
+				IPopulation memberNewPopulation = householdEntity.getComponentPopulation(memberPopulation.getName());
 				if (memberNewPopulation == null) {
 					memberNewPopulation = householdEntity.createComponentPopulation(memberPopulation.getName(), memberPopulation.getAttributes());
 				}
 				List<Entity> newMembers = memberNewPopulation.createEntities(members.size());
 				for (int i=0; i<size; i++) {
-					newMembers.get(i).setEntityAttributeValues(new ArrayList<EntityAttributeValue>(members.get(i).getEntityAttributeValues().values()));
+					newMembers.get(i).setEntityAttributeValues(members.get(i).getEntityAttributeValues());
 				}
 				
 				availableInhabitants.removeAll(members);

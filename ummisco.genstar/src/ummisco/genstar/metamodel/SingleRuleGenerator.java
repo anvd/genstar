@@ -12,8 +12,8 @@ public class SingleRuleGenerator extends AbstractSyntheticPopulationGenerator im
 	}
 
 	@Override
-	public ISyntheticPopulation generate() throws GenstarException {
-		ISyntheticPopulation population = new SyntheticPopulation(populationName, this.getAttributes());
+	public IPopulation generate() throws GenstarException {
+		IPopulation population = new Population(PopulationType.SYNTHETIC_POPULATION, populationName, this.getAttributes());
 		population.createEntities(nbOfEntities);
 		
 		for (Entity e : population.getEntities()) { generationRule.generate(e); }

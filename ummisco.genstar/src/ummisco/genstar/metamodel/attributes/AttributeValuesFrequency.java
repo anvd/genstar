@@ -18,7 +18,7 @@ public class AttributeValuesFrequency {
 	
 	private int frequency = 0;
 	
-	private Set<AbstractAttribute> attributes;
+	private Set<AbstractAttribute> cachedAttributes;
 	
 	
 	public AttributeValuesFrequency(final Map<AbstractAttribute, AttributeValue> attributeValues, final int frequency) throws GenstarException {
@@ -37,29 +37,30 @@ public class AttributeValuesFrequency {
 		}
 		
 		this.attributeValuesOnData = new HashMap<AbstractAttribute, AttributeValue>(attributeValues);
-		this.attributes = new HashSet<AbstractAttribute>(attributeValues.keySet());
+//		this.attributes = new HashSet<AbstractAttribute>(attributeValues.keySet());
 	}
 	
-	public AttributeValue getAttributeValue(final AbstractAttribute attribute) {
+	public AttributeValue getAttributeValueOnData(final AbstractAttribute attribute) {
 		return attributeValuesOnData.get(attribute);
 	}
 	
-	public Map<AbstractAttribute, AttributeValue> getAttributeValues() {
+	public Map<AbstractAttribute, AttributeValue> getAttributeValuesOnData() {
 		Map<AbstractAttribute, AttributeValue> copy = new HashMap<AbstractAttribute, AttributeValue>();
 		copy.putAll(attributeValuesOnData);
 		
 		return copy;
 	}
 	
-	public Map<String, AttributeValue> getAttributeValuesWithNamesOnEntityAsKey() {
-		Map<String, AttributeValue> result = new HashMap<String, AttributeValue>();
-		
-		for (AbstractAttribute attr : attributeValuesOnData.keySet()) {
-			result.put(attr.getNameOnEntity(), attributeValuesOnData.get(attr));
-		}
-		
-		return result;
-	}
+	// TODO remove or refactor
+//	public Map<String, AttributeValue> getAttributeValuesWithNamesOnEntityAsKey() {
+//		Map<String, AttributeValue> result = new HashMap<String, AttributeValue>();
+//		
+//		for (AbstractAttribute attr : attributeValuesOnData.keySet()) {
+//			result.put(attr.getNameOnEntity(), attributeValuesOnData.get(attr));
+//		}
+//		
+//		return result;
+//	}
 
 	public int getFrequency() {
 		return frequency;
@@ -78,11 +79,22 @@ public class AttributeValuesFrequency {
 	public boolean matchEntity(final Collection<? extends AbstractAttribute> inputAttributes, final Entity entity) throws GenstarException {
 		if (inputAttributes == null || entity == null) { throw new IllegalArgumentException("Neither 'inputAttributes' nor 'entity' parameter can be null"); }
 		
-		// attribute values on entity
+		EntityAttributeValue entityAttributeValue;
+		AttributeValue attributeValueOnData;
+		for (AbstractAttribute attribute : inputAttributes) {
+			entityAttributeValue = entity.getEntityAttributeValue(attribute);
+			attributeValueOnData = attributeValuesOnData.get(attribute);
+			
+			if (entityAttributeValue == null || attributeValueOnData == null) { return false; }
+			if (!entityAttributeValue.isAttributeValueOnDataMatched(attributeValueOnData)) { return false; }
+		}
+		
+		/*
+		// build a list of EntityAttributeValues according to inputAttributes
 		EntityAttributeValue entityAttributeValue;
 		Map<AbstractAttribute, EntityAttributeValue> entityAttributeValues = new HashMap<AbstractAttribute, EntityAttributeValue>();
 		for (AbstractAttribute attribute : inputAttributes) {
-			entityAttributeValue = entity.getEntityAttributeValueByNameOnData(attribute.getNameOnData());
+			entityAttributeValue = entity.getEntityAttributeValue(attribute);
 			
 			if (entityAttributeValue == null) { return false; } // or throw exception?
 			
@@ -104,18 +116,19 @@ public class AttributeValuesFrequency {
 		for (AbstractAttribute attribute : entityAttributeValues.keySet()) {
 			if (!entityAttributeValues.get(attribute).isAttributeValueOnEntityMatched(inputAttributeValues.get(attribute))) { return false; }
 		}
-		
+		*/
 		
 		return true;
 	}
 	
 	public boolean matchEntity(final Entity entity) throws GenstarException {
 		if (entity == null) { throw new GenstarException("Parameter entity can not be null"); }
+		if (cachedAttributes == null) { cachedAttributes = new HashSet<AbstractAttribute>(attributeValuesOnData.keySet()); }
 		
-		return this.matchEntity(attributes, entity);
+		return this.matchEntity(cachedAttributes, entity);
 	}
 	
-	public boolean matchAttributeValues(final Map<AbstractAttribute, ? extends AttributeValue> otherAttributeValuesOnData) {
+	public boolean matchAttributeValuesOnData(final Map<AbstractAttribute, ? extends AttributeValue> otherAttributeValuesOnData) {
 		if (otherAttributeValuesOnData == null || otherAttributeValuesOnData.isEmpty()) { throw new IllegalArgumentException("'otherAttributeValuesOnData' parameter can not be null or empty"); }
 		
 		AttributeValue attributeValue;
@@ -148,6 +161,6 @@ public class AttributeValuesFrequency {
 	}
 	
 	public Set<AbstractAttribute> getAttributes() {
-		return new HashSet<AbstractAttribute>(attributes);
+		return new HashSet<AbstractAttribute>(attributeValuesOnData.keySet());
 	}
 }

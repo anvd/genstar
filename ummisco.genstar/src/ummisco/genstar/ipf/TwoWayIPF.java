@@ -31,14 +31,14 @@ public class TwoWayIPF extends IPF<double[][], int[], double[]> {
 
 		data = new double[rowAttributeValues.size()][columnAttributeValues.size()];
 
-		Map<String, AttributeValue> matchingCondition = new HashMap<String, AttributeValue>();
+		Map<AbstractAttribute, AttributeValue> matchingCondition = new HashMap<AbstractAttribute, AttributeValue>();
 		for (int row=0; row<rowAttributeValues.size(); row++) {
-			matchingCondition.put(rowAttribute.getNameOnEntity(), rowAttributeValues.get(row));
+			matchingCondition.put(rowAttribute, rowAttributeValues.get(row));
 			
 			for (int col=0; col<columnAttributeValues.size(); col++) {
-				matchingCondition.put(columnAttribute.getNameOnEntity(), columnAttributeValues.get(col));
+				matchingCondition.put(columnAttribute, columnAttributeValues.get(col));
 				
-				data[row][col] = sampleData.getSampleEntityPopulation().countMatchingEntities(matchingCondition);
+				data[row][col] = sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCondition);
 			}
 		}
 	}

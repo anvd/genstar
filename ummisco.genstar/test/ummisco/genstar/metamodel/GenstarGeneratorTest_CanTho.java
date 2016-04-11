@@ -76,7 +76,7 @@ public class GenstarGeneratorTest_CanTho {
 		ISyntheticPopulationGenerator scenario1InhabitantGenerator = data.getScenario1InhabitantGenerator();
 		scenario1InhabitantGenerator.setPopulationName("Inhabitant population");
 		
-		ISyntheticPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
+		IPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
 			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
 			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
@@ -165,7 +165,7 @@ public class GenstarGeneratorTest_CanTho {
 		Map<String, Integer> householdTypes = new HashMap<String, Integer>();
 		for (int i=0; i<CanThoData.Scenario1.household_type1_values.length; i++) { householdTypes.put(CanThoData.Scenario1.household_type1_values[i], i + 1); }
 		
-		ISyntheticPopulation householdPopulation = scenario1HouseholdGenerator.generate();
+		IPopulation householdPopulation = scenario1HouseholdGenerator.generate();
 		for (Entity household : householdPopulation.getEntities()) {
 			int size = ((UniqueValue) household.getEntityAttributeValueByNameOnData("size").getAttributeValueOnEntity()).getIntValue();
 
@@ -229,7 +229,7 @@ public class GenstarGeneratorTest_CanTho {
 		int tenPercentNbOfEntities = initialNbOfEntities / 10; 
 		scenario1InhabitantGenerator.setNbOfEntities(tenPercentNbOfEntities);
 		
-		ISyntheticPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
+		IPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
 			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
 			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
@@ -286,7 +286,7 @@ public class GenstarGeneratorTest_CanTho {
 		int fortyPercentNbOfEntities = 475374; // (initialNbOfEntities * 4) / 10; 
 		scenario1InhabitantGenerator.setNbOfEntities(fortyPercentNbOfEntities);
 		
-		ISyntheticPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
+		IPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
 			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
 			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
@@ -344,7 +344,7 @@ public class GenstarGeneratorTest_CanTho {
 		int seventyPercentNbOfEntities = 831904; // (initialNbOfEntities * 7) / 10; 
 		scenario1InhabitantGenerator.setNbOfEntities(seventyPercentNbOfEntities);
 		
-		ISyntheticPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
+		IPopulation inhabitantPopulation = scenario1InhabitantGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
 			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
 			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
@@ -425,7 +425,7 @@ public class GenstarGeneratorTest_CanTho {
 		ISyntheticPopulationGenerator scenario2InhabitantGenerator = data.getScenario2InhabitantGenerator();
 		scenario2InhabitantGenerator.setPopulationName("Inhabitant population");
 		
-		ISyntheticPopulation inhabitantPopulation = scenario2InhabitantGenerator.generate();
+		IPopulation inhabitantPopulation = scenario2InhabitantGenerator.generate();
 		for (Entity inhabitant : inhabitantPopulation.getEntities()) {
 			int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
 			boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
@@ -523,7 +523,7 @@ public class GenstarGeneratorTest_CanTho {
 		for (int i=0; i<CanThoData.Scenario2.household_type2_values.length; i++) { householdTypes.put(CanThoData.Scenario2.household_type2_values[i], i + 1); }
 		
 		
-		ISyntheticPopulation householdPopulation = scenario2HouseholdGenerator.generate();
+		IPopulation householdPopulation = scenario2HouseholdGenerator.generate();
 		for (Entity household : householdPopulation.getEntities()) {
 			int size = ((UniqueValue) household.getEntityAttributeValueByNameOnData("size").getAttributeValueOnEntity()).getIntValue();
 			
@@ -613,8 +613,8 @@ public class GenstarGeneratorTest_CanTho {
 		 
 		
 		List<Entity> pickedInhabitants = new ArrayList<Entity>(linker.getPickedInhabitants());
-		ISyntheticPopulation inhabitantPopulation = null, householdPopulation = null;
-		List<ISyntheticPopulation> concernedPopulations = linker.getPopulations();
+		IPopulation inhabitantPopulation = null, householdPopulation = null;
+		List<IPopulation> concernedPopulations = linker.getPopulations();
 		if (concernedPopulations.get(0).getName().equals("Scenario1's inhabitant population")) {
 			inhabitantPopulation = concernedPopulations.get(0);
 			householdPopulation = concernedPopulations.get(1);
@@ -701,8 +701,8 @@ public class GenstarGeneratorTest_CanTho {
 		System.out.println("Generation duration : " + ( (end - start) / 1000 ) + " seconds");
 
 		
-		ISyntheticPopulation inhabitantPopulation = null, householdPopulation = null;
-		List<ISyntheticPopulation> concernedPopulations = linker.getPopulations();
+		IPopulation inhabitantPopulation = null, householdPopulation = null;
+		List<IPopulation> concernedPopulations = linker.getPopulations();
 		if (concernedPopulations.get(0).getName().equals("Scenario2's inhabitant population")) {
 			inhabitantPopulation = concernedPopulations.get(0);
 			householdPopulation = concernedPopulations.get(1);
@@ -752,7 +752,7 @@ public class GenstarGeneratorTest_CanTho {
 			ISyntheticPopulationGenerator scenario3InhabitantGenerator = data.getScenario3InhabitantGenerator();
 			scenario3InhabitantGenerator.setPopulationName("Inhabitant population");
 			
-			ISyntheticPopulation inhabitantPopulation = scenario3InhabitantGenerator.generate();
+			IPopulation inhabitantPopulation = scenario3InhabitantGenerator.generate();
 			for (Entity inhabitant : inhabitantPopulation.getEntities()) {
 				int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
 				boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
@@ -858,7 +858,7 @@ public class GenstarGeneratorTest_CanTho {
 			ISyntheticPopulationGenerator scenario4InhabitantGenerator = data.getScenario4InhabitantGenerator();
 			scenario4InhabitantGenerator.setPopulationName("Inhabitant population");
 			
-			ISyntheticPopulation inhabitantPopulation = scenario4InhabitantGenerator.generate();
+			IPopulation inhabitantPopulation = scenario4InhabitantGenerator.generate();
 			for (Entity inhabitant : inhabitantPopulation.getEntities()) {
 				int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
 				boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
@@ -972,7 +972,7 @@ public class GenstarGeneratorTest_CanTho {
 			scenario5InhabitantGenerator.setPopulationName("Inhabitant population (Scenario 5)");
 			
 			
-			ISyntheticPopulation inhabitantPopulation = scenario5InhabitantGenerator.generate();
+			IPopulation inhabitantPopulation = scenario5InhabitantGenerator.generate();
 			for (Entity inhabitant : inhabitantPopulation.getEntities()) {
 				int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
 				boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();

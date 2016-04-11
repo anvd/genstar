@@ -77,6 +77,12 @@ public class EntityAttributeValue {
 		return this.attributeValueOnEntity.isValueMatched(attributeValueOnEntity);
 	}
 	
+	public boolean isAttributeValueOnDataMatched(final AttributeValue attributeValueOnData) {
+		if (attributeValueOnData == null) { return false; }
+		
+		return this.attributeValueOnData.isValueMatched(attributeValueOnData);
+	}
+	
 	@Override public String toString() {
 		return "EntityAttributeValue with : attributeValueOnData : " + attributeValueOnData.toString() + "; attributeValueOnEntity : " + attributeValueOnEntity.toString();
 	}

@@ -365,7 +365,7 @@ public class GenstarGeneratorTest_CanTho1 {
 				}
 				 
 				
-				ISyntheticPopulation inhabitantPopulation = rulesOrder1InhabitantPopGenerator.generate();
+				IPopulation inhabitantPopulation = rulesOrder1InhabitantPopGenerator.generate();
 				for (Entity inhabitant : inhabitantPopulation.getEntities()) {
 					int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
 					boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();
@@ -506,7 +506,7 @@ public class GenstarGeneratorTest_CanTho1 {
 				}
 				 
 				
-				ISyntheticPopulation inhabitantPopulation = rulesOrder2InhabitantPopGenerator.generate();
+				IPopulation inhabitantPopulation = rulesOrder2InhabitantPopGenerator.generate();
 				for (Entity inhabitant : inhabitantPopulation.getEntities()) {
 					int age = ((UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("age").getAttributeValueOnEntity())).getIntValue();
 					boolean isMale = ( (UniqueValue) (inhabitant.getEntityAttributeValueByNameOnData("sex").getAttributeValueOnEntity()) ).getBooleanValue();

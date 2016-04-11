@@ -9,7 +9,9 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.GenerationRule;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
+import ummisco.genstar.metamodel.Population;
+import ummisco.genstar.metamodel.PopulationType;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
@@ -46,13 +48,16 @@ public class SampleDataGenerationRule extends GenerationRule {
 	
 	private List<AttributeValuesFrequency> selectionProbabilities;
 	
-	private Map<AttributeValuesFrequency, List<SampleEntity>> sampleEntityCategories;
+//	private Map<AttributeValuesFrequency, List<SampleEntity>> sampleEntityCategories;
+	private Map<AttributeValuesFrequency, List<Entity>> sampleEntityCategories;
 	
-	private SampleEntityPopulation internalSampleEntityPopulation;
+//	private SampleEntityPopulation internalSampleEntityPopulation;
+	private IPopulation internalSampleEntityPopulation;
 	
 	private int currentEntityIndex = -1;
 	
-	private List<SampleEntity> internalSampleEntities;
+//	private List<SampleEntity> internalSampleEntities;
+	private List<Entity> internalSampleEntities;
 	
 	
 	public SampleDataGenerationRule(final ISingleRuleGenerator populationGenerator, final String name,
@@ -97,48 +102,72 @@ public class SampleDataGenerationRule extends GenerationRule {
 	}
 	
 	private void buildSampleEntityCategories() throws GenstarException {
-		sampleEntityCategories = new HashMap<AttributeValuesFrequency, List<SampleEntity>>();
+//		sampleEntityCategories = new HashMap<AttributeValuesFrequency, List<SampleEntity>>();
+		sampleEntityCategories = new HashMap<AttributeValuesFrequency, List<Entity>>();
 		
 		for (AttributeValuesFrequency selectProba : selectionProbabilities) {
-			sampleEntityCategories.put(selectProba, sampleData.getSampleEntityPopulation().getMatchingEntities(selectProba.getAttributeValuesWithNamesOnEntityAsKey()));
+//			sampleEntityCategories.put(selectProba, sampleData.getSampleEntityPopulation().getMatchingEntities(selectProba.getAttributeValuesWithNamesOnEntityAsKey()));
+			sampleEntityCategories.put(selectProba, sampleData.getSampleEntityPopulation().getMatchingEntitiesByAttributeValuesOnData(selectProba.getAttributeValuesOnData()));
 		}
 	}
 	
 	private void runInternalGeneration() throws GenstarException {
-		internalSampleEntityPopulation = new SampleEntityPopulation(sampleData.getSampleEntityPopulation().getName(), sampleData.getSampleEntityPopulation().getAttributes());
+		internalSampleEntityPopulation = new Population(PopulationType.SYNTHETIC_POPULATION, sampleData.getSampleEntityPopulation().getName(), sampleData.getSampleEntityPopulation().getAttributes());
 		internalSampleEntityPopulation.addGroupReferences(sampleData.getSampleEntityPopulation().getGroupReferences());
 		internalSampleEntityPopulation.addComponentReferences(sampleData.getSampleEntityPopulation().getComponentReferences());
 		
 		
 		for (AttributeValuesFrequency selectProba : selectionProbabilities) {
-			List<SampleEntity> selectedSampleCategory = sampleEntityCategories.get(selectProba);
+//			List<SampleEntity> selectedSampleCategory = sampleEntityCategories.get(selectProba);
+			List<Entity> selectedSampleCategory = sampleEntityCategories.get(selectProba);
 			
 			for (int agentNo=0; agentNo<selectProba.getFrequency(); agentNo++) {
 				int selectedSampleEntityIndex = SharedInstances.RandomNumberGenerator.nextInt(selectedSampleCategory.size());
-				SampleEntity sourceSampleEntity = selectedSampleCategory.get(selectedSampleEntityIndex);
+//				SampleEntity sourceSampleEntity = selectedSampleCategory.get(selectedSampleEntityIndex);
+				Entity sourceSampleEntity = selectedSampleCategory.get(selectedSampleEntityIndex);
 				
-				SampleEntity targetEntity = generateInternalSampleEntity(sourceSampleEntity, internalSampleEntityPopulation);
+//				SampleEntity targetEntity = generateInternalSampleEntity(sourceSampleEntity, internalSampleEntityPopulation);
+//				sampleData.recodeIdAttributes(targetEntity);
+				Entity targetEntity = generateInternalSampleEntity(sourceSampleEntity, internalSampleEntityPopulation);
 				sampleData.recodeIdAttributes(targetEntity);
 			}
 		}
 	}
 	
-	private SampleEntity generateInternalSampleEntity(final SampleEntity sourceSampleEntity, final SampleEntityPopulation targetSamplePopulation) throws GenstarException {
-		SampleEntity targetSampleEntity = targetSamplePopulation.createSampleEntity(sourceSampleEntity.getAttributeValuesOnEntity());
+	private Entity generateInternalSampleEntity(final Entity sourceSampleEntity, final IPopulation targetSamplePopulation) throws GenstarException {
+		Entity targetSampleEntity = targetSamplePopulation.createEntity(sourceSampleEntity.getEntityAttributeValues());
 		
-		List<SampleEntityPopulation> sourceComponentPopulations = new ArrayList<SampleEntityPopulation>(sourceSampleEntity.getComponentSampleEntityPopulations().values());
-		for (SampleEntityPopulation sourceComponentPop : sourceComponentPopulations) {
-			SampleEntityPopulation tagetComponentSamplePopulation = targetSampleEntity.createComponentPopulation(sourceComponentPop.getName(), sourceComponentPop.getAttributes());
+		List<IPopulation> sourceComponentPopulations = sourceSampleEntity.getComponentPopulations();
+		for (IPopulation sourceComponentPop : sourceComponentPopulations) {
+			IPopulation tagetComponentSamplePopulation = targetSampleEntity.createComponentPopulation(sourceComponentPop.getName(), sourceComponentPop.getAttributes());
 			tagetComponentSamplePopulation.addGroupReferences(sourceComponentPop.getGroupReferences());
 			tagetComponentSamplePopulation.addComponentReferences(sourceComponentPop.getComponentReferences());
 			
-			for (SampleEntity sourceComponentEntity : sourceComponentPop.getSampleEntities()) {
+			for (Entity sourceComponentEntity : sourceComponentPop.getEntities()) {
 				generateInternalSampleEntity(sourceComponentEntity, tagetComponentSamplePopulation);
 			}
 		}
 		
 		return targetSampleEntity;
 	}
+
+
+	//	private SampleEntity generateInternalSampleEntity(final SampleEntity sourceSampleEntity, final SampleEntityPopulation targetSamplePopulation) throws GenstarException {
+//		SampleEntity targetSampleEntity = targetSamplePopulation.createSampleEntity(sourceSampleEntity.getAttributeValuesOnEntity());
+//		
+//		List<SampleEntityPopulation> sourceComponentPopulations = new ArrayList<SampleEntityPopulation>(sourceSampleEntity.getComponentSampleEntityPopulations().values());
+//		for (SampleEntityPopulation sourceComponentPop : sourceComponentPopulations) {
+//			SampleEntityPopulation tagetComponentSamplePopulation = targetSampleEntity.createComponentPopulation(sourceComponentPop.getName(), sourceComponentPop.getAttributes());
+//			tagetComponentSamplePopulation.addGroupReferences(sourceComponentPop.getGroupReferences());
+//			tagetComponentSamplePopulation.addComponentReferences(sourceComponentPop.getComponentReferences());
+//			
+//			for (SampleEntity sourceComponentEntity : sourceComponentPop.getSampleEntities()) {
+//				generateInternalSampleEntity(sourceComponentEntity, tagetComponentSamplePopulation);
+//			}
+//		}
+//		
+//		return targetSampleEntity;
+//	}
 
 	/**
 	 * TODO describe how the method works
@@ -153,7 +182,8 @@ public class SampleDataGenerationRule extends GenerationRule {
 			buildSampleEntityCategories();
 			runInternalGeneration();
 			
-			internalSampleEntities = internalSampleEntityPopulation.getSampleEntities();
+			// TODO why internalSampleEntityPopulation is empty?
+			internalSampleEntities = internalSampleEntityPopulation.getEntities();
 			currentEntityIndex = 0;
 
 			ipfRun = true;
@@ -162,15 +192,15 @@ public class SampleDataGenerationRule extends GenerationRule {
 		if (currentEntityIndex == internalSampleEntities.size()) { throw new GenstarException("Out of sample entities"); }
 		
 		// transfer attribute values from SampleEntity to Entity
-		SampleEntity pickedSampleEntity = internalSampleEntities.get(currentEntityIndex);
+		Entity pickedSampleEntity = internalSampleEntities.get(currentEntityIndex);
 		currentEntityIndex++;
 		
 		transferData(pickedSampleEntity, entity);
 		
 		// heuristic: only inject group & component reference once
 		if (currentEntityIndex == 1) {
-			ISyntheticPopulation entityPopulation = entity.getPopulation();
-			SampleEntityPopulation sampleEntityPopulation = pickedSampleEntity.getPopulation();
+			IPopulation entityPopulation = entity.getPopulation();
+			IPopulation sampleEntityPopulation = pickedSampleEntity.getPopulation();
 			
 			entityPopulation.addGroupReferences(sampleEntityPopulation.getGroupReferences());
 			entityPopulation.addComponentReferences(sampleEntityPopulation.getComponentReferences());
@@ -178,31 +208,54 @@ public class SampleDataGenerationRule extends GenerationRule {
 	}
 	
 	
-	private void transferData(final SampleEntity source, final Entity target) throws GenstarException {
+	private void transferData(final Entity source, final Entity target) throws GenstarException {
 		
 		// 1. transfer data from SampleEntity to Entity
-		Map<String, AttributeValue> attributeValuesOnSampleEntity = source.getAttributeValuesOnEntity(); // = attribute value on entity
-		for (String attributeNameOnData : attributeValuesOnSampleEntity.keySet()) {
-			target.setAttributeValueOnEntity(attributeNameOnData, attributeValuesOnSampleEntity.get(attributeNameOnData));
-		}
+		target.setEntityAttributeValues(source.getEntityAttributeValues());
 		
 		// 2. recursively, transfer component sample entities to entities
-		for (String componentPopulationName : source.getComponentSampleEntityPopulations().keySet()) {
-			SampleEntityPopulation componentSampleEntityPopulation = source.getComponentSampleEntityPopulations().get(componentPopulationName);
+		for (IPopulation sourceComponentPopulation : source.getComponentPopulations()) {
 			
-			ISyntheticPopulation componentEntityPopulation = target.getComponentPopulation(componentPopulationName);
-			if (componentEntityPopulation == null) {
-				componentEntityPopulation = target.createComponentPopulation(componentSampleEntityPopulation.getName(), componentSampleEntityPopulation.getAttributes());
-				componentEntityPopulation.addGroupReferences(componentSampleEntityPopulation.getGroupReferences());
-				componentEntityPopulation.addComponentReferences(componentSampleEntityPopulation.getComponentReferences());
+			IPopulation targetComponentPopulation = target.getComponentPopulation(sourceComponentPopulation.getName());
+			if (targetComponentPopulation == null) {
+				targetComponentPopulation = target.createComponentPopulation(sourceComponentPopulation.getName(), sourceComponentPopulation.getAttributes());
+				targetComponentPopulation.addGroupReferences(sourceComponentPopulation.getGroupReferences());
+				targetComponentPopulation.addComponentReferences(sourceComponentPopulation.getComponentReferences());
 			}
 			
-			for (SampleEntity componentSampleEntity : componentSampleEntityPopulation.getSampleEntities()) {
-				List<Entity> componentEntities = componentEntityPopulation.createEntities(1);
-				transferData(componentSampleEntity, componentEntities.get(0));
+			for (Entity sourceComponentSampleEntity : sourceComponentPopulation.getEntities()) {
+				List<Entity> targetComponentEntities = targetComponentPopulation.createEntities(1);
+				transferData(sourceComponentSampleEntity, targetComponentEntities.get(0));
 			}
 		}
 	}
+	
+	
+//	private void transferData(final SampleEntity source, final Entity target) throws GenstarException {
+//		
+//		// 1. transfer data from SampleEntity to Entity
+//		Map<String, AttributeValue> attributeValuesOnSampleEntity = source.getAttributeValuesOnEntity(); // = attribute value on entity
+//		for (String attributeNameOnData : attributeValuesOnSampleEntity.keySet()) {
+//			target.setAttributeValueOnEntity(attributeNameOnData, attributeValuesOnSampleEntity.get(attributeNameOnData));
+//		}
+//		
+//		// 2. recursively, transfer component sample entities to entities
+//		for (String componentPopulationName : source.getComponentSampleEntityPopulations().keySet()) {
+//			SampleEntityPopulation componentSampleEntityPopulation = source.getComponentSampleEntityPopulations().get(componentPopulationName);
+//			
+//			IPopulation componentEntityPopulation = target.getComponentPopulation(componentPopulationName);
+//			if (componentEntityPopulation == null) {
+//				componentEntityPopulation = target.createComponentPopulation(componentSampleEntityPopulation.getName(), componentSampleEntityPopulation.getAttributes());
+//				componentEntityPopulation.addGroupReferences(componentSampleEntityPopulation.getGroupReferences());
+//				componentEntityPopulation.addComponentReferences(componentSampleEntityPopulation.getComponentReferences());
+//			}
+//			
+//			for (SampleEntity componentSampleEntity : componentSampleEntityPopulation.getSampleEntities()) {
+//				List<Entity> componentEntities = componentEntityPopulation.createEntities(1);
+//				transferData(componentSampleEntity, componentEntities.get(0));
+//			}
+//		}
+//	}
 	
 
 	@Override

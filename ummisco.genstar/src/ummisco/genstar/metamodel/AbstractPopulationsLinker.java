@@ -5,16 +5,16 @@ import java.util.List;
 
 public abstract class AbstractPopulationsLinker implements IPopulationsLinker {
 	
-	protected List<ISyntheticPopulation> populations;
+	protected List<IPopulation> populations;
 	
 	protected int totalRound = 1;
 	protected int currentRound = 1;
 	
 	public AbstractPopulationsLinker() {
-		populations = new ArrayList<ISyntheticPopulation>();
+		populations = new ArrayList<IPopulation>();
 	}
 	
-	@Override public List<ISyntheticPopulation> getPopulations() {
+	@Override public List<IPopulation> getPopulations() {
 		return populations;
 	}
 	

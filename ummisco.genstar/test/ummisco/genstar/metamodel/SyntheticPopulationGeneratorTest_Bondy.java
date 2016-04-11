@@ -19,7 +19,7 @@ public class SyntheticPopulationGeneratorTest_Bondy {
 		ISyntheticPopulationGenerator inhabitantPopulationGenerator = bondyData.getInhabitantPopGenerator();
 		inhabitantPopulationGenerator.setNbOfEntities(10);
 		
-		ISyntheticPopulation population = inhabitantPopulationGenerator.generate();
+		IPopulation population = inhabitantPopulationGenerator.generate();
 		assertTrue(population.getEntities().size() == 10);
 	}
 	
@@ -27,7 +27,7 @@ public class SyntheticPopulationGeneratorTest_Bondy {
 		ISyntheticPopulationGenerator householdPopulationGenerator = bondyData.getHouseholdPopGenerator();
 		householdPopulationGenerator.setNbOfEntities(10);
 		
-		ISyntheticPopulation population = householdPopulationGenerator.generate();
+		IPopulation population = householdPopulationGenerator.generate();
 		assertTrue(population.getEntities().size() == 10);
 	}
 

@@ -32,7 +32,7 @@ public interface ISyntheticPopulationGenerator extends IWithAttributes { // FIXM
 	public abstract void removeAttribute(final AbstractAttribute attribute);
 	// consider to move these methods to IWithAttributes -
 
-	public abstract ISyntheticPopulation generate() throws GenstarException;
+	public abstract IPopulation generate() throws GenstarException;
 	
 	public abstract Map<String, String> getProperties();
 	

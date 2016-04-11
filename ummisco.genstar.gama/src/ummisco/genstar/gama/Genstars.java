@@ -42,7 +42,7 @@ import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 import ummisco.genstar.metamodel.IMultipleRulesGenerator;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.MultipleRulesGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
@@ -212,7 +212,7 @@ public abstract class Genstars {
 
 				// build the string representation of each set of attribute values
 				for (int i=0; i<generationRuleAttributes.size(); i++) {
-					AttributeValue av = avf.getAttributeValue(generationRuleAttributes.get(i));
+					AttributeValue av = avf.getAttributeValueOnData(generationRuleAttributes.get(i));
 					row[i] = av.toCsvString();
 				}
 				row[row.length - 1] = Integer.toString(avf.getFrequency());
@@ -329,9 +329,20 @@ public abstract class Genstars {
 			
 			// 7. calculate frequencies
 			SampleData populationData = new SampleData("dummy population", generator.getAttributes(), populationCSVFile);
-			for (SampleEntity sampleEntity : populationData.getSampleEntityPopulation().getSampleEntities()) {
-				for (AttributeValuesFrequency avf : attributeValuesFrequencies) {
-					if (sampleEntity.isMatched(avf.getAttributeValuesWithNamesOnEntityAsKey())) { avf.setFrequency(avf.getFrequency() + 1); }
+			List<Entity> sampleEntities = populationData.getSampleEntityPopulation().getEntities();
+			Map<Integer, List<AbstractAttribute>> cachedAvfAttributes = new HashMap<Integer, List<AbstractAttribute>>();
+			Map<Integer, AttributeValuesFrequency> cachedAvfs = new HashMap<Integer, AttributeValuesFrequency>();
+			for (int index=0; index<attributeValuesFrequencies.size(); index++) {
+				cachedAvfAttributes.put(index, new ArrayList<AbstractAttribute>(attributeValuesFrequencies.get(index).getAttributes()));
+				cachedAvfs.put(index, attributeValuesFrequencies.get(index));
+			}
+			
+			for (int index=0; index<attributeValuesFrequencies.size(); index++) {
+				List<AbstractAttribute> avfAttributes = new ArrayList<AbstractAttribute>(cachedAvfAttributes.get(index));
+				
+				for (Entity sampleEntity : sampleEntities) {
+					AttributeValuesFrequency avf = cachedAvfs.get(index);
+					if (avf.matchAttributeValuesOnData(sampleEntity.getAttributesValuesOnData(avfAttributes))) { avf.increaseFrequency(); }
 				}
 			}
 			
@@ -342,7 +353,7 @@ public abstract class Genstars {
 
 				// build the string representation of each set of attribute values
 				int i=0;
-				for (Map.Entry<AbstractAttribute, AttributeValue> entry : avf.getAttributeValues().entrySet()) {
+				for (Map.Entry<AbstractAttribute, AttributeValue> entry : avf.getAttributeValuesOnData().entrySet()) {
 					row[i] = entry.getKey().getNameOnData();
 					i++;
 					row[i] = entry.getValue().toCsvString(); // BUG different types of attribute values???
@@ -492,7 +503,7 @@ public abstract class Genstars {
 
 			
 			// 2. Generate the population
-			ISyntheticPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation(populationName, attributesFile, nbOfEntities);
+			IPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation(populationName, attributesFile, nbOfEntities);
 			
 			
 			// 3. Convert the population to IList
@@ -559,7 +570,7 @@ public abstract class Genstars {
 					
 			
 			// 2. Generate the population
-			ISyntheticPopulation generatedPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
+			IPopulation generatedPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
 					groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities);
 			
 			return GamaGenstarUtils.convertGenstarPopulationToGamaPopulation(generatedPopulation);			
@@ -607,7 +618,7 @@ public abstract class Genstars {
 			}
 			
 			// convert GAMA synthetic populations to Gen* synthetic populations
-			ISyntheticPopulation genstarPopulation = GamaGenstarUtils.convertGamaPopulationToGenstarPopulation(null, gamaPopulation, populationAttributes);
+			IPopulation genstarPopulation = GamaGenstarUtils.convertGamaPopulationToGenstarPopulation(null, gamaPopulation, populationAttributes);
 			
 			// write Gen* synthetic populations to CSV files
 			return GenstarUtils.writePopulationToCSVFile(genstarPopulation, rebuiltPopulationOutputFilePaths);
@@ -629,7 +640,7 @@ public abstract class Genstars {
 
 		Map<String, List<AbstractAttribute>> populationsAttributes = new HashMap<String, List<AbstractAttribute>>();
 		populationsAttributes.put(populationName, generator.getAttributes());
-		ISyntheticPopulation genstarPopulation = GamaGenstarUtils.convertGamaPopulationToGenstarPopulation(null, gamaPopulation, populationsAttributes);
+		IPopulation genstarPopulation = GamaGenstarUtils.convertGamaPopulationToGenstarPopulation(null, gamaPopulation, populationsAttributes);
 		
 		// do the analysis
 		GenstarCSVFile controlTotalsFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
@@ -760,14 +771,14 @@ public abstract class Genstars {
 		syntheticPopulation.add(GENSTAR_POPULATION);
 		
 		// 1. Generate the population
-		ISyntheticPopulation generatedPopulation = generator.generate();
+		IPopulation generatedPopulation = generator.generate();
 		
 		// 2. Convert the generated "data" to format understood by GAML "create" statement
 		Map<String, Object> map;
 		for (Entity entity : generatedPopulation.getEntities()) {
 			
 			map = GamaMapFactory.create(Types.STRING, Types.NO_TYPE);
-			for (EntityAttributeValue eav : entity.getEntityAttributeValues().values()) {
+			for (EntityAttributeValue eav : entity.getEntityAttributeValues()) {
 				map.put(eav.getAttribute().getNameOnEntity(), GenstarGamaTypesConverter.convertGenstar2GamaType(eav.getAttributeValueOnEntity()));
 			}
 			

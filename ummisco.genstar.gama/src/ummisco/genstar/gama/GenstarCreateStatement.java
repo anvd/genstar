@@ -1,13 +1,11 @@
 package ummisco.genstar.gama;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import msi.gama.common.interfaces.IKeyword;
 import msi.gama.metamodel.agent.IAgent;
-import msi.gama.metamodel.population.IPopulation;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.facet;
 import msi.gama.precompiler.GamlAnnotations.facets;
@@ -26,12 +24,10 @@ import msi.gaml.compilation.ISymbol;
 import msi.gaml.descriptions.IDescription;
 import msi.gaml.descriptions.StatementDescription;
 import msi.gaml.expressions.IExpression;
-import msi.gaml.species.ISpecies;
 import msi.gaml.statements.AbstractStatementSequence;
 import msi.gaml.statements.RemoteSequence;
 import msi.gaml.types.IType;
 import ummisco.genstar.gama.GenstarCreateStatement.GenstarCreateValidator;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
 
 
 @symbol(
@@ -109,14 +105,14 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 		Map<String, String> groupReferences = (Map<String, String>) genstarPopulation.get(1); // second element contains references to "group" agents
 		Map<String, String> componentReferences = (Map<String, String>) genstarPopulation.get(2); // third element contains references to "component" agents
 		
-		IPopulation population = scope.getSimulationScope().getPopulationFor(speciesName);
-		if (population == null) { throw GamaRuntimeException.error(speciesName + " species not found", scope); }
+		msi.gama.metamodel.population.IPopulation gamaPopulation = scope.getSimulationScope().getPopulationFor(speciesName);
+		if (gamaPopulation == null) { throw GamaRuntimeException.error(speciesName + " species not found", scope); }
 		
 		// extract init values
 		IList<GamaMap> inits = GamaListFactory.create();
 		inits.addAll(genstarPopulation.subList(3, genstarPopulation.size()));
 		
-		IList<? extends IAgent> createdAgents = createAgents(null, scope, population, inits, groupReferences, componentReferences);
+		IList<? extends IAgent> createdAgents = createAgents(null, scope, gamaPopulation, inits, groupReferences, componentReferences);
 		
 		if ( !sequence.isEmpty() ) {
 			for ( final IAgent remoteAgent : createdAgents ) {
@@ -134,7 +130,7 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 		return createdAgents;
 	}
 	
-	private IList<? extends IAgent> createAgents(final IAgent groupAgent, final IScope scope, final IPopulation gamaPopulation, final IList<GamaMap> inits, 
+	private IList<? extends IAgent> createAgents(final IAgent groupAgent, final IScope scope, final msi.gama.metamodel.population.IPopulation gamaPopulation, final IList<GamaMap> inits, 
 			final Map<String, String> groupReferences, final Map<String, String> componentReferences) {
 		
 		// each element of IList inits is a map containing
@@ -146,13 +142,13 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 			
 			// extract initial values
 			List initialValues = new ArrayList();
-			IList genstarComponentPopulations = (IList) element.get(ISyntheticPopulation.class);
+			IList genstarComponentPopulations = (IList) element.get(ummisco.genstar.metamodel.IPopulation.class);
 			if (genstarComponentPopulations == null) { // without Genstar component populations
 				initialValues.add(element);
 			} else {
 				GamaMap copyElement = GamaMapFactory.create();
 				copyElement.putAll(element);
-				copyElement.remove(ISyntheticPopulation.class);
+				copyElement.remove(ummisco.genstar.metamodel.IPopulation.class);
 
 				initialValues.add(copyElement);
 			}
@@ -178,7 +174,7 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 					Map<String, String> componentGroupReferences = (Map<String, String>) genstarComPopulation.get(1); // second element contains references to "group" agents
 					Map<String, String> componentComponentReferences = (Map<String, String>) genstarComPopulation.get(2); // third element contains references to "component" agents
 					
-					IPopulation componentGamaPopulation = scope.getSimulationScope().getPopulationFor(componentSpeciesName);
+					msi.gama.metamodel.population.IPopulation componentGamaPopulation = scope.getSimulationScope().getPopulationFor(componentSpeciesName);
 					if (componentGamaPopulation == null) { throw GamaRuntimeException.error(componentSpeciesName + " species not found", scope); }
 					
 					

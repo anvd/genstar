@@ -53,7 +53,7 @@ import org.junit.runner.RunWith;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.IpfControlTotals;
 import ummisco.genstar.ipf.SampleDataGenerationRule;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -271,7 +271,7 @@ public class GenstarsTest {
 		for (int i=3; i<generatedPopulation.size(); i++) {
 			Map householdEntity = (Map)generatedPopulation.get(i);
 			
-			IList componentPopulations = (IList) householdEntity.get(ISyntheticPopulation.class);
+			IList componentPopulations = (IList) householdEntity.get(IPopulation.class);
 			for (Object o : componentPopulations) {
 				IList componentPopulation = (IList) o;
 				
@@ -381,7 +381,7 @@ public class GenstarsTest {
 		for (int i=3; i<generatedPopulation.size(); i++) {
 			Map householdEntity = (Map)generatedPopulation.get(i);
 			
-			IList componentPopulations = (IList) householdEntity.get(ISyntheticPopulation.class);
+			IList componentPopulations = (IList) householdEntity.get(IPopulation.class);
 			for (Object o : componentPopulations) {
 				IList componentPopulation = (IList) o;
 				

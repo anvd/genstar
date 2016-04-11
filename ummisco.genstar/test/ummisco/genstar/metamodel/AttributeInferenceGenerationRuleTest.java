@@ -251,7 +251,7 @@ public class AttributeInferenceGenerationRuleTest {
 		for (double[] wage : BondyData.hourly_net_wages) {
 			
 			entity = new Entity(generator.generate());
-			entity.setAttributeValueOnData(inferringAttribute.getNameOnData(), new UniqueValue(DataType.INTEGER, Integer.toString((int) wage[0])));
+			entity.setAttributeValueOnData(inferringAttribute, new UniqueValue(DataType.INTEGER, Integer.toString((int) wage[0])));
 			
 			assertTrue(entity.getEntityAttributeValueByNameOnData(inferredAttribute.getNameOnEntity()) == null);
 			rule3.generate(entity);

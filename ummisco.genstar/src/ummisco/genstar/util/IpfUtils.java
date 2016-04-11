@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -104,111 +104,6 @@ public class IpfUtils {
 	}
 	
 	
-	public void buildControlTotalsOfCompoundPopulation(ISyntheticPopulation compoundPopulation, final String componentPopulationName, final GenstarCSVFile groupControlledAttributesListFile, 
-			final GenstarCSVFile componentControlledAttributesListFile, final List<List<String>> groupControlTotalsToBeBuilt, final List<List<String>> componentControlTotalsToBeBuilt) throws GenstarException {
-		
-		// parameters validation
-		if (compoundPopulation == null || groupControlledAttributesListFile == null || componentControlledAttributesListFile == null || groupControlTotalsToBeBuilt == null || componentControlTotalsToBeBuilt == null) {
-			throw new GenstarException("Parameters can not be null");
-		}
-		
-		if (!groupControlTotalsToBeBuilt.isEmpty() || !componentControlTotalsToBeBuilt.isEmpty()) {
-			throw new GenstarException("Both 'groupControlTotalsToBeBuilt' and 'componentControlTotalsToBeBuilt' must be empty list");
-		}
-		
-		// cache component attributes
-		List<AbstractAttribute> componentAttributes = null;
-		for (Entity groupEntity : compoundPopulation.getEntities()) {
-			ISyntheticPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
-			if (componentPopulation != null) {
-				componentAttributes = componentPopulation.getAttributes();
-				break;
-			}
-		}
-		
-		if (componentAttributes == null) {
-			throw new GenstarException("No component population '" + componentPopulationName + "' found in compound population '" + compoundPopulation.getName() + "'");
-		}
-
-		
-		// parse group controlled attributes
-		List<List<String>> groupControlledAttributesFileContent = groupControlledAttributesListFile.getContent();
-		Set<AbstractAttribute> groupControlledAttributes = new HashSet<AbstractAttribute>();
-		for (int line=0; line<groupControlledAttributesFileContent.size(); line++) {
-			List<String> row = groupControlledAttributesFileContent.get(line);
-			if (row.size() > 1) { throw new GenstarException("Invalid groupControlledAttributesListFile file format (file: " + groupControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
-			
-			String controlledAttrName = row.get(0);
-			AbstractAttribute groupControlledAttribute = compoundPopulation.getAttributeByNameOnData(controlledAttrName);
-			if (groupControlledAttribute == null) { throw new GenstarException("Invalid (group) controlled attribute: " + controlledAttrName + ". File: " + groupControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
-			if (groupControlledAttributes.contains(groupControlledAttribute)) { throw new GenstarException("Duplicated (group) controlled attribute: " + controlledAttrName + ". File: " + groupControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
-			
-			groupControlledAttributes.add(groupControlledAttribute);
-		}
-		 
-		// parse component controlled attributes
-		Map<String, AbstractAttribute> componentAttributesNameMap = new HashMap<String, AbstractAttribute>();
-		for (AbstractAttribute cAttr : componentAttributes) { componentAttributesNameMap.put(cAttr.getNameOnData(), cAttr); }
-		List<List<String>> componentControlledAttributesFileContent = componentControlledAttributesListFile.getContent();
-		Set<AbstractAttribute> componentControlledAttributes = new HashSet<AbstractAttribute>();
-		for (int line=0; line<componentControlledAttributesFileContent.size(); line++) {
-			List<String> row = componentControlledAttributesFileContent.get(line);
-			if (row.size() > 1) { throw new GenstarException("Invalid componentControlledAttributesListFile file format (file: " + componentControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
-			
-			String controlledAttrName = row.get(0);
-			AbstractAttribute componentControlledAttribute = componentAttributesNameMap.get(controlledAttrName);
-			if (componentControlledAttribute == null) { throw new GenstarException("Invalid (component) controlled attribute: " + controlledAttrName + ". File: " + groupControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
-			if (componentControlledAttributes.contains(componentControlledAttribute)) { throw new GenstarException("Duplicated (component) controlled attribute: " + controlledAttrName + ". File: " + componentControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
-			
-			componentControlledAttributes.add(componentControlledAttribute);
-		}
-		
-		// generate attribute values frequencies
-		Set<AttributeValuesFrequency> groupAvfs = GenstarUtils.generateAttributeValuesFrequencies(groupControlledAttributes);
-		Set<AttributeValuesFrequency> componentAvfs = GenstarUtils.generateAttributeValuesFrequencies(componentControlledAttributes);
-		
-		// compute/update frequencies
-		for (Entity groupEntity : compoundPopulation.getEntities()) {
-			
-			// group frequencies
-			for (AttributeValuesFrequency groupAvf : groupAvfs) {
-				if (groupAvf.matchEntity(groupControlledAttributes, groupEntity)) {
-					groupAvf.increaseFrequency();
-				}
-			}
-			
-			// component frequencies (of each group)
-			ISyntheticPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
-			if (componentPopulation != null) {
-				for (Entity componentEntity : componentPopulation.getEntities()) {
-					for (AttributeValuesFrequency componentAvf : componentAvfs) {
-						if (componentAvf.matchEntity(componentControlledAttributes, componentEntity)) {
-							componentAvf.increaseFrequency();
-						}
-					}
-				}
-			}
-		}
-		
-		
-		// TODO fill groupControlTotalsToBeBuilt and componentControlTotalsToBeBuilt
-		/*
-			List<AttributeValuesFrequency> sortedAttributeValueFrequencies = new ArrayList<AttributeValuesFrequency>(fdGenerationRule.getAttributeValuesFrequencies());
-			Collections.sort(sortedAttributeValueFrequencies, new GenstarUtils.AttributeValuesFrequencyComparator(generationRuleAttributes));
-		 */
-		List<AttributeValuesFrequency> sortedGroupAvfs = new ArrayList<AttributeValuesFrequency>(groupAvfs);
-//		List<AbstractAttribute> groupControlledAttributesList = new ArrayList<AbstractAttribute>(groupControlledAttributes);
-		Collections.sort(sortedGroupAvfs, new GenstarUtils.AttributeValuesFrequencyComparator(new ArrayList<AbstractAttribute>(groupControlledAttributes)));
-		for (AttributeValuesFrequency groupAvf : sortedGroupAvfs) {
-			
-		}
-		
-		
-		List<AttributeValuesFrequency> sortedComponentAvfs = new ArrayList<AttributeValuesFrequency>(componentAvfs);
-		Collections.sort(sortedComponentAvfs, new GenstarUtils.AttributeValuesFrequencyComparator(new ArrayList<AbstractAttribute>(componentControlledAttributes)));
-		
-		// use GenstarUtils.writeControlTotalsToCsvFile(List<List<String>>, String) to write the control totals to CSV file(s)
-	}
 	
 	
 	// ? TODO refactor to List<AttributeValuesFrequency> generateIpfControlTotals(final GenstarCSVFile attributesFile, final int total)
@@ -248,7 +143,7 @@ public class IpfUtils {
 	}
 
 
-	public static List<Integer> analyseIpfPopulation(final ISyntheticPopulation population, final GenstarCSVFile controlledAttributesListFile, 
+	public static List<Integer> analyseIpfPopulation(final IPopulation population, final GenstarCSVFile controlledAttributesListFile, 
 			final GenstarCSVFile controlTotalsFile) throws GenstarException {
 		
 		// parameters validation
@@ -388,7 +283,7 @@ public class IpfUtils {
 			int matchedGroupIdentity = -1;
 			for (Integer groupIdentity : generatedAvfsByGroups.keySet()) {
 				for (AttributeValuesFrequency avf : generatedAvfsByGroups.get(groupIdentity)) {
-					if (avf.matchAttributeValues(attributeValues)) {
+					if (avf.matchAttributeValuesOnData(attributeValues)) {
 						matched = avf;
 						matchedGroupIdentity = groupIdentity;
 						break;
@@ -405,7 +300,7 @@ public class IpfUtils {
 			// duplication
 			for (Integer groupIdentity : alreadyValidAvfsByGroups.keySet()) {
 				for (AttributeValuesFrequency avf : alreadyValidAvfsByGroups.get(groupIdentity)) {
-					if (avf.matchAttributeValues(attributeValues)) {
+					if (avf.matchAttributeValuesOnData(attributeValues)) {
 						throw new GenstarException("Duplicated control totals. Line: " + line + ", file: " + controlTotalsFile.getPath());
 					}
 				}

@@ -27,7 +27,7 @@ import ummisco.genstar.ipf.SampleDataGenerationRule;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
-import ummisco.genstar.metamodel.ISyntheticPopulation;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.MultipleRulesGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
@@ -97,7 +97,7 @@ public class GenstarUtilsTest {
 
 		boolean isMatchMap1 = false;
 		for (AttributeValuesFrequency f : attributeValuesFrequencies) {
-			if (f.matchAttributeValues(map1)) {
+			if (f.matchAttributeValuesOnData(map1)) {
 				if (isMatchMap1) { Assert.fail("Attributevalue is matched several times (map1)"); }
 				
 				assertTrue(f.getFrequency() == 1);
@@ -114,7 +114,7 @@ public class GenstarUtilsTest {
 		
 		boolean isMatchMap2 = false;
 		for (AttributeValuesFrequency f : attributeValuesFrequencies) {
-			if (f.matchAttributeValues(map2)) {
+			if (f.matchAttributeValuesOnData(map2)) {
 				if (isMatchMap2) { Assert.fail("Attributevalue is matched several times (map2)"); }
 				
 				assertTrue(f.getFrequency() == 2);
@@ -159,7 +159,7 @@ public class GenstarUtilsTest {
 	
 	@Test public void testGenerateRandomSinglePopulationSuccessfully1() throws GenstarException {
 		GenstarCSVFile attributesFile1 = new GenstarCSVFile("test_data/ummisco/genstar/util/GenstarUtils/testGenerateRandomSinglePopulation1/attributes1.csv", true);
-		ISyntheticPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile1, 1, 1);
+		IPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile1, 1, 1);
 		
 		int nbOfEntities1 = 1;
 		for (AbstractAttribute attribute : generatedPopulation.getAttributes()) { nbOfEntities1 *= attribute.values().size(); }
@@ -173,7 +173,7 @@ public class GenstarUtilsTest {
 
 	
 		GenstarCSVFile attributesFile2 = new GenstarCSVFile("test_data/ummisco/genstar/util/GenstarUtils/testGenerateRandomSinglePopulation1/attributes2.csv", true);
-		ISyntheticPopulation generatedPopulation2 = GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile2, 1, 1);
+		IPopulation generatedPopulation2 = GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile2, 1, 1);
 		
 		int nbOfEntities2 = 1;
 		for (AbstractAttribute attribute : generatedPopulation2.getAttributes()) { nbOfEntities2 *= attribute.values().size(); }
@@ -184,7 +184,7 @@ public class GenstarUtilsTest {
 		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/GenstarUtils/testGenerateRandomSinglePopulation/attributes.csv", true);
 		int nbEntities = 100 + SharedInstances.RandomNumberGenerator.nextInt(100);
 		
-		ISyntheticPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile, nbEntities);
+		IPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation("dummy population", attributesFile, nbEntities);
 		
 		assertTrue(generatedPopulation.getEntities().size() == nbEntities);
 		assertTrue(generatedPopulation.getEntities().get(0).getEntityAttributeValues().size() == generatedPopulation.getAttributes().size());
@@ -203,7 +203,7 @@ public class GenstarUtilsTest {
 		
 		int nbOfGroups = 100;
 		
-		ISyntheticPopulation groupPopulation = Deencapsulation.invoke(GenstarUtils.class, "generateGroupPopulation", populationName, groupAttributes, 
+		IPopulation groupPopulation = Deencapsulation.invoke(GenstarUtils.class, "generateGroupPopulation", populationName, groupAttributes, 
 				groupIdAttributeOnGroupEntity, nbOfGroups);
 		
 		assertTrue(groupPopulation.getEntities().size() == nbOfGroups);
@@ -225,7 +225,7 @@ public class GenstarUtilsTest {
 		AbstractAttribute groupSizeAttribute = groupGenerator.getAttributeByNameOnData("Household Size");
 		
 		int nbOfGroups = 100;
-		ISyntheticPopulation groupPopulation = Deencapsulation.invoke(GenstarUtils.class, "generateGroupPopulation", groupPopulationName, groupAttributes, 
+		IPopulation groupPopulation = Deencapsulation.invoke(GenstarUtils.class, "generateGroupPopulation", groupPopulationName, groupAttributes, 
 				groupIdAttributeOnGroupEntity, nbOfGroups);
 		
 		// assert empty component populations
@@ -255,7 +255,7 @@ public class GenstarUtilsTest {
 		// assert that the number of generated component entities is correct
 		int nbOfGeneratedComponents = 0;
 		for (Entity groupEntity : groupPopulation.getEntities()) {
-			for (ISyntheticPopulation componentPopulation : groupEntity.getComponentPopulations()) {
+			for (IPopulation componentPopulation : groupEntity.getComponentPopulations()) {
 				nbOfGeneratedComponents += componentPopulation.getEntities().size();
 			}
 		}
@@ -277,7 +277,7 @@ public class GenstarUtilsTest {
 		String groupSizeAttributeName = "Household Size";
 		int nbOfGroupEntities = 100;
 		
-		ISyntheticPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
+		IPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
 				groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities);
 		
 		assertTrue(generatedCompoundPopulation.getEntities().size() == nbOfGroupEntities);
@@ -291,8 +291,23 @@ public class GenstarUtilsTest {
 			}
 		}
 		
-		ISyntheticPopulation peoplePopulation = groupEntityWithComponents.getComponentPopulation(componentPopulationName);
+		IPopulation peoplePopulation = groupEntityWithComponents.getComponentPopulation(componentPopulationName);
 		assertTrue(peoplePopulation.getEntities().get(0).getEntityAttributeValues().size() == componentAttributesFile.getRows() - 1);
+	}
+	
+	
+	@Test public void testGenerateRandomCompoundPopulation1() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
+	
+	@Test public void testLoadSinglePopulation() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
+	
+	@Test public void testLoadCompoundPopulation() throws GenstarException {
+		fail("not yet implemented");
 	}
 	
 	
@@ -364,7 +379,7 @@ public class GenstarUtilsTest {
 		generatedSinglePopulationFilePaths.put(singlePopulationName, singlePopulationOutputFile);
 		
 		
-		ISyntheticPopulation generatedSinglePopulation = GenstarUtils.generateRandomSinglePopulation(singlePopulationName, attributesFile, nbEntities);
+		IPopulation generatedSinglePopulation = GenstarUtils.generateRandomSinglePopulation(singlePopulationName, attributesFile, nbEntities);
 		Map<String, String> resultSingleFilePaths = GenstarUtils.writePopulationToCSVFile(generatedSinglePopulation, generatedSinglePopulationFilePaths);
 		
 		assertTrue(resultSingleFilePaths.size() == 1);
@@ -396,13 +411,13 @@ public class GenstarUtilsTest {
 		String groupSizeAttributeName = "Household Size";
 		int nbOfGroupEntities = 100;
 		
-		ISyntheticPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
+		IPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
 				groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities);
 		
 		List<AbstractAttribute> componentPopulationAttributes = null;
 		int nbOfComponentEntities = 0;
 		for (Entity groupEntity : generatedCompoundPopulation.getEntities()) {
-			for (ISyntheticPopulation componentPopulation : groupEntity.getComponentPopulations()) {
+			for (IPopulation componentPopulation : groupEntity.getComponentPopulations()) {
 				nbOfComponentEntities += componentPopulation.getNbOfEntities();
 				if (componentPopulationAttributes == null) {
 					componentPopulationAttributes = componentPopulation.getAttributes();

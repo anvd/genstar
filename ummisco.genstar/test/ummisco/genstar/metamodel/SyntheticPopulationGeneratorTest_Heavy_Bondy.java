@@ -18,14 +18,14 @@ public class SyntheticPopulationGeneratorTest_Heavy_Bondy {
 	
 	@Test public void testGenerateFullInhabitantPopulation() throws GenstarException {
 		ISyntheticPopulationGenerator inhabitantPopGenerator = bondyData.getInhabitantPopGenerator();
-		ISyntheticPopulation inhabitantPop = inhabitantPopGenerator.generate();
+		IPopulation inhabitantPop = inhabitantPopGenerator.generate();
 		
 		assertTrue(inhabitantPopGenerator.getNbOfEntities() == inhabitantPop.getEntities().size());
 	}
 	
 	@Test public void testGenerateFullHouseholdPopulation() throws GenstarException {
 		ISyntheticPopulationGenerator householdPopGenerator = bondyData.getHouseholdPopGenerator();
-		ISyntheticPopulation householdPop = householdPopGenerator.generate();
+		IPopulation householdPop = householdPopGenerator.generate();
 		
 		assertTrue(householdPopGenerator.getNbOfEntities() == householdPop.getEntities().size());
 	}

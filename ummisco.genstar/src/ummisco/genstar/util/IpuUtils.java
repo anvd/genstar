@@ -1,6 +1,7 @@
 package ummisco.genstar.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.Entity;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
@@ -94,7 +97,7 @@ public class IpuUtils {
 			// verify attributeValues
 			AttributeValuesFrequency matched = null;
 			for (AttributeValuesFrequency avf : generatedControlledAVsFrequencies) {
-				if (avf.matchAttributeValues(attributeValues)) {
+				if (avf.matchAttributeValuesOnData(attributeValues)) {
 					matched = avf;
 					break;
 				}
@@ -105,7 +108,7 @@ public class IpuUtils {
 			
 			// duplication
 			for (AttributeValuesFrequency avf : alreadyValidControlledAvfFrequencies) {
-				if (avf.matchAttributeValues(attributeValues)) {
+				if (avf.matchAttributeValuesOnData(attributeValues)) {
 					throw new GenstarException("Duplicated control totals. Line: " + line + ", file: " + ipuControlTotalsFile.getPath());
 				}
 			}
@@ -120,12 +123,133 @@ public class IpuUtils {
 		return ipuControlTotals;
 	}
 	
+	
+	public void buildIpuControlTotalsOfCompoundPopulation(IPopulation compoundPopulation, final String componentPopulationName, final GenstarCSVFile groupControlledAttributesListFile, 
+			final GenstarCSVFile componentControlledAttributesListFile, final List<List<String>> groupControlTotalsToBeBuilt, final List<List<String>> componentControlTotalsToBeBuilt) throws GenstarException {
+		
+		// parameters validation
+		if (compoundPopulation == null || groupControlledAttributesListFile == null || componentControlledAttributesListFile == null || groupControlTotalsToBeBuilt == null || componentControlTotalsToBeBuilt == null) {
+			throw new GenstarException("Parameters can not be null");
+		}
+		
+		if (!groupControlTotalsToBeBuilt.isEmpty() || !componentControlTotalsToBeBuilt.isEmpty()) {
+			throw new GenstarException("Both 'groupControlTotalsToBeBuilt' and 'componentControlTotalsToBeBuilt' must be empty list");
+		}
+		
+		// cache component attributes
+		List<AbstractAttribute> componentAttributes = null;
+		for (Entity groupEntity : compoundPopulation.getEntities()) {
+			IPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
+			if (componentPopulation != null) {
+				componentAttributes = componentPopulation.getAttributes();
+				break;
+			}
+		}
+		
+		if (componentAttributes == null) {
+			throw new GenstarException("No component population '" + componentPopulationName + "' found in compound population '" + compoundPopulation.getName() + "'");
+		}
+
+		
+		// parse group controlled attributes
+		List<List<String>> groupControlledAttributesFileContent = groupControlledAttributesListFile.getContent();
+		List<AbstractAttribute> groupControlledAttributes = new ArrayList<AbstractAttribute>();
+		for (int line=0; line<groupControlledAttributesFileContent.size(); line++) {
+			List<String> row = groupControlledAttributesFileContent.get(line);
+			if (row.size() > 1) { throw new GenstarException("Invalid groupControlledAttributesListFile file format (file: " + groupControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
+			
+			String controlledAttrName = row.get(0);
+			AbstractAttribute groupControlledAttribute = compoundPopulation.getAttributeByNameOnData(controlledAttrName);
+			if (groupControlledAttribute == null) { throw new GenstarException("Invalid (group) controlled attribute: " + controlledAttrName + ". File: " + groupControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
+			if (groupControlledAttributes.contains(groupControlledAttribute)) { throw new GenstarException("Duplicated (group) controlled attribute: " + controlledAttrName + ". File: " + groupControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
+			
+			groupControlledAttributes.add(groupControlledAttribute);
+		}
+		 
+		// parse component controlled attributes
+		Map<String, AbstractAttribute> componentAttributesNameMap = new HashMap<String, AbstractAttribute>();
+		for (AbstractAttribute cAttr : componentAttributes) { componentAttributesNameMap.put(cAttr.getNameOnData(), cAttr); }
+		List<List<String>> componentControlledAttributesFileContent = componentControlledAttributesListFile.getContent();
+		List<AbstractAttribute> componentControlledAttributes = new ArrayList<AbstractAttribute>();
+		for (int line=0; line<componentControlledAttributesFileContent.size(); line++) {
+			List<String> row = componentControlledAttributesFileContent.get(line);
+			if (row.size() > 1) { throw new GenstarException("Invalid componentControlledAttributesListFile file format (file: " + componentControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
+			
+			String controlledAttrName = row.get(0);
+			AbstractAttribute componentControlledAttribute = componentAttributesNameMap.get(controlledAttrName);
+			if (componentControlledAttribute == null) { throw new GenstarException("Invalid (component) controlled attribute: " + controlledAttrName + ". File: " + groupControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
+			if (componentControlledAttributes.contains(componentControlledAttribute)) { throw new GenstarException("Duplicated (component) controlled attribute: " + controlledAttrName + ". File: " + componentControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
+			
+			componentControlledAttributes.add(componentControlledAttribute);
+		}
+		
+		// generate attribute values frequencies
+		Set<AttributeValuesFrequency> groupAvfs = GenstarUtils.generateAttributeValuesFrequencies(new HashSet<AbstractAttribute>(groupControlledAttributes));
+		Set<AttributeValuesFrequency> componentAvfs = GenstarUtils.generateAttributeValuesFrequencies(new HashSet<AbstractAttribute>(componentControlledAttributes));
+		
+		// compute/update frequencies
+		for (Entity groupEntity : compoundPopulation.getEntities()) {
+			
+			// group frequencies
+			for (AttributeValuesFrequency groupAvf : groupAvfs) {
+				if (groupAvf.matchEntity(groupControlledAttributes, groupEntity)) {
+					groupAvf.increaseFrequency();
+				}
+			}
+			
+			// component frequencies (of each group)
+			IPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
+			if (componentPopulation != null) {
+				for (Entity componentEntity : componentPopulation.getEntities()) {
+					for (AttributeValuesFrequency componentAvf : componentAvfs) {
+						if (componentAvf.matchEntity(componentControlledAttributes, componentEntity)) {
+							componentAvf.increaseFrequency();
+						}
+					}
+				}
+			}
+		}
+		
+		
+		// fill groupControlTotalsToBeBuilt
+		List<AttributeValuesFrequency> sortedGroupAvfs = new ArrayList<AttributeValuesFrequency>(groupAvfs);
+		Collections.sort(sortedGroupAvfs, new GenstarUtils.AttributeValuesFrequencyComparator(groupControlledAttributes));
+		for (AttributeValuesFrequency groupAvf : sortedGroupAvfs) {
+			List<String> groupControlTotal = new ArrayList<String>();
+			for (AbstractAttribute groupControlledAttr : groupControlledAttributes) {
+				groupControlTotal.add(groupControlledAttr.getNameOnData());
+				groupControlTotal.add(groupAvf.getAttributeValueOnData(groupControlledAttr).toCsvString());
+			}
+			
+			groupControlTotal.add(Integer.toString(groupAvf.getFrequency()));
+			groupControlTotalsToBeBuilt.add(groupControlTotal);
+		}
+		
+		
+		// fill componentControlTotalsToBeBuilt
+		List<AttributeValuesFrequency> sortedComponentAvfs = new ArrayList<AttributeValuesFrequency>(componentAvfs);
+		Collections.sort(sortedComponentAvfs, new GenstarUtils.AttributeValuesFrequencyComparator(componentControlledAttributes));
+		for (AttributeValuesFrequency componentAvf : componentAvfs) {
+			List<String> componentControlTotal = new ArrayList<String>();
+			for (AbstractAttribute componentControlledAttr : componentControlledAttributes) {
+				componentControlTotal.add(componentControlledAttr.getNameOnData());
+				componentControlTotal.add(componentAvf.getAttributeValueOnData(componentControlledAttr).toCsvString());
+			}
+			
+			componentControlTotal.add(Integer.toString(componentAvf.getFrequency()));
+			componentControlTotalsToBeBuilt.add(componentControlTotal);
+		}
+		
+		// use GenstarUtils.writeContentToCsvFile(List<List<String>>, String) to write the control totals to CSV file(s)
+	}
+
+	
 	/*
 	public static List<List<String>> generateIpfControlTotals(final GenstarCSVFile attributesFile, final int total) throws GenstarException {
 	 */
 	public static List<List<String>> generateIpuControlTotals(final GenstarCSVFile attributesFile, final int total) throws GenstarException {
 		
-		
+		// TODO
 		
 		throw new UnsupportedOperationException("Not yet implemented");
 	}

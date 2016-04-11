@@ -3,14 +3,19 @@ package ummisco.genstar.metamodel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 
-public class SyntheticPopulation implements ISyntheticPopulation {
+public class Population implements IPopulation {
+	
+	private PopulationType type;
 	
 	private List<AbstractAttribute> attributes;
 	
@@ -23,10 +28,15 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 	private Map<String, String> componentReferences = Collections.EMPTY_MAP; // population_name :: GAMA_attribute_name
 	
 
-	public SyntheticPopulation(final String name, final List<AbstractAttribute> attributes) throws GenstarException {
+	public Population(final PopulationType type, final String name, final List<AbstractAttribute> attributes) throws GenstarException {
+		if (type == null) { throw new GenstarException("Parameter type can not be null"); }
 		if ( name == null ) { throw new GenstarException("Parameter name can not be null"); }
 		if (attributes == null) { throw new GenstarException("Parameter attributes can not be null"); }
 		
+		Set<AbstractAttribute> attributesSet = new HashSet<AbstractAttribute>(attributes);
+		if (attributesSet.size() < attributes.size()) { throw new GenstarException("Some attributes are duplicated"); }
+		
+		this.type = type;
 		this.name = name;
 		this.attributes = new ArrayList<AbstractAttribute>();
 		this.attributes.addAll(attributes);
@@ -39,13 +49,34 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 	@Override public List<Entity> getEntities() {
 		return new ArrayList<Entity>(entities);
 	}
+	
+	@Override public List<Entity> getMatchingEntitiesByAttributeValuesOnData(final Map<AbstractAttribute, AttributeValue> attributeValuesOnData) throws GenstarException {
+		if (attributeValuesOnData == null) { throw new GenstarException("Parameter attributeValuesOnData can not be null"); }
 
-	@Override public List<Entity> getMatchingEntitiesByAttributeValuesOnEntity(final Map<String, AttributeValue> matchingCriteria) throws GenstarException {
 		List<Entity> matchings = new ArrayList<Entity>();
-		for (Entity e : entities) { if (e.areValuesOnEntityMatched(matchingCriteria)) { matchings.add(e); } }
+		for (Entity e : entities) { if (e.matchAttributeValuesOnData(attributeValuesOnData)) { matchings.add(e); } }
 		
 		return matchings;
 	}
+
+	@Override public List<Entity> getMatchingEntitiesByAttributeValuesOnEntity(final Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity) throws GenstarException {
+		if (attributeValuesOnEntity == null) { throw new GenstarException("Parameter attributeValuesOnEntity can not be null"); }
+		
+		List<Entity> matchings = new ArrayList<Entity>();
+		for (Entity e : entities) { if (e.matchAttributeValuesOnEntity(attributeValuesOnEntity)) { matchings.add(e); } }
+		
+		return matchings;
+	}
+	
+	@Override public int countMatchingEntitiesByAttributeValuesOnEntity(final Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity) throws GenstarException {
+		if (attributeValuesOnEntity == null) { throw new GenstarException("Paramter matchingCriteria can not be null"); }
+
+		int count = 0;
+		for (Entity e : entities) { if (e.matchAttributeValuesOnEntity(attributeValuesOnEntity)) { count++; } }
+		
+		return count;
+	}
+	
 
 	@Override public String getName() {
 		return name;
@@ -58,6 +89,10 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 		return copy;
 	}	
 	
+	@Override public boolean containAttribute(final AbstractAttribute attribute) throws GenstarException {
+		return attributes.contains(attribute);
+	}
+	
 	@Override public AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData) throws GenstarException {
 		if (attributeNameOnData  == null) { throw new GenstarException("Parameter attributeNameOnData can not be null"); }
 		
@@ -68,7 +103,7 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 		return null;
 	}
 	
-	@Override public AbstractAttribute getAttributebyNameOnEntity(final String attributeNameOnEntity) throws GenstarException {
+	@Override public AbstractAttribute getAttributeByNameOnEntity(final String attributeNameOnEntity) throws GenstarException {
 		if (attributeNameOnEntity  == null) { throw new GenstarException("Parameter attributeNameOnEntity can not be null"); }
 		
 		for (AbstractAttribute attr : attributes) {
@@ -78,7 +113,7 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 		return null;
 	}
 	
-	@Override public boolean isCompatible(final ISyntheticPopulation otherPopulation) {
+	@Override public boolean isCompatible(final IPopulation otherPopulation) {
 		if (otherPopulation == null) return false;
 		if (!name.equals(otherPopulation.getName())) { return false; }
 		
@@ -107,7 +142,25 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 		return newlyCreated;
 	}
 	
-	@Override public Entity createEntityWithAttributeValuesOnEntity(final Map<String, AttributeValue> attributeValuesOnEntity) throws GenstarException {
+	@Override public Entity createEntity(final List<EntityAttributeValue> entityAttributeValues) throws GenstarException {
+		Entity e = new Entity(this);
+		e.setEntityAttributeValues(entityAttributeValues);
+		
+		if (entities == Collections.EMPTY_LIST) { entities = new ArrayList<Entity>(); }
+		entities.add(e);
+		
+		return e;
+	}
+	
+	@Override public List<Entity> createEntities(final List<List<EntityAttributeValue>> entityAttributeValuesList) throws GenstarException {
+		List<Entity> entities = new ArrayList<Entity>();
+		for (List<EntityAttributeValue> eavs : entityAttributeValuesList) { entities.add(this.createEntity(eavs)); }
+		
+		return entities;
+	}
+
+	
+	@Override public Entity createEntityWithAttributeValuesOnEntity(final Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity) throws GenstarException {
 		Entity e = new Entity(this);
 		e.setAttributeValuesOnEntity(attributeValuesOnEntity);
 		
@@ -117,10 +170,10 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 		return e;
 	}
 	
-	@Override public List<Entity> createEntitiesWithAttributeValuesOnEntities(final List<Map<String, AttributeValue>> attributeValuesAttributeValueOnEntities) throws GenstarException {
+	@Override public List<Entity> createEntitiesWithAttributeValuesOnEntities(final List<Map<AbstractAttribute, AttributeValue>> attributeValuesAttributeValueOnEntities) throws GenstarException {
 		List<Entity> createdEntities = new ArrayList<Entity>();
 		
-		for (Map<String, AttributeValue> av : attributeValuesAttributeValueOnEntities) {
+		for (Map<AbstractAttribute, AttributeValue> av : attributeValuesAttributeValueOnEntities) {
 			createdEntities.add(createEntityWithAttributeValuesOnEntity(av));
 		}
 		
@@ -170,4 +223,8 @@ public class SyntheticPopulation implements ISyntheticPopulation {
 		if (componentReferences == Collections.EMPTY_MAP) { componentReferences = new HashMap<String, String>(); }
 		componentReferences.put(populationName, referenceAttribute);
 	}	
+	
+	@Override public PopulationType getPopulationType() {
+		return type;
+	}
 }

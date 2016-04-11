@@ -11,6 +11,7 @@ import org.junit.rules.ExpectedException;
 
 import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
@@ -54,18 +55,18 @@ public class EntityTest {
 
 		
 		Entity entity1 = new Entity(bondyPopulation.generate());
-		assertFalse(entity1.containAttributeWithNameOnData(ageRangesAttr1.getNameOnData()));
-		entity1.setAttributeValueOnData(ageRangesAttr1.getNameOnData(), ageRange1);
-		assertTrue(entity1.containAttributeWithNameOnData(ageRangesAttr1.getNameOnData()));
+		assertFalse(entity1.getEntityAttributeValueByNameOnData(ageRangesAttr1.getNameOnData()) != null);
+		entity1.setAttributeValueOnData(ageRangesAttr1, ageRange1);
+		assertTrue(entity1.getEntityAttributeValueByNameOnData(ageRangesAttr1.getNameOnData()) != null);
 		
 		EntityAttributeValue entityAgeValue = entity1.getEntityAttributeValueByNameOnData("age_range_1");
 		assertTrue(entityAgeValue.getAttributeValueOnEntity() instanceof UniqueValue);
 		assertTrue(ageRange1.cover( (UniqueValue) entityAgeValue.getAttributeValueOnEntity()));
 		
 		
-		assertFalse(entity1.containAttributeWithNameOnData(sexAttr.getNameOnEntity()));
-		entity1.setAttributeValueOnData(sexAttr.getNameOnData(), maleValueOrigin);
-		assertTrue(entity1.containAttributeWithNameOnData(sexAttr.getNameOnEntity()));
+		assertFalse(entity1.getEntityAttributeValueByNameOnData(sexAttr.getNameOnData()) != null);
+		entity1.setAttributeValueOnData(sexAttr, maleValueOrigin);
+		assertTrue(entity1.getEntityAttributeValueByNameOnData(sexAttr.getNameOnEntity()) != null);
 	}
 	
 	@Test public void testSetAttributeValuesOnData() throws GenstarException {
@@ -88,17 +89,17 @@ public class EntityTest {
 		
 		Entity entity1 = new Entity(bondyPopulation.generate());
 		
-		assertFalse(entity1.containAttributeWithNameOnData(ageRangesAttr1.getNameOnData()));
-		assertFalse(entity1.containAttributeWithNameOnData(sexAttr.getNameOnEntity()));
+		assertFalse(entity1.getEntityAttributeValue(ageRangesAttr1) != null);
+		assertFalse(entity1.getEntityAttributeValue(sexAttr) != null);
 
-		Map<String, AttributeValue> attributeValuesOnData = new HashMap<String, AttributeValue>();
-		attributeValuesOnData.put(ageRangesAttr1.getNameOnData(), ageRange1);
-		attributeValuesOnData.put(sexAttr.getNameOnData(), maleValueOrigin);
+		Map<AbstractAttribute, AttributeValue> attributeValuesOnData = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValuesOnData.put(ageRangesAttr1, ageRange1);
+		attributeValuesOnData.put(sexAttr, maleValueOrigin);
 		
 		entity1.setAttributeValuesOnData(attributeValuesOnData);
 		
-		assertTrue(entity1.containAttributeWithNameOnData(ageRangesAttr1.getNameOnData()));
-		assertTrue(entity1.containAttributeWithNameOnData(sexAttr.getNameOnEntity()));
+		assertTrue(entity1.getEntityAttributeValue(ageRangesAttr1) != null);
+		assertTrue(entity1.getEntityAttributeValue(sexAttr) != null);
 	}
 	
 	@Test public void testSetAttributeValueOnEntity() throws GenstarException {
@@ -122,7 +123,7 @@ public class EntityTest {
 		Entity entity = new Entity(bondyPopulation.generate());
 		
 		AttributeValue ageValue1 = new UniqueValue(DataType.INTEGER, "1");
-		entity.setAttributeValueOnEntity("age", ageValue1);
+		entity.setAttributeValueOnEntity(ageRangesAttr1, ageValue1);
 		
 		EntityAttributeValue eav1 = entity.getEntityAttributeValueByNameOnData("age_range_1");
 		assertTrue(eav1.getAttribute().equals(ageRangesAttr1));
@@ -156,12 +157,12 @@ public class EntityTest {
 		
 		Entity entity = new Entity(bondyPopulation.generate());
 
-		Map<String, AttributeValue> attributeValuesOnEntity = new HashMap<String, AttributeValue>();
+		Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		AttributeValue ageValue1 = new UniqueValue(DataType.INTEGER, "1");
-		attributeValuesOnEntity.put("age", ageValue1);
+		attributeValuesOnEntity.put(ageRangesAttr1, ageValue1);
 		
-		attributeValuesOnEntity.put("sex", maleValueOrigin);
+		attributeValuesOnEntity.put(sexAttr, maleValueOrigin);
 		
 		entity.setAttributeValuesOnEntity(attributeValuesOnEntity);
 		
@@ -198,35 +199,35 @@ public class EntityTest {
 		bondyPopulation.addAttribute(ageRangesAttr1);
 
 		Entity entity1 = new Entity(bondyPopulation.generate());
-		entity1.setAttributeValueOnData(ageRangesAttr1.getNameOnData(), ageRange1);
+		entity1.setAttributeValueOnData(ageRangesAttr1, ageRange1);
 		
-		Map<String, AttributeValue> set1 = new HashMap<String, AttributeValue>();
+		Map<AbstractAttribute, AttributeValue> set1 = new HashMap<AbstractAttribute, AttributeValue>();
 		
-		assertTrue(entity1.areValuesOnEntityMatched(set1));
-		assertTrue(entity1.areValuesOnEntityMatched(null));
+		assertTrue(entity1.matchAttributeValuesOnEntity(set1));
+		assertTrue(entity1.matchAttributeValuesOnEntity(null));
 		
 		
 		UniqueValue ageRangeMatchAttrValue1 = new UniqueValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]));
-		set1.put("age", ageRangeMatchAttrValue1);
-		assertTrue(entity1.areValuesOnEntityMatched(set1));
+		set1.put(ageRangesAttr1, ageRangeMatchAttrValue1);
+		assertTrue(entity1.matchAttributeValuesOnEntity(set1));
 		
 		
 		set1.clear();
 		UniqueValue ageRangeMatchAttrValue2 = new UniqueValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0] - 1));
-		set1.put("age", ageRangeMatchAttrValue2);
-		assertFalse(entity1.areValuesOnEntityMatched(set1));
+		set1.put(ageRangesAttr1, ageRangeMatchAttrValue2);
+		assertFalse(entity1.matchAttributeValuesOnEntity(set1));
 		
 		
 		set1.clear();
 		RangeValue ageRangeMatchAttrValue3 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
-		set1.put("age", ageRangeMatchAttrValue3);
-		assertTrue(entity1.areValuesOnEntityMatched(set1));
+		set1.put(ageRangesAttr1, ageRangeMatchAttrValue3);
+		assertTrue(entity1.matchAttributeValuesOnEntity(set1));
 		
 		
 		set1.clear();
 		RangeValue ageRangeMatchAttrValue4 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][1] + 1), Integer.toString(BondyData.age_ranges_1[0][1] + 2));
-		set1.put("age", ageRangeMatchAttrValue4);
-		assertFalse(entity1.areValuesOnEntityMatched(set1));
+		set1.put(ageRangesAttr1, ageRangeMatchAttrValue4);
+		assertFalse(entity1.matchAttributeValuesOnEntity(set1));
 		
 	}
 }

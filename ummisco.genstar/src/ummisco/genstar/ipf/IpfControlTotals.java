@@ -34,7 +34,7 @@ public class IpfControlTotals {
 		List<AttributeValuesFrequency> matchings = new ArrayList<AttributeValuesFrequency>();
 		
 		for (AttributeValuesFrequency f : avFrequencies) {
-			if (f.matchAttributeValues(matchingCriteria)) { matchings.add(f); }
+			if (f.matchAttributeValuesOnData(matchingCriteria)) { matchings.add(f); }
 		}
 		
 		return matchings;

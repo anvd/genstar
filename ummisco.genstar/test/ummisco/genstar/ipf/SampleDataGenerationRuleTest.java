@@ -13,8 +13,9 @@ import org.junit.Test;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
+import ummisco.genstar.metamodel.PopulationType;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
-import ummisco.genstar.metamodel.SyntheticPopulation;
+import ummisco.genstar.metamodel.Population;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.AttributeUtils;
@@ -60,16 +61,18 @@ public class SampleDataGenerationRuleTest {
 		rule.setSampleData(sampleData);
 		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
 		
-		List<SampleEntity> internalSampleEntities = Deencapsulation.getField(rule, "internalSampleEntities"); 
+		List<Entity> internalSampleEntities = Deencapsulation.getField(rule, "internalSampleEntities"); 
 		assertTrue(internalSampleEntities == null);
 		
-		SyntheticPopulation population = new SyntheticPopulation("people", generator.getAttributes());
-		for (Entity entity : population.createEntities(generator.getNbOfEntities())) { rule.generate(entity); }
+		Population population = new Population(PopulationType.SYNTHETIC_POPULATION, "people", generator.getAttributes());
+		for (Entity entity : population.createEntities(generator.getNbOfEntities())) { 
+			rule.generate(entity);
+		}
 		
 		List<AttributeValuesFrequency> originalSelectionProbabilities = Deencapsulation.getField(rule, "selectionProbabilities");
 		List<AttributeValuesFrequency> copySelectionProbabilities = new ArrayList<AttributeValuesFrequency>();
 		for (AttributeValuesFrequency origin : originalSelectionProbabilities) {
-			copySelectionProbabilities.add(new AttributeValuesFrequency(origin.getAttributeValues(), origin.getFrequency()));
+			copySelectionProbabilities.add(new AttributeValuesFrequency(origin.getAttributeValuesOnData(), origin.getFrequency()));
 		}
 		
 		// verify that the number of generated entities is correct
@@ -108,7 +111,7 @@ public class SampleDataGenerationRuleTest {
 		rule.setSampleData(sampleData);
 		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
 		
-		SyntheticPopulation population = new SyntheticPopulation("people", generator.getAttributes());
+		Population population = new Population(PopulationType.SYNTHETIC_POPULATION, "people", generator.getAttributes());
 		for (Entity entity : population.createEntities(1)) { rule.generate(entity); }
 
 		rule.generate(population.getEntities().get(0));

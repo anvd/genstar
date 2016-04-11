@@ -520,7 +520,7 @@ public class FrequencyDistributionGenerationRuleTest {
 		BondyData bondyData = new BondyData();
 		ISyntheticPopulationGenerator bondyPopulationGenerator = bondyData.getInhabitantPopGenerator();
 		bondyPopulationGenerator.setNbOfEntities(1);
-		ISyntheticPopulation population = bondyPopulationGenerator.generate(); 
+		IPopulation population = bondyPopulationGenerator.generate(); 
 		Entity entity = new Entity(population);
 		
 		
@@ -528,15 +528,15 @@ public class FrequencyDistributionGenerationRuleTest {
 		FrequencyDistributionGenerationRule rule1 = (FrequencyDistributionGenerationRule) bondyData.getRule1();
 		
 		for (AbstractAttribute attr : rule1.getOrderedOutputAttributes()) {
-			assertFalse(entity.containAttributeWithNameOnData(attr.getNameOnEntity()));
+			assertFalse(entity.getEntityAttributeValue(attr) != null);
 		}
 		rule1.generate(entity);
 		for (AbstractAttribute attr : rule1.getOrderedOutputAttributes()) {
-			assertTrue(entity.containAttributeWithNameOnData(attr.getNameOnData()));
+			assertTrue(entity.getEntityAttributeValue(attr) != null);
 		}
 		
 //		EntityAttributeValue entityAgeAttributeValue = entity.getEntityAttributeValueByNameOnData("age");
-		EntityAttributeValue entityAgeAttributeValue = entity.getEntityAttributeValueByNameOnData(population.getAttributebyNameOnEntity("age").getNameOnData());
+		EntityAttributeValue entityAgeAttributeValue = entity.getEntityAttributeValueByNameOnData(population.getAttributeByNameOnEntity("age").getNameOnData());
 		AttributeValue originalAgeAttributeValue = entityAgeAttributeValue.getAttributeValueOnData();
 		assertTrue(originalAgeAttributeValue.getDataType().equals(DataType.INTEGER));
 		assertTrue(originalAgeAttributeValue instanceof RangeValue);
@@ -552,9 +552,10 @@ public class FrequencyDistributionGenerationRuleTest {
 		// rule2
 		FrequencyDistributionGenerationRule rule2 = (FrequencyDistributionGenerationRule) bondyData.getRule2();
 		
-		assertFalse(entity.containAttributeWithNameOnData("pcs"));
+		AbstractAttribute pcsAttr = entity.getPopulation().getAttributeByNameOnData("pcs");
+		assertFalse(entity.getEntityAttributeValue(pcsAttr) != null);
 		rule2.generate(entity);
-		assertTrue(entity.containAttributeWithNameOnData("pcs"));
+		assertTrue(entity.getEntityAttributeValue(pcsAttr) != null);
 		
 	}
 	
@@ -567,9 +568,10 @@ public class FrequencyDistributionGenerationRuleTest {
 		// rule2
 		FrequencyDistributionGenerationRule rule2 = (FrequencyDistributionGenerationRule) bondyData.getRule2();
 		
-		assertFalse(entity.containAttributeWithNameOnData("pcs"));
+		AbstractAttribute pcsAttr = entity.getPopulation().getAttributeByNameOnData("pcs");
+		assertFalse(entity.getEntityAttributeValue(pcsAttr) != null);
 		rule2.generate(entity);
-		assertTrue(entity.containAttributeWithNameOnData("pcs"));
+		assertTrue(entity.getEntityAttributeValue(pcsAttr) != null);
 		
 		EntityAttributeValue pcsEntityAttrValue = entity.getEntityAttributeValueByNameOnData("pcs");
 		assertTrue(pcsEntityAttrValue.getAttributeValueOnData().isValueMatched(new UniqueValue(DataType.INTEGER, "8")));

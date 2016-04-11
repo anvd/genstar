@@ -6,11 +6,12 @@ import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.GroupComponentSampleData;
-import ummisco.genstar.ipf.SampleEntity;
-import ummisco.genstar.ipf.SampleEntityPopulation;
+import ummisco.genstar.metamodel.Entity;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+
 
 public class Ipu {
 	
@@ -154,32 +155,32 @@ public class Ipu {
 		
 		GroupComponentSampleData groupComponentSampleData = generationRule.getSampleData();
 		String componentPopulationName = groupComponentSampleData.getComponentPopulationName();
-		List<SampleEntity> groupSampleEntities = groupComponentSampleData.getSampleEntityPopulation().getSampleEntities();
+		List<Entity> groupSampleEntities = groupComponentSampleData.getSampleEntityPopulation().getEntities();
 		List<AbstractAttribute> groupControlledAttributes = generationRule.getGroupControlledAttributes();
 		List<AbstractAttribute> componentControlledAttributes = generationRule.getComponentControlledAttributes();
 		for (int row=0; row<numberOfRows; row++) {
-			SampleEntity groupEntity = groupSampleEntities.get(row);
+			Entity groupEntity = groupSampleEntities.get(row);
 			
 			Map<AbstractAttribute, AttributeValue> groupControlledAttributesValuesOnData = groupEntity.getAttributesValuesOnData(groupControlledAttributes);
 			
 			// fill "group" part
 			for (int column=0; column<groupTypes; column++) {
 				AttributeValuesFrequency groupAvf =  groupTypeValues.get(column);
-				if (groupAvf.matchAttributeValues(groupControlledAttributesValuesOnData)) {
+				if (groupAvf.matchAttributeValuesOnData(groupControlledAttributesValuesOnData)) {
 					ipuMatrix[row][column] += 1;
 					break;
 				}
 			}
 			
 			// fill "component" part
-			SampleEntityPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
+			IPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
 			if (componentPopulation != null) {
-				for (SampleEntity componentEntity : componentPopulation.getSampleEntities()) {
+				for (Entity componentEntity : componentPopulation.getEntities()) {
 					Map<AbstractAttribute, AttributeValue> componentControlledAttributesValuesOnData = componentEntity.getAttributesValuesOnData(componentControlledAttributes);
 
 					for (int column=groupTypes; column<numberOfColumns; column++) {
 						AttributeValuesFrequency componentAvf = componentTypeValues.get(column - groupTypes);
-						if (componentAvf.matchAttributeValues(componentControlledAttributesValuesOnData)) {
+						if (componentAvf.matchAttributeValuesOnData(componentControlledAttributesValuesOnData)) {
 							ipuMatrix[row][column] += 1;
 							break;
 						}

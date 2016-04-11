@@ -9,7 +9,7 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 
-public class SampleEntity { // TODO in the future, remove this class, use Entity only
+public class SampleEntity { // TODO remove this class, use Entity only
 	
 	private SampleEntityPopulation population;
 

@@ -7,6 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRuleTest;
 import ummisco.genstar.metamodel.EntityTest;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRuleTest;
+import ummisco.genstar.metamodel.Population;
 import ummisco.genstar.metamodel.PopulationTest_Elementary;
 import ummisco.genstar.metamodel.SyntheticPopulationGeneratorTest_Bondy;
 import ummisco.genstar.metamodel.SyntheticPopulationTest_Bondy;
@@ -19,7 +20,7 @@ import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ AttributeInferenceGenerationRuleTest.class, EntityAttributeValueTest.class,
-	EntityTest.class, RangeValuesAttributeTest.class, 
+	Population.class, EntityTest.class, RangeValuesAttributeTest.class, 
 	UniqueValuesAttributeTest.class,  AttributeValuesFrequencyTest.class, 
 	FrequencyDistributionGenerationRuleTest.class,
 	PopulationTest_Elementary.class,  RangeValueTest.class,
