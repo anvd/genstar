@@ -102,6 +102,14 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 		if (!attribute.getPopulationGenerator().equals(this)) { throw new GenstarException("Can not add '" + attribute.getNameOnData() + "' attribute to '" + this.getGeneratorName() + 
 				"' population. Because attribute's population is " + attribute.getPopulationGenerator() + " (different from " + this + " population)."); }
 		
+		// not support more than 1 identity attribute
+		if (attribute.isIdentity()) {
+			for (AbstractAttribute attr : attributes) {
+				if (attr.isIdentity()) {
+					throw new GenstarException("A population generator can not contain more than 2 identity attributes (" + attr.getNameOnData() + ", " + attribute.getNameOnData() + ")");
+				}
+			}
+		}
 		
 		attributes.add(attribute);
 	}

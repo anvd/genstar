@@ -10,7 +10,7 @@ import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 public class UniqueValuesAttribute extends AbstractAttribute {
 		
 	
-	private Set<UniqueValue> values;
+	private Set<UniqueValue> valuesOnData;
 
 	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType dataType) throws GenstarException {
 		this(populationGenerator, nameOnData, nameOnData, dataType, UniqueValue.class);
@@ -28,7 +28,7 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		super(populationGenerator, nameOnData, nameOnEntity, dataType, valueClassOnEntity);
 
 		this.valueClassOnData = UniqueValue.class;
-		this.values = new HashSet<UniqueValue>();
+		this.valuesOnData = new HashSet<UniqueValue>();
 		try {
 			this.setDefaultValue(valueClassOnData.getConstructor(DataType.class).newInstance(dataType));
 		} catch (final Exception e) {
@@ -41,7 +41,8 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		
 		if (!dataType.isValueValid(stringValue)) { throw new IllegalArgumentException("'" + stringValue + "' is not a(n) " + dataType.getName() + " value."); }
 		
-		values.add(new UniqueValue(dataType, stringValue));
+		// valuesOnData.add(new UniqueValue(dataType, stringValue));
+		this.add(new UniqueValue(dataType, stringValue));
 
 		// fire event
 		internalFireEvent();
@@ -56,7 +57,7 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		
 		// FIXME containsValue
 		
-		values.add((UniqueValue)value);
+		valuesOnData.add((UniqueValue)value);
 
 		// fire event
 		internalFireEvent();
@@ -82,7 +83,7 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		
 		if (value instanceof UniqueValue) {
 			AttributeValue target = null;
-			for (UniqueValue v : values) {
+			for (UniqueValue v : valuesOnData) {
 				if (value.compareTo(v) == 0) {
 					target = v;
 					break;
@@ -90,7 +91,7 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 			}
 			
 			if (target != null) {
-				values.remove(target);
+				valuesOnData.remove(target);
 				internalFireEvent();
 				return true;
 			}
@@ -100,42 +101,42 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 	}
 
 	@Override public boolean containsInstanceOfAttributeValue(final AttributeValue value) {
-		return values.contains(value);
+		return valuesOnData.contains(value);
 	}
 
 	@Override
 	public boolean containsValueOfAttributeValue(final AttributeValue value) {
 		if (this.containsInstanceOfAttributeValue(value)) { return true; }
 		
-		for (AttributeValue v : values) { if (v.compareTo(value) == 0) return true; }
+		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return true; }
 		
 		return false;
 	}
 	
 	@Override
 	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {
-		if (values.contains(value)) { return value; }
+		if (valuesOnData.contains(value)) { return value; }
 		
-		for (AttributeValue v : values) { if (v.compareTo(value) == 0) return v; }
+		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return v; }
 		
 		return null;
 	}
 	
 
 	@Override public void clear() {
-		values.clear();
+		valuesOnData.clear();
 	}
 
 	@Override
-	public Set<AttributeValue> values() {
+	public Set<AttributeValue> valuesOnData() {
 		Set<AttributeValue> attributeValues = new HashSet<AttributeValue>();
-		attributeValues.addAll(values);
+		attributeValues.addAll(valuesOnData);
 		
 		return attributeValues;
 	}
 
 	@Override
-	public AttributeValue findCorrespondingAttributeValue(final List<String> stringValue) throws GenstarException {
+	public AttributeValue findCorrespondingAttributeValueOnData(final List<String> stringValue) throws GenstarException {
 		if (stringValue == null || stringValue.isEmpty()) { throw new GenstarException("'stringValue' parameter can not be null or empty"); }
 		
 		if (isIdentity) {
@@ -145,12 +146,12 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringValue.get(0)));
 	}
 	
-	@Override public AttributeValue findMatchingAttributeValue(final AttributeValue attributeValue) throws GenstarException {
+	@Override public AttributeValue findMatchingAttributeValueOnData(final AttributeValue attributeValue) throws GenstarException {
 		if (attributeValue instanceof UniqueValue) { return this.getInstanceOfAttributeValue(attributeValue); }
 		
 		RangeValue rangeValue = (RangeValue) attributeValue;
 		if (rangeValue.getDataType().isNumericValue() && this.dataType.isNumericValue()) {
-			for (UniqueValue value : values) {
+			for (UniqueValue value : valuesOnData) {
 				if (rangeValue.cover(value)) { return value; }
 			}
 		}

@@ -3,6 +3,7 @@ package ummisco.genstar.ipf;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import mockit.integration.junit4.JMockit;
@@ -24,8 +25,21 @@ import ummisco.genstar.util.GenstarCSVFile;
 @RunWith(JMockit.class)
 public class SampleDataTest {
 
-	@Test
-	public void testGetSampleEntities() throws GenstarException {
+	@Test(expected = GenstarException.class) public void testInitializeSampleDataWithDuplicatedAttributes() throws GenstarException {
+		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
+		
+		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testGetSamtestInitializeSampleDataWithDuplicatedAttributespleEntities/attributes.csv", true);
+		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		
+		List<AbstractAttribute> duplicatedAttributes = generator.getAttributes();
+		duplicatedAttributes.add(duplicatedAttributes.get(0));
+		
+		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testGetSampleEntities/people_sample.csv", true);
+		
+		new SampleData("people", duplicatedAttributes, sampleDataCSVFile);
+	}
+	
+	@Test public void testGetSampleEntities() throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
 		
 		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testGetSampleEntities/attributes.csv", true);
@@ -37,13 +51,13 @@ public class SampleDataTest {
 		assertTrue(sampleData.getSampleEntityPopulation().getEntities().size() == 4);
 	}
 	
-	@Test public void testCountMatchingEntities() throws GenstarException {
+	@Test public void testCountMatchingEntitiesByAttributeValuesOnEntity() throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("generator", 10);
 		
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testCountMatchingEntities/attributes.csv", true);
+		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testCountMatchingEntitiesByAttributeValuesOnEntity/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testCountMatchingEntities/people_sample.csv", true);
+		final GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data/testCountMatchingEntitiesByAttributeValuesOnEntity/people_sample.csv", true);
 		
 		SampleData sampleData = new SampleData("people", generator.getAttributes(), sampleDataCSVFile);
 		/*

@@ -95,9 +95,9 @@ public abstract class AbstractAttribute implements AttributeValueSet {
 		for (AttributeChangedListener l : attributeChangeListeners) { l.attributeChanged(event); }
 	}
 	
-	public abstract AttributeValue findCorrespondingAttributeValue(final List<String> stringValue) throws GenstarException;
+	public abstract AttributeValue findCorrespondingAttributeValueOnData(final List<String> stringValue) throws GenstarException;
 	
-	public abstract AttributeValue findMatchingAttributeValue(final AttributeValue attributeValue) throws GenstarException;
+	public abstract AttributeValue findMatchingAttributeValueOnData(final AttributeValue attributeValue) throws GenstarException; // TODO remove as of duplicate with getInstanceOfAttributeValue
 
 	@Override public String toString() {
 		return this.getClass().getSimpleName() + " with dataType : " + dataType.getName() + "; nameOnData : " + this.nameOnData + "; nameOnEntity : " + this.nameOnEntity;
@@ -130,7 +130,15 @@ public abstract class AbstractAttribute implements AttributeValueSet {
 		this.attributeID = attributeID;
 	}
 	
-	public void setIdentity(final boolean identity) {
+	public void setIdentity(final boolean identity) throws GenstarException {
+		if (identity) {
+			for (AbstractAttribute attr : populationGenerator.getAttributes()) {
+				if (attr.isIdentity && !attr.equals(this)) {
+					throw new GenstarException("A generator can not contain more than one identity attribute");
+				}
+			}
+		}
+		
 		this.isIdentity = identity;
 	}
 	

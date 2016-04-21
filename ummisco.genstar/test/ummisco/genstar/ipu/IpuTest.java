@@ -16,7 +16,6 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.GroupComponentSampleData;
 import ummisco.genstar.ipf.ISampleData;
 import ummisco.genstar.ipf.SampleData;
-import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
@@ -31,6 +30,7 @@ import mockit.integration.junit4.JMockit;
 
 @RunWith(JMockit.class)
 public class IpuTest {
+	
 	@Test /* @Before */ 
 	public void generateSamplePopulation() throws GenstarException {
 		// generate the compound population (i.e., household-people) if necessary
@@ -49,10 +49,18 @@ public class IpuTest {
 		String groupIdAttributeNameOnGroupEntity = "Household ID";
 		String groupIdAttributeNameOnComponentEntity = "Household ID";
 		String groupSizeAttributeName = "Household Size";
-		int nbOfGroupEntities = 200;
+//		int nbOfGroupEntities = 200;
 		
-		IPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
-				groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities);
+//		IPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
+//				groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities);
+		
+		int minGroupEntitiesOfEachAttributeValuesSet = 5;
+		int maxGroupEntitiesOfEachAttributeValuesSet = 10;
+		
+		IPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, 
+				componentPopulationName, componentAttributesFile, groupIdAttributeNameOnGroupEntity, 
+				groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, minGroupEntitiesOfEachAttributeValuesSet, 
+				maxGroupEntitiesOfEachAttributeValuesSet);
 		
 		
 		// write the generated population to CSV files

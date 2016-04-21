@@ -59,5 +59,11 @@ public interface IPopulation {
 
 	public abstract void addComponentReference(final String populationName, final String referenceAttribute) throws GenstarException;
 	
-	public PopulationType getPopulationType();
+	public abstract PopulationType getPopulationType();
+	
+	public abstract boolean isIdValueAlreadyInUsed(final int idValue) throws GenstarException;
+
+	public abstract int nextIdValue() throws GenstarException;
+	
+	public abstract AbstractAttribute getIdentityAttribute() throws GenstarException;
 }

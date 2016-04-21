@@ -9,7 +9,7 @@ import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 
 public class RangeValuesAttribute extends AbstractAttribute {
 	
-	private Set<RangeValue> rangeValues;
+	private Set<RangeValue> valuesOnData;
 	
 	
 	public RangeValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType dataType) throws GenstarException {
@@ -30,7 +30,7 @@ public class RangeValuesAttribute extends AbstractAttribute {
 		if (!dataType.isNumericValue()) { throw new IllegalArgumentException(this.getClass().getName() + " only supports Double, Float and Integer value."); }
 		
 		this.valueClassOnData = RangeValue.class;
-		this.rangeValues = new HashSet<RangeValue>();
+		this.valuesOnData = new HashSet<RangeValue>();
 		try {
 			this.setDefaultValue(valueClassOnData.getConstructor(DataType.class).newInstance(dataType));
 		} catch (Exception e) {
@@ -48,7 +48,7 @@ public class RangeValuesAttribute extends AbstractAttribute {
 		
 		if (this.containsInstanceOfAttributeValue(rangeValue) || this.containsValueOfAttributeValue(rangeValue)) { return false; }
 		
-		rangeValues.add((RangeValue) rangeValue);
+		valuesOnData.add((RangeValue) rangeValue);
 
 		// fire event
 		internalFireEvent();
@@ -75,7 +75,7 @@ public class RangeValuesAttribute extends AbstractAttribute {
 		
 		if (value instanceof RangeValue) {
 			AttributeValue target = null;
-			for (RangeValue v : rangeValues) {
+			for (RangeValue v : valuesOnData) {
 				if (value.compareTo(v) == 0) {
 					target = v;
 					break;
@@ -83,7 +83,7 @@ public class RangeValuesAttribute extends AbstractAttribute {
 			}
 			
 			if (target != null) {
-				rangeValues.remove(target);
+				valuesOnData.remove(target);
 				internalFireEvent();
 				return true;
 			}
@@ -93,41 +93,41 @@ public class RangeValuesAttribute extends AbstractAttribute {
 	}
 	
 	@Override public boolean containsInstanceOfAttributeValue(final AttributeValue value) {
-		return rangeValues.contains(value);
+		return valuesOnData.contains(value);
 	}
 	
 	@Override
 	public boolean containsValueOfAttributeValue(final AttributeValue value) {
 		if (this.containsInstanceOfAttributeValue(value)) { return true; }
 		
-		for (AttributeValue v : rangeValues) { if (v.compareTo(value) == 0) return true; }
+		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return true; }
 		
 		return false;
 	}
 	
 	@Override
 	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {
-		if (rangeValues.contains(value)) { return value; }
+		if (valuesOnData.contains(value)) { return value; }
 		
-		for (AttributeValue v : rangeValues) { if (v.compareTo(value) == 0) return v; }
+		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return v; }
 		
 		return null;
 	}
 
 	@Override public void clear() {
-		rangeValues.clear();
+		valuesOnData.clear();
 	}
 	
 	@Override
-	public Set<AttributeValue> values() {
+	public Set<AttributeValue> valuesOnData() {
 		Set<AttributeValue> attributeValues = new HashSet<AttributeValue>();
-		attributeValues.addAll(rangeValues);
+		attributeValues.addAll(valuesOnData);
 
 		return attributeValues;
 	}
 
 	@Override
-	public AttributeValue findCorrespondingAttributeValue(final List<String> stringValue) throws GenstarException {
+	public AttributeValue findCorrespondingAttributeValueOnData(final List<String> stringValue) throws GenstarException {
 		if (stringValue == null || stringValue.isEmpty()) { throw new GenstarException("'stringValue' parameter can not be null or empty"); }
 		
 		if (isIdentity) {
@@ -138,19 +138,19 @@ public class RangeValuesAttribute extends AbstractAttribute {
 		}
 		
 		if (stringValue.size() == 1) {
-			for (AttributeValue v : rangeValues) { if ( ((RangeValue) v).cover(stringValue.get(0)) ) return v; }
+			for (AttributeValue v : valuesOnData) { if ( ((RangeValue) v).cover(stringValue.get(0)) ) return v; }
 			return null;
 		}
 		
 		return getInstanceOfAttributeValue(new RangeValue(dataType, stringValue.get(0), stringValue.get(1)));
 	}
 
-	@Override public AttributeValue findMatchingAttributeValue(final AttributeValue attributeValue) throws GenstarException {
+	@Override public AttributeValue findMatchingAttributeValueOnData(final AttributeValue attributeValue) throws GenstarException {
 		if (attributeValue instanceof RangeValue) { return this.getInstanceOfAttributeValue(attributeValue); }
 		
 		UniqueValue uniqueValue = (UniqueValue) attributeValue;
 		if (attributeValue.getDataType().isNumericValue()) {
-			for (RangeValue value : rangeValues ) {
+			for (RangeValue value : valuesOnData ) {
 				if (value.cover(uniqueValue)) { return value; }
 			}
 		}

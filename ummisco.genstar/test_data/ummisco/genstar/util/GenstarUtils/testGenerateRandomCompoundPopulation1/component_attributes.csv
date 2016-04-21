@@ -2,4 +2,4 @@ Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On En
 Age,age,int,Range,0:15; 16:20; 21:25; 26:30; 31:50; 51:60; 61:75; 76:80; 81:100,Unique
 Gender,gender,bool,Unique,true; false,Unique
 Work,work,string,Unique,agriculteur; artisant; conducteur; commercant; ecolier; employe_prive; enseignant; militaire; retraite; ouvrier; ouvrier_agricole; ouvrier_batiment; sans_activite,Unique
-Household ID,householdID,int,UniqueWithRangeInput,0:99,Unique
+Household ID,householdID,int,UniqueWithRangeInput,0:300,Unique

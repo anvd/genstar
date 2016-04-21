@@ -106,7 +106,7 @@ public class GenstarGamaTypesConverter {
 		}
 		
 		// Not an identity attribute then ensure the validity of the value
-		AttributeValue matchingGenstarValue = genstarAttribute.findMatchingAttributeValue(genstarValue);
+		AttributeValue matchingGenstarValue = genstarAttribute.findMatchingAttributeValueOnData(genstarValue);
 		if (matchingGenstarValue == null) { throw new GenstarException(genstarAttribute.getNameOnEntity() + " isn't accepted " + gamaStringRepresentation + " as a valid value."); }
 		
 		if (genstarAttribute.getValueClassOnEntity().equals(UniqueValue.class)) { return genstarValue; }

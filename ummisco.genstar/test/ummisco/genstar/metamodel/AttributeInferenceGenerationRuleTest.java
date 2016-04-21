@@ -228,7 +228,7 @@ public class AttributeInferenceGenerationRuleTest {
 				pcsAttr, hourlyNetWageAttr);
 		
 		Map<AttributeValue, AttributeValue> inferenceData = generationRule3.getInferenceData();
-		assertTrue(inferenceData.size() == pcsAttr.values().size());
+		assertTrue(inferenceData.size() == pcsAttr.valuesOnData().size());
 		
 		AttributeValue firstKey = (new ArrayList<AttributeValue>(inferenceData.keySet())).get(0);
 		inferenceData.remove(firstKey);

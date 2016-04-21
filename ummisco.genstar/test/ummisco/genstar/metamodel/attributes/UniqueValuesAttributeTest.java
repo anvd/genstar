@@ -100,10 +100,10 @@ public class UniqueValuesAttributeTest {
 		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 
-		assertTrue(attr.values().isEmpty());
+		assertTrue(attr.valuesOnData().isEmpty());
 		
 		attr.add(new UniqueValue(DataType.INTEGER, "1"));
-		assertTrue(attr.values().size() == 1);
+		assertTrue(attr.valuesOnData().size() == 1);
 	}
 	
 	@Test public void testFindCorrespondingAttributeValue() throws GenstarException {
@@ -112,13 +112,13 @@ public class UniqueValuesAttributeTest {
 		
 		List<String> list1 = new ArrayList<String>();
 		list1.add("1");
-		AttributeValue oneValue = attr.findCorrespondingAttributeValue(list1);
+		AttributeValue oneValue = attr.findCorrespondingAttributeValueOnData(list1);
 		assertTrue(oneValue == null);
 
 		UniqueValue uniqueValue = new UniqueValue(DataType.INTEGER, "1");
 		attr.add(uniqueValue);
 
-		oneValue = attr.findCorrespondingAttributeValue(list1);
+		oneValue = attr.findCorrespondingAttributeValueOnData(list1);
 		assertTrue( ((UniqueValue) oneValue).getStringValue().equals("1"));
 	}
 	
@@ -210,5 +210,10 @@ public class UniqueValuesAttributeTest {
 		AttributeValue defaultValue2 = new RangeValue(DataType.INTEGER, "1", "2");
 		exception.expect(GenstarException.class);
 		attribute1.setDefaultValue(defaultValue2);
+	}
+	
+	@Test public void testSetIdentityOfTwoAttributes() throws GenstarException {
+		// hint: a population can only accept on identity attribute
+		fail("not yet implemented");
 	}
 }

@@ -6,7 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ AttributeValuesFrequencyTest.class, EntityAttributeValueTest.class, RangeValuesAttributeTest.class,
-		RangeValueTest.class, UniqueValuesAttributeTest.class, UniqueValueTest.class })
+		RangeValueTest.class, UniqueValuesAttributeTest.class, UniqueValuesAttributeWithRangeInputTest.class, UniqueValueTest.class })
 public class AttributeTestSuite {
 
 }

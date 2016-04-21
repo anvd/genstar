@@ -26,7 +26,6 @@ import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
-import ummisco.genstar.util.GenstarUtils.CSV_FILE_FORMATS;
 
 @RunWith(JMockit.class)
 public class IpfUtilsTest {
@@ -44,7 +43,7 @@ public class IpfUtilsTest {
 		assertTrue(controlledAttributesValuesSubsets1.size() == 4);
 		for (List<Map<AbstractAttribute, AttributeValue>> subset : controlledAttributesValuesSubsets1) {
 			int nbPossibilities = 1;
-			for (AbstractAttribute attribute : subset.get(0).keySet()) { nbPossibilities *= attribute.values().size(); }
+			for (AbstractAttribute attribute : subset.get(0).keySet()) { nbPossibilities *= attribute.valuesOnData().size(); }
 			assertTrue(nbPossibilities == subset.size());
 			
 			Set<AbstractAttribute> attributeSet = subset.get(0).keySet();
@@ -253,15 +252,15 @@ public class IpfUtilsTest {
 				// 2. parse the attribute value column
 				valueList.clear();
 				String attributeValueString = aRow.get(col+1);
-				if (attributeValueString.contains(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER)) { // range value
-					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER);
+				if (attributeValueString.contains(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER)) { // range value
+					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
 					valueList.add(rangeValueToken.nextToken());
 					valueList.add(rangeValueToken.nextToken());
 				} else { // unique value
 					valueList.add(attributeValueString);
 				}
 				
-				attributeValue = attribute.findCorrespondingAttributeValue(valueList);
+				attributeValue = attribute.findCorrespondingAttributeValueOnData(valueList);
 				attributeValues.put(attribute, attributeValue);
 			}
 			

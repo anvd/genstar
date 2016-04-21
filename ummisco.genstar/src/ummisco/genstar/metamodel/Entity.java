@@ -22,7 +22,7 @@ public class Entity {
 	
 	public Entity(final IPopulation population) {
 		if (population == null) { throw new IllegalArgumentException("Parameter 'population' can not be null"); }
-		
+
 		this.population = population;
 	}
 	
@@ -43,7 +43,7 @@ public class Entity {
 		}
 		
 		if (componentPopulations.get(populationName) != null) {
-			throw new GenstarException("Sample Entity Population " + populationName + " has already existed");
+			throw new GenstarException("Component Population " + populationName + " has already existed");
 		}
 		
 		IPopulation componentPopulation = new Population(this.population.getPopulationType(), populationName, attributes);
@@ -53,13 +53,13 @@ public class Entity {
 	}
 	
 	public List<EntityAttributeValue> getEntityAttributeValues() {
-		return new ArrayList<EntityAttributeValue>(entityAttributeValues.values());
+		return new ArrayList<EntityAttributeValue>(entityAttributeValues.values()); // TODO return copy
 	}
 	
 	public EntityAttributeValue getEntityAttributeValue(final AbstractAttribute attribute) throws GenstarException {
 		if (attribute == null) { throw new GenstarException("'attribute' parameter can not be null"); }
 		
-		return entityAttributeValues.get(attribute);
+		return entityAttributeValues.get(attribute); // TODO return a copy of identity attribute value
 	}
 	
 	public EntityAttributeValue getEntityAttributeValueByNameOnData(final String attributeNameOnData) throws GenstarException {
@@ -67,17 +67,24 @@ public class Entity {
 		AbstractAttribute attribute = population.getAttributeByNameOnData(attributeNameOnData);
 		if (attribute == null) { return null; }
 		
-		return entityAttributeValues.get(attribute);
+		return entityAttributeValues.get(attribute); // TODO return a copy of identity attribute value
 	}
 	
-	// not really used -> remove
 	public EntityAttributeValue getEntityAttributeValueByNameOnEntity(final String attributeNameOnEntity) throws GenstarException {
 		if (attributeNameOnEntity == null) { throw new GenstarException("'attributeNameOnEntity' parameter can not be null"); }
 		
 		AbstractAttribute attribute = population.getAttributeByNameOnEntity(attributeNameOnEntity);
 		if (attribute == null) { return null; }
 		
-		return entityAttributeValues.get(attribute.getNameOnData());
+		return entityAttributeValues.get(attribute); // TODO return a copy identity attribute value
+	}
+	
+	private void internalSetEntityAttributeValue(final EntityAttributeValue eav) throws GenstarException {
+		
+		// identity attribute
+		
+		// fire event -> population listens to the event to re-act accordingly
+		
 	}
 	
 	public void setEntityAttributeValues(final List<EntityAttributeValue> eAttributeValues) throws GenstarException {
@@ -85,11 +92,11 @@ public class Entity {
 		
 		for (EntityAttributeValue eav : eAttributeValues) { 
 			if (population.getAttributeByNameOnData(eav.getAttribute().getNameOnData()) == null) {
-				throw new GenstarException(eav.getAttribute().getNameOnData() + " atribute is not found on entity's population");
+				throw new GenstarException(eav.getAttribute().getNameOnData() + " attribute is not found on entity's population");
 			}
 		}
 		
-		
+		// TODO call internalSetEntityAttributeValue
 		if (this.entityAttributeValues == Collections.EMPTY_MAP) {
 			this.entityAttributeValues = new HashMap<AbstractAttribute, EntityAttributeValue>();
 		}
@@ -106,6 +113,8 @@ public class Entity {
 		
 		if (!population.containAttribute(attribute)) { throw new GenstarException(attribute.getNameOnData() + " attribute is not found on " + population.getName() + " entity"); }
 		
+		// TODO call internalSetEntityAttributeValue
+		
 		if (entityAttributeValues == Collections.EMPTY_MAP) {
 			entityAttributeValues = new HashMap<AbstractAttribute, EntityAttributeValue>();
 			for (AbstractAttribute attr : population.getAttributes()) { entityAttributeValues.put(attr, null); }
@@ -118,6 +127,8 @@ public class Entity {
 	public void setAttributeValuesOnData(final Map<AbstractAttribute, AttributeValue> attributeValuesOnData) throws GenstarException {
 		if (attributeValuesOnData == null) { throw new GenstarException("'attributeValuesOnData' parameter can not be null"); }
 		
+		// TODO call internalSetEntityAttributeValue
+		
 		for (AbstractAttribute attr : attributeValuesOnData.keySet()) { this.setAttributeValueOnData(attr, attributeValuesOnData.get(attr)); }
 	}
 	
@@ -126,19 +137,31 @@ public class Entity {
 			throw new GenstarException("Parameters attribute, attributevalueOnEntity can not be null");
 		}
 		
+		// TODO call internalSetEntityAttributeValue
+		
 		if (!population.containAttribute(attribute)) { throw new GenstarException("No attribute found with " + attribute.getNameOnData() + " as name on " + population.getName() + " entity"); }
 		
 		AttributeValue attributeValueOnData = null;
 		
+		// validation of attributeValueOnEntity
+		attributeValueOnData = attribute.findMatchingAttributeValueOnData(attributeValueOnEntity);
+		if (attributeValueOnData == null) { throw new GenstarException("No matching attribute found for attribute on entity: " + attributeValueOnEntity + " on attribute " + attribute.getNameOnData()); }
+		/*
 		if (!attribute.isIdentity()) {
-			attributeValueOnData = attribute.findMatchingAttributeValue(attributeValueOnEntity);
+			attributeValueOnData = attribute.findMatchingAttributeValueOnData(attributeValueOnEntity);
 			if (attributeValueOnData == null) { throw new GenstarException("No matching attribute found for attribute on entity: " + attributeValueOnEntity + " on attribute " + attribute.getNameOnData()); }
 		} else {
 			// attributeValueOnEntity of an identity attribute doesn't have a corresponding attributeValueOnData, i.e., attributeOnData == null
 			if (!attributeValueOnEntity.getDataType().equals(attribute.getDataType())) {
 				throw new GenstarException("Incompatible data type between attribute (" + attribute.getNameOnData() + ") and attribute value on entity");
 			}
+			
+//			AbstractAttribute populationIdAttr = this.population.getIdentityAttribute();
+//			if (populationIdAttr != null && !populationIdAttr.equals(attribute)) {
+//				throw new GenstarException("An entity can not have two identity attributes (" + populationIdAttr.getNameOnData() + ", " + attribute.getNameOnData() + ")");
+//			}
 		}
+		*/
 		
 		
 		if (entityAttributeValues == Collections.EMPTY_MAP) {
@@ -148,12 +171,16 @@ public class Entity {
 		
 		EntityAttributeValue eav = new EntityAttributeValue(attribute, attributeValueOnData, attributeValueOnEntity);
 		entityAttributeValues.put(attribute, eav);
+		
+		// TODO call internalSetEntityAttributeValue
 	}
 	
 	public void setAttributeValuesOnEntity(Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity) throws GenstarException {
 		if (attributeValuesOnEntity == null) {
 			throw new GenstarException("attributeValuesOnEntity parameter can not be null");
 		}
+		
+		// TODO call internalSetEntityAttributeValue
 		
 		for (AbstractAttribute attribute : attributeValuesOnEntity.keySet()) {
 			this.setAttributeValueOnEntity(attribute, attributeValuesOnEntity.get(attribute));

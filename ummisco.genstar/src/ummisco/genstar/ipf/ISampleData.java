@@ -7,8 +7,8 @@ import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.IPopulation;
 
 public interface ISampleData {
-//	public abstract SampleEntityPopulation getSampleEntityPopulation();
-	public abstract IPopulation getSampleEntityPopulation(); // TODO change to getPopulation
+
+	public abstract IPopulation getSampleEntityPopulation(); // TODO change to getPopulation?
 
 	public abstract void addGroupReferences(final Map<String, String> groupReferences) throws GenstarException;
 	
@@ -26,7 +26,6 @@ public interface ISampleData {
 
 	public abstract void addComponentReference(final String populationName, final String referenceAttribute) throws GenstarException;
 
-//	public abstract void recodeIdAttributes(final SampleEntity targetEntity) throws GenstarException;
 	public abstract void recodeIdAttributes(final Entity targetEntity) throws GenstarException;
 	
 	public abstract String getPopulationName();

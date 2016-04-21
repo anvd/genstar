@@ -134,7 +134,7 @@ public class SampleDataGenerationRuleTest {
 		rule.setSampleData(sampleData);
 		
 		// 1. verify sampleEntityCategories.size()
-		Map<AttributeValuesFrequency, List<SampleEntity>> sampleEntityCategories = Deencapsulation.getField(rule, "sampleEntityCategories");
+		Map<AttributeValuesFrequency, List<Entity>> sampleEntityCategories = Deencapsulation.getField(rule, "sampleEntityCategories");
 		assertTrue(sampleEntityCategories == null);
 		rule.getIPF().fit();
 		

@@ -9,6 +9,7 @@ import ummisco.genstar.metamodel.EntityTest;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRuleTest;
 import ummisco.genstar.metamodel.Population;
 import ummisco.genstar.metamodel.PopulationTest_Elementary;
+import ummisco.genstar.metamodel.SingleRuleGeneratorTest;
 import ummisco.genstar.metamodel.SyntheticPopulationGeneratorTest_Bondy;
 import ummisco.genstar.metamodel.SyntheticPopulationTest_Bondy;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequencyTest;
@@ -23,7 +24,7 @@ import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeTest;
 	Population.class, EntityTest.class, RangeValuesAttributeTest.class, 
 	UniqueValuesAttributeTest.class,  AttributeValuesFrequencyTest.class, 
 	FrequencyDistributionGenerationRuleTest.class,
-	PopulationTest_Elementary.class,  RangeValueTest.class,
+	PopulationTest_Elementary.class,  RangeValueTest.class, SingleRuleGeneratorTest.class,
 	SyntheticPopulationGeneratorTest_Bondy.class, SyntheticPopulationTest_Bondy.class,
 	UniqueValueTest.class })
 public class AllTests {

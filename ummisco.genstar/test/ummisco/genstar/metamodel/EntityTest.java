@@ -189,16 +189,16 @@ public class EntityTest {
 	}
 	
 	
-	@Test public void testAreValuesOnEntityMatched() throws GenstarException {
-		MultipleRulesGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
-		bondyPopulation.setNbOfEntities(1);
+	@Test public void testMatchAttributeValuesOnEntity() throws GenstarException {
+		MultipleRulesGenerator bondyPopulationGenerator = new MultipleRulesGenerator("Population of Bondy", 100);
+		bondyPopulationGenerator.setNbOfEntities(1);
 		
-		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulationGenerator, "age_range_1", "age", DataType.INTEGER);
 		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
 		ageRangesAttr1.add(ageRange1);
-		bondyPopulation.addAttribute(ageRangesAttr1);
+		bondyPopulationGenerator.addAttribute(ageRangesAttr1);
 
-		Entity entity1 = new Entity(bondyPopulation.generate());
+		Entity entity1 = new Entity(bondyPopulationGenerator.generate());
 		entity1.setAttributeValueOnData(ageRangesAttr1, ageRange1);
 		
 		Map<AbstractAttribute, AttributeValue> set1 = new HashMap<AbstractAttribute, AttributeValue>();

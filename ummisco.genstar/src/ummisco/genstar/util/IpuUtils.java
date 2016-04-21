@@ -16,7 +16,6 @@ import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
-import ummisco.genstar.util.GenstarUtils.CSV_FILE_FORMATS;
 
 public class IpuUtils {
 
@@ -72,8 +71,8 @@ public class IpuUtils {
 				// 2. parse the attribute value column
 				valueList.clear();
 				String attributeValueString = aRow.get(col+1);
-				if (attributeValueString.contains(CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER)) { // range value
-					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, CSV_FILE_FORMATS.ATTRIBUTE_METADATA.MIN_MAX_VALUE_DELIMITER);
+				if (attributeValueString.contains(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER)) { // range value
+					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
 					if (rangeValueToken.countTokens() != 2) { throw new GenstarException("Invalid range attribute value: '" + attributeValueString + "'. File: " + ipuControlTotalsFile.getPath()); }
 					valueList.add(rangeValueToken.nextToken());
 					valueList.add(rangeValueToken.nextToken());
@@ -82,7 +81,7 @@ public class IpuUtils {
 				}
 				
 				
-				attributeValue = attribute.findCorrespondingAttributeValue(valueList);
+				attributeValue = attribute.findCorrespondingAttributeValueOnData(valueList);
 				if (attributeValue == null) { throw new GenstarException("Attribute value '" + aRow.get(col+1) + "' not found in valid attribute values of " + attribute.getNameOnData()
 						+ ". File: " + ipuControlTotalsFile.getPath() + ", line: " + line); }
 				

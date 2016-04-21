@@ -15,7 +15,10 @@ import org.junit.runner.RunWith;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
+import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCSVFile;
 import mockit.integration.junit4.JMockit;
@@ -27,6 +30,7 @@ public class PopulationTest {
 	
 	private ISingleRuleGenerator generator;
 	
+	
 	@Before public void init() throws GenstarException {
 		attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/metamodel/population/initialize_population_successfully/attributes.csv", true);
 		generator = new SingleRuleGenerator("dummy generator");
@@ -34,10 +38,6 @@ public class PopulationTest {
 	}
 	
 	@Test public void testInitializePopulationSuccessfully() throws GenstarException {
-//		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/metamodel/population/initialize_population_successfully/attributes.csv", true);
-//		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy generator");
-//		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
-		
 		Population population1 = new Population(PopulationType.SYNTHETIC_POPULATION, "population1", generator.getAttributes());
 		assertTrue(population1.getPopulationType().equals(PopulationType.SYNTHETIC_POPULATION));
 		assertTrue(population1.getAttributes().size() == generator.getAttributes().size());
@@ -48,21 +48,24 @@ public class PopulationTest {
 		assertTrue(population2.getPopulationType().equals(PopulationType.SAMPLE_DATA_POPULATION));
 	}
 	
-	@Test public void testGetAttributeByNameOnData() throws GenstarException {
-//		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/metamodel/population/initialize_population_successfully/attributes.csv", true);
-//		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy generator");
-//		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+	@Test(expected = GenstarException.class) public void testInitializePopulationWithDuplicatedAttributes() throws GenstarException {
+		List<AbstractAttribute> duplicatedAttributes = generator.getAttributes();
+		duplicatedAttributes.add(duplicatedAttributes.get(0));
 		
+		new Population(PopulationType.SAMPLE_DATA_POPULATION, "population2", duplicatedAttributes);
+	}
+	
+	@Test public void testInitializePopulationWithAttributeFromDifferentGenerators() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
+	@Test public void testGetAttributeByNameOnData() throws GenstarException {
 		Population population1 = new Population(PopulationType.SYNTHETIC_POPULATION, "population1", generator.getAttributes());
 		assertTrue(population1.getAttributeByNameOnData("Age") != null);
 		assertTrue(population1.getAttributeByNameOnData("age") == null);
 	}
 	
 	@Test public void testGetAttributeByNameOnEntity() throws GenstarException {
-//		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/metamodel/population/initialize_population_successfully/attributes.csv", true);
-//		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy generator");
-//		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
-		
 		Population population1 = new Population(PopulationType.SYNTHETIC_POPULATION, "population1", generator.getAttributes());
 		assertTrue(population1.getAttributeByNameOnEntity("Age") == null);
 		assertTrue(population1.getAttributeByNameOnEntity("age") != null);
@@ -87,17 +90,17 @@ public class PopulationTest {
 		
 		// Category
 		AbstractAttribute categoryAttr = generator.getAttributeByNameOnData("Category");
-		AttributeValue[] categoryValues = categoryAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] categoryValues = categoryAttr.valuesOnData().toArray(new AttributeValue[0]);
 		EntityAttributeValue categoryEAV = new EntityAttributeValue(categoryAttr, categoryValues[0], categoryValues[0]);
 		
 		// Age
 		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age"); 
-		AttributeValue[] ageValues = ageAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] ageValues = ageAttr.valuesOnData().toArray(new AttributeValue[0]);
 		EntityAttributeValue ageEVA = new EntityAttributeValue(ageAttr, ageValues[0], ageValues[0].cast(ageAttr.getValueClassOnEntity()));
 		
 		// Gender
 		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
-		AttributeValue[] genderValues = genderAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] genderValues = genderAttr.valuesOnData().toArray(new AttributeValue[0]);
 		EntityAttributeValue genderEAV = new EntityAttributeValue(genderAttr, genderValues[0], genderValues[0]);
 		
 		List<EntityAttributeValue> entityAttributeValues = new ArrayList<EntityAttributeValue>();
@@ -111,25 +114,21 @@ public class PopulationTest {
 	}
 	
 	@Test public void testCreateEntitiesWithEntityAttributeValuesList() throws GenstarException {
-		/*
-	@Override public List<Entity> createEntities(final List<List<EntityAttributeValue>> entityAttributeValuesList) throws GenstarException {
-		 */
-		
 		Population population = new Population(PopulationType.SYNTHETIC_POPULATION, "population 1", generator.getAttributes());
 		
 		// Category
 		AbstractAttribute categoryAttr = generator.getAttributeByNameOnData("Category");
-		AttributeValue[] categoryValues = categoryAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] categoryValues = categoryAttr.valuesOnData().toArray(new AttributeValue[0]);
 		EntityAttributeValue categoryEAV = new EntityAttributeValue(categoryAttr, categoryValues[0], categoryValues[0]);
 		
 		// Age
 		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age"); 
-		AttributeValue[] ageValues = ageAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] ageValues = ageAttr.valuesOnData().toArray(new AttributeValue[0]);
 		EntityAttributeValue ageEVA = new EntityAttributeValue(ageAttr, ageValues[0], ageValues[0].cast(ageAttr.getValueClassOnEntity()));
 		
 		// Gender
 		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
-		AttributeValue[] genderValues = genderAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] genderValues = genderAttr.valuesOnData().toArray(new AttributeValue[0]);
 		EntityAttributeValue genderEAV = new EntityAttributeValue(genderAttr, genderValues[0], genderValues[0]);
 		
 		List<EntityAttributeValue> entityAttributeValues1 = new ArrayList<EntityAttributeValue>();
@@ -156,23 +155,19 @@ public class PopulationTest {
 	}
 	
 	@Test public void testCreateEntityWithAttributeValuesOnEntity() throws GenstarException {
-		/*
-	@Override public Entity createEntityWithAttributeValuesOnEntity(final Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity) throws GenstarException {
-		 */
-		
 		Population population = new Population(PopulationType.SYNTHETIC_POPULATION, "population 1", generator.getAttributes());
 		
 		// Category
 		AbstractAttribute categoryAttr = generator.getAttributeByNameOnData("Category");
-		AttributeValue[] categoryValues = categoryAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] categoryValues = categoryAttr.valuesOnData().toArray(new AttributeValue[0]);
 		
 		// Age
 		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age"); 
-		AttributeValue[] ageValues = ageAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] ageValues = ageAttr.valuesOnData().toArray(new AttributeValue[0]);
 		
 		// Gender
 		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
-		AttributeValue[] genderValues = genderAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] genderValues = genderAttr.valuesOnData().toArray(new AttributeValue[0]);
 		
 		Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValuesOnEntity.put(categoryAttr, categoryValues[0].cast(categoryAttr.getValueClassOnEntity()));
@@ -189,15 +184,15 @@ public class PopulationTest {
 		
 		// Category
 		AbstractAttribute categoryAttr = generator.getAttributeByNameOnData("Category");
-		AttributeValue[] categoryValues = categoryAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] categoryValues = categoryAttr.valuesOnData().toArray(new AttributeValue[0]);
 		
 		// Age
 		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age"); 
-		AttributeValue[] ageValues = ageAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] ageValues = ageAttr.valuesOnData().toArray(new AttributeValue[0]);
 		
 		// Gender
 		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
-		AttributeValue[] genderValues = genderAttr.values().toArray(new AttributeValue[0]);
+		AttributeValue[] genderValues = genderAttr.valuesOnData().toArray(new AttributeValue[0]);
 		
 		Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity1 = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValuesOnEntity1.put(categoryAttr, categoryValues[0].cast(categoryAttr.getValueClassOnEntity()));
@@ -218,8 +213,288 @@ public class PopulationTest {
 		assertTrue(entities.size() == 2);
 		assertTrue(population.getEntities().size() == 2);
 	}
+	
+	private void createEntities(final IPopulation population) throws GenstarException {
+		// Category
+		AbstractAttribute categoryAttr = generator.getAttributeByNameOnData("Category");
+		AttributeValue[] categoryValues = categoryAttr.valuesOnData().toArray(new AttributeValue[0]);
+		EntityAttributeValue categoryEAV0 = new EntityAttributeValue(categoryAttr, categoryValues[0], categoryValues[0]);
+		EntityAttributeValue categoryEAV1 = new EntityAttributeValue(categoryAttr, categoryValues[1], categoryValues[1]);
+		
+		// Age
+		List<AttributeValue> ageValuesOnEntity = new ArrayList<AttributeValue>();
+		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "0"));
+		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "1"));
+		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "2"));
+		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "3"));
+		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "4"));
+		
+		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age"); 
+		AttributeValue[] ageValues = ageAttr.valuesOnData().toArray(new AttributeValue[0]);
+		List<EntityAttributeValue> ageEVAs = new ArrayList<EntityAttributeValue>();
+		for (int i=0; i<ageValuesOnEntity.size(); i++) {
+			ageEVAs.add(new EntityAttributeValue(ageAttr, ageValues[0], ageValuesOnEntity.get(i)));
+		}
+		
+		// Gender
+		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
+		AttributeValue[] genderValues = genderAttr.valuesOnData().toArray(new AttributeValue[0]);
+		EntityAttributeValue genderEAV = new EntityAttributeValue(genderAttr, genderValues[0], genderValues[0]);
+
+		// create 10 entities
+		
+		// create 5 entities with entityAttributeValues0
+		List<EntityAttributeValue> entityAttributeValues0 = new ArrayList<EntityAttributeValue>();
+		entityAttributeValues0.add(categoryEAV0);
+		entityAttributeValues0.add(genderEAV);
+		for (int i=0; i<5; i++) {
+			if (entityAttributeValues0.size() == 3) { entityAttributeValues0.remove(2); }
+			entityAttributeValues0.add(ageEVAs.get(i));
+			population.createEntity(entityAttributeValues0); 
+		}
+		
+		// create 5 entities with entityAttributeValues1
+		List<EntityAttributeValue> entityAttributeValues1 = new ArrayList<EntityAttributeValue>();
+		entityAttributeValues1.add(categoryEAV1);
+		entityAttributeValues1.add(genderEAV);
+		for (int i=0; i<5; i++) { 
+			if (entityAttributeValues1.size() == 3) { entityAttributeValues1.remove(2); }
+			entityAttributeValues1.add(ageEVAs.get(i));
+			population.createEntity(entityAttributeValues1); 
+		}
+	}
+	
+	@Test public void testGetMatchingEntitiesByAttributeValuesOnData() throws GenstarException {
+		Population population = new Population(PopulationType.SYNTHETIC_POPULATION, "population 1", generator.getAttributes());
+		createEntities(population);
+		
+		// Category
+		AbstractAttribute categoryAttr = generator.getAttributeByNameOnData("Category");
+		AttributeValue[] categoryValues = categoryAttr.valuesOnData().toArray(new AttributeValue[0]);
+		AttributeValue categoryValues0 = categoryValues[0]; 
+		AttributeValue categoryValues1 = categoryValues[1]; 
+		
+		// Age
+		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age"); 
+		AttributeValue[] ageValues = ageAttr.valuesOnData().toArray(new AttributeValue[0]);
+		AttributeValue ageValues0 = ageValues[0]; 
+		AttributeValue ageValues1 = ageValues[1]; 
+		
+		// Gender
+		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
+		AttributeValue[] genderValues = genderAttr.valuesOnData().toArray(new AttributeValue[0]);
+		AttributeValue genderValues0 = genderValues[0]; 
+		AttributeValue genderValues1 = genderValues[1]; 
+		
+		
+		Map<AbstractAttribute, AttributeValue> attributeValuesOnData = new HashMap<AbstractAttribute, AttributeValue>();
+		
+		// 1. query with categoryValues[0] -> 5 entities
+		attributeValuesOnData.put(categoryAttr, categoryValues0);
+		List<Entity> entities1 = population.getMatchingEntitiesByAttributeValuesOnData(attributeValuesOnData);
+		assertTrue(entities1.size() == 5);
+		
+		
+		// 2. query with categoryValues[1] -> 5 entities
+		attributeValuesOnData.put(categoryAttr, categoryValues1);
+		List<Entity> entities2 = population.getMatchingEntitiesByAttributeValuesOnData(attributeValuesOnData);
+		assertTrue(entities2.size() == 5);
+		
+		
+		// 3. query with ageValues[0] -> 10 entities
+		attributeValuesOnData.clear();
+		attributeValuesOnData.put(ageAttr, ageValues0);
+		List<Entity> entities3 = population.getMatchingEntitiesByAttributeValuesOnData(attributeValuesOnData);
+		assertTrue(entities3.size() == 10);
+		
+		
+		// 4. query with categoryValues[0] & ageValues[0] -> 5 entities
+		attributeValuesOnData.put(categoryAttr, categoryValues0);
+		List<Entity> entities4 = population.getMatchingEntitiesByAttributeValuesOnData(attributeValuesOnData);
+		assertTrue(entities4.size() == 5);
+		
+		
+		// 5. query with ageValues[1] -> 0 entities
+		attributeValuesOnData.clear();
+		attributeValuesOnData.put(ageAttr, ageValues1);
+		List<Entity> entities5 = population.getMatchingEntitiesByAttributeValuesOnData(attributeValuesOnData);
+		assertTrue(entities5.isEmpty());
+		
+		
+		// 6. query with categoryValues[0] & genderValues[0] -> 5 entities
+		attributeValuesOnData.clear();
+		attributeValuesOnData.put(categoryAttr, categoryValues0);
+		attributeValuesOnData.put(genderAttr, genderValues0);
+		List<Entity> entities6 = population.getMatchingEntitiesByAttributeValuesOnData(attributeValuesOnData);
+		assertTrue(entities6.size() == 5);
+		
+		
+		// 7. query with categoryValues[1] & ageValues[0] & genderValues[0] -> 5 entities
+		attributeValuesOnData.put(categoryAttr, categoryValues1);
+		attributeValuesOnData.put(ageAttr, ageValues0);
+		attributeValuesOnData.put(genderAttr, genderValues0);
+		List<Entity> entities7 = population.getMatchingEntitiesByAttributeValuesOnData(attributeValuesOnData);
+		assertTrue(entities7.size() == 5);
+		
+		
+		// 8. query with genderValues[1] -> 0 entities
+		attributeValuesOnData.clear();
+		attributeValuesOnData.put(genderAttr, genderValues1);
+		List<Entity> entities8 = population.getMatchingEntitiesByAttributeValuesOnData(attributeValuesOnData);
+		assertTrue(entities8.isEmpty());
+	}
+	
+	@Test public void testGetMatchingEntitiesByAttributeValuesOnEntity() throws GenstarException {
+		Population population = new Population(PopulationType.SYNTHETIC_POPULATION, "population 1", generator.getAttributes());
+		createEntities(population);
+		
+		// Category
+		AbstractAttribute categoryAttr = generator.getAttributeByNameOnData("Category");
+		AttributeValue[] categoryValues = categoryAttr.valuesOnData().toArray(new AttributeValue[0]);
+		AttributeValue categoryValues0 = categoryValues[0]; 
+		
+		// Age
+		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age"); 
+		
+		// Gender
+		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
+		AttributeValue[] genderValues = genderAttr.valuesOnData().toArray(new AttributeValue[0]);
+		AttributeValue genderValues0 = genderValues[0]; 
+		AttributeValue genderValues1 = genderValues[1]; 
+		
+
+		Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity = new HashMap<AbstractAttribute, AttributeValue>();
+		
+		// 1. query with age = 0 -> 2 entities
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0"));
+		List<Entity> entities1 = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity);
+		assertTrue(entities1.size() == 2);
+		
+		
+		// 2. query with age = 5 -> 0 entity
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "5"));
+		List<Entity> entities2 = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity);
+		assertTrue(entities2.size() == 0);
+		
+		
+		// 3. query with category0 -> 5 entities
+		attributeValuesOnEntity.clear();
+		attributeValuesOnEntity.put(categoryAttr, categoryValues0);
+		List<Entity> entities3 = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity);
+		assertTrue(entities3.size() == 5);
+		
+		
+		// 4. query with gender0 -> 10 entities
+		attributeValuesOnEntity.clear();
+		attributeValuesOnEntity.put(genderAttr, genderValues0);
+		List<Entity> entities4 = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity);
+		assertTrue(entities4.size() == 10);
+
+		
+		// 5. query with age = 0 & category0 -> 2 entities
+		attributeValuesOnEntity.clear();
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0"));
+		attributeValuesOnEntity.put(categoryAttr, categoryValues0);
+		List<Entity> entities5 = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity);
+		assertTrue(entities5.size() == 1);
+		
+		
+		// 6. query with age = 0 & category0 & gender0 -> 2 entities
+		attributeValuesOnEntity.put(genderAttr, genderValues0);
+		List<Entity> entities6 = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity);
+		assertTrue(entities6.size() == 1);
+
+		
+		// 7. query with gender1 -> 0 entity
+		attributeValuesOnEntity.clear();
+		attributeValuesOnEntity.put(genderAttr, genderValues1);
+		List<Entity> entities7 = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity);
+		assertTrue(entities7.isEmpty());
+	}
+	
+	@Test public void testCountMatchingEntitiesByAttributeValuesOnEntity() throws GenstarException {
+		Population population = new Population(PopulationType.SYNTHETIC_POPULATION, "population 1", generator.getAttributes());
+		createEntities(population);
+		
+		// Category
+		AbstractAttribute categoryAttr = generator.getAttributeByNameOnData("Category");
+		AttributeValue[] categoryValues = categoryAttr.valuesOnData().toArray(new AttributeValue[0]);
+		AttributeValue categoryValues0 = categoryValues[0]; 
+		
+		// Age
+		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age"); 
+		
+		// Gender
+		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
+		AttributeValue[] genderValues = genderAttr.valuesOnData().toArray(new AttributeValue[0]);
+		AttributeValue genderValues0 = genderValues[0]; 
+		AttributeValue genderValues1 = genderValues[1]; 
+		
+
+		Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity = new HashMap<AbstractAttribute, AttributeValue>();
+		
+		// 1. query with age = 0 -> 2 entities
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0"));
+		assertTrue(population.countMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity) == 2);
+		
+		
+		// 2. query with age = 5 -> 0 entity
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "5"));
+		assertTrue(population.countMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity) == 0);
+		
+		
+		// 3. query with category0 -> 5 entities
+		attributeValuesOnEntity.clear();
+		attributeValuesOnEntity.put(categoryAttr, categoryValues0);
+		assertTrue(population.countMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity) == 5);
+		
+		
+		// 4. query with gender0 -> 10 entities
+		attributeValuesOnEntity.clear();
+		attributeValuesOnEntity.put(genderAttr, genderValues0);
+		assertTrue(population.countMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity) == 10);
+
+		
+		// 5. query with age = 0 & category0 -> 2 entities
+		attributeValuesOnEntity.clear();
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0"));
+		attributeValuesOnEntity.put(categoryAttr, categoryValues0);
+		assertTrue(population.countMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity) == 1);
+		
+		
+		// 6. query with age = 0 & category0 & gender0 -> 2 entities
+		attributeValuesOnEntity.put(genderAttr, genderValues0);
+		assertTrue(population.countMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity) == 1);
+
+		
+		// 7. query with gender1 -> 0 entity
+		attributeValuesOnEntity.clear();
+		attributeValuesOnEntity.put(genderAttr, genderValues1);
+		assertTrue(population.countMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity) == 0);
+	}
 
 	@Test public void testContainAttribute() throws GenstarException {
+		Population population = new Population(PopulationType.SYNTHETIC_POPULATION, "population 1", generator.getAttributes());
+		
+		AbstractAttribute dummyAttribute = new UniqueValuesAttribute(generator, "dummy_attribute", DataType.INTEGER);
+		assertFalse(population.containAttribute(dummyAttribute));
+		
+		for (AbstractAttribute attr : generator.getAttributes()) { assertTrue(population.containAttribute(attr)); }
+	}
+	
+	@Test public void testIsIdValueAlreadyInUsed() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
+	@Test public void testNextIdValue() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
+	@Test public void testGetIdentityAttribute() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
+	@Test public void testGetIdentityAttributeWhenIdentityAttributeChanged() throws GenstarException {
 		fail("not yet implemented");
 	}
 }

@@ -31,6 +31,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarUtils;
+import ummisco.genstar.util.INPUT_DATA_FORMATS;
 
 public class GamaGenstarUtils {
 
@@ -40,75 +41,75 @@ public class GamaGenstarUtils {
 		
 		// ID_ATTRIBUTE
 		AbstractAttribute idAttribute = null;
-		String idAttributeName = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.ID_ATTRIBUTE_PROPERTY);
+		String idAttributeName = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.ID_ATTRIBUTE_PROPERTY);
 		if (idAttributeName != null) {
 			idAttribute = generator.getAttributeByNameOnData(idAttributeName);
 			if (idAttribute == null) { throw new GenstarException(idAttributeName + " is not recognized as an attribute on the generator"); }
 		}
 		
 		// POPULATION_NAME_PROPERTY
-		String populationName = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.POPULATION_NAME_PROPERTY);
-		if (populationName == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.POPULATION_NAME_PROPERTY + "' not found in the property file."); };
+		String populationName = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.POPULATION_NAME_PROPERTY);
+		if (populationName == null) { throw new GenstarException("Property '" + INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.POPULATION_NAME_PROPERTY + "' not found in the property file."); };
 		generator.setPopulationName(populationName);
 		
 		// SAMPLE_DATA_PROPERTY
-		String sampleDataFilePath = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.SAMPLE_DATA_PROPERTY);
-		if (sampleDataFilePath == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.SAMPLE_DATA_PROPERTY + "' not found in the property file."); }
+		String sampleDataFilePath = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.SAMPLE_DATA_PROPERTY);
+		if (sampleDataFilePath == null) { throw new GenstarException("Property '" + INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.SAMPLE_DATA_PROPERTY + "' not found in the property file."); }
 		GenstarCSVFile sampleCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, sampleDataFilePath, true), true);
 		
 		// CONTROLLED_ATTRIBUTES_PROPERTY 
-		String controlledAttributesFilePath = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.CONTROLLED_ATTRIBUTES_PROPERTY);
-		if (controlledAttributesFilePath == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.CONTROLLED_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
+		String controlledAttributesFilePath = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.CONTROLLED_ATTRIBUTES_PROPERTY);
+		if (controlledAttributesFilePath == null) { throw new GenstarException("Property '" + INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.CONTROLLED_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
 		GenstarCSVFile controlledAttributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlledAttributesFilePath, true), false);
 		
 		// CONTROLLED_TOTALS_PROPERTY
-		String controlledTotalsFilePath = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.CONTROLLED_TOTALS_PROPERTY);
-		if (controlledTotalsFilePath == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.CONTROLLED_TOTALS_PROPERTY + "' not found in the property file."); }
+		String controlledTotalsFilePath = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.CONTROLLED_TOTALS_PROPERTY);
+		if (controlledTotalsFilePath == null) { throw new GenstarException("Property '" + INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.CONTROLLED_TOTALS_PROPERTY + "' not found in the property file."); }
 		GenstarCSVFile controlledTotalsCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlledTotalsFilePath, true), false);
 		
 		// SUPPLEMENTARY_ATTRIBUTES_PROPERTY
-		String supplementaryAttributesFilePath = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.SUPPLEMENTARY_ATTRIBUTES_PROPERTY);
-		if (supplementaryAttributesFilePath == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.SUPPLEMENTARY_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
+		String supplementaryAttributesFilePath = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.SUPPLEMENTARY_ATTRIBUTES_PROPERTY);
+		if (supplementaryAttributesFilePath == null) { throw new GenstarException("Property '" + INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.SUPPLEMENTARY_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
 		GenstarCSVFile supplementaryAttributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, supplementaryAttributesFilePath, true), false);
 		
 		// MAX_ITERATIONS_PROPERTY
-		String maxIterationsValue = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.MAX_ITERATIONS_PROPERTY);
+		String maxIterationsValue = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.MAX_ITERATIONS_PROPERTY);
 		int maxIterations = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
 		if (maxIterationsValue != null) { maxIterations = Integer.parseInt(maxIterationsValue); }
 		
 
 		// COMPONENT_POPULATION_PROPERTY.
-		String componentPopulationName = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_POPULATION_NAME_PROPERTY);
+		String componentPopulationName = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.COMPONENT_POPULATION_NAME_PROPERTY);
 
 		// with component populations
 		if (componentPopulationName != null) { // If COMPONENT_POPULATION_PROPERTY exists, then this is a group_component sample data
 			
 			// COMPONENT_SAMPLE_DATA_PROPERTY
-			String componentSampleDataFilePath = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_SAMPLE_DATA_PROPERTY);
-			if (componentSampleDataFilePath == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_SAMPLE_DATA_PROPERTY + "' not found in the property file."); }
+			String componentSampleDataFilePath = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.COMPONENT_SAMPLE_DATA_PROPERTY);
+			if (componentSampleDataFilePath == null) { throw new GenstarException("Property '" + INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.COMPONENT_SAMPLE_DATA_PROPERTY + "' not found in the property file."); }
 			GenstarCSVFile componentSampleDataFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, componentSampleDataFilePath, true), true);
 			
 			// COMPONENT_ATTRIBUTES_PROPERTY
-			String componentAttributesFilePath = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_ATTRIBUTES_PROPERTY);
-			if (componentAttributesFilePath == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
+			String componentAttributesFilePath = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.COMPONENT_ATTRIBUTES_PROPERTY);
+			if (componentAttributesFilePath == null) { throw new GenstarException("Property '" + INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.COMPONENT_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
 			GenstarCSVFile componentAttributesFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, componentAttributesFilePath, true), true);
 			 
 			// GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY
-			String groupIdAttributeNameOnGroup = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY);
-			if (groupIdAttributeNameOnGroup == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY + "' not found in the property file."); }
+			String groupIdAttributeNameOnGroup = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY);
+			if (groupIdAttributeNameOnGroup == null) { throw new GenstarException("Property '" + INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY + "' not found in the property file."); }
 			 
 			// GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY
-			String groupIdAttributeNameOnComponent = sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY);
-			if (groupIdAttributeNameOnComponent == null) { throw new GenstarException("Property '" + GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY + "' not found in the property file."); }
+			String groupIdAttributeNameOnComponent = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY);
+			if (groupIdAttributeNameOnComponent == null) { throw new GenstarException("Property '" + INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY + "' not found in the property file."); }
 			 
 			
 			// optional/supplementary properties (COMPONENT_REFERENCE_ON_GROUP, GROUP_REFERENCE_ON_COMPONENT)
 			Map<String, String> supplementaryProperties = new HashMap<String, String>();
-			supplementaryProperties.put(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_REFERENCE_ON_GROUP_PROPERTY, sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.COMPONENT_REFERENCE_ON_GROUP_PROPERTY));
-			supplementaryProperties.put(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_REFERENCE_ON_COMPONENT_PROPERTY, sampleDataProperties.getProperty(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_REFERENCE_ON_COMPONENT_PROPERTY));
+			supplementaryProperties.put(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.COMPONENT_REFERENCE_ON_GROUP_PROPERTY, sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.COMPONENT_REFERENCE_ON_GROUP_PROPERTY));
+			supplementaryProperties.put(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.GROUP_REFERENCE_ON_COMPONENT_PROPERTY, sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.GROUP_REFERENCE_ON_COMPONENT_PROPERTY));
 			
-			supplementaryProperties.put(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY, groupIdAttributeNameOnGroup);
-			supplementaryProperties.put(GenstarUtils.SAMPLE_DATA_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY, groupIdAttributeNameOnComponent);
+			supplementaryProperties.put(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY, groupIdAttributeNameOnGroup);
+			supplementaryProperties.put(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY, groupIdAttributeNameOnComponent);
 			
 			
 			GenstarUtils.createGroupComponentSampleDataGenerationRule(generator, ruleName, sampleCSVFile,
@@ -127,13 +128,13 @@ public class GamaGenstarUtils {
 		if ( fileContent == null || fileContent.isEmpty() ) { throw new GenstarException("Invalid Generation Rule file: content is empty (file: " + distributionsCSVFile.getPath()  + ")"); }
 		int rows = fileContent.size();
 
-		if (distributionsCSVFile.getColumns() != GenstarUtils.CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS) { throw new GenstarException("CVS file must have " + GenstarUtils.CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS + " columns, (file: " + distributionsCSVFile.getPath() + ")"); }
+		if (distributionsCSVFile.getColumns() != INPUT_DATA_FORMATS.CSV_FILES.GENERATION_RULES.NB_OF_COLS) { throw new GenstarException("CVS file must have " + INPUT_DATA_FORMATS.CSV_FILES.GENERATION_RULES.NB_OF_COLS + " columns, (file: " + distributionsCSVFile.getPath() + ")"); }
 
 		// 1. Parse the header
 		List<String> header = distributionsCSVFile.getHeaders();
 		for (int i=0; i<header.size(); i++) {
-			if (!header.get(i).equals(GenstarUtils.CSV_FILE_FORMATS.GENERATION_RULE_METADATA.HEADERS[i])) {
-				throw new GenstarException("Invalid Generation Rule file header. Header must be " + GenstarUtils.CSV_FILE_FORMATS.GENERATION_RULE_METADATA.HEADER_STR + " (file: " + distributionsCSVFile.getPath() + ")");
+			if (!header.get(i).equals(INPUT_DATA_FORMATS.CSV_FILES.GENERATION_RULES.HEADERS[i])) {
+				throw new GenstarException("Invalid Generation Rule file header. Header must be " + INPUT_DATA_FORMATS.CSV_FILES.GENERATION_RULES.HEADER_STR + " (file: " + distributionsCSVFile.getPath() + ")");
 			}
 		}
 		
@@ -142,7 +143,7 @@ public class GamaGenstarUtils {
 		for ( int rowIndex = 0; rowIndex < rows; rowIndex++ ) {
 			
 			final List<String> generationRuleInfo = fileContent.get(rowIndex);
-			if (generationRuleInfo.size() != GenstarUtils.CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS) { throw new GenstarException("Invalid Generation Rule file format: each row must have " +  GenstarUtils.CSV_FILE_FORMATS.GENERATION_RULE_METADATA.NB_OF_COLS + " columns, (file: " + distributionsCSVFile.getPath() + ")"); }
+			if (generationRuleInfo.size() != INPUT_DATA_FORMATS.CSV_FILES.GENERATION_RULES.NB_OF_COLS) { throw new GenstarException("Invalid Generation Rule file format: each row must have " +  INPUT_DATA_FORMATS.CSV_FILES.GENERATION_RULES.NB_OF_COLS + " columns, (file: " + distributionsCSVFile.getPath() + ")"); }
 			
 			String ruleName = (String)generationRuleInfo.get(0);
 			String ruleDataFilePathOrJavaClass = (String)generationRuleInfo.get(1);

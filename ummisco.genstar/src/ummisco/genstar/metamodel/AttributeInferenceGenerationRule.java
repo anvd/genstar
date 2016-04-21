@@ -39,7 +39,7 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	private void setInferenceAttributes(final AbstractAttribute inferringAttribute, final AbstractAttribute inferredAttribute) throws GenstarException {
 		if (inferringAttribute == null || inferredAttribute == null) { throw new GenstarException("Neither 'inferringAttribute' nor 'inferredAttribute' can be null"); }
 		if (inferringAttribute.equals(inferredAttribute)) { throw new GenstarException("'inferringAttribute' and 'inferredAttribute' can not be identical"); }
-		if (inferringAttribute.values().size() != inferredAttribute.values().size()) { throw new GenstarException("'inferringAttribute' and 'inferredAttribute' must contains the same number of attribute values"); }
+		if (inferringAttribute.valuesOnData().size() != inferredAttribute.valuesOnData().size()) { throw new GenstarException("'inferringAttribute' and 'inferredAttribute' must contains the same number of attribute values"); }
 		
 		// FIXME more validation!
 		
@@ -50,8 +50,8 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	}
 	
 	private void setDefaultAttributeValuesCorrespondence() {
-		List<AttributeValue> inferringAttributeValues = new ArrayList<AttributeValue>(inferringAttribute.values());
-		List<AttributeValue> inferredAttributeValues = new ArrayList<AttributeValue>(inferredAttribute.values());
+		List<AttributeValue> inferringAttributeValues = new ArrayList<AttributeValue>(inferringAttribute.valuesOnData());
+		List<AttributeValue> inferredAttributeValues = new ArrayList<AttributeValue>(inferredAttribute.valuesOnData());
 		
 		inferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (int i=0; i<inferringAttributeValues.size(); i++) { inferenceData.put(inferringAttributeValues.get(i), inferredAttributeValues.get(i)); }
@@ -60,16 +60,16 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	public void setInferenceData(final Map<AttributeValue, AttributeValue> inferenceData) throws GenstarException { // FIXME find a better way to set the inference data!
 		if (inferenceData == null) { throw new GenstarException("'inferenceData' parameter can not be null"); }
 		
-		if (inferenceData.size() != inferringAttribute.values().size()) { throw new GenstarException("'inferenceData' contains different number of members than inferringAttribute.values"); }
+		if (inferenceData.size() != inferringAttribute.valuesOnData().size()) { throw new GenstarException("'inferenceData' contains different number of members than inferringAttribute.values"); }
 		
-		Set<AttributeValue> inferringAttributeValues = inferringAttribute.values();
+		Set<AttributeValue> inferringAttributeValues = inferringAttribute.valuesOnData();
 		for (AttributeValue inferenceDataKey : new ArrayList<AttributeValue>(inferenceData.keySet())) {
 			if (!inferringAttributeValues.contains(inferenceDataKey)) {
 				throw new GenstarException("Some keys of inferenceData are not values of inferringAttribute");
 			}
 		}
 		 
-		Set<AttributeValue> inferredAttributeValues = inferredAttribute.values();
+		Set<AttributeValue> inferredAttributeValues = inferredAttribute.valuesOnData();
 		for (AttributeValue inferenceDataValue : new ArrayList<AttributeValue>(inferenceData.values())) {
 			if (!inferredAttributeValues.contains(inferenceDataValue)) {
 				throw new GenstarException("Some values of inferenceData are not values of inferredAttribute");

@@ -1,5 +1,7 @@
 package ummisco.genstar.util;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,12 +14,14 @@ import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
 
 @RunWith(JMockit.class)
 public class AttributeUtilsTest {
@@ -68,8 +72,7 @@ public class AttributeUtilsTest {
 	}
 
 
-	@Test
-	public final void testCreateAttributesFromCSVFileExpectationAproach(@Mocked final ISyntheticPopulationGenerator generator, @Mocked final GenstarCSVFile mockedAttributesCSVFile) throws GenstarException {
+	@Test public final void testCreateAttributesFromCSVFileExpectationApproach(@Mocked final ISyntheticPopulationGenerator generator, @Mocked final GenstarCSVFile mockedAttributesCSVFile) throws GenstarException {
 		
 		final List<String> headers = new ArrayList<String>();
 		headers.add("Name On Data");
@@ -121,7 +124,7 @@ public class AttributeUtilsTest {
 			result = "Dummy CSV File";
 			
 			mockedAttributesCSVFile.getColumns();
-			result = GenstarUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.NB_OF_COLS;
+			result = INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.NB_OF_COLS;
 
 			generator.addAttribute((AbstractAttribute) any);
 			times = 3;
@@ -129,4 +132,24 @@ public class AttributeUtilsTest {
 		
 		AttributeUtils.createAttributesFromCSVFile(generator, mockedAttributesCSVFile);
 	}	
+	
+	@Test public void testCreateAttributesFromCSVFile() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
+	@Test public void testCreateUniqueValueAttributeWithRangeInput() throws GenstarException {
+		
+		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
+		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/AttributeUtils/testCreateUniqueValueAttributeWithRangeInput/attributes1.csv", true);
+		
+		assertTrue(generator.getAttributes().isEmpty());
+		
+		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+		
+		List<AbstractAttribute> attributes = generator.getAttributes();
+		assertTrue(attributes.size() == 2);
+		
+		assertTrue(attributes.get(0) instanceof UniqueValuesAttributeWithRangeInput);
+		assertTrue(attributes.get(1) instanceof UniqueValuesAttributeWithRangeInput);
+	}
 }

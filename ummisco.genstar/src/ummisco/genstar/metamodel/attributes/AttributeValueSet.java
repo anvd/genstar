@@ -6,8 +6,7 @@ import ummisco.genstar.exception.GenstarException;
 
 public interface AttributeValueSet {
 	
-	// TODO change to valuesOnData
-	public abstract Set<AttributeValue> values();
+	public abstract Set<AttributeValue> valuesOnData();
 	
 	public abstract boolean add(final AttributeValue value) throws GenstarException;
 	

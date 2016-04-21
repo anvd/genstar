@@ -46,7 +46,7 @@ public abstract class IPF<D, C, M> {
 		this.controlledAttributes.addAll(controlledAttributes);
 		
 		for (int i=0; i<this.controlledAttributes.size(); i++) {
-			controlledAttributeValues.put(i, new ArrayList<AttributeValue>(this.controlledAttributes.get(i).values()));
+			controlledAttributeValues.put(i, new ArrayList<AttributeValue>(this.controlledAttributes.get(i).valuesOnData()));
 		}
 		
 		initializeData();

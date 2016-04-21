@@ -27,6 +27,12 @@ public class Population implements IPopulation {
 	
 	private Map<String, String> componentReferences = Collections.EMPTY_MAP; // population_name :: GAMA_attribute_name
 	
+	private AbstractAttribute idAttribute;
+	
+	private List<Integer> entityIds = Collections.EMPTY_LIST; 
+	
+	private int currentMaxIdValue = 0;
+	
 
 	public Population(final PopulationType type, final String name, final List<AbstractAttribute> attributes) throws GenstarException {
 		if (type == null) { throw new GenstarException("Parameter type can not be null"); }
@@ -40,6 +46,17 @@ public class Population implements IPopulation {
 		this.name = name;
 		this.attributes = new ArrayList<AbstractAttribute>();
 		this.attributes.addAll(attributes);
+		
+		// save the reference to identity attribute
+		for (AbstractAttribute attr : attributes) {
+			if (attr.isIdentity()) {
+				if (idAttribute != null) {
+					throw new GenstarException("Not support more than one identity attribute in a population. Both " + idAttribute.getNameOnData() + " and " + attr.getNameOnData() + " are identity attributes.");
+				}
+				
+				idAttribute = attr;
+			}
+		}
 	}
 	
 	@Override public int getNbOfEntities() {
@@ -83,10 +100,7 @@ public class Population implements IPopulation {
 	}
 
 	@Override public List<AbstractAttribute> getAttributes() {
-		List<AbstractAttribute> copy = new ArrayList<AbstractAttribute>();
-		copy.addAll(attributes);
-		
-		return copy;
+		return new ArrayList<AbstractAttribute>(attributes);
 	}	
 	
 	@Override public boolean containAttribute(final AbstractAttribute attribute) throws GenstarException {
@@ -135,7 +149,7 @@ public class Population implements IPopulation {
 		List<Entity> newlyCreated = new ArrayList<Entity>();
 		for (int i=0; i<number; i++) { 
 			Entity e = new Entity(this);
-			entities.add(e);
+			internalAddEntity(e);
 			newlyCreated.add(e);
 		}
 		
@@ -146,15 +160,16 @@ public class Population implements IPopulation {
 		Entity e = new Entity(this);
 		e.setEntityAttributeValues(entityAttributeValues);
 		
-		if (entities == Collections.EMPTY_LIST) { entities = new ArrayList<Entity>(); }
-		entities.add(e);
+		internalAddEntity(e);
 		
 		return e;
 	}
 	
 	@Override public List<Entity> createEntities(final List<List<EntityAttributeValue>> entityAttributeValuesList) throws GenstarException {
 		List<Entity> entities = new ArrayList<Entity>();
-		for (List<EntityAttributeValue> eavs : entityAttributeValuesList) { entities.add(this.createEntity(eavs)); }
+		for (List<EntityAttributeValue> eavs : entityAttributeValuesList) { 
+			entities.add(this.createEntity(eavs));
+		}
 		
 		return entities;
 	}
@@ -164,8 +179,7 @@ public class Population implements IPopulation {
 		Entity e = new Entity(this);
 		e.setAttributeValuesOnEntity(attributeValuesOnEntity);
 		
-		if (entities == Collections.EMPTY_LIST) { entities = new ArrayList<Entity>(); }
-		entities.add(e);
+		internalAddEntity(e);
 		
 		return e;
 	}
@@ -178,6 +192,35 @@ public class Population implements IPopulation {
 		}
 		
 		return createdEntities;
+	}
+	
+	private void internalAddEntity(final Entity entity) throws GenstarException {
+		if (entities == Collections.EMPTY_LIST) { entities = new ArrayList<Entity>(); }
+		
+		entities.add(entity);
+		/*
+		if (idAttribute != null) {
+			if (!idAttribute.isIdentity()) {
+				throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
+			}
+			
+			
+			if (entityIds == Collections.EMPTY_LIST) { entityIds = new ArrayList<Integer>(); }
+			
+			EntityAttributeValue idEav = entity.getEntityAttributeValue(idAttribute);
+			if (idEav == null) { throw new GenstarException("entity doesn't contain identity attribute value"); }
+
+			int id = ((UniqueValue) idEav.getAttributeValueOnEntity()).getIntValue();
+			if (entityIds.contains(id)) {
+				throw new GenstarException("Duplicated identity attribute value: " + id + ". Population: " + name + ", identity attribute: " + idAttribute.getNameOnData());
+			}
+			
+			entities.add(entity);
+			entityIds.add(id);
+		} else {
+			entities.add(entity);
+		}
+		*/
 	}
 
 	public void addGroupReferences(final Map<String, String> groupReferences) throws GenstarException {
@@ -226,5 +269,35 @@ public class Population implements IPopulation {
 	
 	@Override public PopulationType getPopulationType() {
 		return type;
+	}
+
+	@Override public boolean isIdValueAlreadyInUsed(final int idValue) throws GenstarException {
+		if (idAttribute == null) { throw new GenstarException("This population has no identity attribute"); }
+		if (!idAttribute.isIdentity()) {
+			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
+		}
+
+		if (idValue < 0) { throw new GenstarException("Not support negative identity value"); }
+		
+		return (entityIds.contains(idValue));
+	}
+
+	@Override public int nextIdValue() throws GenstarException {
+		if (idAttribute == null) { throw new GenstarException("This population has no identity attribute"); }
+		if (!idAttribute.isIdentity()) {
+			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
+		}
+		
+		while (entityIds.contains(currentMaxIdValue)) { currentMaxIdValue++; }
+		
+		return currentMaxIdValue;
+	}
+	
+	@Override public AbstractAttribute getIdentityAttribute() throws GenstarException {
+		if (idAttribute != null && !idAttribute.isIdentity()) {
+			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
+		}
+		
+		return idAttribute;
 	}
 }

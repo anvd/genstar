@@ -1,12 +1,7 @@
 package ummisco.genstar.ipf;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
 
-import mockit.Delegate;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
 
 import org.junit.Test;

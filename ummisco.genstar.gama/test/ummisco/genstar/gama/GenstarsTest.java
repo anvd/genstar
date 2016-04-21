@@ -66,6 +66,7 @@ import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.CsvWriter;
 import ummisco.genstar.util.GenstarCSVFile;
 import ummisco.genstar.util.GenstarUtils;
+import ummisco.genstar.util.INPUT_DATA_FORMATS;
 
 @RunWith(JMockit.class)
 public class GenstarsTest {
@@ -167,7 +168,7 @@ public class GenstarsTest {
 			writer.writeRecord((String[])any); times = 57;
 			
 			// verify that one instance of GamaCSVFile is created
-			new GamaCSVFile(scope, resultDistributionCSVFilePath, GenstarUtils.CSV_FILE_FORMATS.ATTRIBUTE_METADATA.FIELD_DELIMITER, Types.STRING, true);
+			new GamaCSVFile(scope, resultDistributionCSVFilePath, INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.FIELD_DELIMITER, Types.STRING, true);
 		}};
 		
 		
