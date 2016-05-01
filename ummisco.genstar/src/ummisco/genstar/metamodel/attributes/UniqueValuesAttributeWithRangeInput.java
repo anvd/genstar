@@ -10,6 +10,8 @@ import java.util.Set;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 
+// refactor the AbstractAttribute inheritance tree, "valuesOnData" method is not applicable for this class
+// 
 public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 	
 	private Map<Integer, UniqueValue> internalValuesOnData = Collections.EMPTY_MAP;

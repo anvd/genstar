@@ -10,10 +10,10 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 
-public class TwoWayIPF extends IPF<double[][], int[], double[]> {
+public class TwoWayIpf extends Ipf<double[][], int[], double[]> {
 	
 	
-	public TwoWayIPF(final SampleDataGenerationRule generationRule) throws GenstarException {
+	public TwoWayIpf(final SampleDataGenerationRule generationRule) throws GenstarException {
 		super(generationRule);
 	}
 
@@ -142,7 +142,7 @@ public class TwoWayIPF extends IPF<double[][], int[], double[]> {
 		// IPFIterations
 		int iterationNo = 0;
 		System.out.println("\tTwoWayIterations: ");
-		for (IPFIteration<double[][], int[], double[]> iter : iterations) {
+		for (IpfIteration<double[][], int[], double[]> iter : iterations) {
 			
 			System.out.println("\t\tIteration: " + iterationNo);
 			

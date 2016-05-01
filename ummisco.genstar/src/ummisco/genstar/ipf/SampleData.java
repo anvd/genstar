@@ -10,19 +10,19 @@ import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.PopulationType;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
 
 public class SampleData extends AbstractSampleData implements ISampleData { // TODO change to CSVSampleData
 	
 	private List<AbstractAttribute> attributes;
 	
-	private GenstarCSVFile data = null;
+	private GenstarCsvFile data = null;
 	
 	private IPopulation sampleEntityPopulation;
 	
 	
-	public SampleData(final String populationName, final List<AbstractAttribute> attributes, GenstarCSVFile data) throws GenstarException {
+	public SampleData(final String populationName, final List<AbstractAttribute> attributes, GenstarCsvFile data) throws GenstarException {
 		if (populationName == null || populationName.isEmpty()) { throw new GenstarException("Parameter populationName can neither be null nor empty"); }
 		if (attributes == null) { throw new GenstarException("Parameter attributes can not be null"); }
 		if (data == null) { throw new GenstarException("Parameter data can not be null"); }

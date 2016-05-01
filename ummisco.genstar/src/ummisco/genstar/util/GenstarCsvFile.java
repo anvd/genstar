@@ -9,7 +9,7 @@ import java.util.List;
 import ummisco.genstar.exception.GenstarException;
 
 
-public class GenstarCSVFile {
+public class GenstarCsvFile {
 
 	private String csvFilePath;
 	
@@ -24,11 +24,11 @@ public class GenstarCSVFile {
 	private int rows = 0, columns = 0;
 	
 	
-	public GenstarCSVFile(final String csvFilePath, final boolean withHeader) throws GenstarException {
+	public GenstarCsvFile(final String csvFilePath, final boolean withHeader) throws GenstarException {
 		this(csvFilePath, ",", withHeader);
 	}
 	
-	public GenstarCSVFile(final String csvFilePath, final String separator, final boolean withHeader) throws GenstarException {
+	public GenstarCsvFile(final String csvFilePath, final String separator, final boolean withHeader) throws GenstarException {
 		if (csvFilePath == null || separator == null) { throw new IllegalArgumentException("csvFilePath, separator can not be null"); }
 		
 		this.csvFilePath = csvFilePath;

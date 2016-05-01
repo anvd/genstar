@@ -230,4 +230,14 @@ public class EntityTest {
 		assertFalse(entity1.matchAttributeValuesOnEntity(set1));
 		
 	}
+	
+	
+	@Test public void testSetEntityAttributeValues() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
+	
+	@Test public void testSetEntityAttributeValuesWithInvalidAttribute() throws GenstarException {
+		fail("not yet implemented");
+	}
 }

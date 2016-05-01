@@ -51,17 +51,6 @@ public class AttributeValuesFrequency {
 		return copy;
 	}
 	
-	// TODO remove or refactor
-//	public Map<String, AttributeValue> getAttributeValuesWithNamesOnEntityAsKey() {
-//		Map<String, AttributeValue> result = new HashMap<String, AttributeValue>();
-//		
-//		for (AbstractAttribute attr : attributeValuesOnData.keySet()) {
-//			result.put(attr.getNameOnEntity(), attributeValuesOnData.get(attr));
-//		}
-//		
-//		return result;
-//	}
-
 	public int getFrequency() {
 		return frequency;
 	}
@@ -89,34 +78,6 @@ public class AttributeValuesFrequency {
 			if (!entityAttributeValue.isAttributeValueOnDataMatched(attributeValueOnData)) { return false; }
 		}
 		
-		/*
-		// build a list of EntityAttributeValues according to inputAttributes
-		EntityAttributeValue entityAttributeValue;
-		Map<AbstractAttribute, EntityAttributeValue> entityAttributeValues = new HashMap<AbstractAttribute, EntityAttributeValue>();
-		for (AbstractAttribute attribute : inputAttributes) {
-			entityAttributeValue = entity.getEntityAttributeValue(attribute);
-			
-			if (entityAttributeValue == null) { return false; } // or throw exception?
-			
-			entityAttributeValues.put(attribute, entityAttributeValue);
-		}
-		
-		// attribute values on distribution element
-		AttributeValue attributeValueOnData;
-		Map<AbstractAttribute, AttributeValue> inputAttributeValues = new HashMap<AbstractAttribute, AttributeValue>();
-		for (AbstractAttribute attribute : inputAttributes) {
-			attributeValueOnData = attributeValuesOnData.get(attribute);
-			
-			if (attributeValueOnData == null) { return false; } // or throw exception?
-			inputAttributeValues.put(attribute, attributeValueOnData); 
-		}
-		
-		if (entityAttributeValues.size() != inputAttributeValues.size()) { return false; }
-		
-		for (AbstractAttribute attribute : entityAttributeValues.keySet()) {
-			if (!entityAttributeValues.get(attribute).isAttributeValueOnEntityMatched(inputAttributeValues.get(attribute))) { return false; }
-		}
-		*/
 		
 		return true;
 	}

@@ -19,7 +19,7 @@ import ummisco.genstar.metamodel.GenerationRule;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.util.AttributeUtils;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
 import mockit.Delegate;
 import mockit.Expectations;
@@ -96,7 +96,7 @@ public class GamaGenstarUtilsTest {
 		
 		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy generator");
 		
-		GenstarCSVFile attributesFile = new GenstarCSVFile(groupAttributesFilePath, true);
+		GenstarCsvFile attributesFile = new GenstarCsvFile(groupAttributesFilePath, true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		GamaGenstarUtils.createSampleDataGenerationRule(scope, generator, ruleName, sampleDataProperties);
@@ -161,7 +161,7 @@ public class GamaGenstarUtilsTest {
 		
 		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy generator");
 		
-		GenstarCSVFile attributesFile = new GenstarCSVFile(attributesFilePath, true);
+		GenstarCsvFile attributesFile = new GenstarCsvFile(attributesFilePath, true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		GamaGenstarUtils.createSampleDataGenerationRule(scope, generator, ruleName, sampleDataProperties);

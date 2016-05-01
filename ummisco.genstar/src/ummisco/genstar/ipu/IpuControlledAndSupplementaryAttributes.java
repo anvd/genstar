@@ -6,19 +6,19 @@ import java.util.List;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 
 public class IpuControlledAndSupplementaryAttributes {
 	
 	private IpuGenerationRule generationRule;
 	
-	private GenstarCSVFile groupControlledAttributesFile;
+	private GenstarCsvFile groupControlledAttributesFile;
 	
-	private GenstarCSVFile groupSupplementaryAttributesFile;
+	private GenstarCsvFile groupSupplementaryAttributesFile;
 	
-	private GenstarCSVFile componentControlledAttributesFile;
+	private GenstarCsvFile componentControlledAttributesFile;
 	
-	private GenstarCSVFile componentSupplementaryAttributesFile;
+	private GenstarCsvFile componentSupplementaryAttributesFile;
 	
 	
 	private List<AbstractAttribute> groupControlledAttributes;
@@ -55,7 +55,7 @@ public class IpuControlledAndSupplementaryAttributes {
 	}
 	
 	
-	private List<AbstractAttribute> readControlledAttributes(final ISyntheticPopulationGenerator generator, final GenstarCSVFile controlledAttributesListFile) throws GenstarException {
+	private List<AbstractAttribute> readControlledAttributes(final ISyntheticPopulationGenerator generator, final GenstarCsvFile controlledAttributesListFile) throws GenstarException {
 		List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
 		
 		if (controlledAttributesListFile.getRows() == 0) { throw new GenstarException("Controlled attributes file can not be empty. (File: " + controlledAttributesListFile.getPath() + ")"); }
@@ -80,7 +80,7 @@ public class IpuControlledAndSupplementaryAttributes {
 	}
 	
 	
-	private List<AbstractAttribute> readSupplementaryAttributes(final ISyntheticPopulationGenerator generator, final GenstarCSVFile supplementaryAttributesListFile, List<AbstractAttribute> controlledAttributes) throws GenstarException {
+	private List<AbstractAttribute> readSupplementaryAttributes(final ISyntheticPopulationGenerator generator, final GenstarCsvFile supplementaryAttributesListFile, List<AbstractAttribute> controlledAttributes) throws GenstarException {
 		List<AbstractAttribute> supplementaryAttributes = new ArrayList<AbstractAttribute>();
 		String attrName;
 		AbstractAttribute supplementaryAttr;

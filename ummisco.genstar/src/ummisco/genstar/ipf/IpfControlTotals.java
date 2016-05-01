@@ -8,13 +8,13 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.IpfUtils;
 
 
 public class IpfControlTotals {
 	
-	private GenstarCSVFile data;
+	private GenstarCsvFile data;
 	
 	private List<AbstractAttribute> controlledAttributes;
 	

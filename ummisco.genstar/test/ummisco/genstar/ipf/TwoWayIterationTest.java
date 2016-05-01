@@ -22,7 +22,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValue;
 @RunWith(JMockit.class)
 public class TwoWayIterationTest {
 	
-	@Test public void testInitializeObjectSuccessfully(@Mocked final TwoWayIPF ipf) throws GenstarException {
+	@Test public void testInitializeObjectSuccessfully(@Mocked final TwoWayIpf ipf) throws GenstarException {
 		
 		final double[][] data = {
 				{ 1, 2 },
@@ -51,7 +51,7 @@ public class TwoWayIterationTest {
 		}
 	}
 	
-	@Test(expected = NullPointerException.class) public void testInitializeObjectWithNullData(@Mocked final TwoWayIPF ipf) throws GenstarException {
+	@Test(expected = NullPointerException.class) public void testInitializeObjectWithNullData(@Mocked final TwoWayIpf ipf) throws GenstarException {
 		final int[] rowControls = { 10, 20, 30 };
 		
 		final int[] columnControls = { 30, 40 };
@@ -65,7 +65,7 @@ public class TwoWayIterationTest {
 		new TwoWayIteration(ipf);
 	}
 	
-	@Test(expected = GenstarException.class) public void testInitializeObjectWithZeroMarginals(@Mocked final TwoWayIPF ipf, @Mocked final AbstractAttribute attribute, 
+	@Test(expected = GenstarException.class) public void testInitializeObjectWithZeroMarginals(@Mocked final TwoWayIpf ipf, @Mocked final AbstractAttribute attribute, 
 			@Mocked final AttributeValue attributeValue) throws GenstarException {
 		final double[][] data = {
 				{ 0, 2 },
@@ -94,7 +94,7 @@ public class TwoWayIterationTest {
 		new TwoWayIteration(ipf);
 	}
 
-	@Test(expected = NullPointerException.class) public void testInitializeObjectWithNullRowControls(@Mocked final TwoWayIPF ipf) throws GenstarException {
+	@Test(expected = NullPointerException.class) public void testInitializeObjectWithNullRowControls(@Mocked final TwoWayIpf ipf) throws GenstarException {
 		final double[][] data = {
 				{ 1, 2 },
 				{ 3, 4 },
@@ -113,7 +113,7 @@ public class TwoWayIterationTest {
 	}
 
 
-	@Test(expected = NullPointerException.class) public void testInitializeObjectWithNullColumnControls(@Mocked final TwoWayIPF ipf) throws GenstarException {
+	@Test(expected = NullPointerException.class) public void testInitializeObjectWithNullColumnControls(@Mocked final TwoWayIpf ipf) throws GenstarException {
 		final double[][] data = {
 				{ 1, 2 },
 				{ 3, 4 },
@@ -132,7 +132,7 @@ public class TwoWayIterationTest {
 	}
 	
 
-	@Test public void testNextIteration(@Mocked final TwoWayIPF ipf) throws GenstarException {
+	@Test public void testNextIteration(@Mocked final TwoWayIpf ipf) throws GenstarException {
 		final double[][] data = {
 				{ 1, 2 },
 				{ 3, 4 },
@@ -183,7 +183,7 @@ public class TwoWayIterationTest {
 		}
 	}
 
-	@Test public void testGetNbOfEntitiesToGenerate(@Mocked final TwoWayIPF ipf) throws GenstarException {
+	@Test public void testGetNbOfEntitiesToGenerate(@Mocked final TwoWayIpf ipf) throws GenstarException {
 		final double[][] data = {
 				{ 1, 2 },
 				{ 3, 4 },

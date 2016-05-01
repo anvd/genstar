@@ -13,20 +13,24 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.Population;
+import ummisco.genstar.metamodel.PopulationType;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
 
 public class IpuUtils {
 
-	public static List<AttributeValuesFrequency> parseIpuControlTotalsFile(final ISyntheticPopulationGenerator generator, final List<AbstractAttribute> controlledAttributes, final GenstarCSVFile ipuControlTotalsFile) throws GenstarException {
+	public static List<AttributeValuesFrequency> parseIpuControlTotalsFile(final ISyntheticPopulationGenerator generator, final List<AbstractAttribute> controlledAttributes, final GenstarCsvFile ipuControlTotalsFile) throws GenstarException {
 		
 		// 1. parameters validation
 		if (generator == null || controlledAttributes == null || ipuControlTotalsFile == null) {
 			throw new GenstarException("Parameters generator, controlledAttributes, ipuControlTotalsFile can not be null");
 		}
 		
-		if (controlledAttributes.size() < 2) { throw new GenstarException("controlledAttributes must have at least two attributes/elements"); }
+//		if (controlledAttributes.size() < 2) { throw new GenstarException("controlledAttributes must have at least two attributes/elements"); }
+		if (controlledAttributes.isEmpty()) { throw new GenstarException("controlledAttributes must have at least one attributes/elements"); }
 		
 		// 2. ensure that controlledAttributes doesn't contain duplicated (controlled) attributes or belong to different population generators
 		Map<String, AbstractAttribute> controlledAttributesMap = new HashMap<String, AbstractAttribute>();
@@ -37,18 +41,25 @@ public class IpuUtils {
 			controlledAttributesMap.put(controlledAttr.getNameOnData(), controlledAttr);
 		}
 		
-		// 3. generate IPU controlled attributes values frequencies to verify the validity of control totals (file content)
+		// 3. ensure that controlledAttributes doesn't contain any instance of UniqueValueWithRangeInput
+		for (AbstractAttribute controlledAttr : controlledAttributes) {
+			if (controlledAttr instanceof UniqueValuesAttributeWithRangeInput) {
+				throw new GenstarException("UniqueValuesAttributeWithRangeInput can not be controlled attribute (" + controlledAttr.getNameOnData() + ")");
+			}
+		}
+		
+		// 4. generate IPU controlled attributes values frequencies to verify the validity of control totals (file content)
 		Set<AttributeValuesFrequency> generatedControlledAVsFrequencies = GenstarUtils.generateAttributeValuesFrequencies(new HashSet<AbstractAttribute>(controlledAttributes));
 		Set<AttributeValuesFrequency> alreadyValidControlledAvfFrequencies = new HashSet<AttributeValuesFrequency>();
 		
-		// 4. IPU control totals file size verification
+		// 5. IPU control totals file size verification
 		List<List<String>> ipuControlTotalsFileContent = ipuControlTotalsFile.getContent();
 		if (generatedControlledAVsFrequencies.size() != ipuControlTotalsFileContent.size()) {
 			throw new GenstarException("Mismatched between required/valid number of IPU controlled totals and supplied number of IPU controlled totals. Required values: " 
 				+ generatedControlledAVsFrequencies.size() + ", supplied values (in control total file): " + ipuControlTotalsFileContent.size() + ". File: " + ipuControlTotalsFile.getPath());
 		}
 		
-		// 5. read the IPU control totals file line by line to initialize AttributeValueFrequencies
+		// 6. read the IPU control totals file line by line to initialize AttributeValueFrequencies
 		int ipuControlTotalLineLength = (controlledAttributes.size() * 2) + 1;
 		List<AttributeValuesFrequency> ipuControlTotals = new ArrayList<AttributeValuesFrequency>();
 		AbstractAttribute attribute;
@@ -123,8 +134,8 @@ public class IpuUtils {
 	}
 	
 	
-	public void buildIpuControlTotalsOfCompoundPopulation(IPopulation compoundPopulation, final String componentPopulationName, final GenstarCSVFile groupControlledAttributesListFile, 
-			final GenstarCSVFile componentControlledAttributesListFile, final List<List<String>> groupControlTotalsToBeBuilt, final List<List<String>> componentControlTotalsToBeBuilt) throws GenstarException {
+	public static void buildIpuControlTotalsOfCompoundPopulation(final IPopulation compoundPopulation, final String componentPopulationName, final GenstarCsvFile groupControlledAttributesListFile, 
+			final GenstarCsvFile componentControlledAttributesListFile, final List<AttributeValuesFrequency> groupControlTotalsToBeBuilt, final List<AttributeValuesFrequency> componentControlTotalsToBeBuilt) throws GenstarException {
 		
 		// parameters validation
 		if (compoundPopulation == null || groupControlledAttributesListFile == null || componentControlledAttributesListFile == null || groupControlTotalsToBeBuilt == null || componentControlTotalsToBeBuilt == null) {
@@ -166,18 +177,18 @@ public class IpuUtils {
 		}
 		 
 		// parse component controlled attributes
-		Map<String, AbstractAttribute> componentAttributesNameMap = new HashMap<String, AbstractAttribute>();
-		for (AbstractAttribute cAttr : componentAttributes) { componentAttributesNameMap.put(cAttr.getNameOnData(), cAttr); }
+		Map<String, AbstractAttribute> componentAttributesNameOnDataMap = new HashMap<String, AbstractAttribute>();
+		for (AbstractAttribute cAttr : componentAttributes) { componentAttributesNameOnDataMap.put(cAttr.getNameOnData(), cAttr); }
 		List<List<String>> componentControlledAttributesFileContent = componentControlledAttributesListFile.getContent();
 		List<AbstractAttribute> componentControlledAttributes = new ArrayList<AbstractAttribute>();
 		for (int line=0; line<componentControlledAttributesFileContent.size(); line++) {
 			List<String> row = componentControlledAttributesFileContent.get(line);
 			if (row.size() > 1) { throw new GenstarException("Invalid componentControlledAttributesListFile file format (file: " + componentControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
 			
-			String controlledAttrName = row.get(0);
-			AbstractAttribute componentControlledAttribute = componentAttributesNameMap.get(controlledAttrName);
-			if (componentControlledAttribute == null) { throw new GenstarException("Invalid (component) controlled attribute: " + controlledAttrName + ". File: " + groupControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
-			if (componentControlledAttributes.contains(componentControlledAttribute)) { throw new GenstarException("Duplicated (component) controlled attribute: " + controlledAttrName + ". File: " + componentControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
+			String controlledAttrNameOnData = row.get(0);
+			AbstractAttribute componentControlledAttribute = componentAttributesNameOnDataMap.get(controlledAttrNameOnData);
+			if (componentControlledAttribute == null) { throw new GenstarException("Invalid (component) controlled attribute: " + controlledAttrNameOnData + ". File: " + groupControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
+			if (componentControlledAttributes.contains(componentControlledAttribute)) { throw new GenstarException("Duplicated (component) controlled attribute: " + controlledAttrNameOnData + ". File: " + componentControlledAttributesListFile.getPath() + " at line " + (line + 1) + ")"); }
 			
 			componentControlledAttributes.add(componentControlledAttribute);
 		}
@@ -211,6 +222,9 @@ public class IpuUtils {
 		
 		
 		// fill groupControlTotalsToBeBuilt
+		groupControlTotalsToBeBuilt.addAll(groupAvfs);
+		Collections.sort(groupControlTotalsToBeBuilt, new GenstarUtils.AttributeValuesFrequencyComparator(groupControlledAttributes));
+		/*
 		List<AttributeValuesFrequency> sortedGroupAvfs = new ArrayList<AttributeValuesFrequency>(groupAvfs);
 		Collections.sort(sortedGroupAvfs, new GenstarUtils.AttributeValuesFrequencyComparator(groupControlledAttributes));
 		for (AttributeValuesFrequency groupAvf : sortedGroupAvfs) {
@@ -223,9 +237,13 @@ public class IpuUtils {
 			groupControlTotal.add(Integer.toString(groupAvf.getFrequency()));
 			groupControlTotalsToBeBuilt.add(groupControlTotal);
 		}
+		*/
 		
 		
 		// fill componentControlTotalsToBeBuilt
+		componentControlTotalsToBeBuilt.addAll(componentAvfs);
+		Collections.sort(componentControlTotalsToBeBuilt, new GenstarUtils.AttributeValuesFrequencyComparator(componentControlledAttributes));
+		/*
 		List<AttributeValuesFrequency> sortedComponentAvfs = new ArrayList<AttributeValuesFrequency>(componentAvfs);
 		Collections.sort(sortedComponentAvfs, new GenstarUtils.AttributeValuesFrequencyComparator(componentControlledAttributes));
 		for (AttributeValuesFrequency componentAvf : componentAvfs) {
@@ -238,18 +256,142 @@ public class IpuUtils {
 			componentControlTotal.add(Integer.toString(componentAvf.getFrequency()));
 			componentControlTotalsToBeBuilt.add(componentControlTotal);
 		}
-		
-		// use GenstarUtils.writeContentToCsvFile(List<List<String>>, String) to write the control totals to CSV file(s)
+		*/
 	}
 
 	
-	/*
-	public static List<List<String>> generateIpfControlTotals(final GenstarCSVFile attributesFile, final int total) throws GenstarException {
-	 */
-	public static List<List<String>> generateIpuControlTotals(final GenstarCSVFile attributesFile, final int total) throws GenstarException {
+	public static List<AttributeValuesFrequency> generateIpuControlTotals(final GenstarCsvFile attributesFile, final int total) throws GenstarException {
 		
 		// TODO
 		
 		throw new UnsupportedOperationException("Not yet implemented");
+	}
+	
+	
+	public static void writeIpuControlTotalsToCsvFile(final List<AttributeValuesFrequency> ipuControlTotals, final String csvOutputFile) throws GenstarException  {
+		
+		// convert ipuControlTotals to List<List<String>>
+		List<List<String>> controlTotalStrings = new ArrayList<List<String>>();
+		for (AttributeValuesFrequency controlTotal : ipuControlTotals) {
+			List<String> controlTotalString = new ArrayList<String>();
+			
+			for (AbstractAttribute controlledAttr : controlTotal.getAttributes()) {
+				controlTotalString.add(controlledAttr.getNameOnData());
+				controlTotalString.add(controlTotal.getAttributeValueOnData(controlledAttr).toCsvString());
+			}
+			
+			controlTotalString.add(Integer.toString(controlTotal.getFrequency()));
+			controlTotalStrings.add(controlTotalString);
+		}
+
+		GenstarUtils.writeContentToCsvFile(controlTotalStrings, csvOutputFile); // write to csv file
+	}
+	
+		
+	public static Map<AttributeValuesFrequency, List<Entity>> buildEntityCategories(final IPopulation population, final Set<AbstractAttribute> ipuControlledAttributes) throws GenstarException {
+		Map<AttributeValuesFrequency, List<Entity>> entityCategories = new HashMap<AttributeValuesFrequency, List<Entity>>();
+		
+		// 0. parameters validations
+		if (population == null) { throw new GenstarException("'population' parameter can not be null"); }
+		
+		if (ipuControlledAttributes == null || ipuControlledAttributes.isEmpty()) { throw new GenstarException("'ipuControlledAttributes' parameter can neither be null nor empty"); }
+		
+		// attributes in ipuControlledAttributes belong to population
+		List<AbstractAttribute> populationAttributes = population.getAttributes();
+		if (!populationAttributes.containsAll(ipuControlledAttributes)) {
+			throw new GenstarException("One or several IPU controlled attributes don't belong to the population");
+		}
+		
+		
+		// 1. generate attribute values frequencies GenstarUtils.generateAttributeValuesFrequencies(ipuControlledAttributes)
+		Set<AttributeValuesFrequency> attributeValuesFrequencies = GenstarUtils.generateAttributeValuesFrequencies(ipuControlledAttributes);
+		for (AttributeValuesFrequency avf : attributeValuesFrequencies) {
+			entityCategories.put(avf, new ArrayList<Entity>());
+		}
+		
+		List<Entity> entities = population.getEntities();
+		List<Entity> alreadyMatchedEntities = new ArrayList<Entity>();
+		
+		for (AttributeValuesFrequency avf : entityCategories.keySet()) {
+			
+			List<Entity> avfEntities = entityCategories.get(avf);
+			
+			for (Entity e : entities) {
+				if (avf.matchEntity(e)) {
+					avf.increaseFrequency();
+					alreadyMatchedEntities.add(e);
+				}
+			}
+			
+			avfEntities.addAll(alreadyMatchedEntities);
+			entities.removeAll(alreadyMatchedEntities);
+			alreadyMatchedEntities.clear();
+		}
+		
+		
+		// 2. if there is no matching entity for any attribute values sets, then throw exception
+		for (AttributeValuesFrequency avf : entityCategories.keySet()) {
+			if (avf.getFrequency() == 0) {
+				throw new GenstarException("No matching entity for attribute values set: " + avf.toString());
+			}
+		}
+		
+		
+		return entityCategories;
+	}
+	
+	
+	// TODO does this method belong to this class?
+	public static IPopulation extractIpuSamplePopulation(final IPopulation originalPopulation, final String samplePopulationName, final float percentage, final Set<AbstractAttribute> ipuControlledAttributes) throws GenstarException {
+		
+		// 0. parameters validation
+		if (originalPopulation == null) { throw new GenstarException("'originalPopulation' parameter can not be null"); }
+		if (samplePopulationName == null) { throw new GenstarException("'samplePopulationName' parameter can not be null"); }
+		if (percentage <= 0 || percentage > 100) { throw new GenstarException("value of 'percentage' parameter must be in (0, 100] range"); }
+		if (ipuControlledAttributes == null || ipuControlledAttributes.isEmpty()) { throw new GenstarException("'ipuControlledAttributes' parameter can neither be null nor empty"); }
+		
+	
+		// 1. Build entity categories: group entities into categories with respect to attribute value sets of IPU controlled totals
+		Map<AttributeValuesFrequency, List<Entity>> entityCategories = buildEntityCategories(originalPopulation, ipuControlledAttributes);
+		
+		
+		// 2. Build sample population
+		IPopulation samplePopulation = new Population(PopulationType.SAMPLE_DATA_POPULATION, samplePopulationName, originalPopulation.getAttributes());
+		
+		
+		// 2.1. firstly, try to satisfy that each attributeValueSet has one selected entity in the extracted sample population
+		for (List<Entity> eCategory : entityCategories.values()) {
+			int entityIndex = SharedInstances.RandomNumberGenerator.nextInt(eCategory.size());
+			Entity selectedEntity = eCategory.get(entityIndex);
+			samplePopulation.createEntity(selectedEntity);
+		}
+		
+		// 2.2. secondly, satisfy the "percentage" condition if possible
+		int alreadyExtractedEntities = entityCategories.size();
+		int originalPopulationSize = originalPopulation.getNbOfEntities();
+		int tobeExtractedEntities = (int) (((float)originalPopulationSize) * percentage / 100);
+		if (tobeExtractedEntities > alreadyExtractedEntities) {
+			int entitiesLeftToExtract = tobeExtractedEntities - alreadyExtractedEntities;
+			List<AttributeValuesFrequency> avfList = new ArrayList<AttributeValuesFrequency>(entityCategories.keySet());
+			
+			for (int i=0; i<entitiesLeftToExtract; i++) {
+				int entityIndex = SharedInstances.RandomNumberGenerator.nextInt(originalPopulationSize);
+				
+				AttributeValuesFrequency selectedAvf = null;
+				for (AttributeValuesFrequency avf : avfList) {
+					if (entityIndex >= avf.getFrequency()) {
+						entityIndex -= avf.getFrequency();
+					} else {
+						selectedAvf = avf;
+						break;
+					}
+				}
+				
+				Entity selectedEntity = entityCategories.get(selectedAvf).get(entityIndex);
+				samplePopulation.createEntity(selectedEntity);
+			}
+		}
+		
+		return samplePopulation;
 	}
 }

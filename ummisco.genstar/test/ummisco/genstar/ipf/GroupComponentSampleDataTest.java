@@ -18,27 +18,27 @@ import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.util.AttributeUtils;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 
 public class GroupComponentSampleDataTest {
 
 	@Test public void testBuildGroupComponentSampleEntities() throws GenstarException {
 		
 		// group generator
-		GenstarCSVFile groupAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/group_component_sample_data/group_attributes.csv", true);
+		GenstarCsvFile groupAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/group_component_sample_data/group_attributes.csv", true);
 		ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group generator");
 		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
 		groupGenerator.setPopulationName("household");
 		
 		// component generator
-		GenstarCSVFile componentAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/group_component_sample_data/component_attributes.csv", true);
+		GenstarCsvFile componentAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/group_component_sample_data/component_attributes.csv", true);
 		ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("component generator");
 		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		componentGenerator.setPopulationName("people");
 		
 		// sample files
-		GenstarCSVFile groupSampleFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/group_component_sample_data/group_sample.csv", true);
-		GenstarCSVFile componentSampleFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/group_component_sample_data/component_sample.csv", true);
+		GenstarCsvFile groupSampleFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/group_component_sample_data/group_sample.csv", true);
+		GenstarCsvFile componentSampleFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/group_component_sample_data/component_sample.csv", true);
 		
 		// groupIdAttributeOnGroup, groupIdAttributeOnComponent
 		AbstractAttribute groupIdAttributeOnGroup = groupGenerator.getAttributeByNameOnData("Household_ID");

@@ -37,6 +37,8 @@ public interface IPopulation {
 	
 	public abstract Entity createEntity(final List<EntityAttributeValue> entityAttributeValues) throws GenstarException;
 	
+	public abstract Entity createEntity(final Entity sourceEntity) throws GenstarException;
+	
 	public abstract List<Entity> createEntities(final List<List<EntityAttributeValue>> entityAttributeValuesList) throws GenstarException;
 	
 	public abstract Entity createEntityWithAttributeValuesOnEntity(final Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity) throws GenstarException;

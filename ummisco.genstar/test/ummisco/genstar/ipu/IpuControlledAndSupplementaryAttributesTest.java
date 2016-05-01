@@ -13,7 +13,7 @@ import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.util.AttributeUtils;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
@@ -21,22 +21,22 @@ import mockit.integration.junit4.JMockit;
 @RunWith(JMockit.class)
 public class IpuControlledAndSupplementaryAttributesTest {
 	
-	GenstarCSVFile groupAttributesFile;
-	GenstarCSVFile groupControlledAttributesFile;
-	GenstarCSVFile groupSupplementaryAttributesFile;
+	GenstarCsvFile groupAttributesFile;
+	GenstarCsvFile groupControlledAttributesFile;
+	GenstarCsvFile groupSupplementaryAttributesFile;
 	
-	GenstarCSVFile componentAttributesFile;
-	GenstarCSVFile componentControlledAttributesFile;
-	GenstarCSVFile componentSupplementaryAttributesFile;
+	GenstarCsvFile componentAttributesFile;
+	GenstarCsvFile componentControlledAttributesFile;
+	GenstarCsvFile componentSupplementaryAttributesFile;
 
 	@Before public void setup() throws GenstarException {
-		groupAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/group_attributes.csv", true);
-		groupControlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/group_controlled_attributes.csv", false);
-		groupSupplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/group_supplementary_attributes.csv", false);
+		groupAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/group_attributes.csv", true);
+		groupControlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/group_controlled_attributes.csv", false);
+		groupSupplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/group_supplementary_attributes.csv", false);
 		
-		componentAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/component_attributes.csv", true);
-		componentControlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/component_controlled_attributes.csv", false);
-		componentSupplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/component_supplementary_attributes.csv", false);
+		componentAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/component_attributes.csv", true);
+		componentControlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/component_controlled_attributes.csv", false);
+		componentSupplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlledAndSupplementaryAttributes/component_supplementary_attributes.csv", false);
 	}
 
 	@Test(expected = GenstarException.class) public void testInitializeIpuControlledAndSupplementaryAttributesWithNullGenerationRule() throws GenstarException {

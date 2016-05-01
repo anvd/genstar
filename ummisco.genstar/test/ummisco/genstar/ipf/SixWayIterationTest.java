@@ -21,7 +21,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValue;
 public class SixWayIterationTest {
 
 	
-	@Test public void testInitializeObjectSuccessfully(@Mocked final SixWayIPF ipf) throws GenstarException {
+	@Test public void testInitializeObjectSuccessfully(@Mocked final SixWayIpf ipf) throws GenstarException {
 		// data[2][2][2][2][2][2]
 		final double[][][][][][] data = {
 			{
@@ -107,7 +107,7 @@ public class SixWayIterationTest {
 	}
 
 
-	@Test(expected = GenstarException.class) public void testInitializeObjectWithZeroMarginals(@Mocked final SixWayIPF ipf, @Mocked final AbstractAttribute attribute, 
+	@Test(expected = GenstarException.class) public void testInitializeObjectWithZeroMarginals(@Mocked final SixWayIpf ipf, @Mocked final AbstractAttribute attribute, 
 			@Mocked final AttributeValue attributeValue) throws GenstarException {
 		// data[2][2][2][2][2][2]
 		final double[][][][][][] data = {
@@ -479,7 +479,7 @@ public class SixWayIterationTest {
 	}
 
 
-	@Test public void testNextIteration(@Mocked final SixWayIPF ipf) throws GenstarException {
+	@Test public void testNextIteration(@Mocked final SixWayIpf ipf) throws GenstarException {
 		// data[2][2][2][2][2][2]
 		final double[][][][][][] data = {
 			{
@@ -972,7 +972,7 @@ public class SixWayIterationTest {
 	}
 
 
-	@Test public void testGetNbOfEntitiesToGenerate(@Mocked final SixWayIPF ipf) throws GenstarException {
+	@Test public void testGetNbOfEntitiesToGenerate(@Mocked final SixWayIpf ipf) throws GenstarException {
 		// data[2][2][2][2][2][2]
 		final double[][][][][][] data = {
 			{

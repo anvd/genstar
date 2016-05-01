@@ -149,7 +149,7 @@ public class AttributeUtils {
 	}
 	
 	
-	public static void createAttributesFromCSVFile(final ISyntheticPopulationGenerator generator, final GenstarCSVFile attributesFile) throws GenstarException {
+	public static void createAttributesFromCSVFile(final ISyntheticPopulationGenerator generator, final GenstarCsvFile attributesFile) throws GenstarException {
 		
 		List<List<String>> attributeFileContent = attributesFile.getContent();
 		if ( attributeFileContent == null || attributeFileContent.isEmpty() ) { throw new GenstarException("Empty attribute file. File: " + attributesFile.getPath()); }

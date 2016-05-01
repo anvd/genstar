@@ -12,7 +12,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 
-public abstract class IPF<D, C, M> {
+public abstract class Ipf<D, C, M> {
 		
 	protected D data;
 	
@@ -24,12 +24,12 @@ public abstract class IPF<D, C, M> {
 	
 	protected SampleDataGenerationRule generationRule = null;
 	
-	protected List<IPFIteration<D, C, M>> iterations;
+	protected List<IpfIteration<D, C, M>> iterations;
 	
 	protected List<AttributeValuesFrequency> selectionProbabilities;
 
 	
-	protected IPF(final SampleDataGenerationRule generationRule) throws GenstarException {
+	protected Ipf(final SampleDataGenerationRule generationRule) throws GenstarException {
 		if (generationRule == null) { throw new GenstarException("'generationRule' can not be null"); }
 		this.generationRule = generationRule;
 		this.controls = new ArrayList<C>();
@@ -87,7 +87,7 @@ public abstract class IPF<D, C, M> {
 		if (iterations != null) {
 			iterations.clear();
 		} else {
-			iterations = new ArrayList<IPFIteration<D, C, M>>();
+			iterations = new ArrayList<IpfIteration<D, C, M>>();
 		}
 
 		if (selectionProbabilities != null) {
@@ -95,7 +95,7 @@ public abstract class IPF<D, C, M> {
 			selectionProbabilities = null;
 		}
 		
-		IPFIteration<D, C, M> iteration = createIPFIteration();
+		IpfIteration<D, C, M> iteration = createIPFIteration();
 		iterations.add(iteration);
 		int maxIterations = generationRule.getMaxIterations();
 		for (int iter=0; iter<maxIterations; iter++) {
@@ -104,7 +104,7 @@ public abstract class IPF<D, C, M> {
 		}		
 	}
 	
-	protected abstract IPFIteration<D, C, M> createIPFIteration() throws GenstarException;
+	protected abstract IpfIteration<D, C, M> createIPFIteration() throws GenstarException;
 
 	public abstract List<AttributeValuesFrequency> getSelectionProbabilitiesOfLastIPFIteration() throws GenstarException;
 	

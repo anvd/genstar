@@ -20,7 +20,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValue;
 @RunWith(JMockit.class)
 public class FiveWayIterationTest {
 
-	@Test public void testInitializeObjectSuccessfully(@Mocked final FiveWayIPF ipf) throws GenstarException {
+	@Test public void testInitializeObjectSuccessfully(@Mocked final FiveWayIpf ipf) throws GenstarException {
 		// data[2][2][2][2][2]
 		final double[][][][][] data = {
 			{
@@ -100,7 +100,7 @@ public class FiveWayIterationTest {
 	}
 
 	
-	@Test(expected = GenstarException.class) public void testInitializeObjectWithZeroMarginals(@Mocked final FiveWayIPF ipf, @Mocked final AbstractAttribute attribute, 
+	@Test(expected = GenstarException.class) public void testInitializeObjectWithZeroMarginals(@Mocked final FiveWayIpf ipf, @Mocked final AbstractAttribute attribute, 
 			@Mocked final AttributeValue attributeValue) throws GenstarException {
 		
 		// data[2][2][2][2][2]
@@ -295,7 +295,7 @@ public class FiveWayIterationTest {
 	}
 
 	
-	@Test public void testNextIteration(@Mocked final FiveWayIPF ipf) throws GenstarException {
+	@Test public void testNextIteration(@Mocked final FiveWayIpf ipf) throws GenstarException {
 		// data[2][2][2][2][2]
 		final double[][][][][] data = {
 			{
@@ -578,7 +578,7 @@ public class FiveWayIterationTest {
 	}
 
 	
-	@Test public void testGetNbOfEntitiesToGenerate(@Mocked final FiveWayIPF ipf) throws GenstarException {
+	@Test public void testGetNbOfEntitiesToGenerate(@Mocked final FiveWayIpf ipf) throws GenstarException {
 		// data[2][2][2][2][2]
 		final double[][][][][] data = {
 			{

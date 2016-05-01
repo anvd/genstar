@@ -6,10 +6,10 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 
-public class SixWayIteration extends IPFIteration<double[][][][][][], int[][][][][], double[][][][][]> {
+public class SixWayIteration extends IpfIteration<double[][][][][][], int[][][][][], double[][][][][]> {
 
 	
-	public SixWayIteration(final SixWayIPF ipf) throws GenstarException {
+	public SixWayIteration(final SixWayIpf ipf) throws GenstarException {
 		super(ipf, 0, ipf.getData());
 	}
 	

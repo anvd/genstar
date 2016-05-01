@@ -5,16 +5,16 @@ import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 
 // TODO change name to IpfControlledAndSupplementaryAttributes
 public class ControlledAndSupplementaryAttributes {
 	
 	private SampleDataGenerationRule generationRule;
 	
-	private GenstarCSVFile controlledAttributesFile;
+	private GenstarCsvFile controlledAttributesFile;
 	
-	private GenstarCSVFile supplementaryAttributesFile;
+	private GenstarCsvFile supplementaryAttributesFile;
 	
 	private List<AbstractAttribute> controlledAttributes;
 	

@@ -9,45 +9,32 @@ import ummisco.genstar.util.IpuUtils;
 
 public class IpuControlTotals {
 
-	private List<AttributeValuesFrequency> groupAvFrequencies;
+	private List<AttributeValuesFrequency> groupTypeConstraints;
 	
-	private List<AttributeValuesFrequency> componentAvFrequencies;
+	private List<AttributeValuesFrequency> componentTypeConstraints;
 
 	
 	public IpuControlTotals(final IpuGenerationRule generationRule) throws GenstarException {
 		if (generationRule == null) { throw new GenstarException("'generationRule' parameter can not be null"); }
 		
-		groupAvFrequencies = IpuUtils.parseIpuControlTotalsFile(generationRule.getGenerator(), generationRule.getGroupControlledAttributes(), generationRule.getGroupControlTotalsFile());
-		componentAvFrequencies = IpuUtils.parseIpuControlTotalsFile(generationRule.getComponentGenerator(), generationRule.getComponentControlledAttributes(), generationRule.getComponentControlTotalsFile());
+		groupTypeConstraints = IpuUtils.parseIpuControlTotalsFile(generationRule.getGenerator(), generationRule.getGroupControlledAttributes(), generationRule.getGroupControlTotalsFile());
+		componentTypeConstraints = IpuUtils.parseIpuControlTotalsFile(generationRule.getComponentGenerator(), generationRule.getComponentControlledAttributes(), generationRule.getComponentControlTotalsFile());
 	}
 	
 	public int getGroupTypes() {
-		return groupAvFrequencies.size();
+		return groupTypeConstraints.size();
 	}
 	
 	public int getComponentTypes() {
-		return componentAvFrequencies.size();
+		return componentTypeConstraints.size();
 	}
 	
-	public List<AttributeValuesFrequency> getGroupAttributesFrequencies() {
-		return new ArrayList<AttributeValuesFrequency>(groupAvFrequencies);
+	public List<AttributeValuesFrequency> getGroupTypeConstraints() {
+		return new ArrayList<AttributeValuesFrequency>(groupTypeConstraints);
 	}
 	
-	public List<AttributeValuesFrequency> getComponentAttributesFrequencies() {
-		return new ArrayList<AttributeValuesFrequency>(componentAvFrequencies);
+	public List<AttributeValuesFrequency> getComponentTypeConstraints() {
+		return new ArrayList<AttributeValuesFrequency>(componentTypeConstraints);
 	}
-	
-/*
-	public List<AttributeValuesFrequency> getMatchingAttributeValuesFrequencies(final Map<AbstractAttribute, AttributeValue> matchingCriteria) {
-		List<AttributeValuesFrequency> matchings = new ArrayList<AttributeValuesFrequency>();
-		
-		for (AttributeValuesFrequency f : avFrequencies) {
-			if (f.matchAttributeValues(matchingCriteria)) { matchings.add(f); }
-		}
-		
-		return matchings;
-	}
- */
-	
 	
 }

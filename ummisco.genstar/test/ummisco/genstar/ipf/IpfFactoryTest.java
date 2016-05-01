@@ -15,74 +15,74 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 
 @RunWith(JMockit.class)
-public class IPFFactoryTest {
+public class IpfFactoryTest {
 
 	@Test(expected = GenstarException.class) public void testCreateIPFWithNullGenerationRule() throws GenstarException {
-		IPFFactory.createIPF(null); 
+		IpfFactory.createIPF(null); 
 	}
 	
 	
 	@Test public void testCreateTwoWayIPFSucessfully(@Mocked final SampleDataGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
-			@Mocked final TwoWayIPF mockedIpf) throws GenstarException {
+			@Mocked final TwoWayIpf mockedIpf) throws GenstarException {
 		
 		new Expectations() {{
 			rule.getControlledAttributes(); result = controlledAttributes;
 			controlledAttributes.size(); result = 2;
 		}};
 		
-		IPF ipf = IPFFactory.createIPF(rule);
-		assertTrue(ipf instanceof TwoWayIPF);
+		Ipf ipf = IpfFactory.createIPF(rule);
+		assertTrue(ipf instanceof TwoWayIpf);
 	}
 	
 	
 	@Test public void testCreateThreeWayIPFSuccessfully(@Mocked final SampleDataGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
-			@Mocked final ThreeWayIPF mockedIpf) throws GenstarException {
+			@Mocked final ThreeWayIpf mockedIpf) throws GenstarException {
 		
 		new Expectations() {{
 			rule.getControlledAttributes(); result = controlledAttributes;
 			controlledAttributes.size(); result = 3;
 		}};
 		
-		IPF ipf = IPFFactory.createIPF(rule);
-		assertTrue(ipf instanceof ThreeWayIPF);
+		Ipf ipf = IpfFactory.createIPF(rule);
+		assertTrue(ipf instanceof ThreeWayIpf);
 	}
 	
 	
 	@Test public void testCreateFourWayIPFSuccessfully(@Mocked final SampleDataGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
-			@Mocked final FourWayIPF mockedIpf) throws GenstarException {
+			@Mocked final FourWayIpf mockedIpf) throws GenstarException {
 
 		new Expectations() {{
 			rule.getControlledAttributes(); result = controlledAttributes;
 			controlledAttributes.size(); result = 4;
 		}};
 		
-		IPF ipf = IPFFactory.createIPF(rule);
-		assertTrue(ipf instanceof FourWayIPF);
+		Ipf ipf = IpfFactory.createIPF(rule);
+		assertTrue(ipf instanceof FourWayIpf);
 	}
 	
 	
 	@Test public void testCreateFiveWayIPFSuccessfully(@Mocked final SampleDataGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
-			@Mocked final FiveWayIPF mockedIpf) throws GenstarException {
+			@Mocked final FiveWayIpf mockedIpf) throws GenstarException {
 
 		new Expectations() {{
 			rule.getControlledAttributes(); result = controlledAttributes;
 			controlledAttributes.size(); result = 5;
 		}};
 		
-		IPF ipf = IPFFactory.createIPF(rule);
-		assertTrue(ipf instanceof FiveWayIPF);
+		Ipf ipf = IpfFactory.createIPF(rule);
+		assertTrue(ipf instanceof FiveWayIpf);
 	}
 	
 
 	@Test public void testCreateFixWayIPFSuccessfully(@Mocked final SampleDataGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
-			@Mocked final SixWayIPF mockedIpf) throws GenstarException {
+			@Mocked final SixWayIpf mockedIpf) throws GenstarException {
 
 		new Expectations() {{
 			rule.getControlledAttributes(); result = controlledAttributes;
 			controlledAttributes.size(); result = 6;
 		}};
 		
-		IPF ipf = IPFFactory.createIPF(rule);
-		assertTrue(ipf instanceof SixWayIPF);
+		Ipf ipf = IpfFactory.createIPF(rule);
+		assertTrue(ipf instanceof SixWayIpf);
 	}
 }

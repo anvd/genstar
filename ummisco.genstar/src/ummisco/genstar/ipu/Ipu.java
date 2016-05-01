@@ -1,6 +1,7 @@
 package ummisco.genstar.ipu;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,34 +23,49 @@ public class Ipu {
 	
 	private int[][] ipuMatrix;
 	
+	/** Number of group entities in sample data */
 	private int numberOfRows;
 	
+	/** Number of group and component entities' types */
 	private int numberOfColumns;
 	
+	/** Number of group types */
 	private int groupTypes;
 	
+	/** Number of component types */
 	private int componentTypes;
 	
 	
-	private List<AttributeValuesFrequency> groupTypeValues;
+	private List<AttributeValuesFrequency> groupTypeConstraints;
 	
-	private List<AttributeValuesFrequency> componentTypeValues;
+	private List<AttributeValuesFrequency> componentTypeConstraints;
 	
 	
+	/** An element (a list itself) contains weights that group entities are picked/selected in each iteration */
 	private List<List<Double>> weights;
 	
+	/** An element (a list itself) contains sums of weights representing the probabilities that entity types are picked/selected in each iteration */
 	private List<List<Double>> weightedSums;
 	
+	/** The number of entity types that we need to reach (i.e., total constraints) */
 	private List<Integer> constraints;
 	
+	/** An element (a list itself) represents the differences between the weighted sums in each iteration and the constraints (i.e., total constraints)  */
 	private List<List<Double>> deltas;
 	
+	/** An element (a double) is the sum of deltas in each iteration, representing the goodness of fit */
 	private List<Double> sumDeltas;
 	
 	
+	/** Elements in each column that we need to compute weights in each iteration */
 	private List<List<Integer>> tobeComputedWeightsRowsByColumns;
 	
+	/** Elements in each column that we don't need to compute weights in each iteration */
 	private List<List<Integer>> notTobeComputedWeightsRowsByColumns;
+	
+	private List<Entity> groupSampleEntities;
+	
+	private Map<Entity, Integer> selectionProbabilities = null;
 	
 
 	public Ipu(final IpuGenerationRule generationRule) throws GenstarException {
@@ -68,21 +84,22 @@ public class Ipu {
 		//			household types are determined by household controlled variables such as household size, income, ...
 		//			person types are determined by person controlled variables such as age, race, gender, ...
 		
-		numberOfRows = generationRule.getSampleData().getSampleEntityPopulation().getNbOfEntities();
+		groupSampleEntities = generationRule.getSampleData().getSampleEntityPopulation().getEntities();
+		numberOfRows = groupSampleEntities.size();
 		groupTypes = controlTotals.getGroupTypes();
 		componentTypes = controlTotals.getComponentTypes();
 		numberOfColumns = groupTypes + componentTypes; 
 		ipuMatrix = new int[numberOfRows][numberOfColumns];
 		
-		groupTypeValues = controlTotals.getGroupAttributesFrequencies();
-		componentTypeValues = controlTotals.getComponentAttributesFrequencies();
+		groupTypeConstraints = controlTotals.getGroupTypeConstraints();
+		componentTypeConstraints = controlTotals.getComponentTypeConstraints();
 		
 		fillIpuMatrix();
 		
 		// initialize constraints
 		constraints = new ArrayList<Integer>(numberOfColumns);
-		for (AttributeValuesFrequency groupF : groupTypeValues) { constraints.add(groupF.getFrequency()); }
-		for (AttributeValuesFrequency componentF : componentTypeValues) { constraints.add(componentF.getFrequency()); }
+		for (AttributeValuesFrequency groupF : groupTypeConstraints) { constraints.add(groupF.getFrequency()); }
+		for (AttributeValuesFrequency componentF : componentTypeConstraints) { constraints.add(componentF.getFrequency()); }
 
 		// initialize weightedSums
 		weightedSums = new ArrayList<List<Double>>();
@@ -155,7 +172,6 @@ public class Ipu {
 		
 		GroupComponentSampleData groupComponentSampleData = generationRule.getSampleData();
 		String componentPopulationName = groupComponentSampleData.getComponentPopulationName();
-		List<Entity> groupSampleEntities = groupComponentSampleData.getSampleEntityPopulation().getEntities();
 		List<AbstractAttribute> groupControlledAttributes = generationRule.getGroupControlledAttributes();
 		List<AbstractAttribute> componentControlledAttributes = generationRule.getComponentControlledAttributes();
 		for (int row=0; row<numberOfRows; row++) {
@@ -165,7 +181,7 @@ public class Ipu {
 			
 			// fill "group" part
 			for (int column=0; column<groupTypes; column++) {
-				AttributeValuesFrequency groupAvf =  groupTypeValues.get(column);
+				AttributeValuesFrequency groupAvf =  groupTypeConstraints.get(column);
 				if (groupAvf.matchAttributeValuesOnData(groupControlledAttributesValuesOnData)) {
 					ipuMatrix[row][column] += 1;
 					break;
@@ -179,7 +195,7 @@ public class Ipu {
 					Map<AbstractAttribute, AttributeValue> componentControlledAttributesValuesOnData = componentEntity.getAttributesValuesOnData(componentControlledAttributes);
 
 					for (int column=groupTypes; column<numberOfColumns; column++) {
-						AttributeValuesFrequency componentAvf = componentTypeValues.get(column - groupTypes);
+						AttributeValuesFrequency componentAvf = componentTypeConstraints.get(column - groupTypes);
 						if (componentAvf.matchAttributeValuesOnData(componentControlledAttributesValuesOnData)) {
 							ipuMatrix[row][column] += 1;
 							break;
@@ -192,6 +208,14 @@ public class Ipu {
 	
 	
 	public void fit() throws GenstarException {
+		// run "fit" once only
+		if (selectionProbabilities == null) {
+			selectionProbabilities = new HashMap<Entity, Integer>();
+		} else {
+			return;
+		}
+		
+		
 		for (int iteration=0; iteration<generationRule.getMaxIterations(); iteration++) {
 			for (int column=0; column<numberOfColumns; column++) {
 				computeWeights(column);
@@ -199,6 +223,12 @@ public class Ipu {
 			}
 
 			evaluateGoodnessOfFit();
+		}
+		
+		// build selectionProbabilities based on the latest selection weights of group sample entities
+		List<Double> latestWeights = weights.get(weights.size() - 1);
+		for (int index=0; index<groupSampleEntities.size(); index++) {
+			selectionProbabilities.put(groupSampleEntities.get(index), (int) Math.round(latestWeights.get(index)));
 		}
 	}
 	
@@ -212,9 +242,9 @@ public class Ipu {
 		List<Integer> notTobeComputedWeightsRows = notTobeComputedWeightsRowsByColumns.get(column);
 		
 		double[] newWeightsArray = new double[numberOfRows];
-		for (int row : notTobeComputedWeightsRows) { newWeightsArray[row] = previousWeights.get(row); }  // ?
+		for (int row : notTobeComputedWeightsRows) { newWeightsArray[row] = previousWeights.get(row); }  // no need to compute weights, the assign the previous weights
 		for (int row : tobeComputedWeightsRows) {
-			newWeightsArray[row] = (((double)constraint) / previousWeightedSum) * previousWeights.get(row); // = constraint / previousWeightedSum * previousWeight
+			newWeightsArray[row] = (((double)constraint) / previousWeightedSum) * previousWeights.get(row); // newWeight = constraint / previousWeightedSum * previousWeight
 		}
 		
 		List<Double> newWeights = new ArrayList<Double>(newWeightsArray.length);
@@ -239,6 +269,12 @@ public class Ipu {
 		}
 		
 		weightedSums.add(latestWeightedSums);
+	}
+	
+	
+	public Map<Entity, Integer> getSelectionProbabilities() throws GenstarException {
+		if (selectionProbabilities == null) { fit(); }
+		return new HashMap<Entity, Integer>(selectionProbabilities);
 	}
 	
 	
@@ -273,13 +309,13 @@ public class Ipu {
 		
 		int column = 0;
 		System.out.println("groupTypeValues:");
-		for (AttributeValuesFrequency avf : groupTypeValues) { 
+		for (AttributeValuesFrequency avf : groupTypeConstraints) { 
 			System.out.println("column " + column + ": "  + avf.toString());
 			column++;
 		}
 		
 		System.out.println("componentTypeValues:");
-		for (AttributeValuesFrequency avf : componentTypeValues) { 
+		for (AttributeValuesFrequency avf : componentTypeConstraints) { 
 			System.out.println("column " + column + ": "  + avf.toString());
 			column++;
 		}

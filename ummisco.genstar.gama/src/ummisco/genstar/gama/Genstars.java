@@ -51,7 +51,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.CsvWriter;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
 import ummisco.genstar.util.INPUT_DATA_FORMATS;
 import ummisco.genstar.util.IpfUtils;
@@ -94,11 +94,11 @@ public abstract class Genstars {
 			
 			String attributesCSVFilePath = populationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION.ATTRIBUTES_PROPERTY);
 			if (attributesCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION.ATTRIBUTES_PROPERTY + " property not found in " + populationPropertiesFilePath); }
-			GenstarCSVFile attributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
+			GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
 			
 			String generationRulesCSVFilePath = populationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION.GENERATION_RULES_PROPERTY);
 			if (generationRulesCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION.GENERATION_RULES_PROPERTY + " property not found in " + populationPropertiesFilePath); }
-			GenstarCSVFile generationRulesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, generationRulesCSVFilePath, true), true);
+			GenstarCsvFile generationRulesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, generationRulesCSVFilePath, true), true);
 			
 			String nbOfEntitiesProperty = populationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION.NUMBER_OF_ENTITIES);
 			if (nbOfEntitiesProperty == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION.NUMBER_OF_ENTITIES + " property not found in " + populationPropertiesFilePath); }
@@ -159,9 +159,9 @@ public abstract class Genstars {
 		
 		try {
 			// initialize CSV files
-			GenstarCSVFile attributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
-			GenstarCSVFile sampleDataCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, sampleDataCSVFilePath, true), true);
-			GenstarCSVFile distributionFormatCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, distributionFormatCSVFilePath, true), true);
+			GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
+			GenstarCsvFile sampleDataCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, sampleDataCSVFilePath, true), true);
+			GenstarCsvFile distributionFormatCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, distributionFormatCSVFilePath, true), true);
 			
 			// 1. create the generator then add attributes
 			ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("dummy generator", 10);
@@ -263,17 +263,17 @@ public abstract class Genstars {
 			// 1. initialize CSV files
 			String attributesCSVFilePath = controlTotalProperties.getProperty(PROPERTY_FILES.CONTROL_TOTALS.ATTRIBUTES_PROPERTY);
 			if (attributesCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION.ATTRIBUTES_PROPERTY + " property not found in " + controlTotalPropertiesFilePath); }
-			GenstarCSVFile attributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
+			GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
 			
 			String idAttributeNameOnData = controlTotalProperties.getProperty(PROPERTY_FILES.CONTROL_TOTALS.ID_ATTRIBUTE_PROPERTY);
 			
 			String controlAttributesCSVFilePath = controlTotalProperties.getProperty(PROPERTY_FILES.CONTROL_TOTALS.CONTROLLED_ATTRIBUTES_PROPERTY);
 			if (controlAttributesCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.CONTROL_TOTALS.CONTROLLED_ATTRIBUTES_PROPERTY + " property not found in " + controlTotalPropertiesFilePath); }
-			GenstarCSVFile controlAttributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlAttributesCSVFilePath, true), false);
+			GenstarCsvFile controlAttributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlAttributesCSVFilePath, true), false);
 			
 			String populationCSVFilePath = controlTotalProperties.getProperty(PROPERTY_FILES.CONTROL_TOTALS.POPULATION_DATA_PROPERTY);
 			if (populationCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.CONTROL_TOTALS.POPULATION_DATA_PROPERTY + " property not found in " + controlTotalPropertiesFilePath); }
-			GenstarCSVFile populationCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, populationCSVFilePath, true), true);
+			GenstarCsvFile populationCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, populationCSVFilePath, true), true);
 			
 			int controlAttributesRows = controlAttributesCSVFile.getRows();
 			if (controlAttributesCSVFile.getColumns() != 1 || controlAttributesRows < 2) {
@@ -409,7 +409,7 @@ public abstract class Genstars {
 			// 1. Read the ATTRIBUTES_PROPERTIES then create the generator
 			String attributesCSVFilePath = populationPropeties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.ATTRIBUTES_PROPERTY);
 			if (attributesCSVFilePath == null) { throw new GenstarException(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.ATTRIBUTES_PROPERTY + " property not found in " + populationPropertiesFilePath); }
-			GenstarCSVFile attributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
+			GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
 			ISingleRuleGenerator generator = new SingleRuleGenerator("single rule generator");
 			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 			
@@ -452,7 +452,7 @@ public abstract class Genstars {
 			
 			// 1. Read the ATTRIBUTES_PROPERTIES then create the generator
 			String attributesCSVFilePath = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.ATTRIBUTES_PROPERTY);
-			GenstarCSVFile attributesCSVFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
+			GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
 			ISingleRuleGenerator generator = new SingleRuleGenerator("single rule generator");
 			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 			
@@ -495,7 +495,7 @@ public abstract class Genstars {
 			
 			String attributesFileProperty = populationProperties.getProperty(PROPERTY_FILES.RANDOM_SINGLE_POPULATION.ATTRIBUTES_PROPERTY);
 			if (attributesFileProperty == null) { throw new GenstarException(PROPERTY_FILES.RANDOM_SINGLE_POPULATION.ATTRIBUTES_PROPERTY + " property not found in " + populationPropertiesFilePath); }
-			GenstarCSVFile attributesFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesFileProperty, true), true);
+			GenstarCsvFile attributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesFileProperty, true), true);
 			
 			String nbOfEntitiesProperty = populationProperties.getProperty(PROPERTY_FILES.RANDOM_SINGLE_POPULATION.NB_OF_ENTITIES_PROPERTY);
 			if (nbOfEntitiesProperty == null) { throw new GenstarException(PROPERTY_FILES.RANDOM_SINGLE_POPULATION.NB_OF_ENTITIES_PROPERTY + " property not found in " + populationPropertiesFilePath); }
@@ -546,14 +546,14 @@ public abstract class Genstars {
 			
 			String groupAttributesFileProperty = populationProperties.getProperty(PROPERTY_FILES.RANDOM_COMPOUND_POPULATION.GROUP_ATTRIBUTES_PROPERTY);
 			if (groupAttributesFileProperty == null) { throw new GenstarException(PROPERTY_FILES.RANDOM_COMPOUND_POPULATION.GROUP_ATTRIBUTES_PROPERTY + " property not found in " + populationConfigurationFile); }
-			GenstarCSVFile groupAttributesFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, groupAttributesFileProperty, true), true);
+			GenstarCsvFile groupAttributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, groupAttributesFileProperty, true), true);
 			
 			String componentPopulationName = populationProperties.getProperty(PROPERTY_FILES.RANDOM_COMPOUND_POPULATION.COMPONENT_POPULATION_NAME_PROPERTY);
 			if (componentPopulationName == null) { throw new GenstarException(PROPERTY_FILES.RANDOM_COMPOUND_POPULATION.COMPONENT_POPULATION_NAME_PROPERTY + " property not found in " + populationConfigurationFile); }
 			
 			String componentAttributesFileProperty = populationProperties.getProperty(PROPERTY_FILES.RANDOM_COMPOUND_POPULATION.COMPONENT_ATTRIBUTES_PROPERTY);
 			if (componentAttributesFileProperty == null) { throw new GenstarException(PROPERTY_FILES.RANDOM_COMPOUND_POPULATION.COMPONENT_ATTRIBUTES_PROPERTY ); }
-			GenstarCSVFile componentAttributesFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, componentAttributesFileProperty, true), true);
+			GenstarCsvFile componentAttributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, componentAttributesFileProperty, true), true);
 			
 			String nbOfGroupEntitiesProperty = populationProperties.getProperty(PROPERTY_FILES.RANDOM_COMPOUND_POPULATION.NB_OF_GROUP_ENTITIES_PROPERTY);
 			if (nbOfGroupEntitiesProperty == null) { throw new GenstarException(PROPERTY_FILES.RANDOM_COMPOUND_POPULATION.NB_OF_GROUP_ENTITIES_PROPERTY + " property not found in " + populationConfigurationFile); }
@@ -598,7 +598,7 @@ public abstract class Genstars {
 			for (String populationName : populationAttributesFilePaths.keySet()) {
 				ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
 				
-				GenstarCSVFile attributesFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, populationAttributesFilePaths.get(populationName), true), true);
+				GenstarCsvFile attributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, populationAttributesFilePaths.get(populationName), true), true);
 				AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 				
 				populationAttributes.put(populationName, generator.getAttributes());
@@ -636,7 +636,7 @@ public abstract class Genstars {
 
 		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
 		
-		GenstarCSVFile attributesFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesFilePath, true), true);
+		GenstarCsvFile attributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesFilePath, true), true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 
 		Map<String, List<AbstractAttribute>> populationsAttributes = new HashMap<String, List<AbstractAttribute>>();
@@ -644,8 +644,8 @@ public abstract class Genstars {
 		IPopulation genstarPopulation = GamaGenstarUtils.convertGamaPopulationToGenstarPopulation(null, gamaPopulation, populationsAttributes);
 		
 		// do the analysis
-		GenstarCSVFile controlTotalsFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
-		GenstarCSVFile controlledAttributesListFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlledAttributesListFilePath, true), false);
+		GenstarCsvFile controlTotalsFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
+		GenstarCsvFile controlledAttributesListFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlledAttributesListFilePath, true), false);
 		return IpfUtils.analyseIpfPopulation(genstarPopulation, controlledAttributesListFile, controlTotalsFile);
 	}
 	
@@ -682,7 +682,7 @@ public abstract class Genstars {
 			*/
 			
 			// TODO analyseIpfPopulation need the information of ID attribute -> option 1: analyse compound Ipf population
-			GenstarCSVFile controlTotalsFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
+			GenstarCsvFile controlTotalsFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
 			List<Integer> generatedFrequencies = analyseIpfPopulation(scope, gamaPopulation, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath);
 			
 			// write analysis result to GAMA console
@@ -735,7 +735,7 @@ public abstract class Genstars {
 			List<Integer> generatedFrequencies = GenstarUtils.analyseIpfPopulation(genstarPopulation, controlledAttributesListFile, controlTotalsFile);
 			*/
 			
-			GenstarCSVFile controlTotalsFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
+			GenstarCsvFile controlTotalsFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
 			List<Integer> generatedFrequencies = analyseIpfPopulation(scope, gamaPopulation, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath);
 
 			// output file

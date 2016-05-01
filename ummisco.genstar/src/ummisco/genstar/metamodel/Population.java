@@ -36,7 +36,7 @@ public class Population implements IPopulation {
 
 	public Population(final PopulationType type, final String name, final List<AbstractAttribute> attributes) throws GenstarException {
 		if (type == null) { throw new GenstarException("Parameter type can not be null"); }
-		if ( name == null ) { throw new GenstarException("Parameter name can not be null"); }
+		if (name == null) { throw new GenstarException("Parameter name can not be null"); }
 		if (attributes == null) { throw new GenstarException("Parameter attributes can not be null"); }
 		
 		Set<AbstractAttribute> attributesSet = new HashSet<AbstractAttribute>(attributes);
@@ -165,13 +165,36 @@ public class Population implements IPopulation {
 		return e;
 	}
 	
-	@Override public List<Entity> createEntities(final List<List<EntityAttributeValue>> entityAttributeValuesList) throws GenstarException {
-		List<Entity> entities = new ArrayList<Entity>();
-		for (List<EntityAttributeValue> eavs : entityAttributeValuesList) { 
-			entities.add(this.createEntity(eavs));
+	@Override public Entity createEntity(final Entity sourceEntity) throws GenstarException {
+		return replicateEntity(sourceEntity, this);
+	}
+	
+	
+	private Entity replicateEntity(final Entity sourceEntity, final IPopulation targetPopulation) throws GenstarException {
+		Entity replicatedEntity = targetPopulation.createEntity(sourceEntity.getEntityAttributeValues());
+		
+		List<IPopulation> sourceComponentPopulations = sourceEntity.getComponentPopulations();
+		for (IPopulation sourceComponentPop : sourceComponentPopulations) {
+			IPopulation tagetComponentSamplePopulation = replicatedEntity.createComponentPopulation(sourceComponentPop.getName(), sourceComponentPop.getAttributes());
+			tagetComponentSamplePopulation.addGroupReferences(sourceComponentPop.getGroupReferences());
+			tagetComponentSamplePopulation.addComponentReferences(sourceComponentPop.getComponentReferences());
+			
+			for (Entity sourceComponentEntity : sourceComponentPop.getEntities()) {
+				replicateEntity(sourceComponentEntity, tagetComponentSamplePopulation);
+			}
 		}
 		
-		return entities;
+		return replicatedEntity;
+	}
+	
+	
+	@Override public List<Entity> createEntities(final List<List<EntityAttributeValue>> entityAttributeValuesList) throws GenstarException {
+		List<Entity> createdEntities = new ArrayList<Entity>();
+		for (List<EntityAttributeValue> eavs : entityAttributeValuesList) { 
+			createdEntities.add(this.createEntity(eavs));
+		}
+		
+		return createdEntities;
 	}
 
 	

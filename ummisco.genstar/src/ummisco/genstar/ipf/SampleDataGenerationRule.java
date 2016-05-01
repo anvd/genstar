@@ -8,14 +8,14 @@ import java.util.Map;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.GenerationRule;
-import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.IPopulation;
+import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.Population;
 import ummisco.genstar.metamodel.PopulationType;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
-import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
+import ummisco.genstar.util.GenstarUtils;
 import ummisco.genstar.util.SharedInstances;
 
 // TODO make SampleDataGenerationRule a super class (of IpfGenerationRule and IpuGenerationRule), change this class to IpfGenerationRule
@@ -26,17 +26,17 @@ public class SampleDataGenerationRule extends GenerationRule {
 	public static final int DEFAULT_MAX_ITERATIONS = 3;
 	
 	
-	private IPF ipf;
+	private Ipf ipf;
 	
 	private ISampleData sampleData;
 	
-	private GenstarCSVFile controlTotalsFile;
+	private GenstarCsvFile controlTotalsFile;
 	
 	private IpfControlTotals controlTotals;
 	
-	private GenstarCSVFile controlledAttributesFile;
+	private GenstarCsvFile controlledAttributesFile;
 	
-	private GenstarCSVFile supplementaryAttributesFile;
+	private GenstarCsvFile supplementaryAttributesFile;
 	
 	private ControlledAndSupplementaryAttributes controlledAndSupplementaryAttributes;
 	
@@ -58,8 +58,8 @@ public class SampleDataGenerationRule extends GenerationRule {
 	
 	
 	public SampleDataGenerationRule(final ISingleRuleGenerator populationGenerator, final String name,
-			final GenstarCSVFile controlledAttributesFile, final GenstarCSVFile controlTotalsFile, 
-			final GenstarCSVFile supplementaryAttributesFile, final int maxIterations) throws GenstarException {
+			final GenstarCsvFile controlledAttributesFile, final GenstarCsvFile controlTotalsFile, 
+			final GenstarCsvFile supplementaryAttributesFile, final int maxIterations) throws GenstarException {
 		
 		super(populationGenerator, name);
 		
@@ -98,6 +98,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 		return RULE_TYPE_NAME;
 	}
 	
+	// TODO use IpuUtils.buildEntityCategories instead
 	private void buildSampleEntityCategories() throws GenstarException {
 		sampleEntityCategories = new HashMap<AttributeValuesFrequency, List<Entity>>();
 		
@@ -119,12 +120,14 @@ public class SampleDataGenerationRule extends GenerationRule {
 				int selectedSampleEntityIndex = SharedInstances.RandomNumberGenerator.nextInt(selectedSampleCategory.size());
 				Entity sourceSampleEntity = selectedSampleCategory.get(selectedSampleEntityIndex);
 				
-				Entity targetGeneratedEntity = replicateSampleEntity(sourceSampleEntity, internalGeneratedPopulation);
+				Entity targetGeneratedEntity = GenstarUtils.replicateSampleEntity(sourceSampleEntity, internalGeneratedPopulation);
 				sampleData.recodeIdAttributes(targetGeneratedEntity);
 			}
 		}
 	}
 	
+	/*
+	TODO move this method to GenstarUtils
 	private Entity replicateSampleEntity(final Entity sourceSampleEntity, final IPopulation targetPopulation) throws GenstarException {
 		Entity replicatedEntity = targetPopulation.createEntity(sourceSampleEntity.getEntityAttributeValues());
 		
@@ -141,7 +144,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 		
 		return replicatedEntity;
 	}
-
+	 */
 
 	/**
 	 * TODO describe how the method works
@@ -168,7 +171,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 		Entity pickedSampleEntity = internalSampleEntities.get(currentEntityIndex);
 		currentEntityIndex++;
 		
-		transferData(pickedSampleEntity, entity);
+		GenstarUtils.transferData(pickedSampleEntity, entity);
 		
 		// heuristic: only inject group & component reference once
 		if (currentEntityIndex == 1) {
@@ -181,6 +184,8 @@ public class SampleDataGenerationRule extends GenerationRule {
 	}
 	
 	
+	/*
+	TODO move this method to GenstarUtils
 	private void transferData(final Entity source, final Entity target) throws GenstarException {
 		
 		// 1. transfer data from SampleEntity to Entity
@@ -202,6 +207,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 			}
 		}
 	}
+	*/
 	
 
 	@Override
@@ -223,7 +229,7 @@ public class SampleDataGenerationRule extends GenerationRule {
 		return null;
 	}
 	
-	public IPF getIPF() {
+	public Ipf getIPF() {
 		return ipf;
 	}
 	
@@ -235,11 +241,11 @@ public class SampleDataGenerationRule extends GenerationRule {
 		if (sampleData == null) { throw new GenstarException("Parameter sampleData can not be null"); }
 		
 		this.sampleData = sampleData;
-		this.ipf = IPFFactory.createIPF(this);
+		this.ipf = IpfFactory.createIPF(this);
 		ipfRun = false;
 	}
 	
-	public GenstarCSVFile getControlTotalsFile() {
+	public GenstarCsvFile getControlTotalsFile() {
 		return controlTotalsFile;
 	}
 	
@@ -247,11 +253,11 @@ public class SampleDataGenerationRule extends GenerationRule {
 		 return controlTotals;
 	}
 	
-	public GenstarCSVFile getControlledAttributesFile() {
+	public GenstarCsvFile getControlledAttributesFile() {
 		return controlledAttributesFile;
 	}
 	
-	public GenstarCSVFile getSupplementaryAttributesFile() {
+	public GenstarCsvFile getSupplementaryAttributesFile() {
 		return supplementaryAttributesFile;
 	}
 	

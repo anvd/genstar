@@ -64,7 +64,7 @@ import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.CsvWriter;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
 import ummisco.genstar.util.INPUT_DATA_FORMATS;
 
@@ -566,13 +566,13 @@ public class GenstarsTest {
 		 */
 		
 		Genstars.generateControlTotals(scope, controlTotalPropertiesFilePath, dataSet1ControlTotalFilePath);
-		final GenstarCSVFile dataSet1controlTotalFile = new GenstarCSVFile(dataSet1ControlTotalFilePath, false);
+		final GenstarCsvFile dataSet1controlTotalFile = new GenstarCsvFile(dataSet1ControlTotalFilePath, false);
 		assertTrue(dataSet1controlTotalFile.getColumns() == 5);
 		assertTrue(dataSet1controlTotalFile.getRows() == 26);
 
 		// dataSet1
 		final ISyntheticPopulationGenerator dataSet1Generator = new SingleRuleGenerator("dummy generator");
-		GenstarCSVFile dataSet1AttributesFile = new GenstarCSVFile(dataSet1AttributesFilePath, true);
+		GenstarCsvFile dataSet1AttributesFile = new GenstarCsvFile(dataSet1AttributesFilePath, true);
 		AttributeUtils.createAttributesFromCSVFile(dataSet1Generator, dataSet1AttributesFile);
 		
 		AbstractAttribute householdSizeAttr = dataSet1Generator.getAttributeByNameOnData("Household Size");
@@ -718,13 +718,13 @@ public class GenstarsTest {
 		 */
 		
 		Genstars.generateControlTotals(scope, controlTotalPropertiesFilePath, dataSet2ControlTotalFilePath);
-		final GenstarCSVFile dataSet2controlTotalFile = new GenstarCSVFile(dataSet2ControlTotalFilePath, false);
+		final GenstarCsvFile dataSet2controlTotalFile = new GenstarCsvFile(dataSet2ControlTotalFilePath, false);
 		assertTrue(dataSet2controlTotalFile.getColumns() == 3);
 		assertTrue(dataSet2controlTotalFile.getRows() == 11);
 		
 		// dataSet2
 		final ISyntheticPopulationGenerator dataSet2Generator = new SingleRuleGenerator("dummy generator");
-		GenstarCSVFile dataSet2AttributesFile = new GenstarCSVFile(dataSet2AttributesFilePath, true);
+		GenstarCsvFile dataSet2AttributesFile = new GenstarCsvFile(dataSet2AttributesFilePath, true);
 		AttributeUtils.createAttributesFromCSVFile(dataSet2Generator, dataSet2AttributesFile);
 		
 		AbstractAttribute ageAttr = dataSet2Generator.getAttributeByNameOnData("Age");

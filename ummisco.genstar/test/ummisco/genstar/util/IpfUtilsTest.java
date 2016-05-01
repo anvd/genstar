@@ -32,7 +32,7 @@ public class IpfUtilsTest {
 
 	@Test public void testBuildControlledAttributesValuesSubsets() throws GenstarException {
 		// test_data/ummisco/genstar/util/IpfUtils/testBuildControlledAttributesValuesSubsets/controlled_attributes1.csv
-		GenstarCSVFile controlledAttributesFile1 = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testBuildControlledAttributesValuesSubsets/controlled_attributes1.csv", true);
+		GenstarCsvFile controlledAttributesFile1 = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testBuildControlledAttributesValuesSubsets/controlled_attributes1.csv", true);
 		ISingleRuleGenerator generator1 = new SingleRuleGenerator("dummy single rule generator");
 		AttributeUtils.createAttributesFromCSVFile(generator1, controlledAttributesFile1);
 		
@@ -54,7 +54,7 @@ public class IpfUtilsTest {
 	
 	
 		// test_data/ummisco/genstar/util/IpfUtils/testBuildControlledAttributesValuesSubsets/controlled_attributes2.csv
-		GenstarCSVFile controlledAttributesFile2 = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testBuildControlledAttributesValuesSubsets/controlled_attributes2.csv", true);
+		GenstarCsvFile controlledAttributesFile2 = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testBuildControlledAttributesValuesSubsets/controlled_attributes2.csv", true);
 		ISingleRuleGenerator generator2 = new SingleRuleGenerator("dummy single rule generator");
 		AttributeUtils.createAttributesFromCSVFile(generator2, controlledAttributesFile2);
 		
@@ -69,12 +69,12 @@ public class IpfUtilsTest {
 		IpfUtils.generateIpfControlTotals(null, 1);
 	}
 	
-	@Test(expected = GenstarException.class) public void testGenerateControlTotalsWithNonPositiveTotal(@Mocked final GenstarCSVFile controlledAttributesFile) throws GenstarException {
+	@Test(expected = GenstarException.class) public void testGenerateControlTotalsWithNonPositiveTotal(@Mocked final GenstarCsvFile controlledAttributesFile) throws GenstarException {
 		IpfUtils.generateIpfControlTotals(controlledAttributesFile, 0);
 	}
 	
 	@Test public void testGenerateIpfControlTotals() throws GenstarException {
-		GenstarCSVFile controlledAttributesFile1 = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testGenerateIpfControlTotals/controlled_attributes1.csv", true);
+		GenstarCsvFile controlledAttributesFile1 = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testGenerateIpfControlTotals/controlled_attributes1.csv", true);
 		List<List<String>> result1 = IpfUtils.generateIpfControlTotals(controlledAttributesFile1, 1000);
 		
 		/*
@@ -87,7 +87,7 @@ public class IpfUtilsTest {
 		assertTrue(result1.size() == 102); 
 		for (List<String> row1 : result1) { assertTrue(row1.size() == 7); }
 
-		GenstarCSVFile controlledAttributesFile2 = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testGenerateIpfControlTotals/controlled_attributes2.csv", true);
+		GenstarCsvFile controlledAttributesFile2 = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testGenerateIpfControlTotals/controlled_attributes2.csv", true);
 		List<List<String>> result3 = IpfUtils.generateIpfControlTotals(controlledAttributesFile2, 10000);
 		
 		/*
@@ -148,10 +148,10 @@ public class IpfUtilsTest {
 	
 	@Test(expected = GenstarException.class) public void testReadAttributeValuesFrequenciesFromControlTotalsFileWithDupplicatedControlledAttributes() throws GenstarException {
 		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/controlled_attributes1.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/controlled_attributes1.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, controlledAttributesFile);
 		
-		GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/control_totals1.csv", false);
+		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/control_totals1.csv", false);
 		
 		List<AbstractAttribute> duplicatedAttributes = new ArrayList<AbstractAttribute>();
 		
@@ -164,7 +164,7 @@ public class IpfUtilsTest {
 	
 	@Test(expected = GenstarException.class) public void testReadAttributeValuesFrequenciesFromControlTotalsFileWithControlledAttributesFromDifferentGenerators() throws GenstarException {
 		ISyntheticPopulationGenerator generator1 = new SingleRuleGenerator("dummy generator");
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/controlled_attributes1.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/controlled_attributes1.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator1, controlledAttributesFile);
 		
 		ISyntheticPopulationGenerator generator2 = new SingleRuleGenerator("dummy generator");
@@ -177,47 +177,47 @@ public class IpfUtilsTest {
 		attributesFromDifferentGenerators.add(attributes1.get(0));
 		attributesFromDifferentGenerators.add(attributes2.get(1));
 
-		GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/control_totals1.csv", false);
+		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/control_totals1.csv", false);
 
 		IpfUtils.parseIpfControlTotalsFile(controlTotalsFile, attributesFromDifferentGenerators);
 	}
 
 	@Test(expected = GenstarException.class) public void testReadAttributeValuesFrequenciesFromControlTotalsFileWithMismatchedControlTotalsFileContentAndAttributesValuesSizes() throws GenstarException {
 		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithMismatchedControlTotalsFileContentAndAttributesValuesSizes/controlled_attributes1.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithMismatchedControlTotalsFileContentAndAttributesValuesSizes/controlled_attributes1.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, controlledAttributesFile);
 		
-		GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithMismatchedControlTotalsFileContentAndAttributesValuesSizes/control_totals1.csv", false);
+		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithMismatchedControlTotalsFileContentAndAttributesValuesSizes/control_totals1.csv", false);
 		
 		IpfUtils.parseIpfControlTotalsFile(controlTotalsFile, generator.getAttributes());
 	}
 
 	@Test(expected = GenstarException.class) public void testReadAttributeValuesFrequenciesFromControlTotalsFileWithInvalidControlTotalFormat() throws GenstarException {
 		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/IpfUtils/util/testReadAttributeValuesFrequenciesFromControlTotalsFileWithInvalidControlTotalFormat/controlled_attributes1.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/IpfUtils/util/testReadAttributeValuesFrequenciesFromControlTotalsFileWithInvalidControlTotalFormat/controlled_attributes1.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, controlledAttributesFile);
 		
-		GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithInvalidControlTotalFormat/control_totals1.csv", false);
+		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithInvalidControlTotalFormat/control_totals1.csv", false);
 		
 		IpfUtils.parseIpfControlTotalsFile(controlTotalsFile, generator.getAttributes());
 	}
 
 	@Test(expected = GenstarException.class) public void testReadAttributeValuesFrequenciesFromControlTotalsFileWithUnregconizedAttribute() throws GenstarException {
 		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithUnregconizedAttribute/controlled_attributes1.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithUnregconizedAttribute/controlled_attributes1.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, controlledAttributesFile);
 		
-		GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithUnregconizedAttribute/control_totals1.csv", false);
+		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithUnregconizedAttribute/control_totals1.csv", false);
 		
 		IpfUtils.parseIpfControlTotalsFile(controlTotalsFile, generator.getAttributes());
 	}
 
 	@Test(expected = GenstarException.class) public void testReadAttributeValuesFrequenciesFromControlTotalsFileWithDuplicatedControlTotals() throws GenstarException {
 		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithDuplicatedControlTotals/controlled_attributes1.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithDuplicatedControlTotals/controlled_attributes1.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, controlledAttributesFile);
 		
-		GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithDuplicatedControlTotals/control_totals1.csv", false);
+		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithDuplicatedControlTotals/control_totals1.csv", false);
 		
 		IpfUtils.parseIpfControlTotalsFile(controlTotalsFile, generator.getAttributes());
 		
@@ -227,10 +227,10 @@ public class IpfUtilsTest {
 	@Test public void testReadAttributeValuesFrequenciesFromControlTotalsFile() throws GenstarException {
 		
 		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/controlled_attributes1.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/controlled_attributes1.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, controlledAttributesFile);
 		
-		GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/control_totals1.csv", false);
+		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/control_totals1.csv", false);
 		
 		List<AttributeValuesFrequency> avfs = IpfUtils.parseIpfControlTotalsFile(controlTotalsFile, generator.getAttributes());
 		
@@ -281,7 +281,7 @@ public class IpfUtilsTest {
 		if (outputFile.exists()) { outputFile.delete(); }
 		
 		// generate the sample data if necessary
-		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/attributes.csv", true);
+		GenstarCsvFile attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/attributes.csv", true);
 		String sampleFilePath = "test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/sample_data.csv";
 		File sampleFile = new File(sampleFilePath);
 		if (!sampleFile.exists()) {
@@ -299,10 +299,10 @@ public class IpfUtilsTest {
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		// 2. create sample data generation rule (GenstarFactoryUtils.createSampleDataGenerationRule)
-		GenstarCSVFile sampleCSVFile = new GenstarCSVFile(sampleFilePath, true);
-		GenstarCSVFile controlledAttributesListFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/controlled_attributes_list.csv", false);
-		GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/control_totals.csv", false);
-		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/supplementary_attributes_list.csv", false);
+		GenstarCsvFile sampleCSVFile = new GenstarCsvFile(sampleFilePath, true);
+		GenstarCsvFile controlledAttributesListFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/controlled_attributes_list.csv", false);
+		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/control_totals.csv", false);
+		GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/supplementary_attributes_list.csv", false);
 		GenstarUtils.createSampleDataGenerationRule(generator, "dummy rule", sampleCSVFile, controlledAttributesListFile, controlTotalsFile, supplementaryAttributesFile, null, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
 		
 		// 3. generate the population

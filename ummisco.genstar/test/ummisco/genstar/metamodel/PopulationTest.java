@@ -20,19 +20,19 @@ import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 import ummisco.genstar.util.AttributeUtils;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 import mockit.integration.junit4.JMockit;
 
 @RunWith(JMockit.class)
 public class PopulationTest {
 	
-	private GenstarCSVFile attributesFile;
+	private GenstarCsvFile attributesFile;
 	
 	private ISingleRuleGenerator generator;
 	
 	
 	@Before public void init() throws GenstarException {
-		attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/metamodel/population/initialize_population_successfully/attributes.csv", true);
+		attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/population/initialize_population_successfully/attributes.csv", true);
 		generator = new SingleRuleGenerator("dummy generator");
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 	}
@@ -212,6 +212,10 @@ public class PopulationTest {
 		List<Entity> entities = population.createEntitiesWithAttributeValuesOnEntities(attributeValuesAttributeValueOnEntities);
 		assertTrue(entities.size() == 2);
 		assertTrue(population.getEntities().size() == 2);
+	}
+	
+	@Test public void testCreateEntityFromAnotherEntity() throws GenstarException { // createEntity(final Entity sourceEntity)
+		fail("not yet implemented");
 	}
 	
 	private void createEntities(final IPopulation population) throws GenstarException {
@@ -495,6 +499,10 @@ public class PopulationTest {
 	}
 	
 	@Test public void testGetIdentityAttributeWhenIdentityAttributeChanged() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
+	@Test public void testIsCompatible() throws GenstarException {
 		fail("not yet implemented");
 	}
 }

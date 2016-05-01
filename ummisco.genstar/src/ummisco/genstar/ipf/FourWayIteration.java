@@ -6,10 +6,10 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 
-public class FourWayIteration extends IPFIteration<double[][][][], int[][][], double[][][]> {
+public class FourWayIteration extends IpfIteration<double[][][][], int[][][], double[][][]> {
 	
 	
-	public FourWayIteration(final FourWayIPF ipf) throws GenstarException {
+	public FourWayIteration(final FourWayIpf ipf) throws GenstarException {
 		super(ipf, 0, ipf.getData());
 	}
 	

@@ -106,7 +106,7 @@ public class IpfUtils {
 	
 	
 	// ? TODO refactor to List<AttributeValuesFrequency> generateIpfControlTotals(final GenstarCSVFile attributesFile, final int total)
-	public static List<List<String>> generateIpfControlTotals(final GenstarCSVFile attributesFile, final int total) throws GenstarException {
+	public static List<List<String>> generateIpfControlTotals(final GenstarCsvFile attributesFile, final int total) throws GenstarException {
 		// parameters validation
 		if (attributesFile == null) { throw new GenstarException("Parameter attributesFile can not be null"); }
 		if (total < 1) { throw new GenstarException("Parameter controlTotal must be positive"); }
@@ -142,8 +142,8 @@ public class IpfUtils {
 	}
 
 
-	public static List<Integer> analyseIpfPopulation(final IPopulation population, final GenstarCSVFile controlledAttributesListFile, 
-			final GenstarCSVFile controlTotalsFile) throws GenstarException {
+	public static List<Integer> analyseIpfPopulation(final IPopulation population, final GenstarCsvFile controlledAttributesListFile, 
+			final GenstarCsvFile controlTotalsFile) throws GenstarException {
 		
 		// parameters validation
 		if (population == null || controlledAttributesListFile == null || controlTotalsFile == null) {
@@ -179,7 +179,7 @@ public class IpfUtils {
 	}
 	
 	// TODO change name to readAttributeValuesFrequenciesFromIpfControlTotalsFile or parseIpfControlTotals
-	public static List<AttributeValuesFrequency> parseIpfControlTotalsFile(final GenstarCSVFile controlTotalsFile, 
+	public static List<AttributeValuesFrequency> parseIpfControlTotalsFile(final GenstarCsvFile controlTotalsFile, 
 			final List<AbstractAttribute> controlledAttributes) throws GenstarException {
 		
 		// parameters validation
@@ -364,7 +364,7 @@ public class IpfUtils {
 
 	
 	// TODO remove, no class uses this method
-	public static GenstarCSVFile writeAnalysisResultToFile(final GenstarCSVFile controlTotalsFile, final List<Integer> analysisResult, final String csvOutputFilePath) throws GenstarException {
+	public static GenstarCsvFile writeAnalysisResultToFile(final GenstarCsvFile controlTotalsFile, final List<Integer> analysisResult, final String csvOutputFilePath) throws GenstarException {
 		
 		// parameters validation
 		if (controlTotalsFile == null || analysisResult == null || csvOutputFilePath == null) {
@@ -393,6 +393,6 @@ public class IpfUtils {
 			writer.close();
 		}
 		
-		return new GenstarCSVFile(csvOutputFilePath, false);
+		return new GenstarCsvFile(csvOutputFilePath, false);
 	}
 }

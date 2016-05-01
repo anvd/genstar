@@ -17,7 +17,7 @@ import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.util.AttributeUtils;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 
 @RunWith(JMockit.class)
 public class ControlledAndSupplementaryAtttributesTest {
@@ -26,7 +26,7 @@ public class ControlledAndSupplementaryAtttributesTest {
 	static {
 		try {
 			generator = new SingleRuleGenerator("generator");
-			GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/attributes.csv", true);
+			GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/attributes.csv", true);
 			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		} catch (final GenstarException e) {
 			e.printStackTrace();
@@ -34,8 +34,8 @@ public class ControlledAndSupplementaryAtttributesTest {
 	}
 	
 	@Test public void testInitializeObjectSuccessfully(@Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
-		final GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes1.csv", false);
-		final GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes1.csv", false);
+		final GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes1.csv", false);
+		final GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes1.csv", false);
 		
 		new Expectations() {{
 			generationRule.getGenerator(); result = generator;
@@ -62,8 +62,8 @@ public class ControlledAndSupplementaryAtttributesTest {
 	
 	@Test(expected = GenstarException.class) 
 	public void testSupplementaryFileContainsControlledAttr(@Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
-		final GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes2.csv", false);
-		final GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes2.csv", false);
+		final GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes2.csv", false);
+		final GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes2.csv", false);
 		
 		new Expectations() {{
 			generationRule.getGenerator(); result = generator;
@@ -75,8 +75,8 @@ public class ControlledAndSupplementaryAtttributesTest {
 	}
 	
 	@Test(expected = GenstarException.class) public void testEmptyControlledAttributesFile(@Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
-		final GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes3.csv", false);
-		final GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes3.csv", false);
+		final GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes3.csv", false);
+		final GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes3.csv", false);
 		
 		new Expectations() {{
 			generationRule.getControlledAttributesFile(); result = controlledAttributesFile;
@@ -87,8 +87,8 @@ public class ControlledAndSupplementaryAtttributesTest {
 	}
 	
 	@Test public void testEmptySupplementaryAttributesFile(@Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
-		final GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes1.csv", false);
-		final GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes3.csv", false);
+		final GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes1.csv", false);
+		final GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes3.csv", false);
 		
 		new Expectations() {{
 			generationRule.getGenerator(); result = generator;
@@ -101,8 +101,8 @@ public class ControlledAndSupplementaryAtttributesTest {
 	}
 	
 	@Test(expected = GenstarException.class) public void testControlledAttributesFileContainsInvalidAttr(@Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
-		final GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes4.csv", false);
-		final GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes3.csv", false);
+		final GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes4.csv", false);
+		final GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes3.csv", false);
 		
 		new Expectations() {{
 			generationRule.getGenerator(); result = generator;
@@ -114,8 +114,8 @@ public class ControlledAndSupplementaryAtttributesTest {
 	}
 	
 	@Test(expected = GenstarException.class) public void testSupplementaryAttributesFileContainsInvalidAttr(@Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
-		final GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes1.csv", false);
-		final GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes4.csv", false);
+		final GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/controlled_attributes1.csv", false);
+		final GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/supplementary_attributes4.csv", false);
 		
 		new Expectations() {{
 			generationRule.getGenerator(); result = generator;

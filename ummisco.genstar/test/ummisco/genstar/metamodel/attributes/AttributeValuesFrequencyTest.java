@@ -16,6 +16,7 @@ import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SingleRuleGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
@@ -24,6 +25,8 @@ import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
+import ummisco.genstar.util.AttributeUtils;
+import ummisco.genstar.util.GenstarCsvFile;
 
 public class AttributeValuesFrequencyTest {
 
@@ -177,6 +180,21 @@ public class AttributeValuesFrequencyTest {
 		attributeValues1.put(ageRangesAttr1, ageRange1);
 		AttributeValuesFrequency avf3 = new AttributeValuesFrequency(attributeValues1);
 		assertTrue(avf3.matchEntity(entity1));
+	}
+	
+	
+	@Test public void testGetAttributes() throws GenstarException {
+		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
+		
+		GenstarCsvFile attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/GenstarUtils/testGenerateAttributeValuesFrequencies/attributes.csv", true);
+		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
+		for (AbstractAttribute attr : generator.getAttributes()) {
+			attributeValues.put(attr, attr.valuesOnData().iterator().next());
+		}
+		
+		new AttributeValuesFrequency(attributeValues);
 	}
 	
 }

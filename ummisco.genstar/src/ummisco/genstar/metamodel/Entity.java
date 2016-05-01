@@ -91,7 +91,7 @@ public class Entity {
 		if (eAttributeValues == null) { throw new GenstarException("Parameter entityAttributeValues can not be null"); }
 		
 		for (EntityAttributeValue eav : eAttributeValues) { 
-			if (population.getAttributeByNameOnData(eav.getAttribute().getNameOnData()) == null) {
+			if (!population.containAttribute(eav.getAttribute())) {
 				throw new GenstarException(eav.getAttribute().getNameOnData() + " attribute is not found on entity's population");
 			}
 		}
@@ -223,13 +223,12 @@ public class Entity {
 		
 		Map<AbstractAttribute, AttributeValue> controlledAttributesValuesOnData = new HashMap<AbstractAttribute, AttributeValue>();
 		for (AbstractAttribute attr : attributes) {
-			EntityAttributeValue entityAttributeValue = entityAttributeValues.get(attr.getNameOnData());
-			if (entityAttributeValue == null) { throw new GenstarException("Attribute " + attr.getNameOnData() + " not found in the entity"); }
+			EntityAttributeValue entityAttributeValue = entityAttributeValues.get(attr);
+			if (entityAttributeValue == null) { throw new GenstarException("Attribute '" + attr.getNameOnData() + "' not found on the entity"); }
 
 			AttributeValue valueOnData = entityAttributeValue.getAttributeValueOnData();
 			controlledAttributesValuesOnData.put(attr, valueOnData);
 		}
-		
 		
 		return controlledAttributesValuesOnData;
 	}

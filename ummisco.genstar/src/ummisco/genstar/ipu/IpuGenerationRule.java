@@ -1,15 +1,20 @@
 package ummisco.genstar.ipu;
 
 import java.util.List;
+import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.GroupComponentSampleData;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.GenerationRule;
+import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.Population;
+import ummisco.genstar.metamodel.PopulationType;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
+import ummisco.genstar.util.GenstarUtils;
 
 public class IpuGenerationRule extends GenerationRule {
 
@@ -17,42 +22,43 @@ public class IpuGenerationRule extends GenerationRule {
 
 	private Ipu ipu;
 	
-	
-	private GenstarCSVFile groupControlTotalsFile;
-	
-	private GenstarCSVFile groupControlledAttributesFile;
-	
-	private GenstarCSVFile groupSupplementaryAttributesFile;
-	
-	private List<AbstractAttribute> groupAttributes;
+	private boolean ipuRun = false;
 	
 	
-	private GenstarCSVFile componentControlTotalsFile;
+	private GenstarCsvFile groupControlTotalsFile;
 	
-	private GenstarCSVFile componentControlledAttributesFile;
+	private GenstarCsvFile groupControlledAttributesFile;
 	
-	private GenstarCSVFile componentSupplementaryAttributesFile;
+	private GenstarCsvFile groupSupplementaryAttributesFile;
 	
-	private List<AbstractAttribute> componentAttributes;
+	
+	private GenstarCsvFile componentControlTotalsFile;
+	
+	private GenstarCsvFile componentControlledAttributesFile;
+	
+	private GenstarCsvFile componentSupplementaryAttributesFile;
 	
 	private ISingleRuleGenerator componentPopulationGenerator;
 	
 
 	private IpuControlTotals ipuControlTotals;
 	
-	
 	private int maxIterations = 3;
-	
 	
 	private IpuControlledAndSupplementaryAttributes controlledAndSupplementaryAttributes;
 	
-	
 	private GroupComponentSampleData sampleData;
 
+	private IPopulation internalGeneratedPopulation;
+	
+	private int currentEntityIndex = -1;
+	
+	private List<Entity> internalSampleEntities;
+	
 	
 	public IpuGenerationRule(final ISingleRuleGenerator groupPopulationGenerator, final ISingleRuleGenerator componentPopulationGenerator, final String name, 
-			final GenstarCSVFile groupControlledAttributesFile, final GenstarCSVFile groupControlTotalsFile, final GenstarCSVFile groupSupplementaryAttributesFile,
-			final GenstarCSVFile componentControlledAttributesFile, final GenstarCSVFile componentControlTotalsFile, final GenstarCSVFile componentSupplementaryAttributesFile,
+			final GenstarCsvFile groupControlledAttributesFile, final GenstarCsvFile groupControlTotalsFile, final GenstarCsvFile groupSupplementaryAttributesFile,
+			final GenstarCsvFile componentControlledAttributesFile, final GenstarCsvFile componentControlTotalsFile, final GenstarCsvFile componentSupplementaryAttributesFile,
 			final int maxIterations) throws GenstarException {
 
 		super(groupPopulationGenerator, name);
@@ -110,8 +116,54 @@ public class IpuGenerationRule extends GenerationRule {
 
 	@Override
 	public void generate(Entity entity) throws GenstarException {
-		// TODO Auto-generated method stub
+		if (sampleData == null) { throw new GenstarException("sampleData can not be null"); }
 		
+		if (!ipuRun) { // run the fitting if necessary
+			ipu.fit();
+			
+			Map<Entity, Integer> selectionProbabilities = ipu.getSelectionProbabilities();
+			runInternalGeneration(selectionProbabilities);
+			
+			internalSampleEntities = internalGeneratedPopulation.getEntities();
+			currentEntityIndex = 0;
+
+			ipuRun = true;
+		}
+		
+		if (currentEntityIndex == internalSampleEntities.size()) { throw new GenstarException("Out of sample entities"); }
+		
+		// transfer attribute values from SampleEntity to Entity
+		Entity pickedSampleEntity = internalSampleEntities.get(currentEntityIndex);
+		currentEntityIndex++;
+		
+		GenstarUtils.transferData(pickedSampleEntity, entity);
+		
+		// heuristic: only inject group & component reference once
+		if (currentEntityIndex == 1) {
+			IPopulation entityPopulation = entity.getPopulation();
+			IPopulation sampleEntityPopulation = pickedSampleEntity.getPopulation();
+			
+			entityPopulation.addGroupReferences(sampleEntityPopulation.getGroupReferences());
+			entityPopulation.addComponentReferences(sampleEntityPopulation.getComponentReferences());
+		}
+	}
+	
+	private void runInternalGeneration(final Map<Entity, Integer> selectionProbabilities) throws GenstarException {
+		
+		// create the internal population
+		internalGeneratedPopulation = new Population(PopulationType.SYNTHETIC_POPULATION, sampleData.getSampleEntityPopulation().getName(), sampleData.getSampleEntityPopulation().getAttributes());
+		internalGeneratedPopulation.addGroupReferences(sampleData.getSampleEntityPopulation().getGroupReferences());
+		internalGeneratedPopulation.addComponentReferences(sampleData.getSampleEntityPopulation().getComponentReferences());
+		
+
+		// create entities of the internal population with entities of selectionProbabilities
+		for (Entity sourceSampleEntity : sampleData.getSampleEntityPopulation().getEntities()) {
+			int nbEntities = selectionProbabilities.get(sourceSampleEntity);
+			for (int i=0; i<nbEntities; i++) {
+				Entity targetGeneratedEntity = GenstarUtils.replicateSampleEntity(sourceSampleEntity, internalGeneratedPopulation);
+				sampleData.recodeIdAttributes(targetGeneratedEntity);
+			}
+		}
 	}
 	
 	public void setSampleData(final GroupComponentSampleData sampleData) throws GenstarException {
@@ -119,33 +171,22 @@ public class IpuGenerationRule extends GenerationRule {
 		
 		this.sampleData = sampleData;
 		this.ipu = new Ipu(this);
-		
-		// TODO initialize Ipu
-		
-		// ipfRun = false;
-		
-		/*
-		if (sampleData == null) { throw new GenstarException("Parameter sampleData can not be null"); }
-		
-		this.sampleData = sampleData;
-		this.ipf = IPFFactory.createIPF(this);
-		ipfRun = false;
-		 */
+		ipuRun = false;
 	}
 	
 	public GroupComponentSampleData getSampleData() {
 		return sampleData;
 	}
 
-	public GenstarCSVFile getGroupControlTotalsFile() {
+	public GenstarCsvFile getGroupControlTotalsFile() {
 		return groupControlTotalsFile;
 	}
 
-	public GenstarCSVFile getGroupControlledAttributesFile() {
+	public GenstarCsvFile getGroupControlledAttributesFile() {
 		return groupControlledAttributesFile;
 	}
 
-	public GenstarCSVFile getGroupSupplementaryAttributesFile() {
+	public GenstarCsvFile getGroupSupplementaryAttributesFile() {
 		return groupSupplementaryAttributesFile;
 	}
 
@@ -153,27 +194,18 @@ public class IpuGenerationRule extends GenerationRule {
 		return controlledAndSupplementaryAttributes.getGroupControlledAttributes();
 	}
 
-	public GenstarCSVFile getComponentControlTotalsFile() {
+	public GenstarCsvFile getComponentControlTotalsFile() {
 		return componentControlTotalsFile;
 	}
 
-	public GenstarCSVFile getComponentControlledAttributesFile() {
+	public GenstarCsvFile getComponentControlledAttributesFile() {
 		return componentControlledAttributesFile;
 	}
 
-	public GenstarCSVFile getComponentSupplementaryAttributesFile() {
+	public GenstarCsvFile getComponentSupplementaryAttributesFile() {
 		return componentSupplementaryAttributesFile;
 	}
 
-//	public List<AbstractAttribute> getComponentAttributes() {
-//		if (componentAttributes == null) {
-//			componentAttributes = new ArrayList<AbstractAttribute>();
-//			componentAttributes.addAll(controlledAndSupplementaryAttributes.getComponentControlledAttributes());
-//			componentAttributes.addAll(controlledAndSupplementaryAttributes.get)
-//		}
-//		return componentAttributes; // ?
-//	}
-	
 	public List<AbstractAttribute> getComponentControlledAttributes() {
 		return controlledAndSupplementaryAttributes.getComponentControlledAttributes();
 	}

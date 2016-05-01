@@ -25,10 +25,10 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.AttributeUtils;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 
 @RunWith(JMockit.class)
-public class ThreeWayIPFTest {
+public class ThreeWayIpfTest {
 	
 	@Mocked SampleDataGenerationRule generationRule;
 	ISyntheticPopulationGenerator generator;
@@ -36,20 +36,20 @@ public class ThreeWayIPFTest {
 	AbstractAttribute rowAttribute, columnAttribute, layerAttribute;
 	List<AttributeValue> rowAttributeValues, columnAttributeValues, layerAttributeValues;
 
-	ThreeWayIPF ipf;
+	ThreeWayIpf ipf;
 
 	
 	@Before public void init() throws GenstarException {
 		
 		generator = new SingleRuleGenerator("generator");
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/attributes.csv", true);
+		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/three_way/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		GenstarCSVFile controlAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/controlled_attributes.csv", false);
+		GenstarCsvFile controlAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/three_way/controlled_attributes.csv", false);
 		for (List<String> row : controlAttributesFile.getContent()) { controlledAttributes.add(generator.getAttributeByNameOnData(row.get(0))); }	
 		
-		final GenstarCSVFile sampleDataFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/people_sample.csv", true);
-		final GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/three_way/control_totals.csv", false);
+		final GenstarCsvFile sampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/three_way/people_sample.csv", true);
+		final GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/three_way/control_totals.csv", false);
 
 		new NonStrictExpectations() {{
 			generationRule.getGenerator(); result = generator;
@@ -83,7 +83,7 @@ public class ThreeWayIPFTest {
 			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
-		ipf = new ThreeWayIPF(generationRule);
+		ipf = new ThreeWayIpf(generationRule);
 		
 		
 		/*
@@ -110,7 +110,7 @@ public class ThreeWayIPFTest {
 		new Expectations() {{
 			threeWayGenerationRule.getControlledAttributes(); result = new ArrayList<AbstractAttribute>();
 		}};
-		new ThreeWayIPF(threeWayGenerationRule);
+		new ThreeWayIpf(threeWayGenerationRule);
 	}
 	
 	// "data" verification
@@ -237,9 +237,9 @@ public class ThreeWayIPFTest {
 	}
 	
 	@Test public void testFit() throws GenstarException {
-		ThreeWayIPF ipf1 = new ThreeWayIPF(generationRule);
+		ThreeWayIpf ipf1 = new ThreeWayIpf(generationRule);
 		
-		List<IPFIteration> iterations0 = Deencapsulation.getField(ipf1, "iterations");
+		List<IpfIteration> iterations0 = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations0 == null);
 		ipf1.fit();
 		iterations0 = Deencapsulation.getField(ipf1, "iterations");
@@ -251,9 +251,9 @@ public class ThreeWayIPFTest {
 	}
 	
 	@Test public void testGetSelectionProbabilities() throws GenstarException {
-		final ThreeWayIPF ipf1 = new ThreeWayIPF(generationRule);
+		final ThreeWayIpf ipf1 = new ThreeWayIpf(generationRule);
 		
-		List<IPFIteration> iterations = Deencapsulation.getField(ipf1, "iterations");
+		List<IpfIteration> iterations = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations == null);
 		
 		List<AttributeValuesFrequency> selectionProbabilities = ipf1.getSelectionProbabilitiesOfLastIPFIteration();

@@ -25,10 +25,10 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.AttributeUtils;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 
 @RunWith(JMockit.class)
-public class TwoWayIPFTest {
+public class TwoWayIpfTest {
 
 	@Mocked SampleDataGenerationRule generationRule;
 	ISyntheticPopulationGenerator generator;
@@ -36,18 +36,18 @@ public class TwoWayIPFTest {
 	AbstractAttribute rowAttr, colAttr;
 	List<AttributeValue> rowAttributeValues, colAttributeValues;
 
-	TwoWayIPF ipf;
+	TwoWayIpf ipf;
 	
 	@Before public void init() throws GenstarException {
 		generator = new SingleRuleGenerator("generator");
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/two_way/attributes.csv", true);
+		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/two_way/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		GenstarCSVFile controlAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/two_way/controlled_attributes.csv", false);
+		GenstarCsvFile controlAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/two_way/controlled_attributes.csv", false);
 		for (List<String> row : controlAttributesFile.getContent()) { controlledAttributes.add(generator.getAttributeByNameOnData(row.get(0))); }	
 		
-		final GenstarCSVFile sampleDataFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/two_way/people_sample.csv", true);
-		final GenstarCSVFile controlTotalsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/two_way/control_totals.csv", false);
+		final GenstarCsvFile sampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/two_way/people_sample.csv", true);
+		final GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/two_way/control_totals.csv", false);
 
 		new NonStrictExpectations() {{
 			generationRule.getGenerator(); result = generator;
@@ -81,7 +81,7 @@ public class TwoWayIPFTest {
 			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
-		ipf = new TwoWayIPF(generationRule);
+		ipf = new TwoWayIpf(generationRule);
 		
 		rowAttr = controlledAttributes.get(0);
 		assertTrue(rowAttr.getNameOnData().equals("Household Size"));
@@ -99,7 +99,7 @@ public class TwoWayIPFTest {
 			myGenerationRule.getControlledAttributes(); result = new ArrayList<AbstractAttribute>();
 		}};
 		
-		new TwoWayIPF(myGenerationRule);
+		new TwoWayIpf(myGenerationRule);
 	}
 	
 	// "data" verification
@@ -172,9 +172,9 @@ public class TwoWayIPFTest {
 	}
 	
 	@Test public void testFit() throws GenstarException {
-		TwoWayIPF ipf1 = new TwoWayIPF(generationRule);
+		TwoWayIpf ipf1 = new TwoWayIpf(generationRule);
 		
-		List<IPFIteration> iterations0 = Deencapsulation.getField(ipf1, "iterations");
+		List<IpfIteration> iterations0 = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations0 == null);
 		ipf1.fit();
 		iterations0 = Deencapsulation.getField(ipf1, "iterations");
@@ -185,9 +185,9 @@ public class TwoWayIPFTest {
 	}
 	
 	@Test public void testGetSelectionProbabilities() throws GenstarException {
-		final TwoWayIPF ipf1 = new TwoWayIPF(generationRule);
+		final TwoWayIpf ipf1 = new TwoWayIpf(generationRule);
 		
-		List<IPFIteration> iterations = Deencapsulation.getField(ipf1, "iterations");
+		List<IpfIteration> iterations = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations == null);
 		
 		List<AttributeValuesFrequency> selectionProbabilities = ipf1.getSelectionProbabilitiesOfLastIPFIteration();

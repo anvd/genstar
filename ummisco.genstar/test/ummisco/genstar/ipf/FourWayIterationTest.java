@@ -20,7 +20,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValue;
 @RunWith(JMockit.class)
 public class FourWayIterationTest {
 
-	@Test public void testInitializeObjectSuccessfully(@Mocked final FourWayIPF ipf) throws GenstarException {
+	@Test public void testInitializeObjectSuccessfully(@Mocked final FourWayIpf ipf) throws GenstarException {
 		
 		// data[2][3][4][5]
 		final double[][][][] data = {
@@ -97,7 +97,7 @@ public class FourWayIterationTest {
 		assertTrue(iterationData[0][0][0].length == data[0][0][0].length);
 	}
 
-	@Test(expected = GenstarException.class) public void testInitializeObjectWithZeroMarginals(@Mocked final FourWayIPF ipf, @Mocked final AbstractAttribute attribute, 
+	@Test(expected = GenstarException.class) public void testInitializeObjectWithZeroMarginals(@Mocked final FourWayIpf ipf, @Mocked final AbstractAttribute attribute, 
 			@Mocked final AttributeValue attributeValue) throws GenstarException {
 		
 		// data[2][3][4][5]
@@ -237,7 +237,7 @@ public class FourWayIterationTest {
 		 
 	}
 
-	@Test public void testNextIteration(@Mocked final FourWayIPF ipf) throws GenstarException {
+	@Test public void testNextIteration(@Mocked final FourWayIpf ipf) throws GenstarException {
 		// data[2][3][4][5]
 		final double[][][][] data = {
 			{
@@ -441,7 +441,7 @@ public class FourWayIterationTest {
 		}
 	}
 
-	@Test public void testGetNbOfEntitiesToGenerate(@Mocked final FourWayIPF ipf) throws GenstarException {
+	@Test public void testGetNbOfEntitiesToGenerate(@Mocked final FourWayIpf ipf) throws GenstarException {
 		// data[2][3][4][5]
 		final double[][][][] data = {
 			{

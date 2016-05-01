@@ -13,12 +13,12 @@ import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.util.AttributeUtils;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 
 public class SyntheticPopulationTest {
 
 	@Test public void testCreateEntityWithAttributeValuesOnEntity() throws GenstarException {
-		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/metamodel/synthetic_population/attributes.csv", true);
+		GenstarCsvFile attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/synthetic_population/attributes.csv", true);
 		
 		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy generator");
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);

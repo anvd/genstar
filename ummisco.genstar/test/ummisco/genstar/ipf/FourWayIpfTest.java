@@ -27,12 +27,12 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.AttributeUtils;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
 import ummisco.genstar.util.IpfUtils;
 
 @RunWith(JMockit.class)
-public class FourWayIPFTest {
+public class FourWayIpfTest {
 
 	@Mocked SampleDataGenerationRule generationRule;
 	ISyntheticPopulationGenerator generator;
@@ -40,7 +40,7 @@ public class FourWayIPFTest {
 	AbstractAttribute rowAttribute, columnAttribute, layerAttribute, stackAttribute;
 	List<AttributeValue> rowAttributeValues, columnAttributeValues, layerAttributeValues, stackAttributeValues;
 
-	FourWayIPF ipf;
+	FourWayIpf ipf;
 	
 	@Before public void init() throws GenstarException {
 		
@@ -48,8 +48,8 @@ public class FourWayIPFTest {
 		String _sampleDataFilePath = "test_data/ummisco/genstar/ipf/four_way/household_sample.csv";
 		String controlTotalsFilePath = "test_data/ummisco/genstar/ipf/four_way/control_totals.csv";
 
-		GenstarCSVFile _attributesFile = new GenstarCSVFile(_attributesFilePath, true);
-		GenstarCSVFile controlAttributesFile = _attributesFile; 
+		GenstarCsvFile _attributesFile = new GenstarCsvFile(_attributesFilePath, true);
+		GenstarCsvFile controlAttributesFile = _attributesFile; 
 		
 		String controlAttributesListFilePath = "test_data/ummisco/genstar/ipf/four_way/controlled_attributes_list.csv";
 		
@@ -77,14 +77,14 @@ public class FourWayIPFTest {
 		}
 		
 		generator = new SingleRuleGenerator("generator");
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/four_way/attributes.csv", true);
+		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/four_way/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		GenstarCSVFile controlAttributesListFile = new GenstarCSVFile(controlAttributesListFilePath, false);
+		GenstarCsvFile controlAttributesListFile = new GenstarCsvFile(controlAttributesListFilePath, false);
 		for (List<String> row : controlAttributesListFile.getContent()) { controlledAttributes.add(generator.getAttributeByNameOnData(row.get(0))); }	
 		
-		final GenstarCSVFile sampleDataFile = new GenstarCSVFile(_sampleDataFilePath, true);
-		final GenstarCSVFile controlTotalsCSVFile = new GenstarCSVFile(controlTotalsFilePath, false);
+		final GenstarCsvFile sampleDataFile = new GenstarCsvFile(_sampleDataFilePath, true);
+		final GenstarCsvFile controlTotalsCSVFile = new GenstarCsvFile(controlTotalsFilePath, false);
 		
 		new NonStrictExpectations() {{
 			generationRule.getGenerator(); result = generator;
@@ -118,7 +118,7 @@ public class FourWayIPFTest {
 			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
-		ipf = new FourWayIPF(generationRule);
+		ipf = new FourWayIpf(generationRule);
 		
 		/*
 		 controlled_attributes.csv
@@ -149,7 +149,7 @@ public class FourWayIPFTest {
 		new Expectations() {{
 			fourWayGenerationRule.getControlledAttributes(); result = new ArrayList<AbstractAttribute>();
 		}};
-		new FourWayIPF(fourWayGenerationRule);
+		new FourWayIpf(fourWayGenerationRule);
 	}
 	
 	// "data" verification
@@ -403,7 +403,7 @@ public class FourWayIPFTest {
 	}
 
 	@Test public void testFit() throws GenstarException {
-		FourWayIPF ipf1 = new FourWayIPF(generationRule);
+		FourWayIpf ipf1 = new FourWayIpf(generationRule);
 		
 		List<FourWayIteration> iterations0 = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations0 == null);
@@ -413,7 +413,7 @@ public class FourWayIPFTest {
 	}
 
 	@Test public void testGetSelectionProbabilities() throws GenstarException {
-		final FourWayIPF ipf1 = new FourWayIPF(generationRule);
+		final FourWayIpf ipf1 = new FourWayIpf(generationRule);
 		
 		List<FourWayIteration> iterations = Deencapsulation.getField(ipf1, "iterations");
 		assertTrue(iterations == null);

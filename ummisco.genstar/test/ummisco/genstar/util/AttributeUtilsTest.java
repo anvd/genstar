@@ -72,7 +72,7 @@ public class AttributeUtilsTest {
 	}
 
 
-	@Test public final void testCreateAttributesFromCSVFileExpectationApproach(@Mocked final ISyntheticPopulationGenerator generator, @Mocked final GenstarCSVFile mockedAttributesCSVFile) throws GenstarException {
+	@Test public final void testCreateAttributesFromCSVFileExpectationApproach(@Mocked final ISyntheticPopulationGenerator generator, @Mocked final GenstarCsvFile mockedAttributesCSVFile) throws GenstarException {
 		
 		final List<String> headers = new ArrayList<String>();
 		headers.add("Name On Data");
@@ -140,7 +140,7 @@ public class AttributeUtilsTest {
 	@Test public void testCreateUniqueValueAttributeWithRangeInput() throws GenstarException {
 		
 		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
-		GenstarCSVFile attributesFile = new GenstarCSVFile("test_data/ummisco/genstar/util/AttributeUtils/testCreateUniqueValueAttributeWithRangeInput/attributes1.csv", true);
+		GenstarCsvFile attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/AttributeUtils/testCreateUniqueValueAttributeWithRangeInput/attributes1.csv", true);
 		
 		assertTrue(generator.getAttributes().isEmpty());
 		

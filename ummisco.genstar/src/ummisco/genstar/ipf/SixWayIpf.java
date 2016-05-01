@@ -10,9 +10,9 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 
-public class SixWayIPF extends IPF<double[][][][][][], int[][][][][], double[][][][][]> {
+public class SixWayIpf extends Ipf<double[][][][][][], int[][][][][], double[][][][][]> {
 
-	protected SixWayIPF(final SampleDataGenerationRule generationRule) throws GenstarException {
+	protected SixWayIpf(final SampleDataGenerationRule generationRule) throws GenstarException {
 		super(generationRule);
 	}
 

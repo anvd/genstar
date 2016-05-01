@@ -19,20 +19,20 @@ import ummisco.genstar.metamodel.Population;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.util.AttributeUtils;
-import ummisco.genstar.util.GenstarCSVFile;
+import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
 
 public class SampleDataGenerationRuleTest {
 
 	@Test public void initializeSampleDataGenerationRuleSuccessfully() throws GenstarException {
 		ISingleRuleGenerator generator = new SingleRuleGenerator("generator"); 
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
+		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		GenstarCSVFile sampleDataFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/people_sample.csv", true);
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/controlled_attributes.csv", false);
-		GenstarCSVFile controlsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
-		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
+		GenstarCsvFile sampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/people_sample.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/controlled_attributes.csv", false);
+		GenstarCsvFile controlsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
+		GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
@@ -47,13 +47,13 @@ public class SampleDataGenerationRuleTest {
 	
 	@Test public void testGenerate() throws GenstarException {
 		ISingleRuleGenerator generator = new SingleRuleGenerator("generator"); 
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
+		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		GenstarCSVFile sampleDataFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/people_sample.csv", true);
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/controlled_attributes.csv", false);
-		GenstarCSVFile controlsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
-		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
+		GenstarCsvFile sampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/people_sample.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/controlled_attributes.csv", false);
+		GenstarCsvFile controlsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
+		GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule", 
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
@@ -97,13 +97,13 @@ public class SampleDataGenerationRuleTest {
 	
 	@Test(expected = Exception.class) public void testGenerateFailed() throws GenstarException {
 		ISingleRuleGenerator generator = new SingleRuleGenerator("generator"); 
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
+		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		GenstarCSVFile sampleDataFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/people_sample.csv", true);
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/controlled_attributes.csv", false);
-		GenstarCSVFile controlsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
-		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
+		GenstarCsvFile sampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/people_sample.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/controlled_attributes.csv", false);
+		GenstarCsvFile controlsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
+		GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
@@ -120,13 +120,13 @@ public class SampleDataGenerationRuleTest {
 	@Test public void testBuildSampleEntityCategories() throws GenstarException {
 		
 		ISingleRuleGenerator generator = new SingleRuleGenerator("generator"); 
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
+		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		GenstarCSVFile sampleDataFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/people_sample.csv", true);
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/controlled_attributes.csv", false);
-		GenstarCSVFile controlsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
-		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
+		GenstarCsvFile sampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/people_sample.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/controlled_attributes.csv", false);
+		GenstarCsvFile controlsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
+		GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
@@ -155,13 +155,13 @@ public class SampleDataGenerationRuleTest {
 	@Test public void testMaxIterationIsSetCorrectly() throws GenstarException {
 		
 		ISingleRuleGenerator generator = new SingleRuleGenerator("generator"); 
-		GenstarCSVFile attributesCSVFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
+		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
-		GenstarCSVFile sampleDataFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/people_sample.csv", true);
-		GenstarCSVFile controlledAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/controlled_attributes.csv", false);
-		GenstarCSVFile controlsFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
-		GenstarCSVFile supplementaryAttributesFile = new GenstarCSVFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
+		GenstarCsvFile sampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/people_sample.csv", true);
+		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/controlled_attributes.csv", false);
+		GenstarCsvFile controlsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/control_totals.csv", false);
+		GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/sample_data_generation_rule_data/supplementary_attributes.csv", false);
 		
 		SampleDataGenerationRule rule = new SampleDataGenerationRule(generator, "sample data generation rule",
 				controlledAttributesFile, controlsFile, supplementaryAttributesFile, SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS);
