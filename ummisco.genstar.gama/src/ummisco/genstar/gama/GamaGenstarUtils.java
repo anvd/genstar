@@ -16,16 +16,16 @@ import msi.gama.util.GamaMap;
 import msi.gama.util.GamaMapFactory;
 import msi.gama.util.IList;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.ipf.SampleDataGenerationRule;
+import ummisco.genstar.ipf.IpfGenerationRule;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
-import ummisco.genstar.metamodel.CustomGenerationRule;
+import ummisco.genstar.metamodel.CustomSampleFreeGenerationRule;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
-import ummisco.genstar.metamodel.IMultipleRulesGenerator;
-import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.PopulationType;
 import ummisco.genstar.metamodel.Population;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
+import ummisco.genstar.metamodel.SampleFreeGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
@@ -35,7 +35,8 @@ import ummisco.genstar.util.INPUT_DATA_FORMATS;
 
 public class GamaGenstarUtils {
 
-	static void createSampleDataGenerationRule(final IScope scope, final ISingleRuleGenerator generator, final String ruleName, final Properties sampleDataProperties) throws GenstarException {
+	// TODO change to "createSampleBasedGenerationRule"
+	static void createSampleDataGenerationRule(final IScope scope, final SampleBasedGenerator generator, final String ruleName, final Properties sampleDataProperties) throws GenstarException {
 		
 		// Read the necessary data from the properties
 		
@@ -74,7 +75,7 @@ public class GamaGenstarUtils {
 		
 		// MAX_ITERATIONS_PROPERTY
 		String maxIterationsValue = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.MAX_ITERATIONS_PROPERTY);
-		int maxIterations = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
+		int maxIterations = IpfGenerationRule.DEFAULT_MAX_ITERATIONS;
 		if (maxIterationsValue != null) { maxIterations = Integer.parseInt(maxIterationsValue); }
 		
 
@@ -123,7 +124,8 @@ public class GamaGenstarUtils {
 	}
 
 	
-	public static void createGenerationRulesFromCSVFile(final IScope scope, final IMultipleRulesGenerator generator, final GenstarCsvFile distributionsCSVFile) throws GenstarException {
+	// TODO change to "createSampleFreeGenerationRulesFromCsvFile"
+	public static void createGenerationRulesFromCSVFile(final IScope scope, final SampleFreeGenerator generator, final GenstarCsvFile distributionsCSVFile) throws GenstarException {
 		List<List<String>> fileContent = distributionsCSVFile.getContent();
 		if ( fileContent == null || fileContent.isEmpty() ) { throw new GenstarException("Invalid Generation Rule file: content is empty (file: " + distributionsCSVFile.getPath()  + ")"); }
 		int rows = fileContent.size();
@@ -150,8 +152,8 @@ public class GamaGenstarUtils {
 			String ruleTypeName = (String)generationRuleInfo.get(2);
 			GenstarCsvFile ruleDataFile = null;
 			Properties properties = null;
-			if (!ruleTypeName.equals(CustomGenerationRule.RULE_TYPE_NAME)) {
-				if (ruleTypeName.equals(SampleDataGenerationRule.RULE_TYPE_NAME)) { // Sample Data Configuration is a property file
+			if (!ruleTypeName.equals(CustomSampleFreeGenerationRule.RULE_TYPE_NAME)) {
+				if (ruleTypeName.equals(IpfGenerationRule.RULE_TYPE_NAME)) { // Sample Data Configuration is a property file
 					File sampleDataPropertyFile = new File(FileUtils.constructAbsoluteFilePath(scope, ruleDataFilePathOrJavaClass, true));
 					try {
 						FileInputStream propertyInputStream = new FileInputStream(sampleDataPropertyFile);
@@ -172,10 +174,10 @@ public class GamaGenstarUtils {
 				GenstarUtils.createFrequencyDistributionGenerationRule(generator, ruleName, ruleDataFile);
 			} else if (ruleTypeName.equals(AttributeInferenceGenerationRule.RULE_TYPE_NAME)) {
 				GenstarUtils.createAttributeInferenceGenerationRule(generator, ruleName, ruleDataFile);
-			} else if (ruleTypeName.equals(SampleDataGenerationRule.RULE_TYPE_NAME)) {
-				throw new GenstarException("Unsupported generation rule type: " + SampleDataGenerationRule.RULE_TYPE_NAME);
+			} else if (ruleTypeName.equals(IpfGenerationRule.RULE_TYPE_NAME)) {
+				throw new GenstarException("Unsupported generation rule type: " + IpfGenerationRule.RULE_TYPE_NAME);
 				//createSampleDataGenerationRule(scope, generator, ruleName, properties);
-			} else if (ruleTypeName.equals(CustomGenerationRule.RULE_TYPE_NAME)) { 
+			} else if (ruleTypeName.equals(CustomSampleFreeGenerationRule.RULE_TYPE_NAME)) { 
 				GenstarUtils.createCustomGenerationRule(generator, ruleName, ruleDataFilePathOrJavaClass);
 			} else {
 				throw new GenstarException("Unsupported generation rule (" + ruleTypeName + "), file: " + distributionsCSVFile.getPath());

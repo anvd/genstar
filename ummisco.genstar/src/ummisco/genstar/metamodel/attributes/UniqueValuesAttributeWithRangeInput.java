@@ -1,20 +1,17 @@
 package ummisco.genstar.metamodel.attributes;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 
-// refactor the AbstractAttribute inheritance tree, "valuesOnData" method is not applicable for this class
-// 
+
 public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 	
-	private Map<Integer, UniqueValue> internalValuesOnData = Collections.EMPTY_MAP;
+	private List<UniqueValue> internalValuesOnData;
 	
 	private UniqueValue minValue;
 	
@@ -40,14 +37,24 @@ public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 		
 		this.minValue = new UniqueValue(minValue);
 		this.maxValue = new UniqueValue(maxValue);
+		
+		initializeValuesOnData();
+	}
+	
+	private void initializeValuesOnData() throws GenstarException {
+		internalValuesOnData = new ArrayList<UniqueValue>();
+		
+		int minValueInt = minValue.getIntValue();
+		int maxValueInt = maxValue.getIntValue();
+		
+		for (int i=minValueInt; i<=maxValueInt; i++) {
+			internalValuesOnData.add(new UniqueValue(DataType.INTEGER, Integer.toString(i)));
+		}
 	}
 
 	@Override
 	public Set<AttributeValue> valuesOnData() {
-		Set<AttributeValue> valuesOnData = new HashSet<AttributeValue>();
-		valuesOnData.add(minValue);
-		valuesOnData.add(maxValue);
-		
+		Set<AttributeValue> valuesOnData = new HashSet<AttributeValue>(internalValuesOnData);
 		return valuesOnData;
 	}
 
@@ -66,12 +73,7 @@ public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 		return false;
 	}
 
-	@Override
-	public boolean containsInstanceOfAttributeValue(AttributeValue value) {
-		
-		return false;
-	}
-
+	/*
 	@Override
 	public boolean containsValueOfAttributeValue(AttributeValue value) {
 		if (value instanceof UniqueValue && value.getDataType().equals(DataType.INTEGER)) {
@@ -82,46 +84,27 @@ public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 
 		return false;
 	}
+	*/
 
 	@Override
 	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {
 		if (!(value instanceof UniqueValue) || !value.getDataType().equals(DataType.INTEGER)) { return null; }
 		
-		if (internalValuesOnData.containsValue(value)) { return value; }
-		
-		if (internalValuesOnData == Collections.EMPTY_MAP) { internalValuesOnData = new HashMap<Integer, UniqueValue>(); }
+		if (internalValuesOnData.contains(value)) { return value; }
 		
 		int intValue = ((UniqueValue)value).getIntValue();
 		if (intValue < minValue.getIntValue() || intValue > maxValue.getIntValue()) { return null; }
 		
-		UniqueValue savedAttributeValue = internalValuesOnData.get(intValue);
-		if (savedAttributeValue != null) { return savedAttributeValue; }
-		
-		try {
-			savedAttributeValue = new UniqueValue(DataType.INTEGER, Integer.toString(intValue));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		internalValuesOnData.put(intValue, savedAttributeValue);
-		
-		return savedAttributeValue;
+		int index = intValue - minValue.getIntValue();
+		return internalValuesOnData.get(index);
 	}
 
 	@Override
-	public void clear() {
-		
-	}
+	public void clear() {}
 
 	@Override
 	public AttributeValue findCorrespondingAttributeValueOnData(final List<String> stringValue) throws GenstarException {
-		
 		if (stringValue == null || stringValue.isEmpty()) { throw new GenstarException("'stringValue' parameter can not be null or empty"); }
-		
-//		if (isIdentity) {
-//			if (stringValue.size() == 1) { return new UniqueValue(dataType, stringValue.get(0)); }
-//		}
-		
 		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringValue.get(0)));
 	}
 

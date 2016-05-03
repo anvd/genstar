@@ -10,7 +10,7 @@ import ummisco.genstar.util.GenstarCsvFile;
 // TODO change name to IpfControlledAndSupplementaryAttributes
 public class ControlledAndSupplementaryAttributes {
 	
-	private SampleDataGenerationRule generationRule;
+	private IpfGenerationRule generationRule;
 	
 	private GenstarCsvFile controlledAttributesFile;
 	
@@ -21,7 +21,7 @@ public class ControlledAndSupplementaryAttributes {
 	private List<AbstractAttribute> supplementaryAttributes;
 	
 	
-	public ControlledAndSupplementaryAttributes(final SampleDataGenerationRule generationRule) throws GenstarException {
+	public ControlledAndSupplementaryAttributes(final IpfGenerationRule generationRule) throws GenstarException {
 		if (generationRule == null) { throw new GenstarException("'generationRule' can not be null"); }
 		
 		this.generationRule = generationRule;

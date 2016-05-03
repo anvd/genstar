@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
 
 public abstract class AbstractSampleData implements ISampleData {
 	

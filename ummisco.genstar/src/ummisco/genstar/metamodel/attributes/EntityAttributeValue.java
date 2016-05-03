@@ -18,7 +18,7 @@ public class EntityAttributeValue {
 		
 		if (attributeValueOnData == null) { throw new GenstarException("Parameter attributeValueOnData can't be null"); }
 		
-		if (!attribute.containsValueOfAttributeValue(attributeValueOnData)) {
+		if (attribute.getInstanceOfAttributeValue(attributeValueOnData) == null) {
 			throw new GenstarException(attributeValueOnData + " is not a valid value of " + attribute.getNameOnData() + " attribute");
 		}
 
@@ -68,7 +68,7 @@ public class EntityAttributeValue {
 			throw new GenstarException("Incompatible attribute value classes between " + attribute.getValueClassOnData().getName() + " and " + attributeValueOnData.getClass().getName());
 		}
 		
-		if (!attribute.containsValueOfAttributeValue(attributeValueOnData)) {
+		if (attribute.getInstanceOfAttributeValue(attributeValueOnData) == null) {
 			throw new GenstarException(attributeValueOnData + " is not a valid value of " + attribute.getNameOnData() + " attribute");
 		}
 		

@@ -20,7 +20,7 @@ public class SyntheticPopulationTest {
 	@Test public void testCreateEntityWithAttributeValuesOnEntity() throws GenstarException {
 		GenstarCsvFile attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/synthetic_population/attributes.csv", true);
 		
-		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy generator");
+		SampleBasedGenerator generator = new SampleBasedGenerator("dummy generator");
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		IPopulation population = new Population(PopulationType.SYNTHETIC_POPULATION, "people", generator.getAttributes());

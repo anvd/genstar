@@ -21,7 +21,7 @@ import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.PopulationType;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
@@ -33,7 +33,7 @@ public class IpuUtilsTest {
 	
 	
 	@Test public void testParseIpuControlTotalsFile() throws GenstarException {
-		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
+		ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
 		
 		GenstarCsvFile attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpuUtils/parseIpuControlTotalsFile/success/group_attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
@@ -53,7 +53,7 @@ public class IpuUtilsTest {
 		
 		GenstarCsvFile ipuControlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpuUtils/parseIpuControlTotalsFile/success/group_ipu_control_totals.csv", false);
 		
-		List<AttributeValuesFrequency> avfs = IpuUtils.parseIpuControlTotalsFile(generator, controlledAttributes, ipuControlTotalsFile);
+		List<AttributeValuesFrequency> avfs = IpuUtils.parseAttributeValuesFrequenciesFromIpuControlTotalsFile(controlledAttributes, ipuControlTotalsFile);
 		
 		assertTrue(avfs.size() == 24); // verify size
 		
@@ -311,7 +311,7 @@ public class IpuUtilsTest {
 
 		
 		GenstarCsvFile attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpuUtils/writeIpuControlTotalsToCsvFile/group_attributes.csv", true);
-		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
+		ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		List<AttributeValuesFrequency> ipuControlTotals = new ArrayList<AttributeValuesFrequency>();

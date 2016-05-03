@@ -74,13 +74,6 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 		return attributes.contains(attribute);
 	}
 	
-	@Override public boolean containAttribute(final String dataAttributeName) {
-		if (dataAttributeName == null) { return false; }
-		
-		for (AbstractAttribute attr : attributes) { if (attr.getNameOnData().equals(dataAttributeName)) return true; }
-		return false;
-	}
-	
 	@Override public AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData) {
 		if (attributeNameOnData == null) { throw new IllegalArgumentException("'attributeNameOnData' parameter can not be null"); }
 
@@ -98,7 +91,7 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 	
 	@Override public void addAttribute(final AbstractAttribute attribute) throws GenstarException {
 		if (attribute == null) { throw new GenstarException("'attribute' parameter can not be null"); }
-		if (containAttribute(attribute.getNameOnData())) { throw new GenstarException("'" + generatorName + "' population already contains '" + attribute.getNameOnData() + "' attribute."); }
+		if (getAttributeByNameOnData(attribute.getNameOnData()) != null) { throw new GenstarException("'" + generatorName + "' population already contains '" + attribute.getNameOnData() + "' attribute."); }
 		if (!attribute.getPopulationGenerator().equals(this)) { throw new GenstarException("Can not add '" + attribute.getNameOnData() + "' attribute to '" + this.getGeneratorName() + 
 				"' population. Because attribute's population is " + attribute.getPopulationGenerator() + " (different from " + this + " population)."); }
 		

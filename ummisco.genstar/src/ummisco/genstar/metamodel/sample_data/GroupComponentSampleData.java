@@ -1,9 +1,10 @@
-package ummisco.genstar.ipf;
+package ummisco.genstar.metamodel.sample_data;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.ipf.AbstractSampleData;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.PopulationType;
@@ -47,8 +48,6 @@ public class GroupComponentSampleData extends AbstractSampleData implements ISam
 		// ?? duplicate with group-component references
 		this.groupIdAttributeOnGroupEntity = groupIdAttributeOnGroupEntity;
 		this.groupIdAttributeOnComponentEntity = groupIdAttributeOnComponentEntity;
-		
-//		buildGroupComponentSampleEntities();
 		
 		sampleEntityPopulation = GenstarUtils.loadCompoundPopulation(PopulationType.SAMPLE_DATA_POPULATION, groupSampleData.getSampleEntityPopulation(), 
 				componentSampleData.getSampleEntityPopulation(), groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);

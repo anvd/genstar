@@ -28,19 +28,19 @@ public class PopulationTest_Elementary {
 	public void testInvalidParameterConstructor() throws GenstarException {
 		exception.expect(GenstarException.class);
 
-		new MultipleRulesGenerator(null, 1);
-		new MultipleRulesGenerator("test population", 0);
-		new MultipleRulesGenerator(null, -1);
+		new SampleFreeGenerator(null, 1);
+		new SampleFreeGenerator("test population", 0);
+		new SampleFreeGenerator(null, -1);
 	}
 	
 	@Test
 	public void testValueParameterConstructor() throws GenstarException {
-		new MultipleRulesGenerator("test population", 1);
+		new SampleFreeGenerator("test population", 1);
 	}
 	
 	@Test
 	public void testGetNameAndNbOfEntities() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 		
 		Assert.assertEquals(population.getGeneratorName(), "test population");
 		Assert.assertEquals(population.getNbOfEntities(), 1);
@@ -49,7 +49,7 @@ public class PopulationTest_Elementary {
 	
 	@Test
 	public void testAddNullAttribute() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 
 		exception.expect(GenstarException.class);
 		population.addAttribute(null);
@@ -57,7 +57,7 @@ public class PopulationTest_Elementary {
 	
 	@Test
 	public void testAddAttribute() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 		
 		assertTrue(population.getAttributes().size() == 0);
 
@@ -72,7 +72,7 @@ public class PopulationTest_Elementary {
 	
 	@Test
 	public void testDuplicatedAttributeName() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 
 		AbstractAttribute attr = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
 		population.addAttribute(attr);
@@ -83,8 +83,8 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testAddAttributeInvalidPopulation() throws GenstarException {
-		MultipleRulesGenerator population1 = new MultipleRulesGenerator("test population1", 1);
-		MultipleRulesGenerator population2 = new MultipleRulesGenerator("test population2", 1);
+		SampleFreeGenerator population1 = new SampleFreeGenerator("test population1", 1);
+		SampleFreeGenerator population2 = new SampleFreeGenerator("test population2", 1);
 
 		AbstractAttribute attr = new UniqueValuesAttribute(population1, "dummy attribute", DataType.STRING);
 		exception.expect(GenstarException.class);
@@ -92,7 +92,7 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testGetAttributes() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 
 		AbstractAttribute attr = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
 		population.addAttribute(attr);
@@ -106,24 +106,8 @@ public class PopulationTest_Elementary {
 		assertTrue(attributes.contains(attr) && attributes.contains(attr1));
 	}
 	
-	@Test public void testContainAttributeName() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
-		
-		assertFalse(population.containAttribute("dummy attribute"));
-
-		AbstractAttribute attr = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
-		population.addAttribute(attr);
-		assertTrue(population.containAttribute("dummy attribute"));
-
-		AbstractAttribute attr1 = new UniqueValuesAttribute(population, "dummy attribute1", DataType.STRING);
-		population.addAttribute(attr1);
-		assertTrue(population.containAttribute("dummy attribute1"));
-
-		assertFalse(population.containAttribute(new String()));
-	}
-	
 	@Test public void testAppendValidFrequencyGenerationRules() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 		
 		assertTrue(population.getGenerationRules().size() == 0);
 
@@ -139,8 +123,8 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testAppendInvalidGenerationRule1() throws GenstarException {
-		MultipleRulesGenerator population1 = new MultipleRulesGenerator("test population1", 1);
-		MultipleRulesGenerator population2 = new MultipleRulesGenerator("test population2", 1);
+		SampleFreeGenerator population1 = new SampleFreeGenerator("test population1", 1);
+		SampleFreeGenerator population2 = new SampleFreeGenerator("test population2", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population1, "distribution 1");
 		exception.expect(IllegalArgumentException.class);
@@ -148,7 +132,7 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testAppendInvalidGenerationRule2() throws GenstarException {
-		MultipleRulesGenerator population1 = new MultipleRulesGenerator("test population1", 1);
+		SampleFreeGenerator population1 = new SampleFreeGenerator("test population1", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population1, "distribution 1");
 		population1.appendGenerationRule(dis1);
@@ -157,7 +141,7 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testAppendInvalidGenerationRule3() throws GenstarException {
-		MultipleRulesGenerator population1 = new MultipleRulesGenerator("test population1", 1);
+		SampleFreeGenerator population1 = new SampleFreeGenerator("test population1", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population1, "distribution 1");
 		FrequencyDistributionGenerationRule dis2 = new FrequencyDistributionGenerationRule(population1, "distribution 1");
@@ -167,7 +151,7 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testInsertValidGenerationRules() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 		
 		assertTrue(population.getGenerationRules().size() == 0);
 
@@ -196,7 +180,7 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testInsertInvalidPositionGenerationRules() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
 		exception.expect(IllegalArgumentException.class);
@@ -207,7 +191,7 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testRemoveValidGenerationRule() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 		
 		assertTrue(population.getNbOfRules() == 0);
 		population.removeGenerationRule(null);
@@ -244,7 +228,7 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testChangeGenerationRuleOrder() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
 		population.appendGenerationRule(dis1);
@@ -273,7 +257,7 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testGetGenerationRuleAtOrder() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
 		population.appendGenerationRule(dis1);
@@ -296,7 +280,7 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testContainGenerationRule() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
 		assertFalse(population.containGenerationRule(dis1));
@@ -306,7 +290,7 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testContainGenerationRuleName() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
 		assertFalse(population.containGenerationRuleName("distribution 1"));
@@ -316,7 +300,7 @@ public class PopulationTest_Elementary {
 	}
 	
 	@Test public void testGetGenerationRules() throws GenstarException {
-		MultipleRulesGenerator population = new MultipleRulesGenerator("test population", 1);
+		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 		
 		FrequencyDistributionGenerationRule dis1 = new FrequencyDistributionGenerationRule(population, "distribution 1");
 		population.appendGenerationRule(dis1);
@@ -337,7 +321,7 @@ public class PopulationTest_Elementary {
 		ruleArray[3] = dis4;
 		
 		
-		NavigableSet<GenerationRule> rules = population.getGenerationRules();
+		NavigableSet<SampleFreeGenerationRule> rules = population.getGenerationRules();
 		assertTrue(rules.size() == 4);
 		
 		int ruleIndex = 0;

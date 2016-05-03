@@ -13,7 +13,7 @@ import ummisco.genstar.metamodel.attributes.AttributeChangedListener;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 
-public class AttributeInferenceGenerationRule extends GenerationRule implements AttributeChangedListener {
+public class AttributeInferenceGenerationRule extends SampleFreeGenerationRule implements AttributeChangedListener {
 	
 	public static final int ATTRIBUTE_INFERENCE_GENERATION_RULE_ID = 1;
 	public static final String RULE_TYPE_NAME = "Attribute Inference";
@@ -24,12 +24,7 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	private Map<AttributeValue, AttributeValue> inferenceData;
 
 
-	// TODO change to 
-	/*
-	 public AttributeInferenceGenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String ruleName, 
-			final String inferringAttributeName, final String inferredAttributeName) throws GenstarException
-	 */
-	public AttributeInferenceGenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String name, 
+	public AttributeInferenceGenerationRule(final SampleFreeGenerator populationGenerator, final String name, 
 			final AbstractAttribute inferringAttribute, final AbstractAttribute inferredAttribute) throws GenstarException {
 		super(populationGenerator, name);
 
@@ -41,7 +36,7 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 		if (inferringAttribute.equals(inferredAttribute)) { throw new GenstarException("'inferringAttribute' and 'inferredAttribute' can not be identical"); }
 		if (inferringAttribute.valuesOnData().size() != inferredAttribute.valuesOnData().size()) { throw new GenstarException("'inferringAttribute' and 'inferredAttribute' must contains the same number of attribute values"); }
 		
-		// FIXME more validation!
+		// TODO further validation!
 		
 		this.inferringAttribute = inferringAttribute;
 		this.inferredAttribute = inferredAttribute;
@@ -153,6 +148,11 @@ public class AttributeInferenceGenerationRule extends GenerationRule implements 
 	@Override
 	public String getRuleTypeName() {
 		return RULE_TYPE_NAME;
+	}
+
+	@Override
+	public boolean containAttribute(final AbstractAttribute attribute) throws GenstarException {
+		return inferringAttribute.equals(attribute) || inferredAttribute.equals(attribute);
 	}
 	
 }

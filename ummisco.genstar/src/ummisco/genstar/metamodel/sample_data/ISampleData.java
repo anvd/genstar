@@ -1,4 +1,4 @@
-package ummisco.genstar.ipf;
+package ummisco.genstar.metamodel.sample_data;
 
 import java.util.Map;
 

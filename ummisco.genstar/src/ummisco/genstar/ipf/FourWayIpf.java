@@ -9,6 +9,7 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
 
 /**
  * 
@@ -19,7 +20,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 public class FourWayIpf extends Ipf<double[][][][], int[][][], double[][][]> {
 
 	
-	protected FourWayIpf(final SampleDataGenerationRule generationRule) throws GenstarException {
+	protected FourWayIpf(final IpfGenerationRule generationRule) throws GenstarException {
 		super(generationRule);
 	}
 

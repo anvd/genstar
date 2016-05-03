@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
@@ -139,7 +139,7 @@ public class AttributeUtilsTest {
 	
 	@Test public void testCreateUniqueValueAttributeWithRangeInput() throws GenstarException {
 		
-		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
+		ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
 		GenstarCsvFile attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/AttributeUtils/testCreateUniqueValueAttributeWithRangeInput/attributes1.csv", true);
 		
 		assertTrue(generator.getAttributes().isEmpty());

@@ -59,7 +59,7 @@ public class GenstarGeneratorTest_CanTho2 {
 	}
 	
 	
-	private IMultipleRulesGenerator householdPopGenerator1;
+	private SampleFreeGenerator householdPopGenerator1;
 	private FrequencyDistributionGenerationRule generator1Rule1;
 	
 	public static final String GENERATOR1_RULE1_NAME = "Household population by size, type and living_place";
@@ -83,7 +83,7 @@ public class GenstarGeneratorTest_CanTho2 {
 	
 	private void initializeHouseholdPopGenerator1() throws GenstarException {
 		
-		householdPopGenerator1 = new MultipleRulesGenerator("Household population generator 1", 286058); // data inconsistency?
+		householdPopGenerator1 = new SampleFreeGenerator("Household population generator 1", 286058); // data inconsistency?
 
 		// create attributes +
 		

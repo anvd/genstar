@@ -8,23 +8,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import mockit.Deencapsulation;
 import mockit.Delegate;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
+import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
@@ -34,7 +37,7 @@ import ummisco.genstar.util.IpfUtils;
 public class FiveWayIpfTest {
 
 	// household population
-	@Mocked SampleDataGenerationRule householdGenerationRule;
+	@Mocked IpfGenerationRule householdGenerationRule;
 	ISyntheticPopulationGenerator householdGenerator;
 	final List<AbstractAttribute> householdControlledAttributes = new ArrayList<AbstractAttribute>();
 	AbstractAttribute householdRowAttribute, householdColumnAttribute, householdLayerAttribute, householdStackAttribute, householdFifthAttribute;
@@ -43,7 +46,10 @@ public class FiveWayIpfTest {
 	FiveWayIpf householdIPF;
 
 	
-	@Before public void init() throws GenstarException {
+	@Before
+	public void init() throws GenstarException {
+		
+		if (householdIPF != null) { return; }
 		
 		// household population
 		String householdAttributesFilePath = "test_data/ummisco/genstar/ipf/five_way/household_attributes.csv";
@@ -77,10 +83,10 @@ public class FiveWayIpfTest {
 			Map<String, String> csvFilePaths = new HashMap<String, String>();
 			csvFilePaths.put(householdPopulationName, _householdSampleDataFileNamePath);
 			
-			GenstarUtils.writePopulationToCSVFile(generatedSamplePopulation, csvFilePaths);
+			GenstarUtils.writePopulationToCsvFile(generatedSamplePopulation, csvFilePaths);
 		}
 		 
-		householdGenerator = new SingleRuleGenerator("household generator");
+		householdGenerator = new SampleBasedGenerator("household generator");
 		GenstarCsvFile householdAttributesCSVFile = new GenstarCsvFile(householdAttributesFilePath, true);
 		AttributeUtils.createAttributesFromCSVFile(householdGenerator, householdAttributesCSVFile);
 		
@@ -95,7 +101,7 @@ public class FiveWayIpfTest {
 			
 			onInstance(householdGenerationRule).getAttributeByNameOnData(anyString);
 			result = new Delegate() {
-				AbstractAttribute delegateMethod(final String attributeName) {
+				AbstractAttribute delegateMethod(final String attributeName) throws GenstarException {
 					return householdGenerator.getAttributeByNameOnData(attributeName);
 				}
 			};
@@ -118,7 +124,7 @@ public class FiveWayIpfTest {
 			};
 			
 			onInstance(householdGenerationRule).getMaxIterations();
-			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
+			result = IpfGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
 		householdIPF = new FiveWayIpf(householdGenerationRule);
@@ -152,7 +158,7 @@ public class FiveWayIpfTest {
 		householdFifthAttributeValues = householdIPF.getAttributeValues(4);
 	}
 
-	@Test(expected = GenstarException.class) public void testInitializeFiveWayIPFWithInvalidControlledAttributes(@Mocked final SampleDataGenerationRule fiveWayGenerationRule) throws GenstarException {
+	@Test(expected = GenstarException.class) public void testInitializeFiveWayIPFWithInvalidControlledAttributes(@Mocked final IpfGenerationRule fiveWayGenerationRule) throws GenstarException {
 		new Expectations() {{
 			fiveWayGenerationRule.getControlledAttributes(); result = new ArrayList<AbstractAttribute>();
 		}};

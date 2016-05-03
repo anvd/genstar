@@ -52,10 +52,10 @@ import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.IpfControlTotals;
-import ummisco.genstar.ipf.SampleDataGenerationRule;
+import ummisco.genstar.ipf.IpfGenerationRule;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
@@ -488,7 +488,7 @@ public class GenstarsTest {
 	}
 	
 	
-	@Test public void testGenerateControlTotalsDataSet1(@Mocked final IScope scope, @Mocked final FileUtils fileUtils, @Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
+	@Test public void testGenerateControlTotalsDataSet1(@Mocked final IScope scope, @Mocked final FileUtils fileUtils, @Mocked final IpfGenerationRule generationRule) throws GenstarException {
 		
 		// dataSet1
 		final String dataSet1AttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/group_attributes.csv";
@@ -571,7 +571,7 @@ public class GenstarsTest {
 		assertTrue(dataSet1controlTotalFile.getRows() == 26);
 
 		// dataSet1
-		final ISyntheticPopulationGenerator dataSet1Generator = new SingleRuleGenerator("dummy generator");
+		final ISyntheticPopulationGenerator dataSet1Generator = new SampleBasedGenerator("dummy generator");
 		GenstarCsvFile dataSet1AttributesFile = new GenstarCsvFile(dataSet1AttributesFilePath, true);
 		AttributeUtils.createAttributesFromCSVFile(dataSet1Generator, dataSet1AttributesFile);
 		
@@ -656,7 +656,7 @@ public class GenstarsTest {
 	}
 	
 	
-	@Test public void testGenerateControlTotalsDataSet2(@Mocked final IScope scope, @Mocked final FileUtils fileUtils, @Mocked final SampleDataGenerationRule generationRule) throws GenstarException {
+	@Test public void testGenerateControlTotalsDataSet2(@Mocked final IScope scope, @Mocked final FileUtils fileUtils, @Mocked final IpfGenerationRule generationRule) throws GenstarException {
 		
 		// dataSet2
 		final String dataSet2AttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/attributes.csv";
@@ -723,7 +723,7 @@ public class GenstarsTest {
 		assertTrue(dataSet2controlTotalFile.getRows() == 11);
 		
 		// dataSet2
-		final ISyntheticPopulationGenerator dataSet2Generator = new SingleRuleGenerator("dummy generator");
+		final ISyntheticPopulationGenerator dataSet2Generator = new SampleBasedGenerator("dummy generator");
 		GenstarCsvFile dataSet2AttributesFile = new GenstarCsvFile(dataSet2AttributesFilePath, true);
 		AttributeUtils.createAttributesFromCSVFile(dataSet2Generator, dataSet2AttributesFile);
 		

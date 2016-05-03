@@ -25,7 +25,7 @@ public class EntityTest {
 	@Rule public ExpectedException exception = ExpectedException.none();
 
 	@Test public void testValidParamConstructor() throws GenstarException {
-		ISyntheticPopulationGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
+		ISyntheticPopulationGenerator bondyPopulation = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		new Entity(bondyPopulation.generate());
 	}
@@ -37,7 +37,7 @@ public class EntityTest {
 	
 	@Test public void testSetAttributeValueOnData() throws GenstarException {
 		
-		ISyntheticPopulationGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
+		ISyntheticPopulationGenerator bondyPopulation = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER, UniqueValue.class);
@@ -70,7 +70,7 @@ public class EntityTest {
 	}
 	
 	@Test public void testSetAttributeValuesOnData() throws GenstarException {
-		ISyntheticPopulationGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
+		ISyntheticPopulationGenerator bondyPopulation = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
@@ -103,7 +103,7 @@ public class EntityTest {
 	}
 	
 	@Test public void testSetAttributeValueOnEntity() throws GenstarException {
-		ISyntheticPopulationGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
+		ISyntheticPopulationGenerator bondyPopulation = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER, UniqueValue.class);
@@ -138,7 +138,7 @@ public class EntityTest {
 	}
 	
 	@Test public void testSetAttributeValuesOnEntity() throws GenstarException {
-		ISyntheticPopulationGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
+		ISyntheticPopulationGenerator bondyPopulation = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER, UniqueValue.class);
@@ -190,7 +190,7 @@ public class EntityTest {
 	
 	
 	@Test public void testMatchAttributeValuesOnEntity() throws GenstarException {
-		MultipleRulesGenerator bondyPopulationGenerator = new MultipleRulesGenerator("Population of Bondy", 100);
+		SampleFreeGenerator bondyPopulationGenerator = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulationGenerator.setNbOfEntities(1);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulationGenerator, "age_range_1", "age", DataType.INTEGER);

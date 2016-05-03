@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
@@ -24,7 +24,7 @@ public class IpuControlTotalsTest {
 	@Test public void testGetTypeConstraints(@Mocked final IpuGenerationRule generationRule) throws GenstarException {
 		
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlTotals/group_attributes.csv", true);
-		final ISyntheticPopulationGenerator groupGenerator = new SingleRuleGenerator("Group generator");
+		final ISyntheticPopulationGenerator groupGenerator = new SampleBasedGenerator("Group generator");
 		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
 		
 		// Household Size, Household Income, Number Of Cars
@@ -34,7 +34,7 @@ public class IpuControlTotalsTest {
 		groupControlledAttributes.add(groupGenerator.getAttributeByNameOnData("Number Of Cars"));
 		
 		GenstarCsvFile componentAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlTotals/component_attributes.csv", true);
-		final ISyntheticPopulationGenerator componentGenerator = new SingleRuleGenerator("Component generator");
+		final ISyntheticPopulationGenerator componentGenerator = new SampleBasedGenerator("Component generator");
 		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		
 		final GenstarCsvFile groupControlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlTotals/group_ipu_control_totals.csv", false);
@@ -47,11 +47,11 @@ public class IpuControlTotalsTest {
 		final GenstarCsvFile componentControlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlTotals/component_ipu_control_totals.csv", false);
 		
 		new Expectations() {{
-			generationRule.getGenerator(); result = groupGenerator;
+//			generationRule.getGenerator(); result = groupGenerator;
 			generationRule.getGroupControlledAttributes(); result = groupControlledAttributes;
 			generationRule.getGroupControlTotalsFile(); result = groupControlTotalsFile;
 			
-			generationRule.getComponentGenerator(); result = componentGenerator;
+//			generationRule.getComponentGenerator(); result = componentGenerator;
 			generationRule.getComponentControlledAttributes(); result = componentControlledAttributes;
 			generationRule.getComponentControlTotalsFile(); result = componentControlTotalsFile;
 		}};

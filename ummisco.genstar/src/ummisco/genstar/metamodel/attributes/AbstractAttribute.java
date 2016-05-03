@@ -2,13 +2,14 @@ package ummisco.genstar.metamodel.attributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.util.PersistentObject;
 
 
-public abstract class AbstractAttribute implements AttributeValueSet {
+public abstract class AbstractAttribute {
 	
 	
 	protected int attributeID = PersistentObject.NEW_OBJECT_ID;
@@ -145,4 +146,17 @@ public abstract class AbstractAttribute implements AttributeValueSet {
 	public boolean isIdentity() {
 		return isIdentity;
 	}
+
+	public abstract Set<AttributeValue> valuesOnData();
+	
+	public abstract boolean add(final AttributeValue value) throws GenstarException;
+	
+	public abstract boolean addAll(final Set<AttributeValue> values) throws GenstarException;
+	
+	public abstract boolean remove(final AttributeValue value);
+	
+	public abstract AttributeValue getInstanceOfAttributeValue(final AttributeValue value);
+
+	public abstract void clear();
+
 }

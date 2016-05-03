@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SampleFreeGenerator;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
@@ -124,7 +124,7 @@ public class UniqueValueTest {
 	}
 
 	@Test public void testFindMatchingAttributeValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		List<String> list1 = new ArrayList<String>();

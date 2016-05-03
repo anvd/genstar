@@ -7,15 +7,15 @@ import java.util.TreeSet;
 
 import ummisco.genstar.exception.GenstarException;
 
-public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator implements IMultipleRulesGenerator {
+public class SampleFreeGenerator extends AbstractSyntheticPopulationGenerator {
 	
-	protected SortedMap<Integer, GenerationRule> generationRules; // rule order begins by 0
+	protected SortedMap<Integer, SampleFreeGenerationRule> generationRules; // rule order begins by 0
 
-	public MultipleRulesGenerator(final String generatorName, final int nbOfEntities) throws GenstarException {
+	public SampleFreeGenerator(final String generatorName, final int nbOfEntities) throws GenstarException {
 		this(generatorName, nbOfEntities, "no-name population");
 	}
 	
-	public MultipleRulesGenerator(final String generatorName, final int nbOfEntities, final String populationName) throws GenstarException {
+	public SampleFreeGenerator(final String generatorName, final int nbOfEntities, final String populationName) throws GenstarException {
 		super(generatorName);
 		
 		if (nbOfEntities <= 0) { throw new IllegalArgumentException("'nbOfEntities' must be a positive integer"); }
@@ -23,11 +23,11 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		
 		this.populationName = populationName.trim();
 		this.nbOfEntities = nbOfEntities;
-		this.generationRules = new TreeMap<Integer, GenerationRule>();
+		this.generationRules = new TreeMap<Integer, SampleFreeGenerationRule>();
 	}
 
 
-	@Override public int getNbOfRules() {
+	public int getNbOfRules() {
 		return generationRules.size();
 	}
 
@@ -46,7 +46,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		}
 	}
 	
-	@Override public void appendGenerationRule(final GenerationRule rule) {
+	public void appendGenerationRule(final SampleFreeGenerationRule rule) {
 		verifyRuleValidity(rule);
 		
 		int index = generationRules.size();
@@ -54,7 +54,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		generationRules.put(index, rule);
 	}
 	
-	@Override public void insertGenerationRule(final GenerationRule rule, final int order) {
+	public void insertGenerationRule(final SampleFreeGenerationRule rule, final int order) {
 		verifyRuleValidity(rule);
 		
 		if (order < 0 || order > generationRules.size()) { throw new IllegalArgumentException("Can not insert the generation rule : 'order' parameter must be in range[0, " + generationRules.size() + "]"); }
@@ -62,7 +62,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		int newIndex = 0;
 		int oldIndex = 0;
 		int size = generationRules.size();
-		SortedMap<Integer, GenerationRule> newRules = new TreeMap<Integer, GenerationRule>();
+		SortedMap<Integer, SampleFreeGenerationRule> newRules = new TreeMap<Integer, SampleFreeGenerationRule>();
 		
 		// process the first part
 		while (oldIndex < order) {
@@ -76,7 +76,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		newIndex = order + 1;
 		
 		// process the second part
-		GenerationRule secondPartRule;
+		SampleFreeGenerationRule secondPartRule;
 		while (oldIndex < size) {
 			secondPartRule = generationRules.get(oldIndex);
 			setRuleOrder(secondPartRule, newIndex);
@@ -89,7 +89,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		generationRules.putAll(newRules);
 	}
 	
-	@Override public void removeGenerationRule(final GenerationRule rule) {
+	public void removeGenerationRule(final FrequencyDistributionGenerationRule rule) {
 		if (rule == null) { return; }
 		
 		int removedOrder = 0;
@@ -104,7 +104,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		
 		if (!contain) { return; }
 		
-		SortedMap<Integer, GenerationRule> newRules = new TreeMap<Integer, GenerationRule>();
+		SortedMap<Integer, SampleFreeGenerationRule> newRules = new TreeMap<Integer, SampleFreeGenerationRule>();
 		int oldIndex = 0;
 		int size = generationRules.size();
 		
@@ -118,7 +118,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		int newIndex = removedOrder + 1;
 		
 		// process the second part
-		GenerationRule secondPartRule;
+		SampleFreeGenerationRule secondPartRule;
 		while (newIndex < size) {
 			secondPartRule = generationRules.get(newIndex);
 			newRules.put(oldIndex, secondPartRule);
@@ -131,7 +131,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		generationRules.putAll(newRules);
 	}
 	
-	@Override public void changeGenerationRuleOrder(final GenerationRule rule, final int newOrder) {
+	public void changeGenerationRuleOrder(final FrequencyDistributionGenerationRule rule, final int newOrder) {
 		if (rule == null) { throw new IllegalArgumentException("'rule' parameter must not be null"); }
 		int oldOrder = this.getGenerationRuleOrder(rule);
 		if (oldOrder == -1) { throw new IllegalArgumentException("'" + generatorName + "' population doesn't contain '" + rule.getName() + "' generation rule"); }
@@ -143,7 +143,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		insertGenerationRule(rule, newOrder);
 	}
 	
-	@Override public int getGenerationRuleOrder(final GenerationRule rule) {
+	public int getGenerationRuleOrder(final FrequencyDistributionGenerationRule rule) {
 		if (rule == null) { throw new IllegalArgumentException("'rule' parameter can not be null"); }
 		
 		for (int order : generationRules.keySet()) {
@@ -153,7 +153,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		return -1;
 	}
 	
-	@Override public GenerationRule getGenerationRuleAtOrder(final int order) {
+	public SampleFreeGenerationRule getGenerationRuleAtOrder(final int order) {
 		if (order < 0 || order > (generationRules.size() - 1)) {
 			throw new IllegalArgumentException("'order' parameter must be in range[0, " + (generationRules.size() - 1) + "]");
 		}
@@ -161,7 +161,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		return generationRules.get(order);
 	}
 	
-	@Override public boolean containGenerationRule(final GenerationRule rule) {
+	public boolean containGenerationRule(final FrequencyDistributionGenerationRule rule) {
 		if (rule == null) { return false; }
 		
 		for (int order : generationRules.keySet()) {
@@ -171,7 +171,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		return false;
 	}
 	
-	@Override public boolean containGenerationRuleName(final String ruleName) {
+	public boolean containGenerationRuleName(final String ruleName) {
 		for (GenerationRule d : generationRules.values()) {
 			if (d.getName().equals(ruleName)) { return true; }
 		}
@@ -179,8 +179,8 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		return false;
 	}
 	
-	@Override public NavigableSet<GenerationRule> getGenerationRules() {
-		NavigableSet<GenerationRule> retVal = new TreeSet<GenerationRule>();
+	public NavigableSet<SampleFreeGenerationRule> getGenerationRules() {
+		NavigableSet<SampleFreeGenerationRule> retVal = new TreeSet<SampleFreeGenerationRule>();
 		retVal.addAll(generationRules.values());
 		
 		return retVal;
@@ -203,7 +203,7 @@ public class MultipleRulesGenerator extends AbstractSyntheticPopulationGenerator
 		return population;
 	}
 
-	private void setRuleOrder(final GenerationRule rule, final int order) {
+	private void setRuleOrder(final SampleFreeGenerationRule rule, final int order) {
 		rule.setOrder(order);
 	}
 }

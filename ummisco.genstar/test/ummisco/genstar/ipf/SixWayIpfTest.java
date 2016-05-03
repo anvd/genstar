@@ -22,10 +22,12 @@ import org.junit.runner.RunWith;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
+import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
@@ -36,7 +38,7 @@ public class SixWayIpfTest {
 	
 	
 	// household population
-	@Mocked SampleDataGenerationRule householdGenerationRule;
+	@Mocked IpfGenerationRule householdGenerationRule;
 	ISyntheticPopulationGenerator householdGenerator;
 	final List<AbstractAttribute> householdControlledAttributes = new ArrayList<AbstractAttribute>();
 	AbstractAttribute householdRowAttribute, householdColumnAttribute, householdLayerAttribute, householdStackAttribute, householdFifthAttribute, householdSixthAttribute;
@@ -46,6 +48,8 @@ public class SixWayIpfTest {
 	 
 
 	@Before public void init() throws GenstarException {
+		
+		if (householdIPF != null) { return; }
 		
 		// household population
 		String householdAttributesFilePath = "test_data/ummisco/genstar/ipf/six_way/household_attributes.csv";
@@ -79,10 +83,10 @@ public class SixWayIpfTest {
 			Map<String, String> csvFilePaths = new HashMap<String, String>();
 			csvFilePaths.put(householdPopulationName, _householdSampleDataFileNamePath);
 			
-			GenstarUtils.writePopulationToCSVFile(generatedSamplePopulation, csvFilePaths);
+			GenstarUtils.writePopulationToCsvFile(generatedSamplePopulation, csvFilePaths);
 		}
 		 
-		householdGenerator = new SingleRuleGenerator("household generator");
+		householdGenerator = new SampleBasedGenerator("household generator");
 		GenstarCsvFile householdAttributesCSVFile = new GenstarCsvFile(householdAttributesFilePath, true);
 		AttributeUtils.createAttributesFromCSVFile(householdGenerator, householdAttributesCSVFile);
 		
@@ -97,7 +101,7 @@ public class SixWayIpfTest {
 			
 			onInstance(householdGenerationRule).getAttributeByNameOnData(anyString);
 			result = new Delegate() {
-				AbstractAttribute delegateMethod(final String attributeName) {
+				AbstractAttribute delegateMethod(final String attributeName) throws GenstarException {
 					return householdGenerator.getAttributeByNameOnData(attributeName);
 				}
 			};
@@ -120,7 +124,7 @@ public class SixWayIpfTest {
 			};
 			
 			onInstance(householdGenerationRule).getMaxIterations();
-			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
+			result = IpfGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
 		householdIPF = new SixWayIpf(householdGenerationRule);
@@ -161,7 +165,7 @@ public class SixWayIpfTest {
 	}
 
 	
-	@Test(expected = GenstarException.class) public void testInitializeSixWayIPFWithInvalidControlledAttributes(@Mocked final SampleDataGenerationRule sixWayGenerationRule) throws GenstarException {
+	@Test(expected = GenstarException.class) public void testInitializeSixWayIPFWithInvalidControlledAttributes(@Mocked final IpfGenerationRule sixWayGenerationRule) throws GenstarException {
 		new Expectations() {{
 			sixWayGenerationRule.getControlledAttributes(); result = new ArrayList<AbstractAttribute>();
 		}};

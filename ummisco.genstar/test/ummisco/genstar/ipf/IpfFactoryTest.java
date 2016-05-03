@@ -22,7 +22,7 @@ public class IpfFactoryTest {
 	}
 	
 	
-	@Test public void testCreateTwoWayIPFSucessfully(@Mocked final SampleDataGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
+	@Test public void testCreateTwoWayIPFSucessfully(@Mocked final IpfGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
 			@Mocked final TwoWayIpf mockedIpf) throws GenstarException {
 		
 		new Expectations() {{
@@ -35,7 +35,7 @@ public class IpfFactoryTest {
 	}
 	
 	
-	@Test public void testCreateThreeWayIPFSuccessfully(@Mocked final SampleDataGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
+	@Test public void testCreateThreeWayIPFSuccessfully(@Mocked final IpfGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
 			@Mocked final ThreeWayIpf mockedIpf) throws GenstarException {
 		
 		new Expectations() {{
@@ -48,7 +48,7 @@ public class IpfFactoryTest {
 	}
 	
 	
-	@Test public void testCreateFourWayIPFSuccessfully(@Mocked final SampleDataGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
+	@Test public void testCreateFourWayIPFSuccessfully(@Mocked final IpfGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
 			@Mocked final FourWayIpf mockedIpf) throws GenstarException {
 
 		new Expectations() {{
@@ -61,7 +61,7 @@ public class IpfFactoryTest {
 	}
 	
 	
-	@Test public void testCreateFiveWayIPFSuccessfully(@Mocked final SampleDataGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
+	@Test public void testCreateFiveWayIPFSuccessfully(@Mocked final IpfGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
 			@Mocked final FiveWayIpf mockedIpf) throws GenstarException {
 
 		new Expectations() {{
@@ -74,7 +74,7 @@ public class IpfFactoryTest {
 	}
 	
 
-	@Test public void testCreateFixWayIPFSuccessfully(@Mocked final SampleDataGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
+	@Test public void testCreateFixWayIPFSuccessfully(@Mocked final IpfGenerationRule rule, @Mocked final List<AbstractAttribute> controlledAttributes,
 			@Mocked final SixWayIpf mockedIpf) throws GenstarException {
 
 		new Expectations() {{

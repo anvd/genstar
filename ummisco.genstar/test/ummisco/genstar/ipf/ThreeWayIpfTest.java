@@ -20,17 +20,19 @@ import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
+import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 
 @RunWith(JMockit.class)
 public class ThreeWayIpfTest {
 	
-	@Mocked SampleDataGenerationRule generationRule;
+	@Mocked IpfGenerationRule generationRule;
 	ISyntheticPopulationGenerator generator;
 	final List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
 	AbstractAttribute rowAttribute, columnAttribute, layerAttribute;
@@ -41,7 +43,9 @@ public class ThreeWayIpfTest {
 	
 	@Before public void init() throws GenstarException {
 		
-		generator = new SingleRuleGenerator("generator");
+		if (ipf != null) { return; }
+		
+		generator = new SampleBasedGenerator("generator");
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/three_way/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -57,7 +61,7 @@ public class ThreeWayIpfTest {
 			
 			generationRule.getAttributeByNameOnData(anyString);
 			result = new Delegate() {
-				AbstractAttribute delegateMethod(final String attributeName) {
+				AbstractAttribute delegateMethod(final String attributeName) throws GenstarException {
 					return generator.getAttributeByNameOnData(attributeName);
 				}
 			};
@@ -80,7 +84,7 @@ public class ThreeWayIpfTest {
 			};
 			
 			generationRule.getMaxIterations();
-			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
+			result = IpfGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
 		ipf = new ThreeWayIpf(generationRule);
@@ -105,7 +109,7 @@ public class ThreeWayIpfTest {
 		layerAttributeValues = ipf.getAttributeValues(2);
 	}
 	
-	@Test(expected = GenstarException.class) public void testInitializeThreeWayIPFWithInvalidControlledAttributes(@Mocked final SampleDataGenerationRule threeWayGenerationRule) throws GenstarException {
+	@Test(expected = GenstarException.class) public void testInitializeThreeWayIPFWithInvalidControlledAttributes(@Mocked final IpfGenerationRule threeWayGenerationRule) throws GenstarException {
 		
 		new Expectations() {{
 			threeWayGenerationRule.getControlledAttributes(); result = new ArrayList<AbstractAttribute>();

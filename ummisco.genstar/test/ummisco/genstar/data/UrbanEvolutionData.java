@@ -6,9 +6,8 @@ import java.util.Map;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
-import ummisco.genstar.metamodel.IMultipleRulesGenerator;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SampleFreeGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
@@ -60,12 +59,12 @@ public class UrbanEvolutionData {
 	private float[] building_height_values = { 5.0f, 8.0f, 20.0f, 7.0f };
 	
 	// create rules
-	private IMultipleRulesGenerator buildingPopulationGenerator;
+	private SampleFreeGenerator buildingPopulationGenerator;
 	private FrequencyDistributionGenerationRule generationRule1;
 	private AttributeInferenceGenerationRule generationRule2, generationRule3, generationRule4;
 	
 	public UrbanEvolutionData() throws GenstarException {
-		buildingPopulationGenerator = new MultipleRulesGenerator("Building population", 120);
+		buildingPopulationGenerator = new SampleFreeGenerator("Building population", 120);
 		
 		// create attributes +
 		UniqueValuesAttribute buildingTypeAttr = new UniqueValuesAttribute(buildingPopulationGenerator, "type", DataType.STRING);

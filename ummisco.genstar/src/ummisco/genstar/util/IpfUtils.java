@@ -3,7 +3,6 @@ package ummisco.genstar.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,16 +12,14 @@ import java.util.StringTokenizer;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 
 import com.google.common.collect.Sets;
-import com.sun.tools.javac.comp.Todo;
 
 public class IpfUtils {
 
@@ -111,7 +108,7 @@ public class IpfUtils {
 		if (attributesFile == null) { throw new GenstarException("Parameter attributesFile can not be null"); }
 		if (total < 1) { throw new GenstarException("Parameter controlTotal must be positive"); }
 		
-		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy single rule generator");
+		SampleBasedGenerator generator = new SampleBasedGenerator("dummy single rule generator");
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		// generate frequencies / control totals
@@ -166,7 +163,7 @@ public class IpfUtils {
 		}
 
 		// read attribute values frequencies from control totals file then do the analysis
-		List<AttributeValuesFrequency> attributeValuesFrequencies = parseIpfControlTotalsFile(controlTotalsFile, controlledAttributes);
+		List<AttributeValuesFrequency> attributeValuesFrequencies = parseAttributeValuesFrequenciesFromIpfControlTotalsFile(controlTotalsFile, controlledAttributes);
 		List<Integer> generatedFrequencies = new ArrayList<Integer>();
 		List<Entity> entities = population.getEntities();
 		for (AttributeValuesFrequency avf : attributeValuesFrequencies) {
@@ -178,12 +175,12 @@ public class IpfUtils {
 		return generatedFrequencies;
 	}
 	
-	// TODO change name to readAttributeValuesFrequenciesFromIpfControlTotalsFile or parseIpfControlTotals
-	public static List<AttributeValuesFrequency> parseIpfControlTotalsFile(final GenstarCsvFile controlTotalsFile, 
+
+	public static List<AttributeValuesFrequency> parseAttributeValuesFrequenciesFromIpfControlTotalsFile(final GenstarCsvFile ipfControlTotalsFile, 
 			final List<AbstractAttribute> controlledAttributes) throws GenstarException {
 		
 		// parameters validation
-		if (controlTotalsFile == null || controlledAttributes == null) {
+		if (ipfControlTotalsFile == null || controlledAttributes == null) {
 			throw new GenstarException("Parameters controlTotalsFile, controlledAttributes can not be null");
 		}
 		
@@ -206,11 +203,11 @@ public class IpfUtils {
 		for (List<Map<AbstractAttribute, AttributeValue>> subset : controlledAttributesValuesSubsets) { controlledAttributesValuesSubsetsSize += subset.size(); }
 		
 		// size verification
-		List<List<String>> controlTotalsFileContent = controlTotalsFile.getContent();
+		List<List<String>> controlTotalsFileContent = ipfControlTotalsFile.getContent();
 		if (controlledAttributesValuesSubsetsSize != controlTotalsFileContent.size()) {
 			throw new GenstarException("Mismatched between required/valid number of controlled totals and supplied number of controlled totals. Required values: " 
 						+ controlledAttributesValuesSubsetsSize + ", supplied values (in control total file): " + controlTotalsFileContent.size()
-						+ ". File: " + controlTotalsFile.getPath());
+						+ ". File: " + ipfControlTotalsFile.getPath());
 		}
 		
 		
@@ -241,14 +238,14 @@ public class IpfUtils {
 		int line = 1;
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		for (List<String> aRow : controlTotalsFileContent) {
-			if (aRow.size() != controlTotalLineLength) throw new GenstarException("Invalid attribute values frequency format. File: " + controlTotalsFile.getPath() + ", line: " + line);
+			if (aRow.size() != controlTotalLineLength) throw new GenstarException("Invalid attribute values frequency format. File: " + ipfControlTotalsFile.getPath() + ", line: " + line);
 			line++;
 			
 			attributeValues.clear();
 			for (int col=0; col<(aRow.size() - 1); col+=2) { // Parse each line of the file
 				// 1. parse the attribute name column
 				attribute = generator.getAttributeByNameOnData(aRow.get(col));
-				if (attribute == null) { throw new GenstarException("'" + aRow.get(col) + "' is not a valid attribute. File: " + controlTotalsFile.getPath() + ", line: " + line + "."); }
+				if (attribute == null) { throw new GenstarException("'" + aRow.get(col) + "' is not a valid attribute. File: " + ipfControlTotalsFile.getPath() + ", line: " + line + "."); }
 				if (!controlledAttributes.contains(attribute)) { throw new GenstarException("'" + aRow.get(col) + "' is not a controlled attribute."); }
 				if (attributeValues.containsKey(attribute)) { throw new GenstarException("Duplicated attribute : '" + attribute.getNameOnData() + "'"); }
 				
@@ -257,7 +254,7 @@ public class IpfUtils {
 				String attributeValueString = aRow.get(col+1);
 				if (attributeValueString.contains(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER)) { // range value
 					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
-					if (rangeValueToken.countTokens() != 2) { throw new GenstarException("Invalid range attribute value: '" + attributeValueString + "'. File: " + controlTotalsFile.getPath()); }
+					if (rangeValueToken.countTokens() != 2) { throw new GenstarException("Invalid range attribute value: '" + attributeValueString + "'. File: " + ipfControlTotalsFile.getPath()); }
 					valueList.add(rangeValueToken.nextToken());
 					valueList.add(rangeValueToken.nextToken());
 				} else { // unique value
@@ -267,14 +264,14 @@ public class IpfUtils {
 				
 				attributeValue = attribute.findCorrespondingAttributeValueOnData(valueList);
 				if (attributeValue == null) { throw new GenstarException("Attribute value '" + aRow.get(col+1) + "' not found in valid attribute values of " + attribute.getNameOnData()
-						+ ". File: " + controlTotalsFile.getPath() + ", line: " + line); }
+						+ ". File: " + ipfControlTotalsFile.getPath() + ", line: " + line); }
 				
 				attributeValues.put(attribute, attributeValue);
 			}
 			
 			// "frequency" is the last column
 			int frequency = Integer.parseInt(aRow.get(aRow.size() - 1));
-			if (frequency <= 0) { throw new GenstarException("frequency value must be positive. File: " + controlTotalsFile.getPath() + ", line: " + line); }
+			if (frequency <= 0) { throw new GenstarException("frequency value must be positive. File: " + ipfControlTotalsFile.getPath() + ", line: " + line); }
 			
 			
 			// verify attributeValues
@@ -294,13 +291,13 @@ public class IpfUtils {
 			
 			
 			// attribute values is not recognized
-			if (matched == null) { throw new GenstarException("Line " + line + " is not a valid controlled total. File: " + controlTotalsFile.getPath()); }
+			if (matched == null) { throw new GenstarException("Line " + line + " is not a valid controlled total. File: " + ipfControlTotalsFile.getPath()); }
 			
 			// duplication
 			for (Integer groupIdentity : alreadyValidAvfsByGroups.keySet()) {
 				for (AttributeValuesFrequency avf : alreadyValidAvfsByGroups.get(groupIdentity)) {
 					if (avf.matchAttributeValuesOnData(attributeValues)) {
-						throw new GenstarException("Duplicated control totals. Line: " + line + ", file: " + controlTotalsFile.getPath());
+						throw new GenstarException("Duplicated control totals. Line: " + line + ", file: " + ipfControlTotalsFile.getPath());
 					}
 				}
 			}
@@ -355,7 +352,7 @@ public class IpfUtils {
 			}
 			
 			throw new GenstarException("Sum control totals of controlled attribute groups are not equal: " + messageDetail.toString()
-					+ " . File: " + controlTotalsFile.getPath()); 
+					+ " . File: " + ipfControlTotalsFile.getPath()); 
 		}
 		
 		

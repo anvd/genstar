@@ -122,10 +122,10 @@ public class GenstarGeneratorTest_CanTho1 {
 	public static final String ORDER2_GENERATOR_RULE2_NAME = "Inhabitant population by age and sex (Order 1 Generator)";
 	
 	
-	private IMultipleRulesGenerator rulesOrder1InhabitantPopGenerator;
+	private SampleFreeGenerator rulesOrder1InhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule order1Rule1, order1Rule2;
 	
-	private IMultipleRulesGenerator rulesOrder2InhabitantPopGenerator;
+	private SampleFreeGenerator rulesOrder2InhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule order2Rule1, order2Rule2;
 	
 	
@@ -150,7 +150,7 @@ public class GenstarGeneratorTest_CanTho1 {
 	
 	private void initializeRulesOrder1Generator() throws GenstarException {
 		
-		rulesOrder1InhabitantPopGenerator = new MultipleRulesGenerator("Inhabitant population generator (Rules Order 1)", 1188435);
+		rulesOrder1InhabitantPopGenerator = new SampleFreeGenerator("Inhabitant population generator (Rules Order 1)", 1188435);
 		
 		// create attributes +
 		
@@ -233,7 +233,7 @@ public class GenstarGeneratorTest_CanTho1 {
 	
 	private void initializeRulesOrder2Generator() throws GenstarException {
 		
-		rulesOrder2InhabitantPopGenerator = new MultipleRulesGenerator("Inhabitant population generator (Rules Order 2)", 1188435);
+		rulesOrder2InhabitantPopGenerator = new SampleFreeGenerator("Inhabitant population generator (Rules Order 2)", 1188435);
 		
 		// create attributes +
 		

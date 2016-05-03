@@ -28,12 +28,12 @@ public class PopulationTest {
 	
 	private GenstarCsvFile attributesFile;
 	
-	private ISingleRuleGenerator generator;
+	private SampleBasedGenerator generator;
 	
 	
 	@Before public void init() throws GenstarException {
 		attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/population/initialize_population_successfully/attributes.csv", true);
-		generator = new SingleRuleGenerator("dummy generator");
+		generator = new SampleBasedGenerator("dummy generator");
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 	}
 	

@@ -6,9 +6,9 @@ import java.util.StringTokenizer;
 
 import ummisco.genstar.exception.GenstarException;
 
-public abstract class CustomGenerationRule extends GenerationRule {
+public abstract class CustomSampleFreeGenerationRule extends SampleFreeGenerationRule {
 
-	public static final String RULE_TYPE_NAME = "Custom Generation Rule";
+	public static final String RULE_TYPE_NAME = "Custom Generation Rule"; // TODO change to "Custom Sample Free Generation Rule"
 	
 	public static final String PARAMETER_DELIMITER = "&";
 	
@@ -16,7 +16,7 @@ public abstract class CustomGenerationRule extends GenerationRule {
 	
 	protected Map<String, String> parameterValuesMap;
 
-	public CustomGenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String ruleName, final String parameterValues) throws GenstarException {
+	public CustomSampleFreeGenerationRule(final SampleFreeGenerator populationGenerator, final String ruleName, final String parameterValues) throws GenstarException {
 		super(populationGenerator, ruleName);
 		
 		readParameterValues(parameterValues);

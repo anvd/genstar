@@ -15,22 +15,25 @@ import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
+import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 
 @RunWith(JMockit.class)
 public class TwoWayIpfTest {
 
-	@Mocked SampleDataGenerationRule generationRule;
+	@Mocked IpfGenerationRule generationRule;
 	ISyntheticPopulationGenerator generator;
 	final List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
 	AbstractAttribute rowAttr, colAttr;
@@ -39,7 +42,10 @@ public class TwoWayIpfTest {
 	TwoWayIpf ipf;
 	
 	@Before public void init() throws GenstarException {
-		generator = new SingleRuleGenerator("generator");
+		
+		if (ipf != null) {  return; }
+		
+		generator = new SampleBasedGenerator("generator");
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/two_way/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -55,7 +61,7 @@ public class TwoWayIpfTest {
 			
 			generationRule.getAttributeByNameOnData(anyString);
 			result = new Delegate() {
-				AbstractAttribute delegateMethod(final String attributeName) {
+				AbstractAttribute delegateMethod(final String attributeName) throws GenstarException {
 					return generator.getAttributeByNameOnData(attributeName);
 				}
 			};
@@ -78,7 +84,7 @@ public class TwoWayIpfTest {
 			};
 			
 			generationRule.getMaxIterations();
-			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
+			result = IpfGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
 		ipf = new TwoWayIpf(generationRule);
@@ -93,7 +99,7 @@ public class TwoWayIpfTest {
 	}
 	
 	
-	@Test(expected = GenstarException.class) public void initializeIPFWithInvalidControlledAttributes(@Mocked final SampleDataGenerationRule myGenerationRule) throws GenstarException {
+	@Test(expected = GenstarException.class) public void initializeIPFWithInvalidControlledAttributes(@Mocked final IpfGenerationRule myGenerationRule) throws GenstarException {
 		
 		new Expectations() {{
 			myGenerationRule.getControlledAttributes(); result = new ArrayList<AbstractAttribute>();

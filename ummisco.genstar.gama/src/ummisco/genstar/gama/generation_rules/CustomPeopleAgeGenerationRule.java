@@ -14,17 +14,16 @@ import msi.gama.util.file.GamaCSVFile;
 import msi.gama.util.matrix.IMatrix;
 import msi.gaml.types.Types;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.CustomGenerationRule;
+import ummisco.genstar.metamodel.CustomSampleFreeGenerationRule;
 import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.SampleFreeGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.DataType;
-import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.util.SharedInstances;
 
-public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
+public class CustomPeopleAgeGenerationRule extends CustomSampleFreeGenerationRule {
 	
 	private List<AbstractAttribute> attributes;
 	
@@ -34,7 +33,7 @@ public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
 	
 	private int total = 0;
 	
-	public CustomPeopleAgeGenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String ruleName, final String parameterValues) throws GenstarException {
+	public CustomPeopleAgeGenerationRule(final SampleFreeGenerator populationGenerator, final String ruleName, final String parameterValues) throws GenstarException {
 		super(populationGenerator, ruleName, parameterValues);		
 	}
 	
@@ -76,7 +75,7 @@ public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
 			String maxValue = minMaxValueToken.nextToken().trim();
 			RangeValue rangeValue = new RangeValue(dataType, minValue, maxValue);
 			
-			if (!ageAttribute.containsValueOfAttributeValue(rangeValue)) { throw new GenstarException(rangeValue.toString() + " not found in 'Age' attribute."); }
+			if (ageAttribute.getInstanceOfAttributeValue(rangeValue) != null) { throw new GenstarException(rangeValue.toString() + " not found in 'Age' attribute."); }
 			if (valueFrequencies.containsKey(rangeValue)) { throw new GenstarException("Duplicated attribute value: " + rangeValue.toString() + ". File: " + ruleDataCSVFile.getPath()); }
 			
 			
@@ -97,7 +96,6 @@ public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
 
 	@Override
 	public int getRuleTypeID() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -129,6 +127,11 @@ public class CustomPeopleAgeGenerationRule extends CustomGenerationRule {
 	public AbstractAttribute getAttributeByNameOnEntity(
 			String attributeNameOnEntity) {
 		throw new UnsupportedOperationException("not yet implemented");
+	}
+
+	@Override
+	public boolean containAttribute(final AbstractAttribute attribute) throws GenstarException {
+		return attributes.contains(attribute);
 	}
 
 }

@@ -14,19 +14,20 @@ import ummisco.genstar.util.IpfUtils;
 
 public class IpfControlTotals {
 	
-	private GenstarCsvFile data;
+	private GenstarCsvFile ipfControlTotalsFile;
 	
 	private List<AbstractAttribute> controlledAttributes;
 	
 	private List<AttributeValuesFrequency> avFrequencies;
 
 	
-	public IpfControlTotals(final SampleDataGenerationRule generationRule) throws GenstarException {
+//	public IpfControlTotals(final List<AbstractAttribute> controlledAttribute, final GenstarCsvFile ipfControlTotalsFile) throws GenstarException {
+	public IpfControlTotals(final IpfGenerationRule generationRule) throws GenstarException {
 		if (generationRule == null) { throw new GenstarException("'generationRule' parameter can not be null"); }
 		
-		this.data = generationRule.getControlTotalsFile();
-		this.controlledAttributes = generationRule.getControlledAttributes();
-		this.avFrequencies = IpfUtils.parseIpfControlTotalsFile(this.data, this.controlledAttributes);
+		this.ipfControlTotalsFile = generationRule.getControlTotalsFile();
+		this.controlledAttributes = new ArrayList<AbstractAttribute>(generationRule.getControlledAttributes());
+		this.avFrequencies = IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(this.ipfControlTotalsFile, this.controlledAttributes);
 	}
 	
 	

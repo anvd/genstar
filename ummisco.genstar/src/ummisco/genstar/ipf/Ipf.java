@@ -22,14 +22,14 @@ public abstract class Ipf<D, C, M> {
 	
 	protected Map<Integer, List<AttributeValue>> controlledAttributeValues;
 	
-	protected SampleDataGenerationRule generationRule = null;
+	protected IpfGenerationRule generationRule = null;
 	
 	protected List<IpfIteration<D, C, M>> iterations;
 	
 	protected List<AttributeValuesFrequency> selectionProbabilities;
 
 	
-	protected Ipf(final SampleDataGenerationRule generationRule) throws GenstarException {
+	protected Ipf(final IpfGenerationRule generationRule) throws GenstarException {
 		if (generationRule == null) { throw new GenstarException("'generationRule' can not be null"); }
 		this.generationRule = generationRule;
 		this.controls = new ArrayList<C>();
@@ -60,7 +60,7 @@ public abstract class Ipf<D, C, M> {
 	protected abstract void computeControls() throws GenstarException;
 	
 	
-	public SampleDataGenerationRule getGenerationRule() {
+	public IpfGenerationRule getGenerationRule() {
 		return generationRule;
 	}
 	

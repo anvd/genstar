@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SampleFreeGenerator;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
@@ -35,7 +35,7 @@ public class UniqueValuesAttributeTest {
 	public void testNullDataVarNameParamConstructor() throws GenstarException {
 		exception.expect(GenstarException.class);
 
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		new UniqueValuesAttribute(p, null, "entity var name", DataType.BOOL);
 	}
 	
@@ -43,7 +43,7 @@ public class UniqueValuesAttributeTest {
 	public void testNullEntityVarNameConstructor() throws GenstarException {
 		exception.expect(GenstarException.class);
 
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		new UniqueValuesAttribute(p, "data var name", null, DataType.BOOL);
 	}
 	
@@ -51,7 +51,7 @@ public class UniqueValuesAttributeTest {
 	public void testNullValueTypeConstructor() throws GenstarException {
 		exception.expect(GenstarException.class);
 		
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		new UniqueValuesAttribute(p, "data var name", "entity var name", null);
 	}
 	
@@ -64,7 +64,7 @@ public class UniqueValuesAttributeTest {
 	
 	@Test
 	public void testValidParamsConstructor() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.BOOL);
 	}
 
@@ -72,7 +72,7 @@ public class UniqueValuesAttributeTest {
 	public void testAddNullValue() throws GenstarException {
 		exception.expect(GenstarException.class);
 
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		attr.add(null);
@@ -80,7 +80,7 @@ public class UniqueValuesAttributeTest {
 	
 	@Test
 	public void testAddValidValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		attr.add(new UniqueValue(DataType.INTEGER, "10"));
@@ -88,7 +88,7 @@ public class UniqueValuesAttributeTest {
 	
 	@Test
 	public void testAddNullValues() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 
 		exception.expect(GenstarException.class);
@@ -97,7 +97,7 @@ public class UniqueValuesAttributeTest {
 	
 	@Test
 	public void testGetValues() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 
 		assertTrue(attr.valuesOnData().isEmpty());
@@ -107,7 +107,7 @@ public class UniqueValuesAttributeTest {
 	}
 	
 	@Test public void testFindCorrespondingAttributeValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		List<String> list1 = new ArrayList<String>();
@@ -122,8 +122,9 @@ public class UniqueValuesAttributeTest {
 		assertTrue( ((UniqueValue) oneValue).getStringValue().equals("1"));
 	}
 	
+	/*
 	@Test public void testContainsValueOfAttributeValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		attr.add(new UniqueValue(DataType.INTEGER, "1"));
@@ -133,9 +134,11 @@ public class UniqueValuesAttributeTest {
 		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
 		assertTrue(attr.containsValueOfAttributeValue(testValue));
 	}
+	*/
 	
+	/*
 	@Test public void testConstainsInstanceOfAttributeValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
@@ -144,9 +147,10 @@ public class UniqueValuesAttributeTest {
 		assertFalse(attr.containsInstanceOfAttributeValue(new UniqueValue(DataType.INTEGER, "1")));		
 		assertTrue(attr.containsInstanceOfAttributeValue(testValue));
 	}
+	*/
 	
 	@Test public void testAddDuplicatedValues1() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
@@ -159,7 +163,7 @@ public class UniqueValuesAttributeTest {
 	}
 	
 	@Test public void testGetInstanceOfValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
@@ -174,7 +178,7 @@ public class UniqueValuesAttributeTest {
 	}
 	
 	@Test public void testGetDefaultValueOnEntity() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 
 		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER);
 		assertTrue(attribute1.getDefaultValueOnEntity() instanceof UniqueValue);
@@ -186,7 +190,7 @@ public class UniqueValuesAttributeTest {
 	}
 	
 	@Test public void testGetDefaultValueOnData() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 
 		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER);
 		assertTrue(attribute1.getDefaultValueOnData() instanceof UniqueValue);
@@ -198,7 +202,7 @@ public class UniqueValuesAttributeTest {
 	}
 	
 	@Test public void testSetDefaultValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		
 		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER);
 

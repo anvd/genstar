@@ -17,7 +17,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 public class IpfIterationTest {
 
 	private class MockIPF extends Ipf<double[][], int[], double[]> {
-		public MockIPF(SampleDataGenerationRule generationRule) throws GenstarException {
+		public MockIPF(IpfGenerationRule generationRule) throws GenstarException {
 			super(generationRule);
 		}
 

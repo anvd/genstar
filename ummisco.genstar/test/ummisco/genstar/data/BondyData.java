@@ -7,9 +7,8 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 import ummisco.genstar.metamodel.GenerationRule;
-import ummisco.genstar.metamodel.IMultipleRulesGenerator;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SampleFreeGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
@@ -205,11 +204,11 @@ public final class BondyData {
 	// "Household" population -
 	
 
-	private IMultipleRulesGenerator bondyInhabitantPopGenerator;
+	private SampleFreeGenerator bondyInhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule generationRule1, generationRule2;
 	private AttributeInferenceGenerationRule generationRule3;
 	
-	private IMultipleRulesGenerator bondyHouseholdPopGenerator;
+	private SampleFreeGenerator bondyHouseholdPopGenerator;
 	private FrequencyDistributionGenerationRule generationRule4, generationRule5,
 		generationRule6, generationRule7, generationRule8; 
 
@@ -239,7 +238,7 @@ public final class BondyData {
 	
 	private void createInhabitantPopGenerator() throws GenstarException {
 
-		bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
+		bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyInhabitantPopGenerator, "age_range_1", "age", DataType.INTEGER, UniqueValue.class);
@@ -367,7 +366,7 @@ public final class BondyData {
 	}
 	
 	private void createHouseholdPopGenerator() throws GenstarException {
-		bondyHouseholdPopGenerator = new MultipleRulesGenerator("Population of Bondy's Households", 21000);
+		bondyHouseholdPopGenerator = new SampleFreeGenerator("Population of Bondy's Households", 21000);
 		
 		// create attributes +
 		// Rule 4 : Household by size, sex and age of household's head
@@ -561,7 +560,7 @@ public final class BondyData {
 		return bondyInhabitantPopGenerator;
 	}
 	
-	public IMultipleRulesGenerator getHouseholdPopGenerator() {
+	public SampleFreeGenerator getHouseholdPopGenerator() {
 		return bondyHouseholdPopGenerator;
 	}
 	

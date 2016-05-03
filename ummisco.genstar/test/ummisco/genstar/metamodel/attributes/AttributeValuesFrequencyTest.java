@@ -15,8 +15,8 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleFreeGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
@@ -31,7 +31,7 @@ import ummisco.genstar.util.GenstarCsvFile;
 public class AttributeValuesFrequencyTest {
 
 	@Test public void testMatchAttributeValues() throws GenstarException {
-		MultipleRulesGenerator bondyPopulationGenerator = new MultipleRulesGenerator("Population of Bondy", 100);
+		SampleFreeGenerator bondyPopulationGenerator = new SampleFreeGenerator("Population of Bondy", 100);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulationGenerator, "age_range_1", "age", DataType.INTEGER);
 		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
@@ -92,7 +92,7 @@ public class AttributeValuesFrequencyTest {
 	}
 	
 	@Test public void testMatchEntity() throws GenstarException {
-		ISyntheticPopulationGenerator bondyPopulationGenerator = new MultipleRulesGenerator("Population of Bondy", 100);
+		ISyntheticPopulationGenerator bondyPopulationGenerator = new SampleFreeGenerator("Population of Bondy", 100);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulationGenerator, "age_range_1", "age", DataType.INTEGER);
 		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
@@ -143,7 +143,7 @@ public class AttributeValuesFrequencyTest {
 	
 	
 	@Test public void testMatchEntity1() throws GenstarException {
-		ISyntheticPopulationGenerator bondyPopulationGenerator = new MultipleRulesGenerator("Population of Bondy", 100);
+		ISyntheticPopulationGenerator bondyPopulationGenerator = new SampleFreeGenerator("Population of Bondy", 100);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulationGenerator, "age_range_1", "age", DataType.INTEGER);
 		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
@@ -184,7 +184,7 @@ public class AttributeValuesFrequencyTest {
 	
 	
 	@Test public void testGetAttributes() throws GenstarException {
-		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("generator");
+		ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
 		
 		GenstarCsvFile attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/GenstarUtils/testGenerateAttributeValuesFrequencies/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);

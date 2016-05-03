@@ -46,7 +46,9 @@ public class RangeValuesAttribute extends AbstractAttribute {
 		
 		if (!this.dataType.equals(rangeValue.dataType)) { throw new GenstarException("Incompatible valueType between rangeValue and attribute : " + rangeValue.dataType.getName() + " v.s. " + this.dataType.getName()); }
 		
-		if (this.containsInstanceOfAttributeValue(rangeValue) || this.containsValueOfAttributeValue(rangeValue)) { return false; }
+//		if (this.containsInstanceOfAttributeValue(rangeValue) || this.containsValueOfAttributeValue(rangeValue)) { return false; }
+//		if ((this.getInstanceOfAttributeValue(rangeValue) != null) || this.containsValueOfAttributeValue(rangeValue)) { return false; }
+		if (this.getInstanceOfAttributeValue(rangeValue) != null) { return false; }
 		
 		valuesOnData.add((RangeValue) rangeValue);
 
@@ -92,18 +94,21 @@ public class RangeValuesAttribute extends AbstractAttribute {
 		return false;
 	}
 	
-	@Override public boolean containsInstanceOfAttributeValue(final AttributeValue value) {
-		return valuesOnData.contains(value);
-	}
+//	@Override public boolean containsInstanceOfAttributeValue(final AttributeValue value) {
+//		return valuesOnData.contains(value);
+//	}
 	
+	/*
 	@Override
 	public boolean containsValueOfAttributeValue(final AttributeValue value) {
-		if (this.containsInstanceOfAttributeValue(value)) { return true; }
+//		if (this.containsInstanceOfAttributeValue(value)) { return true; }
+		if (this.getInstanceOfAttributeValue(value) != null) { return true; }
 		
 		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return true; }
 		
 		return false;
 	}
+	*/
 	
 	@Override
 	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {

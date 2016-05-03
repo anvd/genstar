@@ -150,10 +150,10 @@ public class GenstarGeneratorTest_CanTho3 {
 	
 	public static final String HOUSEHOLD_POPULATION_NAME = "Household population";
 	
-	private IMultipleRulesGenerator inhabitantPopGenerator;
+	private SampleFreeGenerator inhabitantPopGenerator;
 	private FrequencyDistributionGenerationRule inhabitantPopRule1, inhabitantPopRule2;
 	
-	private IMultipleRulesGenerator householdPopGenerator;
+	private SampleFreeGenerator householdPopGenerator;
 	private FrequencyDistributionGenerationRule householdPopRule1;
 	
 	// percentages of inhabitant population to generate
@@ -182,7 +182,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		// inhabitantGenerator +
 		
 		
-		inhabitantPopGenerator = new MultipleRulesGenerator("Inhabitant population generator", (int)TOTAL_INHABITANTS);
+		inhabitantPopGenerator = new SampleFreeGenerator("Inhabitant population generator", (int)TOTAL_INHABITANTS);
 		inhabitantPopGenerator.setPopulationName(INHABITANT_POPULATION_NAME);
 		
 		// create attributes +
@@ -276,7 +276,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		
 		
 		// householdGenerator +
-		householdPopGenerator = new MultipleRulesGenerator("Household population generator", (int)TOTAL_HOUSEHOLDS); // data inconsistency?
+		householdPopGenerator = new SampleFreeGenerator("Household population generator", (int)TOTAL_HOUSEHOLDS); // data inconsistency?
 		householdPopGenerator.setPopulationName(HOUSEHOLD_POPULATION_NAME);
 
 		// create attributes +

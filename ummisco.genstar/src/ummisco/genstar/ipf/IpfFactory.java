@@ -7,7 +7,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 
 public class IpfFactory {
 	
-	public static Ipf createIPF(final SampleDataGenerationRule generationRule) throws GenstarException {
+	public static Ipf createIPF(final IpfGenerationRule generationRule) throws GenstarException {
 		if (generationRule == null) { throw new GenstarException("'generationRule' can not be null"); }
 		
 		// initialize nWayIPF basing on the number of controlled attributes

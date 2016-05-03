@@ -3,15 +3,14 @@ package ummisco.genstar.metamodel;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.util.PersistentObject;
 
-public abstract class GenerationRule implements Comparable<GenerationRule>, IWithAttributes {
+
+public abstract class GenerationRule implements IWithAttributes {
 	
 	protected int generationRuleID = PersistentObject.NEW_OBJECT_ID;
 	
 	protected ISyntheticPopulationGenerator populationGenerator;
 	
 	protected String name;
-	
-	protected int order = -1;
 	
 	
 	public GenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String name) throws GenstarException {
@@ -37,22 +36,9 @@ public abstract class GenerationRule implements Comparable<GenerationRule>, IWit
 	public String getName() {
 		return name;
 	}
-	
-	public void setOrder(final int order) {
-		this.order = order;
-	}
-	
-	public int getOrder() {
-		return order;
-	}
-	
-	@Override public int compareTo(final GenerationRule other) {
-		return this.order - other.order;
-	}
 
 	public abstract int getRuleTypeID();
 	
 	public abstract String getRuleTypeName();
 
-	public abstract void generate(final Entity entity) throws GenstarException;
 }

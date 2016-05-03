@@ -1,7 +1,6 @@
 package ummisco.genstar.metamodel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,13 +12,10 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
-import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.util.GenstarUtils;
 import ummisco.genstar.util.SharedInstances;
 
-import com.google.common.collect.Sets;
-
-public class FrequencyDistributionGenerationRule extends GenerationRule { // TODO  implements AttributeChangedListener
+public class FrequencyDistributionGenerationRule extends SampleFreeGenerationRule { // TODO  implements AttributeChangedListener
 	
 	public static final int FREQUENCY_DISTRIBUTION_GENERATION_RULE_ID = 2;
 	
@@ -37,7 +33,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 	// with three-attribute distribution -> use an attribute to separate the tables, i.e., table splitter
 	
 	
-	public FrequencyDistributionGenerationRule(final ISyntheticPopulationGenerator populationGenerator, final String name) throws GenstarException {
+	public FrequencyDistributionGenerationRule(final SampleFreeGenerator populationGenerator, final String name) throws GenstarException {
 		super(populationGenerator, name);
 		
 		this.inputAttributes = new TreeMap<Integer, AbstractAttribute>();
@@ -388,6 +384,7 @@ public class FrequencyDistributionGenerationRule extends GenerationRule { // TOD
 		}
 	}
 
+	@Override
 	public void generate(final Entity entity) throws GenstarException {
 		
 		// TODO if (order == 0) -> optimization to improve the exactness!!!

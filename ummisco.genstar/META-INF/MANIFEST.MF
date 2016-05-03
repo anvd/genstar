@@ -10,8 +10,10 @@ Export-Package: ummisco.genstar,
  ummisco.genstar.data;uses:="ummisco.genstar.metamodel",
  ummisco.genstar.exception,
  ummisco.genstar.ipf,
+ ummisco.genstar.ipu,
  ummisco.genstar.metamodel;uses:="org.junit.rules",
  ummisco.genstar.metamodel.attributes,
+ ummisco.genstar.metamodel.sample_data,
  ummisco.genstar.util;uses:="org.uncommons.maths.random"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/derby.jar,

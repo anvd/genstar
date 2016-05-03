@@ -7,13 +7,13 @@ import org.junit.Test;
 import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SampleFreeGenerator;
 
 public class EntityAttributeValueTest {
 
 	
 	@Test public void testCreateEntityAttributeValue1() throws GenstarException {
-		ISyntheticPopulationGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
+		ISyntheticPopulationGenerator bondyPopulation = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER, UniqueValue.class);

@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.ipf.GroupComponentSampleData;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.sample_data.GroupComponentSampleData;
 
 
 public class Ipu {

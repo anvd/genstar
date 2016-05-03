@@ -12,16 +12,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.ipf.GroupComponentSampleData;
-import ummisco.genstar.ipf.ISampleData;
-import ummisco.genstar.ipf.SampleData;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.Population;
 import ummisco.genstar.metamodel.PopulationType;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.sample_data.GroupComponentSampleData;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
+import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 import mockit.Deencapsulation;
@@ -30,10 +29,10 @@ import mockit.integration.junit4.JMockit;
 @RunWith(JMockit.class)
 public class IpuGenerationRuleTest {
 
-	static ISingleRuleGenerator groupPopulationGenerator;
+	static SampleBasedGenerator groupPopulationGenerator;
 	static GenstarCsvFile groupAttributesFile;
 	
-	static ISingleRuleGenerator componentPopulationGenerator;
+	static SampleBasedGenerator componentPopulationGenerator;
 	static GenstarCsvFile componentAttributesFile;
 	
 	static GenstarCsvFile groupControlledAttributesFile;
@@ -50,11 +49,11 @@ public class IpuGenerationRuleTest {
 	@BeforeClass public static void setup() throws GenstarException {
 		String base_path = "test_data/ummisco/genstar/ipu/IpuGenerationRule/";
 		
-		groupPopulationGenerator = new SingleRuleGenerator("group generator");
+		groupPopulationGenerator = new SampleBasedGenerator("group generator");
 		groupAttributesFile = new GenstarCsvFile(base_path + "group_attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(groupPopulationGenerator, groupAttributesFile);
 		
-		componentPopulationGenerator = new SingleRuleGenerator("component generator");
+		componentPopulationGenerator = new SampleBasedGenerator("component generator");
 		componentAttributesFile = new GenstarCsvFile(base_path + "component_attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(componentPopulationGenerator, componentAttributesFile);
 
@@ -110,8 +109,10 @@ public class IpuGenerationRuleTest {
 		assertTrue(sharedRule.getComponentSupplementaryAttributesFile().equals(componentSupplementaryAttributesFile));
 	}
 	
-	@Test public void testIpuGenerationRuleWithNullComponentPopulationGenerator() throws GenstarException {
-		fail("not yet implemented");
+	@Test(expected = GenstarException.class) public void testIpuGenerationRuleWithNullComponentPopulationGenerator() throws GenstarException {
+		new IpuGenerationRule(groupPopulationGenerator, null, "Ipu generation rule", 
+				groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile,
+				componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, 3);
 	}
 	
 	
@@ -161,6 +162,7 @@ public class IpuGenerationRuleTest {
 		assertTrue(ipu != null);
 	}
 	
+	
 	@Test public void testGenerate() throws GenstarException {
 		IpuGenerationRule rule = new IpuGenerationRule(groupPopulationGenerator, componentPopulationGenerator, "Ipu generation rule", 
 				groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile,
@@ -197,29 +199,18 @@ public class IpuGenerationRuleTest {
 		boolean ipuRun = Deencapsulation.getField(rule, "ipuRun");
 		assertFalse(ipuRun);
 		
-		List<Entity> internalSampleEntities = Deencapsulation.getField(rule, "internalSampleEntities");
-		assertNull(internalSampleEntities);
-		
-		int currentEntityIndex = Deencapsulation.getField(rule, "currentEntityIndex");
-		assertTrue(currentEntityIndex == -1);
-		
-		
-		IPopulation population = new Population(PopulationType.SYNTHETIC_POPULATION, "dummy population", rule.getGenerator().getAttributes());
-		Entity e = population.createEntities(1).get(0);
-		rule.generate(e);
-		
+		IPopulation population = rule.generate();
 		
 		// verifications 1
 		ipuRun = Deencapsulation.getField(rule, "ipuRun");
 		assertTrue(ipuRun);
-		
-		internalSampleEntities = Deencapsulation.getField(rule, "internalSampleEntities");
 		
 		Ipu ipu = Deencapsulation.getField(rule, "ipu");
 		Map<Entity, Integer> selectionProbabilities = ipu.getSelectionProbabilities();
 		int totalGeneratedEntities = 0;
 		for (Integer i : selectionProbabilities.values()) { totalGeneratedEntities += i; }
 		
-		assertTrue(internalSampleEntities.size() == totalGeneratedEntities);
+		assertTrue(population.getNbOfEntities() == totalGeneratedEntities);
+		
 	}
 }

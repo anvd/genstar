@@ -1,4 +1,4 @@
-package ummisco.genstar.ipf;
+package ummisco.genstar.metamodel.sample_data;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.ipf.AbstractSampleData;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.PopulationType;

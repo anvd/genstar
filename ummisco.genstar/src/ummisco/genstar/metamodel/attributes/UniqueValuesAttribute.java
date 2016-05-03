@@ -53,7 +53,9 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		if (!(value.getClass().equals(valueClassOnData))) { throw new GenstarException("value must be an instance of " + valueClassOnData.getName()); }
 		if (!this.dataType.equals(value.dataType)) { throw new GenstarException("Incompatible valueType"); }
 		
-		if (this.containsInstanceOfAttributeValue(value) || this.containsValueOfAttributeValue(value)) { return false; }
+//		if (this.containsInstanceOfAttributeValue(value) || this.containsValueOfAttributeValue(value)) { return false; }
+//		if (this.getInstanceOfAttributeValue(value) != null || this.containsValueOfAttributeValue(value)) { return false; }
+		if (this.getInstanceOfAttributeValue(value) != null) { return false; }
 		
 		// FIXME containsValue
 		
@@ -100,18 +102,21 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		return false;
 	}
 
-	@Override public boolean containsInstanceOfAttributeValue(final AttributeValue value) {
-		return valuesOnData.contains(value);
-	}
+//	@Override public boolean containsInstanceOfAttributeValue(final AttributeValue value) {
+//		return valuesOnData.contains(value);
+//	}
 
+	/*
 	@Override
 	public boolean containsValueOfAttributeValue(final AttributeValue value) {
-		if (this.containsInstanceOfAttributeValue(value)) { return true; }
+//		if (this.containsInstanceOfAttributeValue(value)) { return true; }
+		if (this.getInstanceOfAttributeValue(value) != null) { return true; }
 		
 		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return true; }
 		
 		return false;
 	}
+	*/
 	
 	@Override
 	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {

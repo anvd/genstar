@@ -9,11 +9,12 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
 
 public class ThreeWayIpf extends Ipf<double[][][], int[][], double[][]> {
 
 	
-	public ThreeWayIpf(final SampleDataGenerationRule generationRule) throws GenstarException {
+	public ThreeWayIpf(final IpfGenerationRule generationRule) throws GenstarException {
 		super(generationRule);
 	}
 	

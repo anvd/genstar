@@ -21,15 +21,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.ipf.GroupComponentSampleData;
-import ummisco.genstar.ipf.ISampleData;
-import ummisco.genstar.ipf.SampleData;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.ISingleRuleGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.sample_data.GroupComponentSampleData;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
+import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
@@ -39,7 +38,7 @@ import ummisco.genstar.util.IpuUtils;
 public class IpuTest {
 	
 	/* @Test */ @BeforeClass
-	public void generateSamplePopulations() throws GenstarException {
+	public static void generateSamplePopulations() throws GenstarException {
 		// generate the compound population (i.e., household-people) if necessary
 		String base_folder_path = "test_data/ummisco/genstar/ipu/Ipu/generated_populations/";
 		
@@ -76,7 +75,7 @@ public class IpuTest {
 		generatedCompoundPopulationFilePaths.put(groupPopulationName, groupPopulationOutputFile);
 		generatedCompoundPopulationFilePaths.put(componentPopulationName, componentPopulationOutputFile);
 
-		GenstarUtils.writePopulationToCSVFile(generatedCompoundPopulation, generatedCompoundPopulationFilePaths);
+		GenstarUtils.writePopulationToCsvFile(generatedCompoundPopulation, generatedCompoundPopulationFilePaths);
 		
 		
 		// extract control totals of the generated compound population
@@ -119,7 +118,7 @@ public class IpuTest {
 		extractedPopulationFilePaths1.put(groupPopulationName, groupPopulationOutputFile1);
 		extractedPopulationFilePaths1.put(componentPopulationName, componentPopulationOutputFile1);
 		
-		GenstarUtils.writePopulationToCSVFile(extractedPopulation1, extractedPopulationFilePaths1);
+		GenstarUtils.writePopulationToCsvFile(extractedPopulation1, extractedPopulationFilePaths1);
 		
 		
 		// extract 5%
@@ -132,7 +131,7 @@ public class IpuTest {
 		extractedPopulationFilePaths2.put(groupPopulationName, groupPopulationOutputFile2);
 		extractedPopulationFilePaths2.put(componentPopulationName, componentPopulationOutputFile2);
 		
-		GenstarUtils.writePopulationToCSVFile(extractedPopulation2, extractedPopulationFilePaths2);
+		GenstarUtils.writePopulationToCsvFile(extractedPopulation2, extractedPopulationFilePaths2);
 		
 		
 		// extract 10%
@@ -145,7 +144,7 @@ public class IpuTest {
 		extractedPopulationFilePaths3.put(groupPopulationName, groupPopulationOutputFile3);
 		extractedPopulationFilePaths3.put(componentPopulationName, componentPopulationOutputFile3);
 		
-		GenstarUtils.writePopulationToCSVFile(extractedPopulation3, extractedPopulationFilePaths3);
+		GenstarUtils.writePopulationToCsvFile(extractedPopulation3, extractedPopulationFilePaths3);
 		 
 		
 		// extract 20%
@@ -158,7 +157,7 @@ public class IpuTest {
 		extractedPopulationFilePaths4.put(groupPopulationName, groupPopulationOutputFile4);
 		extractedPopulationFilePaths4.put(componentPopulationName, componentPopulationOutputFile4);
 		
-		GenstarUtils.writePopulationToCSVFile(extractedPopulation4, extractedPopulationFilePaths4);
+		GenstarUtils.writePopulationToCsvFile(extractedPopulation4, extractedPopulationFilePaths4);
 		
 		
 		
@@ -172,14 +171,14 @@ public class IpuTest {
 		extractedPopulationFilePaths5.put(groupPopulationName, groupPopulationOutputFile5);
 		extractedPopulationFilePaths5.put(componentPopulationName, componentPopulationOutputFile5);
 		
-		GenstarUtils.writePopulationToCSVFile(extractedPopulation5, extractedPopulationFilePaths5);
+		GenstarUtils.writePopulationToCsvFile(extractedPopulation5, extractedPopulationFilePaths5);
 		 
 	}
 
 	@Test public void testInitializeIpuSuccessfully(@Mocked final IpuGenerationRule generationRule) throws GenstarException {
 		
 		// 1. initialize ??? 
-		final ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group generator");
+		final SampleBasedGenerator groupGenerator = new SampleBasedGenerator("group generator");
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/success/group_attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
 		
@@ -190,7 +189,7 @@ public class IpuTest {
 
 		final GenstarCsvFile groupControlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/success/group_ipu_control_totals.csv", false);
 		
-		final ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("componnent generator");
+		final SampleBasedGenerator componentGenerator = new SampleBasedGenerator("componnent generator");
 		GenstarCsvFile componentAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/success/component_attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		
@@ -218,11 +217,11 @@ public class IpuTest {
 
 		// data for ipuControlTotals
 		new Expectations() {{
-			generationRule.getGenerator(); result = groupGenerator;
+//			generationRule.getGenerator(); result = groupGenerator;
 			generationRule.getGroupControlledAttributes(); result = groupControlledAttributes;
 			generationRule.getGroupControlTotalsFile(); result = groupControlTotalsFile;
 			
-			generationRule.getComponentGenerator(); result = componentGenerator;
+//			generationRule.getComponentGenerator(); result = componentGenerator;
 			generationRule.getComponentControlledAttributes(); result = componentControlledAttributes;
 			generationRule.getComponentControlTotalsFile(); result = componentControlTotalsFile;
 		}};
@@ -289,7 +288,7 @@ public class IpuTest {
 	
 	@Test public void testFit(@Mocked final IpuGenerationRule generationRule) throws GenstarException {
 		// initialize generators and controlled attributes 
-		final ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group generator");
+		final SampleBasedGenerator groupGenerator = new SampleBasedGenerator("group generator");
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fit/group_attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
 		
@@ -300,7 +299,7 @@ public class IpuTest {
 
 		final GenstarCsvFile groupControlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fit/group_ipu_control_totals.csv", false);
 		
-		final ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("componnent generator");
+		final SampleBasedGenerator componentGenerator = new SampleBasedGenerator("componnent generator");
 		GenstarCsvFile componentAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fit/component_attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		
@@ -329,11 +328,11 @@ public class IpuTest {
 		
 		// data for ipuControlTotals
 		new Expectations() {{
-			generationRule.getGenerator(); result = groupGenerator;
+//			generationRule.getGenerator(); result = groupGenerator;
 			generationRule.getGroupControlledAttributes(); result = groupControlledAttributes;
 			generationRule.getGroupControlTotalsFile(); result = groupControlTotalsFile;
 			
-			generationRule.getComponentGenerator(); result = componentGenerator;
+//			generationRule.getComponentGenerator(); result = componentGenerator;
 			generationRule.getComponentControlledAttributes(); result = componentControlledAttributes;
 			generationRule.getComponentControlTotalsFile(); result = componentControlTotalsFile;
 			
@@ -378,7 +377,7 @@ public class IpuTest {
 		String base_path = "test_data/ummisco/genstar/ipu/Ipu/success1/";
 		
 		// 1. initialize generators and controlled attributes 
-		final ISingleRuleGenerator groupGenerator = new SingleRuleGenerator("group generator");
+		final SampleBasedGenerator groupGenerator = new SampleBasedGenerator("group generator");
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile(base_path + "group_attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
 		
@@ -388,7 +387,7 @@ public class IpuTest {
 
 		final GenstarCsvFile groupControlTotalsFile = new GenstarCsvFile(base_path + "group_ipu_control_totals.csv", false);
 		
-		final ISingleRuleGenerator componentGenerator = new SingleRuleGenerator("componnent generator");
+		final SampleBasedGenerator componentGenerator = new SampleBasedGenerator("componnent generator");
 		GenstarCsvFile componentAttributesFile = new GenstarCsvFile(base_path + "component_attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
 		
@@ -415,11 +414,11 @@ public class IpuTest {
 		
 		// data for ipuControlTotals
 		new Expectations() {{
-			generationRule.getGenerator(); result = groupGenerator;
+//			generationRule.getGenerator(); result = groupGenerator;
 			generationRule.getGroupControlledAttributes(); result = groupControlledAttributes;
 			generationRule.getGroupControlTotalsFile(); result = groupControlTotalsFile;
 			
-			generationRule.getComponentGenerator(); result = componentGenerator;
+//			generationRule.getComponentGenerator(); result = componentGenerator;
 			generationRule.getComponentControlledAttributes(); result = componentControlledAttributes;
 			generationRule.getComponentControlTotalsFile(); result = componentControlTotalsFile;
 			

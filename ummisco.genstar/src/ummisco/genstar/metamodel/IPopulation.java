@@ -8,16 +8,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 
-public interface IPopulation {
-	
-	
-	public abstract List<AbstractAttribute> getAttributes();
-	
-	public abstract boolean containAttribute(final AbstractAttribute attribute) throws GenstarException;
-	
-	public abstract AbstractAttribute getAttributeByNameOnData(final String attributeNameOnData) throws GenstarException;
-	
-	public abstract AbstractAttribute getAttributeByNameOnEntity(final String attributeNameOnEntity) throws GenstarException;
+public interface IPopulation extends IWithAttributes {
 	
 	public abstract String getName();
 	

@@ -22,17 +22,13 @@ import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
 
 public class IpuUtils {
 
-	public static List<AttributeValuesFrequency> parseIpuControlTotalsFile(final ISyntheticPopulationGenerator generator, final List<AbstractAttribute> controlledAttributes, final GenstarCsvFile ipuControlTotalsFile) throws GenstarException {
+	public static List<AttributeValuesFrequency> parseAttributeValuesFrequenciesFromIpuControlTotalsFile(final List<AbstractAttribute> controlledAttributes, final GenstarCsvFile ipuControlTotalsFile) throws GenstarException {
 		
 		// 1. parameters validation
-		if (generator == null || controlledAttributes == null || ipuControlTotalsFile == null) {
-			throw new GenstarException("Parameters generator, controlledAttributes, ipuControlTotalsFile can not be null");
-		}
-		
-//		if (controlledAttributes.size() < 2) { throw new GenstarException("controlledAttributes must have at least two attributes/elements"); }
 		if (controlledAttributes.isEmpty()) { throw new GenstarException("controlledAttributes must have at least one attributes/elements"); }
 		
 		// 2. ensure that controlledAttributes doesn't contain duplicated (controlled) attributes or belong to different population generators
+		final ISyntheticPopulationGenerator generator = controlledAttributes.get(0).getPopulationGenerator();
 		Map<String, AbstractAttribute> controlledAttributesMap = new HashMap<String, AbstractAttribute>();
 		for (AbstractAttribute controlledAttr : controlledAttributes) {
 			if (controlledAttributesMap.containsKey(controlledAttr.getNameOnData())) { throw new GenstarException("Duplicated controlled attributes (" + controlledAttr.getNameOnData() + ")"); }

@@ -36,19 +36,17 @@ import msi.gaml.extensions.genstar.IGamaPopulationsLinker;
 import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.ipf.SampleData;
 import ummisco.genstar.metamodel.Entity;
 import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
-import ummisco.genstar.metamodel.IMultipleRulesGenerator;
-import ummisco.genstar.metamodel.ISingleRuleGenerator;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleFreeGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
+import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.CsvWriter;
 import ummisco.genstar.util.GenstarCsvFile;
@@ -112,7 +110,7 @@ public abstract class Genstars {
 			
 			
 			// 2. Create the generator
-			IMultipleRulesGenerator generator = new MultipleRulesGenerator("Population Generator", nbOfEntities);
+			SampleFreeGenerator generator = new SampleFreeGenerator("Population Generator", nbOfEntities);
 			generator.setPopulationName(populationName);
 			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 			GamaGenstarUtils.createGenerationRulesFromCSVFile(scope, generator, generationRulesCSVFile);
@@ -164,7 +162,7 @@ public abstract class Genstars {
 			GenstarCsvFile distributionFormatCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, distributionFormatCSVFilePath, true), true);
 			
 			// 1. create the generator then add attributes
-			ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("dummy generator", 10);
+			SampleFreeGenerator generator = new SampleFreeGenerator("dummy generator", 10);
 			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 			
 			// 2. read the distribution file format to know the input and output attributes
@@ -176,18 +174,18 @@ public abstract class Genstars {
 				StringTokenizer t = new StringTokenizer(attribute, INPUT_DATA_FORMATS.CSV_FILES.FREQUENCY_DISTRIBUTION_GENERATION_RULE.ATTRIBUTE_NAME_TYPE_DELIMITER);
 				if (t.countTokens() != 2) { throw new GenstarException("Element must have format attribute_name:Input or attribute_name:Output. File: " + distributionFormatCSVFile.getPath() + "."); }
 				
-				String attributeName = t.nextToken();
-				if (!generator.containAttribute(attributeName)) { throw new GenstarException("Attribute '" + attributeName + "' is not defined. File: " + distributionFormatCSVFile.getPath() + "."); }
-				attributeNamesOnDataWithoutInputOutput.add(attributeName);
+				String attributeNameOnData = t.nextToken();
+				if (generator.getAttributeByNameOnData(attributeNameOnData) == null) { throw new GenstarException("Attribute '" + attributeNameOnData + "' is not defined. File: " + distributionFormatCSVFile.getPath() + "."); }
+				attributeNamesOnDataWithoutInputOutput.add(attributeNameOnData);
 				
 				String attributeType = t.nextToken();
 				if (!attributeType.equals(INPUT_DATA_FORMATS.CSV_FILES.FREQUENCY_DISTRIBUTION_GENERATION_RULE.INPUT_ATTRIBUTE) && !attributeType.equals(INPUT_DATA_FORMATS.CSV_FILES.FREQUENCY_DISTRIBUTION_GENERATION_RULE.OUTPUT_ATTRIBUTE)) {
-					throw new GenstarException("Attribute " + attributeName + " must either be Input or Output. File: " + distributionFormatCSVFile.getPath() + ".");
+					throw new GenstarException("Attribute " + attributeNameOnData + " must either be Input or Output. File: " + distributionFormatCSVFile.getPath() + ".");
 				}
 			}
 			
 			// 3. create a frequency generation rule from the sample data then write the generation rule to file.
-			FrequencyDistributionGenerationRule fdGenerationRule = GenstarUtils.createFrequencyDistributionFromSampleData(generator, distributionFormatCSVFile, sampleDataCSVFile);
+			FrequencyDistributionGenerationRule fdGenerationRule = GenstarUtils.createFrequencyDistributionGenerationRuleFromSampleData(generator, distributionFormatCSVFile, sampleDataCSVFile);
 			
 			List<String[]> contents = new ArrayList<String[]>();
 			
@@ -234,6 +232,8 @@ public abstract class Genstars {
 	}
 	
 	
+	
+	// TODO change to "ipf_control_totals"
 	@operator(value = "control_totals", type = IType.FILE, category = { IOperatorCategory.GENSTAR })
 	@doc(value = "generates the control totals then save them to a CSV file",
 		returns = "a reference to the file containing the resulting control totals",
@@ -243,6 +243,10 @@ public abstract class Genstars {
 			equals = "a file containing the resulting control totals and locating at the path specified by resultControlsTotalFilePath.csv",
 			test = false) }, see = { "population_from_csv", "link_populations" })
 	public static IGamaFile generateControlTotals(final IScope scope, final String controlTotalPropertiesFilePath, final String resultControlsTotalFilePath) {
+	// change method name to "generateIpfControlTotals"
+	// delegate to IpfUtils.parseIpfControlTotalsFile
+		
+		
 		
 		try {
 			
@@ -283,7 +287,7 @@ public abstract class Genstars {
 			for (List<String> row : controlAttributesCSVFile.getContent()) { controlledAttributeNames.add(row.get(0)); }
 			
 			// 2. create the generator then add attributes
-			ISyntheticPopulationGenerator generator = new MultipleRulesGenerator("dummy generator", 10);
+			ISyntheticPopulationGenerator generator = new SampleFreeGenerator("dummy generator", 10);
 			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 			
 			// 3. process ID attribute
@@ -295,7 +299,7 @@ public abstract class Genstars {
 			
 			// 4. ensure that all controlled attributes exist
 			for (String attributeNameOnData : controlledAttributeNames) { 
-				if (!generator.containAttribute(attributeNameOnData)) {
+				if (generator.getAttributeByNameOnData(attributeNameOnData) == null) {
 					throw new GenstarException(attributeNameOnData + " is not a valid attribute. File: " + controlAttributesCSVFilePath);
 				}
 			}
@@ -410,7 +414,7 @@ public abstract class Genstars {
 			String attributesCSVFilePath = populationPropeties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.ATTRIBUTES_PROPERTY);
 			if (attributesCSVFilePath == null) { throw new GenstarException(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.ATTRIBUTES_PROPERTY + " property not found in " + populationPropertiesFilePath); }
 			GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
-			ISingleRuleGenerator generator = new SingleRuleGenerator("single rule generator");
+			SampleBasedGenerator generator = new SampleBasedGenerator("single rule generator");
 			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 			
 			
@@ -453,7 +457,7 @@ public abstract class Genstars {
 			// 1. Read the ATTRIBUTES_PROPERTIES then create the generator
 			String attributesCSVFilePath = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.ATTRIBUTES_PROPERTY);
 			GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
-			ISingleRuleGenerator generator = new SingleRuleGenerator("single rule generator");
+			SampleBasedGenerator generator = new SampleBasedGenerator("single rule generator");
 			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 			
 			// 2. Create the generation rule
@@ -596,7 +600,7 @@ public abstract class Genstars {
 			// build population attributes
 			Map<String, List<AbstractAttribute>> populationAttributes = new HashMap<String, List<AbstractAttribute>>();
 			for (String populationName : populationAttributesFilePaths.keySet()) {
-				ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
+				ISyntheticPopulationGenerator generator = new SampleBasedGenerator("dummy generator");
 				
 				GenstarCsvFile attributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, populationAttributesFilePaths.get(populationName), true), true);
 				AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
@@ -622,7 +626,7 @@ public abstract class Genstars {
 			IPopulation genstarPopulation = GamaGenstarUtils.convertGamaPopulationToGenstarPopulation(null, gamaPopulation, populationAttributes);
 			
 			// write Gen* synthetic populations to CSV files
-			return GenstarUtils.writePopulationToCSVFile(genstarPopulation, rebuiltPopulationOutputFilePaths);
+			return GenstarUtils.writePopulationToCsvFile(genstarPopulation, rebuiltPopulationOutputFilePaths);
 		} catch (GenstarException e) {
 			throw GamaRuntimeException.error(e.getMessage(), scope);
 		}
@@ -634,7 +638,7 @@ public abstract class Genstars {
 		// convert GAMA population to Gen* population
 		String populationName = (String)gamaPopulation.get(0); // first element is the population name
 
-		ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
+		ISyntheticPopulationGenerator generator = new SampleBasedGenerator("dummy generator");
 		
 		GenstarCsvFile attributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesFilePath, true), true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
@@ -662,24 +666,6 @@ public abstract class Genstars {
 			final String controlledAttributesListFilePath, final String controlTotalsFilePath) {
 		
 		try {
-			/*
-			// convert GAMA population to Gen* population
-			String populationName = (String)gamaPopulation.get(0); // first element is the population name
-
-			ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
-			
-			GenstarCSVFile attributesFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesFilePath, true), true);
-			GenstarUtils.createAttributesFromCSVFile(generator, attributesFile);
-
-			Map<String, List<AbstractAttribute>> populationsAttributes = new HashMap<String, List<AbstractAttribute>>();
-			populationsAttributes.put(populationName, generator.getAttributes());
-			ISyntheticPopulation genstarPopulation = GamaGenstarUtils.convertGamaPopulationToGenstarPopulation(null, gamaPopulation, populationsAttributes);
-			
-			// do the analysis
-			GenstarCSVFile controlTotalsFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
-			GenstarCSVFile controlledAttributesListFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlledAttributesListFilePath, true), false);
-			List<Integer> generatedFrequencies = GenstarUtils.analyseIpfPopulation(genstarPopulation, controlledAttributesListFile, controlTotalsFile);
-			*/
 			
 			// TODO analyseIpfPopulation need the information of ID attribute -> option 1: analyse compound Ipf population
 			GenstarCsvFile controlTotalsFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
@@ -716,24 +702,6 @@ public abstract class Genstars {
 			final String controlledAttributesListFilePath, final String controlTotalsFilePath, final String outputFilePath) {
 		
 		try {
-			/*
-			// convert GAMA population to Gen* population
-			String populationName = (String)gamaPopulation.get(0); // first element is the population name
-
-			ISyntheticPopulationGenerator generator = new SingleRuleGenerator("dummy generator");
-			
-			GenstarCSVFile attributesFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, attributesFilePath, true), true);
-			GenstarUtils.createAttributesFromCSVFile(generator, attributesFile);
-
-			Map<String, List<AbstractAttribute>> populationsAttributes = new HashMap<String, List<AbstractAttribute>>();
-			populationsAttributes.put(populationName, generator.getAttributes());
-			ISyntheticPopulation genstarPopulation = GamaGenstarUtils.convertGamaPopulationToGenstarPopulation(null, gamaPopulation, populationsAttributes);
-			
-			// do the analysis
-			GenstarCSVFile controlTotalsFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
-			GenstarCSVFile controlledAttributesListFile = new GenstarCSVFile(FileUtils.constructAbsoluteFilePath(scope, controlledAttributesListFilePath, true), false);
-			List<Integer> generatedFrequencies = GenstarUtils.analyseIpfPopulation(genstarPopulation, controlledAttributesListFile, controlTotalsFile);
-			*/
 			
 			GenstarCsvFile controlTotalsFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
 			List<Integer> generatedFrequencies = analyseIpfPopulation(scope, gamaPopulation, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath);

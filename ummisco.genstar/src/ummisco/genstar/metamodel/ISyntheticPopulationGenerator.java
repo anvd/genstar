@@ -6,7 +6,7 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 
 
-public interface ISyntheticPopulationGenerator extends IWithAttributes { // FIXME change class name -> ISingleSyntheticPopulationGenerator
+public interface ISyntheticPopulationGenerator extends IWithAttributes {
 	
 	public abstract void setID(final int id);
 	
@@ -22,15 +22,9 @@ public interface ISyntheticPopulationGenerator extends IWithAttributes { // FIXM
 	
 	public abstract void setNbOfEntities(final int nbOfEntities);
 
-	// consider to move these methods to IWithAttributes +
-	public abstract boolean containAttribute(final AbstractAttribute attribute);
-
-	public abstract boolean containAttribute(final String attributeNameOnData);
-
 	public abstract void addAttribute(final AbstractAttribute attribute) throws GenstarException;
 
 	public abstract void removeAttribute(final AbstractAttribute attribute);
-	// consider to move these methods to IWithAttributes -
 
 	public abstract IPopulation generate() throws GenstarException;
 	

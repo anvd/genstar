@@ -39,7 +39,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	
 	@Test
 	public void testValidParametersConstructor() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		
 		assertEquals(d.getName(), "Distribution of household size, sex and age of head");
@@ -50,7 +50,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 
 	@Test public void testAppendInvalidInputAttributes1() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
@@ -63,7 +63,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testAppendValidInputAttributes() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		assertTrue(d.getOrderedInputAttributes().size() == 0);
@@ -82,7 +82,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testAppendInvalidInputAttribute2() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
@@ -99,7 +99,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertInvalidInputAttribute1() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -109,7 +109,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertInvalidInputAttribute2() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -120,7 +120,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertValidInputAttributes() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -138,7 +138,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testGetInputAttributes() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -164,7 +164,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testRemoveInputAttributes() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -202,7 +202,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testChangeInputAttributeOrder() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -246,7 +246,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testAppendInvalidOutputAttribute1() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
@@ -259,7 +259,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testAppendInvalidOutputAttribute2() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
@@ -274,7 +274,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testAppendValidOutputAttributes() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 		
@@ -290,7 +290,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertInvalidOutputAttribute1() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -300,7 +300,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertInvalidOutputAttribute2() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -311,7 +311,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testInsertValidOutputAttributes() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -329,7 +329,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testGetOutputAttributes() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -354,7 +354,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testRemoveOutputAttributes() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -392,7 +392,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	
 	@Test public void testChangeOutputAttributeOrder() throws GenstarException {
 		
-		MultipleRulesGenerator p = new MultipleRulesGenerator("Household population", 10);
+		SampleFreeGenerator p = new SampleFreeGenerator("Household population", 10);
 		FrequencyDistributionGenerationRule d = new FrequencyDistributionGenerationRule(p, "Distribution of household size, sex and age of head");
 		p.appendGenerationRule(d);
 
@@ -446,7 +446,7 @@ public class FrequencyDistributionGenerationRuleTest {
 	}
 	
 	@Test public void testSetFrequencyValue() throws GenstarException {
-		MultipleRulesGenerator bondyPopulation = new MultipleRulesGenerator("Population of Bondy", 100);
+		SampleFreeGenerator bondyPopulation = new SampleFreeGenerator("Population of Bondy", 100);
 		
 		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
 		for (int[] range : BondyData.age_ranges_1) {

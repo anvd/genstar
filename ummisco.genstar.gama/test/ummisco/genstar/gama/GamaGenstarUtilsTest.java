@@ -1,6 +1,7 @@
 package ummisco.genstar.gama;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,25 +9,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.ipf.GroupComponentSampleData;
-import ummisco.genstar.ipf.SampleData;
-import ummisco.genstar.ipf.SampleDataGenerationRule;
-import ummisco.genstar.metamodel.GenerationRule;
-import ummisco.genstar.metamodel.ISingleRuleGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
-import ummisco.genstar.util.AttributeUtils;
-import ummisco.genstar.util.GenstarCsvFile;
-import ummisco.genstar.util.GenstarUtils;
 import mockit.Delegate;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import msi.gama.common.util.FileUtils;
 import msi.gama.runtime.IScope;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.ipf.IpfGenerationRule;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
+import ummisco.genstar.metamodel.sample_data.GroupComponentSampleData;
+import ummisco.genstar.metamodel.sample_data.SampleData;
+import ummisco.genstar.util.AttributeUtils;
+import ummisco.genstar.util.GenstarCsvFile;
 
 @RunWith(JMockit.class)
 public class GamaGenstarUtilsTest {
@@ -94,16 +93,16 @@ public class GamaGenstarUtilsTest {
 		}
 		
 		
-		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy generator");
+		SampleBasedGenerator generator = new SampleBasedGenerator("dummy generator");
 		
 		GenstarCsvFile attributesFile = new GenstarCsvFile(groupAttributesFilePath, true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		GamaGenstarUtils.createSampleDataGenerationRule(scope, generator, ruleName, sampleDataProperties);
 		
-		assertTrue(generator.getGenerationRule() instanceof SampleDataGenerationRule);
+		assertTrue(generator.getGenerationRule() instanceof IpfGenerationRule);
 
-		SampleDataGenerationRule generationRule = (SampleDataGenerationRule) generator.getGenerationRule();
+		IpfGenerationRule generationRule = (IpfGenerationRule) generator.getGenerationRule();
 		assertTrue(generationRule.getSampleData() instanceof GroupComponentSampleData);
 	}
 	
@@ -159,16 +158,16 @@ public class GamaGenstarUtilsTest {
 		}
 
 		
-		ISingleRuleGenerator generator = new SingleRuleGenerator("dummy generator");
+		SampleBasedGenerator generator = new SampleBasedGenerator("dummy generator");
 		
 		GenstarCsvFile attributesFile = new GenstarCsvFile(attributesFilePath, true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
 		
 		GamaGenstarUtils.createSampleDataGenerationRule(scope, generator, ruleName, sampleDataProperties);
 		
-		assertTrue(generator.getGenerationRule() instanceof SampleDataGenerationRule);
+		assertTrue(generator.getGenerationRule() instanceof IpfGenerationRule);
 
-		SampleDataGenerationRule generationRule = (SampleDataGenerationRule) generator.getGenerationRule();
+		IpfGenerationRule generationRule = (IpfGenerationRule) generator.getGenerationRule();
 		assertTrue(generationRule.getSampleData() instanceof SampleData);
 		
 	}

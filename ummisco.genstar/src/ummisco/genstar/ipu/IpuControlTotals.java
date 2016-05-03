@@ -17,8 +17,8 @@ public class IpuControlTotals {
 	public IpuControlTotals(final IpuGenerationRule generationRule) throws GenstarException {
 		if (generationRule == null) { throw new GenstarException("'generationRule' parameter can not be null"); }
 		
-		groupTypeConstraints = IpuUtils.parseIpuControlTotalsFile(generationRule.getGenerator(), generationRule.getGroupControlledAttributes(), generationRule.getGroupControlTotalsFile());
-		componentTypeConstraints = IpuUtils.parseIpuControlTotalsFile(generationRule.getComponentGenerator(), generationRule.getComponentControlledAttributes(), generationRule.getComponentControlTotalsFile());
+		groupTypeConstraints = IpuUtils.parseAttributeValuesFrequenciesFromIpuControlTotalsFile(generationRule.getGroupControlledAttributes(), generationRule.getGroupControlTotalsFile());
+		componentTypeConstraints = IpuUtils.parseAttributeValuesFrequenciesFromIpuControlTotalsFile(generationRule.getComponentControlledAttributes(), generationRule.getComponentControlTotalsFile());
 	}
 	
 	public int getGroupTypes() {

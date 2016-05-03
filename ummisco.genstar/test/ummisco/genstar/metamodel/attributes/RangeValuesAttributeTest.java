@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.MultipleRulesGenerator;
+import ummisco.genstar.metamodel.SampleFreeGenerator;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
@@ -29,7 +29,7 @@ public class RangeValuesAttributeTest {
 	
 	@Test
 	public void testNullNameParamConstructor() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		
 		exception.expect(GenstarException.class);
 		new RangeValuesAttribute(p, null, null, DataType.BOOL);
@@ -37,7 +37,7 @@ public class RangeValuesAttributeTest {
 	
 	@Test
 	public void testNullValueTypeConstructor() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 
 		exception.expect(GenstarException.class);
 		new RangeValuesAttribute(p, null, null, (Class)null);
@@ -45,7 +45,7 @@ public class RangeValuesAttributeTest {
 	
 	@Test
 	public void testAddRangeValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		assertTrue(attr.valuesOnData().isEmpty());
@@ -58,7 +58,7 @@ public class RangeValuesAttributeTest {
 	
 	@Test
 	public void testAddNullRangeValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 
 		exception.expect(GenstarException.class);
@@ -67,15 +67,16 @@ public class RangeValuesAttributeTest {
 	
 	@Test
 	public void testAddNullRangeValues() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		exception.expect(GenstarException.class);
 		attr.addAll(null);
 	}
 	
+	/*
 	@Test public void testConstainsInstanceOfAttributeValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		List<String> list1 = new ArrayList<String>();
@@ -88,9 +89,10 @@ public class RangeValuesAttributeTest {
 		attr.add(rangeValue);
 		assertTrue(attr.containsInstanceOfAttributeValue(rangeValue));
 	}
+	*/
 
 	@Test public void testDefaultValueOnEntity() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER, UniqueValue.class);
 		
 		assertTrue(attr.getDefaultValueOnEntity() instanceof UniqueValue);
@@ -98,7 +100,7 @@ public class RangeValuesAttributeTest {
 	}
 	
 	@Test public void testDefaultValueOnData() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER, UniqueValue.class);
 		
 		assertTrue(attr.getDefaultValueOnData() instanceof RangeValue);
@@ -107,7 +109,7 @@ public class RangeValuesAttributeTest {
 	
 	
 	@Test public void testFindCorrespondingAttributeValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		List<String> list1 = new ArrayList<String>();
@@ -140,7 +142,7 @@ public class RangeValuesAttributeTest {
 	}
 	
 	@Test public void testFindMatchingAttributeValue() throws GenstarException {
-		MultipleRulesGenerator p = new MultipleRulesGenerator("test population", 100);
+		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		List<String> list1 = new ArrayList<String>();

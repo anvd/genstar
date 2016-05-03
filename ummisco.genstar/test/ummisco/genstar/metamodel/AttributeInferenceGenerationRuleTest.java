@@ -34,21 +34,21 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 	
 	@Test public void testInvalidParamConstructor2() throws GenstarException { // null "name"
-		MultipleRulesGenerator dummyPopulation = new MultipleRulesGenerator("dummy population", 1);
+		SampleFreeGenerator dummyPopulation = new SampleFreeGenerator("dummy population", 1);
 
 		exception.expect(GenstarException.class);
 		new AttributeInferenceGenerationRule(dummyPopulation, null, null, null);
 	}
 	
 	@Test public void testInvalidParamConstructor3() throws GenstarException {
-		MultipleRulesGenerator dummyPopulation = new MultipleRulesGenerator("dummy population", 1);
+		SampleFreeGenerator dummyPopulation = new SampleFreeGenerator("dummy population", 1);
 
 		exception.expect(GenstarException.class);
 		new AttributeInferenceGenerationRule(dummyPopulation, "attribute inference generation rule", null, null);
 	}
 	
 	@Test public void testValidParamConstructor1() throws GenstarException {
-		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
+		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -68,7 +68,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 	
 	@Test public void testSetValidInferenceData1() throws GenstarException {
-		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
+		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -98,7 +98,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 	
 	@Test public void testSetInvalidInferenceData1() throws GenstarException { // null inference data
-		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
+		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -122,7 +122,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 	
 	@Test public void testInvalidSetInferenceData2() throws GenstarException { // length(inferring attribute values) != length(rule.inferringAttribute.values)
-		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
+		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -146,7 +146,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 
 	@Test public void testInvalidSetInferenceData3() throws GenstarException { // some inferring attributes values don't belong to (rule.inferringAttribute.values)
-		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
+		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -177,7 +177,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 
 	@Test public void testInvalidSetInferenceData4() throws GenstarException { // some inferred attributes values don't belong to (rule.inferredAttribute.values)
-		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
+		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
@@ -208,7 +208,7 @@ public class AttributeInferenceGenerationRuleTest {
 	}
 
 	@Test public void testGetInferenceData() throws GenstarException {
-		MultipleRulesGenerator bondyInhabitantPopGenerator = new MultipleRulesGenerator("Population of Bondy's Inhabitants", 51000);
+		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);

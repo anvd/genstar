@@ -22,10 +22,12 @@ import org.junit.runner.RunWith;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SingleRuleGenerator;
+import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
+import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
@@ -34,7 +36,7 @@ import ummisco.genstar.util.IpfUtils;
 @RunWith(JMockit.class)
 public class FourWayIpfTest {
 
-	@Mocked SampleDataGenerationRule generationRule;
+	@Mocked IpfGenerationRule generationRule;
 	ISyntheticPopulationGenerator generator;
 	final List<AbstractAttribute> controlledAttributes = new ArrayList<AbstractAttribute>();
 	AbstractAttribute rowAttribute, columnAttribute, layerAttribute, stackAttribute;
@@ -43,6 +45,8 @@ public class FourWayIpfTest {
 	FourWayIpf ipf;
 	
 	@Before public void init() throws GenstarException {
+		
+		if (ipf != null) { return; }
 		
 		String _attributesFilePath = "test_data/ummisco/genstar/ipf/four_way/attributes.csv";
 		String _sampleDataFilePath = "test_data/ummisco/genstar/ipf/four_way/household_sample.csv";
@@ -73,10 +77,10 @@ public class FourWayIpfTest {
 			Map<String, String> csvFilePaths = new HashMap<String, String>();
 			csvFilePaths.put(populationName, _sampleDataFilePath);
 			
-			GenstarUtils.writePopulationToCSVFile(generatedSamplePopulation, csvFilePaths);
+			GenstarUtils.writePopulationToCsvFile(generatedSamplePopulation, csvFilePaths);
 		}
 		
-		generator = new SingleRuleGenerator("generator");
+		generator = new SampleBasedGenerator("generator");
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/four_way/attributes.csv", true);
 		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 		
@@ -92,7 +96,7 @@ public class FourWayIpfTest {
 			
 			generationRule.getAttributeByNameOnData(anyString);
 			result = new Delegate() {
-				AbstractAttribute delegateMethod(final String attributeName) {
+				AbstractAttribute delegateMethod(final String attributeName) throws GenstarException {
 					return generator.getAttributeByNameOnData(attributeName);
 				}
 			};
@@ -115,7 +119,7 @@ public class FourWayIpfTest {
 			};
 			
 			generationRule.getMaxIterations();
-			result = SampleDataGenerationRule.DEFAULT_MAX_ITERATIONS;
+			result = IpfGenerationRule.DEFAULT_MAX_ITERATIONS;
 		}};
 		
 		ipf = new FourWayIpf(generationRule);
@@ -145,7 +149,7 @@ public class FourWayIpfTest {
 	}
 	
 
-	@Test(expected = GenstarException.class) public void testInitializeFourWayIPFWithInvalidControlledAttributes(@Mocked final SampleDataGenerationRule fourWayGenerationRule) throws GenstarException {
+	@Test(expected = GenstarException.class) public void testInitializeFourWayIPFWithInvalidControlledAttributes(@Mocked final IpfGenerationRule fourWayGenerationRule) throws GenstarException {
 		new Expectations() {{
 			fourWayGenerationRule.getControlledAttributes(); result = new ArrayList<AbstractAttribute>();
 		}};
