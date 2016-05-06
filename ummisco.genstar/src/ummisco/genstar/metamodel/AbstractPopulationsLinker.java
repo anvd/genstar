@@ -3,6 +3,8 @@ package ummisco.genstar.metamodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import ummisco.genstar.metamodel.population.IPopulation;
+
 public abstract class AbstractPopulationsLinker implements IPopulationsLinker {
 	
 	protected List<IPopulation> populations;

@@ -21,12 +21,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
-import ummisco.genstar.metamodel.sample_data.GroupComponentSampleData;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
+import ummisco.genstar.metamodel.sample_data.CompoundSampleData;
 import ummisco.genstar.metamodel.sample_data.ISampleData;
 import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
@@ -180,7 +180,7 @@ public class IpuTest {
 		// 1. initialize ??? 
 		final SampleBasedGenerator groupGenerator = new SampleBasedGenerator("group generator");
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/success/group_attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(groupGenerator, groupAttributesFile);
 		
 		// Household Size, Household Income
 		final List<AbstractAttribute> groupControlledAttributes = new ArrayList<AbstractAttribute>();
@@ -191,7 +191,7 @@ public class IpuTest {
 		
 		final SampleBasedGenerator componentGenerator = new SampleBasedGenerator("componnent generator");
 		GenstarCsvFile componentAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/success/component_attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(componentGenerator, componentAttributesFile);
 		
 		// Gender, Work
 		final List<AbstractAttribute> componentControlledAttributes = new ArrayList<AbstractAttribute>();
@@ -212,7 +212,7 @@ public class IpuTest {
 		groupIdAttributeOnComponentEntity.setIdentity(true);
 		ISampleData componentSample = new SampleData("people", componentGenerator.getAttributes(), componentSampleFile);
 		
-		final GroupComponentSampleData sampleData = new GroupComponentSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
+		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
 		
 
 		// data for ipuControlTotals
@@ -290,7 +290,7 @@ public class IpuTest {
 		// initialize generators and controlled attributes 
 		final SampleBasedGenerator groupGenerator = new SampleBasedGenerator("group generator");
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fit/group_attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(groupGenerator, groupAttributesFile);
 		
 		// group controlled attributes: Household Size, Household Income
 		final List<AbstractAttribute> groupControlledAttributes = new ArrayList<AbstractAttribute>();
@@ -301,7 +301,7 @@ public class IpuTest {
 		
 		final SampleBasedGenerator componentGenerator = new SampleBasedGenerator("componnent generator");
 		GenstarCsvFile componentAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fit/component_attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(componentGenerator, componentAttributesFile);
 		
 		// component controlled attributes: Gender, Work
 		final List<AbstractAttribute> componentControlledAttributes = new ArrayList<AbstractAttribute>();
@@ -322,7 +322,7 @@ public class IpuTest {
 		groupIdAttributeOnComponentEntity.setIdentity(true);
 		ISampleData componentSample = new SampleData("people", componentGenerator.getAttributes(), componentSampleFile);
 		
-		final GroupComponentSampleData sampleData = new GroupComponentSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
+		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
 		
 		final int MAX_ITERATIONS = 100;
 		
@@ -379,7 +379,7 @@ public class IpuTest {
 		// 1. initialize generators and controlled attributes 
 		final SampleBasedGenerator groupGenerator = new SampleBasedGenerator("group generator");
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile(base_path + "group_attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(groupGenerator, groupAttributesFile);
 		
 		// group controlled attributes: Household Type
 		final List<AbstractAttribute> groupControlledAttributes = new ArrayList<AbstractAttribute>();
@@ -389,7 +389,7 @@ public class IpuTest {
 		
 		final SampleBasedGenerator componentGenerator = new SampleBasedGenerator("componnent generator");
 		GenstarCsvFile componentAttributesFile = new GenstarCsvFile(base_path + "component_attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(componentGenerator, componentAttributesFile);
 		
 		// component controlled attributes: Person Type
 		final List<AbstractAttribute> componentControlledAttributes = new ArrayList<AbstractAttribute>();
@@ -409,7 +409,7 @@ public class IpuTest {
 		groupIdAttributeOnComponentEntity.setIdentity(true);
 		ISampleData componentSample = new SampleData("people", componentGenerator.getAttributes(), componentSampleFile);
 		
-		final GroupComponentSampleData sampleData = new GroupComponentSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
+		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
 
 		
 		// data for ipuControlTotals

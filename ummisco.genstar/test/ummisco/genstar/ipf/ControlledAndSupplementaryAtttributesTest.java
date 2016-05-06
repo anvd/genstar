@@ -13,9 +13,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 
@@ -27,7 +27,7 @@ public class ControlledAndSupplementaryAtttributesTest {
 		try {
 			generator = new SampleBasedGenerator("generator");
 			GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/controlled_supplementary_attributes_data/attributes.csv", true);
-			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+			AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		} catch (final GenstarException e) {
 			e.printStackTrace();
 		} 

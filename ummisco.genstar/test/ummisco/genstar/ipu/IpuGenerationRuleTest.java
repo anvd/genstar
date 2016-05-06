@@ -1,30 +1,29 @@
 package ummisco.genstar.ipu;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
+import mockit.Deencapsulation;
+import mockit.integration.junit4.JMockit;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.Population;
-import ummisco.genstar.metamodel.PopulationType;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
-import ummisco.genstar.metamodel.sample_data.GroupComponentSampleData;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
+import ummisco.genstar.metamodel.sample_data.CompoundSampleData;
 import ummisco.genstar.metamodel.sample_data.ISampleData;
 import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
-import mockit.Deencapsulation;
-import mockit.integration.junit4.JMockit;
 
 @RunWith(JMockit.class)
 public class IpuGenerationRuleTest {
@@ -51,11 +50,11 @@ public class IpuGenerationRuleTest {
 		
 		groupPopulationGenerator = new SampleBasedGenerator("group generator");
 		groupAttributesFile = new GenstarCsvFile(base_path + "group_attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(groupPopulationGenerator, groupAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(groupPopulationGenerator, groupAttributesFile);
 		
 		componentPopulationGenerator = new SampleBasedGenerator("component generator");
 		componentAttributesFile = new GenstarCsvFile(base_path + "component_attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(componentPopulationGenerator, componentAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(componentPopulationGenerator, componentAttributesFile);
 
 		groupControlledAttributesFile = new GenstarCsvFile(base_path + "group_controlled_attributes.csv", false);
 		groupControlTotalsFile = new GenstarCsvFile(base_path + "group_ipu_control_totals.csv", false);
@@ -65,15 +64,13 @@ public class IpuGenerationRuleTest {
 		componentControlTotalsFile = new GenstarCsvFile(base_path + "component_ipu_control_totals.csv", false);
 		componentSupplementaryAttributesFile = new GenstarCsvFile(base_path + "component_supplementary_attributes.csv", false);
 		
-		sharedRule = new IpuGenerationRule(groupPopulationGenerator, componentPopulationGenerator, "Ipu generation rule", 
-				groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile,
-				componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, 3);
+		sharedRule = new IpuGenerationRule("Ipu generation rule", groupPopulationGenerator, groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile,
+				componentPopulationGenerator, componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, 3);
 	}
 
 	@Test public void testInitializeIpuGenerationRuleSuccessfully() throws GenstarException {
-		IpuGenerationRule rule = new IpuGenerationRule(groupPopulationGenerator, componentPopulationGenerator, "Ipu generation rule", 
-				groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile,
-				componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, 3);
+		IpuGenerationRule rule = new IpuGenerationRule("Ipu generation rule", groupPopulationGenerator, groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile,
+				componentPopulationGenerator, componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, 3);
 	}
 	
 	@Test public void testGetAttributes() throws GenstarException {
@@ -110,16 +107,14 @@ public class IpuGenerationRuleTest {
 	}
 	
 	@Test(expected = GenstarException.class) public void testIpuGenerationRuleWithNullComponentPopulationGenerator() throws GenstarException {
-		new IpuGenerationRule(groupPopulationGenerator, null, "Ipu generation rule", 
-				groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile,
-				componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, 3);
+		new IpuGenerationRule("Ipu generation rule", groupPopulationGenerator, groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile, 
+				null, componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, 3);
 	}
 	
 	
 	@Test public void testSetSampleData() throws GenstarException {
-		IpuGenerationRule rule = new IpuGenerationRule(groupPopulationGenerator, componentPopulationGenerator, "Ipu generation rule", 
-				groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile,
-				componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, 3);
+		IpuGenerationRule rule = new IpuGenerationRule("Ipu generation rule", groupPopulationGenerator, groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile,
+				componentPopulationGenerator, componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, 3);
 		
 		
 		// 0. initialize IpuGenerationRule
@@ -144,7 +139,7 @@ public class IpuGenerationRuleTest {
 		groupIdAttributeOnComponentEntity.setIdentity(true);
 		ISampleData componentSample = new SampleData("people", rule.getComponentGenerator().getAttributes(), componentSampleFile);
 		
-		final GroupComponentSampleData sampleData = new GroupComponentSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
+		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
 		 
 		
 		// verifications 0
@@ -164,9 +159,8 @@ public class IpuGenerationRuleTest {
 	
 	
 	@Test public void testGenerate() throws GenstarException {
-		IpuGenerationRule rule = new IpuGenerationRule(groupPopulationGenerator, componentPopulationGenerator, "Ipu generation rule", 
-				groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile,
-				componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, 3);
+		IpuGenerationRule rule = new IpuGenerationRule("Ipu generation rule", groupPopulationGenerator, groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile,
+				componentPopulationGenerator, componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, 3);
 		
 		
 		// 0. initialize IpuGenerationRule
@@ -191,7 +185,7 @@ public class IpuGenerationRuleTest {
 		groupIdAttributeOnComponentEntity.setIdentity(true);
 		ISampleData componentSample = new SampleData("people", rule.getComponentGenerator().getAttributes(), componentSampleFile);
 		
-		final GroupComponentSampleData sampleData = new GroupComponentSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
+		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
 		 
 		rule.setSampleData(sampleData);
 		

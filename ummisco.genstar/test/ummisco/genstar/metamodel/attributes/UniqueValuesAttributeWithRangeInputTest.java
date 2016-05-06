@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 
 @RunWith(JMockit.class)
 public class UniqueValuesAttributeWithRangeInputTest {

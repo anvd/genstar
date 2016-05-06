@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.IPopulationsLinker;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.population.IPopulation;
 
 public class GenstarGenerator {
 	

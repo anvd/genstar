@@ -16,6 +16,9 @@ import ummisco.genstar.data.CanThoPopLinkers.Scenario1PopLinker;
 import ummisco.genstar.data.CanThoPopLinkers.Scenario2PopLinker;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
 import ummisco.genstar.util.GenstarFileUtils;
 
 public class GenstarGeneratorTest_CanTho {

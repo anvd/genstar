@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.Entity;
+import ummisco.genstar.metamodel.population.Entity;
 import ummisco.genstar.util.PersistentObject;
 
 public class AttributeValuesFrequency {

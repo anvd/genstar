@@ -20,7 +20,7 @@ global {
 		write 'Analyze generation result ...';
 		string attributesFilePath <- '../includes/people/attributes.csv';
 		string controlledAttributesListFilePath <- '../includes/people/controlled_attributes.csv';
-		string controlTotalsFilePath <- '../includes/people/controlled_totals.csv';
+		string controlTotalsFilePath <- '../includes/people/control_totals.csv';
 		list<int> analysisResult <- analyse_ipf_population_to_console(people_population, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath);
 	}
 }

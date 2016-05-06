@@ -13,8 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
@@ -22,6 +20,8 @@ import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
 
 @RunWith(JMockit.class)
 public class AttributeUtilsTest {
@@ -72,7 +72,7 @@ public class AttributeUtilsTest {
 	}
 
 
-	@Test public final void testCreateAttributesFromCSVFileExpectationApproach(@Mocked final ISyntheticPopulationGenerator generator, @Mocked final GenstarCsvFile mockedAttributesCSVFile) throws GenstarException {
+	@Test public final void testCreateAttributesFromCsvFileExpectationApproach(@Mocked final ISyntheticPopulationGenerator generator, @Mocked final GenstarCsvFile mockedAttributesCSVFile) throws GenstarException {
 		
 		final List<String> headers = new ArrayList<String>();
 		headers.add("Name On Data");
@@ -130,10 +130,10 @@ public class AttributeUtilsTest {
 			times = 3;
 		}};
 		
-		AttributeUtils.createAttributesFromCSVFile(generator, mockedAttributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, mockedAttributesCSVFile);
 	}	
 	
-	@Test public void testCreateAttributesFromCSVFile() throws GenstarException {
+	@Test public void testCreateAttributesFromCsvFile() throws GenstarException {
 		fail("not yet implemented");
 	}
 	
@@ -144,7 +144,7 @@ public class AttributeUtilsTest {
 		
 		assertTrue(generator.getAttributes().isEmpty());
 		
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 		
 		List<AbstractAttribute> attributes = generator.getAttributes();
 		assertTrue(attributes.size() == 2);

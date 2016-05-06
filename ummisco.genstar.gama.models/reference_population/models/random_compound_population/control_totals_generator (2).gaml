@@ -11,7 +11,7 @@ global {
 	string base_path <- '../../includes/random_compound_population/ipf_configuration/';
 	string controlled_attributes_base_folder <- '_controlled_attributes/';
 	string control_totals_configuration_base_file <- 'control_totals_configuration_';
-	string result_control_totals_base_file <- 'controlled_totals_';
+	string result_control_totals_base_file <- 'control_totals_';
 	
 	string point_properties <- '.properties';
 	string point_csv <- '.csv';

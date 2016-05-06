@@ -16,14 +16,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 
@@ -33,7 +33,7 @@ public class ControlTotalsTest { // TODO change name to IpfControlTotalsTest
 	@Test public void testGetMatchingAttributeValuesFrequenciesForUniqueValue(@Mocked final IpfGenerationRule rule1, @Mocked final IpfGenerationRule rule2) throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/ControlTotals/testGetMatchingAttributeValuesFrequenciesForUniqueValue/attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
 		final GenstarCsvFile frequencyFile1 = new GenstarCsvFile("test_data/ummisco/genstar/ipf/ControlTotals/testGetMatchingAttributeValuesFrequenciesForUniqueValue/control_totals1.csv", false);
 
@@ -159,7 +159,7 @@ public class ControlTotalsTest { // TODO change name to IpfControlTotalsTest
 		
 		final ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/ControlTotals/testParseAttributeValuesFrequencyForUniqueValue/attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 
 		AbstractAttribute householdSizeAttr = generator.getAttributeByNameOnData("Household Size");
 		AbstractAttribute householdIncomeAttr = generator.getAttributeByNameOnData("Household Income");
@@ -201,7 +201,7 @@ public class ControlTotalsTest { // TODO change name to IpfControlTotalsTest
 	@Test public void testGetMatchingAttributeValuesFrequenciesForRangeValue(@Mocked final IpfGenerationRule rule) throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/ControlTotals/testGetMatchingAttributeValuesFrequenciesForRangeValue/attributes1.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
 		final GenstarCsvFile frequencyFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/ControlTotals/testGetMatchingAttributeValuesFrequenciesForRangeValue/control_totals3.csv", false);
 		
@@ -262,7 +262,7 @@ public class ControlTotalsTest { // TODO change name to IpfControlTotalsTest
 	@Test(expected = GenstarException.class) public void testAttributeValuesFrequenciesFileContainsInvalidAttribute(@Mocked final IpfGenerationRule rule) throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/ControlTotals/testAttributeValuesFrequenciesFileContainsInvalidAttribute/attributes1.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
 		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age");
 		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");
@@ -306,7 +306,7 @@ public class ControlTotalsTest { // TODO change name to IpfControlTotalsTest
 	@Test(expected = GenstarException.class) public void testAttributeValuesFrequenciesFileContainsInvalidControlledAttribute(@Mocked final IpfGenerationRule rule) throws GenstarException {
 		final ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/ControlTotals/testAttributeValuesFrequenciesFileContainsInvalidControlledAttribute/attributes1.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
 		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age");
 		AbstractAttribute genderAttr = generator.getAttributeByNameOnData("Gender");

@@ -19,6 +19,11 @@ import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
+import ummisco.genstar.metamodel.population.Population;
+import ummisco.genstar.metamodel.population.PopulationType;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 import mockit.integration.junit4.JMockit;
@@ -34,7 +39,7 @@ public class PopulationTest {
 	@Before public void init() throws GenstarException {
 		attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/population/initialize_population_successfully/attributes.csv", true);
 		generator = new SampleBasedGenerator("dummy generator");
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 	}
 	
 	@Test public void testInitializePopulationSuccessfully() throws GenstarException {

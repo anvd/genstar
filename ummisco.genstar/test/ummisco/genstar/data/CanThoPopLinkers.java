@@ -7,13 +7,13 @@ import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.AbstractPopulationsLinker;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
 import msi.gama.precompiler.GamlAnnotations.populations_linker;
 
 public class CanThoPopLinkers {

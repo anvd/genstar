@@ -11,13 +11,17 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
+import ummisco.genstar.ipf.IpfGenerationRule;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
+import ummisco.genstar.metamodel.sample_data.CompoundSampleData;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
+import ummisco.genstar.metamodel.sample_data.SampleData;
 
 import com.google.common.collect.Sets;
 
@@ -109,7 +113,7 @@ public class IpfUtils {
 		if (total < 1) { throw new GenstarException("Parameter controlTotal must be positive"); }
 		
 		SampleBasedGenerator generator = new SampleBasedGenerator("dummy single rule generator");
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 		
 		// generate frequencies / control totals
 		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets = buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(generator.getAttributes()));
@@ -392,4 +396,66 @@ public class IpfUtils {
 		
 		return new GenstarCsvFile(csvOutputFilePath, false);
 	}
+
+
+	// TODO move this method to IpfUtils
+	public static void createIpfGenerationRule(final SampleBasedGenerator generator, final String ruleName, final GenstarCsvFile sampleFile,
+			final GenstarCsvFile controlledAttributesFile, final GenstarCsvFile controlledTotalsFile, 
+			final GenstarCsvFile supplementaryAttributesFile, final AbstractAttribute idAttribute, final int maxIterations) throws GenstarException {
+		
+		IpfGenerationRule rule = new IpfGenerationRule(generator, ruleName, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile, maxIterations);
+		
+		if (idAttribute != null) {
+			if (!generator.getAttributes().contains(idAttribute)) { throw new GenstarException(idAttribute.getNameOnEntity() + " is not recognized as an attribute of the generator"); }
+			idAttribute.setIdentity(true);
+		}
+		
+		ISampleData sampleData = new SampleData(generator.getPopulationName(), generator.getAttributes(), sampleFile);
+		rule.setSampleData(sampleData);
+		
+		generator.setGenerationRule(rule);
+		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
+	}
+	
+	
+	public static void createCompoundIpfGenerationRule(final SampleBasedGenerator groupGenerator, final String ruleName, final GenstarCsvFile groupSampleFile,
+			final GenstarCsvFile groupControlledAttributesFile, final GenstarCsvFile groupControlledTotalsFile, final GenstarCsvFile groupSupplementaryAttributesFile,
+			final GenstarCsvFile componentSampleFile, final GenstarCsvFile componentAttributesFile, final String componentPopulationName, 
+			final int maxIterations, final Map<String, String> generatorProperties) throws GenstarException {
+		
+		IpfGenerationRule rule = new IpfGenerationRule(groupGenerator, ruleName, groupControlledAttributesFile, groupControlledTotalsFile, groupSupplementaryAttributesFile, maxIterations);
+
+		SampleBasedGenerator componentGenerator = new SampleBasedGenerator("Component Generator");
+		AttributeUtils.createAttributesFromCsvFile(componentGenerator, componentAttributesFile);
+		componentGenerator.setPopulationName(componentPopulationName);
+		
+		String groupIdAttributeNameOnGroup = generatorProperties.get(INPUT_DATA_FORMATS.PROPERTY_FILES.IPF_POPULATION.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY);
+		AbstractAttribute groupIdAttributeOnGroup = rule.getAttributeByNameOnData(groupIdAttributeNameOnGroup);
+		if (groupIdAttributeOnGroup == null) { throw new GenstarException("'" + groupIdAttributeNameOnGroup + "' is not a valid attribute"); }
+		groupIdAttributeOnGroup.setIdentity(true);
+		
+		String groupIdAttributeNameOnComponent = generatorProperties.get(INPUT_DATA_FORMATS.PROPERTY_FILES.IPF_POPULATION.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY);
+		AbstractAttribute groupIdAttributeOnComponent = componentGenerator.getAttributeByNameOnData(groupIdAttributeNameOnComponent);
+		if (groupIdAttributeOnComponent == null) { throw new GenstarException("'" + groupIdAttributeOnComponent + "' is not a valid attribute"); }
+//		groupIdAttributeOnComponent.setIdentity(true);
+		
+		ISampleData groupSampleData = new SampleData(groupGenerator.getPopulationName(), groupGenerator.getAttributes(), groupSampleFile);
+		String componentReferenceOnGroup = generatorProperties.get(INPUT_DATA_FORMATS.PROPERTY_FILES.IPF_POPULATION.COMPONENT_REFERENCE_ON_GROUP_PROPERTY);
+		if (componentReferenceOnGroup != null) { 
+			groupSampleData.getSampleEntityPopulation().addComponentReference(componentGenerator.getPopulationName(), componentReferenceOnGroup);
+		}
+		
+		ISampleData componentSampleData = new SampleData(componentGenerator.getPopulationName(), componentGenerator.getAttributes(), componentSampleFile);
+		String groupReferenceOnComponent = generatorProperties.get(INPUT_DATA_FORMATS.PROPERTY_FILES.IPF_POPULATION.GROUP_REFERENCE_ON_COMPONENT_PROPERTY);
+		if (groupReferenceOnComponent != null) {
+			componentSampleData.getSampleEntityPopulation().addGroupReference(groupGenerator.getPopulationName(), groupReferenceOnComponent);
+		}
+		
+		ISampleData compoundSampleData = new CompoundSampleData(groupSampleData, componentSampleData, groupIdAttributeOnGroup, groupIdAttributeOnComponent);
+		rule.setSampleData(compoundSampleData);
+
+		groupGenerator.setGenerationRule(rule);
+		groupGenerator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
+	}
+	
 }

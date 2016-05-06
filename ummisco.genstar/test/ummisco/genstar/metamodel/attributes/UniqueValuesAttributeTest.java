@@ -12,12 +12,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.SampleFreeGenerator;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
+import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
 
 @RunWith(JUnit4.class)
 public class UniqueValuesAttributeTest {

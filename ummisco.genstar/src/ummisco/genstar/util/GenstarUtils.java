@@ -16,16 +16,7 @@ import java.util.TreeMap;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.IpfGenerationRule;
-import ummisco.genstar.metamodel.AttributeInferenceGenerationRule;
-import ummisco.genstar.metamodel.CustomSampleFreeGenerationRule;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.Population;
-import ummisco.genstar.metamodel.PopulationType;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
-import ummisco.genstar.metamodel.SampleFreeGenerator;
+import ummisco.genstar.ipu.IpuGenerationRule;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
@@ -34,9 +25,19 @@ import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
 import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
-import ummisco.genstar.metamodel.sample_data.GroupComponentSampleData;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
+import ummisco.genstar.metamodel.population.Population;
+import ummisco.genstar.metamodel.population.PopulationType;
+import ummisco.genstar.metamodel.sample_data.CompoundSampleData;
 import ummisco.genstar.metamodel.sample_data.ISampleData;
 import ummisco.genstar.metamodel.sample_data.SampleData;
+import ummisco.genstar.sample_free.AttributeInferenceGenerationRule;
+import ummisco.genstar.sample_free.CustomSampleFreeGenerationRule;
+import ummisco.genstar.sample_free.FrequencyDistributionGenerationRule;
 
 import com.google.common.collect.Sets;
 
@@ -71,8 +72,6 @@ public class GenstarUtils {
 			return 0;
 		}
 	}	
-	
-	
 
 	
 	public static void createFrequencyDistributionGenerationRule(final SampleFreeGenerator generator, final String ruleName, final GenstarCsvFile ruleFile) throws GenstarException {
@@ -220,65 +219,7 @@ public class GenstarUtils {
 	}	
 	
 	
-	// TODO change to createIpfGenerationRule
-	public static void createSampleDataGenerationRule(final SampleBasedGenerator generator, final String ruleName, final GenstarCsvFile sampleFile,
-			final GenstarCsvFile controlledAttributesFile, final GenstarCsvFile controlledTotalsFile, 
-			final GenstarCsvFile supplementaryAttributesFile, final AbstractAttribute idAttribute, final int maxIterations) throws GenstarException {
-		
-		IpfGenerationRule rule = new IpfGenerationRule(generator, ruleName, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile, maxIterations);
-		
-		if (idAttribute != null) {
-			if (!generator.getAttributes().contains(idAttribute)) { throw new GenstarException(idAttribute.getNameOnEntity() + " is not recognized as an attribute of the generator"); }
-			idAttribute.setIdentity(true);
-		}
-		
-		ISampleData sampleData = new SampleData(generator.getPopulationName(), generator.getAttributes(), sampleFile);
-		rule.setSampleData(sampleData);
-		
-		generator.setGenerationRule(rule);
-		generator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
-	}
 	
-	
-	public static void createGroupComponentSampleDataGenerationRule(final SampleBasedGenerator groupGenerator, final String ruleName, final GenstarCsvFile groupSampleFile,
-			final GenstarCsvFile groupControlledAttributesFile, final GenstarCsvFile groupControlledTotalsFile, final GenstarCsvFile groupSupplementaryAttributesFile,
-			final GenstarCsvFile componentSampleFile, final GenstarCsvFile componentAttributesFile, final String componentPopulationName, 
-			final int maxIterations, final Map<String, String> generatorProperties) throws GenstarException {
-		
-		IpfGenerationRule rule = new IpfGenerationRule(groupGenerator, ruleName, groupControlledAttributesFile, groupControlledTotalsFile, groupSupplementaryAttributesFile, maxIterations);
-
-		SampleBasedGenerator componentGenerator = new SampleBasedGenerator("Component Generator");
-		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
-		componentGenerator.setPopulationName(componentPopulationName);
-		
-		String groupIdAttributeNameOnGroup = generatorProperties.get(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY);
-		AbstractAttribute groupIdAttributeOnGroup = rule.getAttributeByNameOnData(groupIdAttributeNameOnGroup);
-		if (groupIdAttributeOnGroup == null) { throw new GenstarException("'" + groupIdAttributeNameOnGroup + "' is not a valid attribute"); }
-		groupIdAttributeOnGroup.setIdentity(true);
-		
-		String groupIdAttributeNameOnComponent = generatorProperties.get(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY);
-		AbstractAttribute groupIdAttributeOnComponent = componentGenerator.getAttributeByNameOnData(groupIdAttributeNameOnComponent);
-		if (groupIdAttributeOnComponent == null) { throw new GenstarException("'" + groupIdAttributeOnComponent + "' is not a valid attribute"); }
-//		groupIdAttributeOnComponent.setIdentity(true);
-		
-		ISampleData groupSampleData = new SampleData(groupGenerator.getPopulationName(), groupGenerator.getAttributes(), groupSampleFile);
-		String componentReferenceOnGroup = generatorProperties.get(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.COMPONENT_REFERENCE_ON_GROUP_PROPERTY);
-		if (componentReferenceOnGroup != null) { 
-			groupSampleData.addComponentReference(componentGenerator.getPopulationName(), componentReferenceOnGroup);
-		}
-		
-		ISampleData componentSampleData = new SampleData(componentGenerator.getPopulationName(), componentGenerator.getAttributes(), componentSampleFile);
-		String groupReferenceOnComponent = generatorProperties.get(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.GROUP_REFERENCE_ON_COMPONENT_PROPERTY);
-		if (groupReferenceOnComponent != null) {
-			componentSampleData.addGroupReference(groupGenerator.getPopulationName(), groupReferenceOnComponent);
-		}
-		
-		ISampleData groupComponentSampleData = new GroupComponentSampleData(groupSampleData, componentSampleData, groupIdAttributeOnGroup, groupIdAttributeOnComponent);
-		rule.setSampleData(groupComponentSampleData);
-
-		groupGenerator.setGenerationRule(rule);
-		groupGenerator.setNbOfEntities(rule.getIPF().getNbOfEntitiesToGenerate());
-	}
 
 		
 	static List<AbstractAttribute> parseSupplementaryAttributesCsvFile(final ISyntheticPopulationGenerator generator, final GenstarCsvFile supplementaryAttributesFile) throws GenstarException {
@@ -444,7 +385,7 @@ public class GenstarUtils {
 		if (maxEntitiesOfEachAttributeValuesSet < minEntitiesOfEachAttributeValuesSet) { throw new GenstarException("maxEntitiesOfEachAttributeValuesSet can not be smaller than minEntitiesOfEachAttributeValuesSet"); }
 		
 		SampleBasedGenerator generator = new SampleBasedGenerator("dummy single rule generator");
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 
 		Set<AbstractAttribute> attributes = new HashSet<AbstractAttribute>(generator.getAttributes());
 		IPopulation syntheticPopulation = new Population(PopulationType.SYNTHETIC_POPULATION, populationName, generator.getAttributes());
@@ -512,7 +453,7 @@ public class GenstarUtils {
 		if (entities <= 0) { throw new GenstarException("Parameter entities must be positive"); }
 		
 		SampleBasedGenerator generator = new SampleBasedGenerator("dummy single rule generator");
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 		
 		List<AbstractAttribute> attributes = new ArrayList<AbstractAttribute>(generator.getAttributes());
 		
@@ -574,7 +515,7 @@ public class GenstarUtils {
 		
 		// 1. create group attributes from groupAttributesFile
 		SampleBasedGenerator groupGenerator = new SampleBasedGenerator("group dummy generator");
-		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(groupGenerator, groupAttributesFile);
 		List<AbstractAttribute> groupAttributes = groupGenerator.getAttributes();
 		
 		// 2. retrieve reference to groupIdAttributeOnGroupEntity
@@ -595,7 +536,7 @@ public class GenstarUtils {
 
 		// 5. create component attributes from componentAttributesFile
 		SampleBasedGenerator componentGenerator = new SampleBasedGenerator("component dummy generator");
-		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(componentGenerator, componentAttributesFile);
 		List<AbstractAttribute> componentAttributes = new ArrayList<AbstractAttribute>(componentGenerator.getAttributes());
 
 		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttributeByNameOnData(groupIdAttributeNameOnDataOfComponentEntity);
@@ -629,7 +570,7 @@ public class GenstarUtils {
 		
 		// 1. create group attributes from groupAttributesFile
 		SampleBasedGenerator groupGenerator = new SampleBasedGenerator("group dummy generator");
-		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(groupGenerator, groupAttributesFile);
 
 		
 		// 2. retrieve reference to groupIdAttributeOnGroupEntity
@@ -711,7 +652,7 @@ public class GenstarUtils {
 		
 		// 7. create component attributes from componentAttributesFile. GenstarUtils.generateComponentPopulation
 		SampleBasedGenerator componentGenerator = new SampleBasedGenerator("component dummy generator");
-		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(componentGenerator, componentAttributesFile);
 		List<AbstractAttribute> componentAttributes = new ArrayList<AbstractAttribute>(componentGenerator.getAttributes());
 
 		
@@ -733,7 +674,7 @@ public class GenstarUtils {
 			final GenstarCsvFile singlePopulationFile) throws GenstarException { 
 		
 		SampleBasedGenerator generator = new SampleBasedGenerator("generator");
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 		
 		return GenstarUtils.loadSinglePopulation(populationType, populationName, generator.getAttributes(), singlePopulationFile);
 	}

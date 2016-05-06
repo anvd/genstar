@@ -12,12 +12,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SampleFreeGenerator;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
 import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
@@ -29,7 +29,7 @@ public class SampleDataTest {
 		final ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
 		
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/sample_data/SampleData/testGetSamtestInitializeSampleDataWithDuplicatedAttributespleEntities/attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
 		List<AbstractAttribute> duplicatedAttributes = generator.getAttributes();
 		duplicatedAttributes.add(duplicatedAttributes.get(0));
@@ -43,7 +43,7 @@ public class SampleDataTest {
 		final ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
 		
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/sample_data/SampleData/testGetSampleEntities/attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
 		final GenstarCsvFile sampleDataCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/sample_data/SampleData/testGetSampleEntities/people_sample.csv", true);
 		
@@ -55,7 +55,7 @@ public class SampleDataTest {
 		final ISyntheticPopulationGenerator generator = new SampleFreeGenerator("generator", 10);
 		
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/sample_data/SampleData/testCountMatchingEntitiesByAttributeValuesOnEntity/attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
 		final GenstarCsvFile sampleDataCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/sample_data/SampleData/testCountMatchingEntitiesByAttributeValuesOnEntity/people_sample.csv", true);
 		
@@ -127,7 +127,7 @@ public class SampleDataTest {
 		SampleBasedGenerator generator = new SampleBasedGenerator("generator");
 		
 		GenstarCsvFile attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/sample_data/SampleData/testInitializeSampleEntitiesWithMismatchedAttributes/attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 		
 		GenstarCsvFile data = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/sample_data/SampleData/testInitializeSampleEntitiesWithMismatchedAttributes/PICURS_People_SampleData.csv", true);
 		

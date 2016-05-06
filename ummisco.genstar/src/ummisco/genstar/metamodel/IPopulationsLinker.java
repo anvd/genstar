@@ -3,6 +3,7 @@ package ummisco.genstar.metamodel;
 import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.population.IPopulation;
 
 public interface IPopulationsLinker { 
 

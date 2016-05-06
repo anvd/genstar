@@ -21,6 +21,10 @@ import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.sample_free.AttributeInferenceGenerationRule;
 
 @RunWith(JUnit4.class)
 public class AttributeInferenceGenerationRuleTest {

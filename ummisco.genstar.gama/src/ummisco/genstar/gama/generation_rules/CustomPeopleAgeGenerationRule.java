@@ -14,13 +14,13 @@ import msi.gama.util.file.GamaCSVFile;
 import msi.gama.util.matrix.IMatrix;
 import msi.gaml.types.Types;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.CustomSampleFreeGenerationRule;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.SampleFreeGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.sample_free.CustomSampleFreeGenerationRule;
 import ummisco.genstar.util.SharedInstances;
 
 public class CustomPeopleAgeGenerationRule extends CustomSampleFreeGenerationRule {

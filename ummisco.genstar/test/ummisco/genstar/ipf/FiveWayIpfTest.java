@@ -20,12 +20,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.population.IPopulation;
 import ummisco.genstar.metamodel.sample_data.ISampleData;
 import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
@@ -88,7 +88,7 @@ public class FiveWayIpfTest {
 		 
 		householdGenerator = new SampleBasedGenerator("household generator");
 		GenstarCsvFile householdAttributesCSVFile = new GenstarCsvFile(householdAttributesFilePath, true);
-		AttributeUtils.createAttributesFromCSVFile(householdGenerator, householdAttributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(householdGenerator, householdAttributesCSVFile);
 		
 		for (List<String> row : householdControlAttributesListFile.getContent()) { householdControlledAttributes.add(householdGenerator.getAttributeByNameOnData(row.get(0))); }	
 		

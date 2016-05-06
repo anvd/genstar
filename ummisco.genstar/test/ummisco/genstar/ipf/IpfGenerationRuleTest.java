@@ -11,11 +11,11 @@ import mockit.Deencapsulation;
 import org.junit.Test;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
 import ummisco.genstar.metamodel.sample_data.ISampleData;
 import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
@@ -26,7 +26,7 @@ public class IpfGenerationRuleTest {
 	@Test public void initializeSampleDataGenerationRuleSuccessfully() throws GenstarException {
 		SampleBasedGenerator generator = new SampleBasedGenerator("generator"); 
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
 		GenstarCsvFile sampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/people_sample.csv", true);
 		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/controlled_attributes.csv", false);
@@ -47,7 +47,7 @@ public class IpfGenerationRuleTest {
 	@Test public void testGenerate() throws GenstarException {
 		SampleBasedGenerator generator = new SampleBasedGenerator("generator"); 
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
 		GenstarCsvFile sampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/people_sample.csv", true);
 		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/controlled_attributes.csv", false);
@@ -111,7 +111,7 @@ public class IpfGenerationRuleTest {
 		
 		SampleBasedGenerator generator = new SampleBasedGenerator("generator"); 
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
 		GenstarCsvFile sampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/people_sample.csv", true);
 		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/controlled_attributes.csv", false);
@@ -146,7 +146,7 @@ public class IpfGenerationRuleTest {
 		
 		SampleBasedGenerator generator = new SampleBasedGenerator("generator"); 
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/attributes.csv", true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
 		GenstarCsvFile sampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/people_sample.csv", true);
 		GenstarCsvFile controlledAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipf/IpfGenerationRule/controlled_attributes.csv", false);

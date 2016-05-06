@@ -19,6 +19,10 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
+import ummisco.genstar.metamodel.generation_rules.GenerationRule;
+import ummisco.genstar.metamodel.generation_rules.SampleFreeGenerationRule;
+import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
+import ummisco.genstar.sample_free.FrequencyDistributionGenerationRule;
 
 @RunWith(JUnit4.class)
 public class PopulationTest_Elementary {

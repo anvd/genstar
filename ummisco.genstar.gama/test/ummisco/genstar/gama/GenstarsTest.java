@@ -53,19 +53,18 @@ import org.junit.runner.RunWith;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.IpfControlTotals;
 import ummisco.genstar.ipf.IpfGenerationRule;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.population.IPopulation;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.CsvWriter;
 import ummisco.genstar.util.GenstarCsvFile;
-import ummisco.genstar.util.GenstarUtils;
 import ummisco.genstar.util.INPUT_DATA_FORMATS;
 
 @RunWith(JMockit.class)
@@ -178,22 +177,22 @@ public class GenstarsTest {
 	
 	@Test public void testGenerateIPFSinglePopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) {
 		
-		final String populationPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFSinglePopulation/SampleData_GenerationRule_Config.properties";
+		final String populationPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFSinglePopulation/IpfSinglePopulationProperties.properties";
 		final String attributesCSVFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFSinglePopulation/attributes.csv";
 		final String sampleDataFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFSinglePopulation/PICURS_People_SampleData.csv";
 		final String controlledAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFSinglePopulation/controlled_attributes.csv";
-		final String controlledTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFSinglePopulation/controlled_totals.csv";
+		final String controlTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFSinglePopulation/control_totals.csv";
 		final String supplementaryAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFSinglePopulation/supplementary_attributes.csv";
 		
 		new Expectations() {{
 			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
 			result = new Delegate() {
 				String delegate(IScope scope, String filePath, boolean mustExist) {
-					if (filePath.endsWith("SampleData_GenerationRule_Config.properties")) { return populationPropertiesFilePath; }
+					if (filePath.endsWith("IpfSinglePopulationProperties.properties")) { return populationPropertiesFilePath; }
 					if (filePath.endsWith("/attributes.csv")) { return attributesCSVFilePath; }
 					if (filePath.endsWith("PICURS_People_SampleData.csv")) { return sampleDataFilePath; }
 					if (filePath.endsWith("controlled_attributes.csv")) { return controlledAttributesFilePath; }
-					if (filePath.endsWith("controlled_totals.csv")) { return controlledTotalFilePath; }
+					if (filePath.endsWith("control_totals.csv")) { return controlTotalFilePath; }
 					if (filePath.endsWith("supplementary_attributes.csv")) { return supplementaryAttributesFilePath; }
 					
 					return null;
@@ -220,19 +219,19 @@ public class GenstarsTest {
 		ATTRIBUTES=test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_attributes.csv
 		SAMPLE_DATA=test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_sample.csv
 		CONTROLLED_ATTRIBUTES=test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_component/group_controlled_attributes.csv
-		CONTROLLED_TOTALS=test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_component/group_control_totals.csv
+		CONTROL_TOTALS=test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_component/group_control_totals.csv
 		SUPPLEMENTARY_ATTRIBUTES=test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_supplementary_attributes.csv
 		COMPONENT_POPULATION_NAME=people
 		COMPONENT_SAMPLE_DATA=test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/component_sample.csv
 		COMPONENT_ATTRIBUTES=test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/component_attributes.csv
 		 */
 		
-		final String populationPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/SampleDataProperties.properties";
+		final String ipfCompoundPopulationPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/IpfCompoundPopulationProperties.properties";
 		
 		final String groupAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_attributes.csv";
 		final String groupSampleDataFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_sample.csv";
 		final String groupControlledAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_controlled_attributes.csv";
-		final String groupControlledTotalsFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_control_totals.csv";
+		final String groupControlTotalsFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_control_totals.csv";
 		final String groupSupplementaryAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_supplementary_attributes.csv";
 		
 		final String componentAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/component_attributes.csv";
@@ -243,11 +242,11 @@ public class GenstarsTest {
 			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
 			result = new Delegate() {
 				String delegate(IScope scope, String filePath, boolean mustExist) {
-					if (filePath.endsWith("/SampleDataProperties.properties")) { return populationPropertiesFilePath; }
+					if (filePath.endsWith("/IpfCompoundPopulationProperties.properties")) { return ipfCompoundPopulationPropertiesFilePath; }
 					if (filePath.endsWith("/group_attributes.csv")) { return groupAttributesFilePath; }
 					if (filePath.endsWith("/group_sample.csv")) { return groupSampleDataFilePath; }
 					if (filePath.endsWith("/group_controlled_attributes.csv")) { return groupControlledAttributesFilePath; }
-					if (filePath.endsWith("/group_control_totals.csv")) { return groupControlledTotalsFilePath; }
+					if (filePath.endsWith("/group_control_totals.csv")) { return groupControlTotalsFilePath; }
 					if (filePath.endsWith("/group_supplementary_attributes.csv")) { return groupSupplementaryAttributesFilePath; }
 					
 					if (filePath.endsWith("/component_attributes.csv")) { return componentAttributesFilePath; }
@@ -259,7 +258,7 @@ public class GenstarsTest {
 		}};
 		
 		
-		IList generatedPopulation = Genstars.generateIPFCompoundPopulation(scope, populationPropertiesFilePath);
+		IList generatedPopulation = Genstars.generateIPFCompoundPopulation(scope, ipfCompoundPopulationPropertiesFilePath);
 		
 		
 		// verify the first three elements of a GAMA synthetic population
@@ -282,6 +281,106 @@ public class GenstarsTest {
 				assertTrue( ((Map)componentPopulation.get(2)).isEmpty() ); // third element contains references to "component" agents
 			}
 		}
+	}
+	
+	@Test public void testGenerateIpuPopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
+		/*
+	public static IList generateIpuPopulation(final IScope scope, final String ipuPopulationPropertiesFilePath) {
+		 */
+		
+		/*
+			GROUP_ATTRIBUTES=test_data/ummisco/genstar/gama/Genstars/testGenerateIpuPopulation/group_attributes.csv
+			GROUP_POPULATION_NAME=household
+			GROUP_SAMPLE_DATA=test_data/ummisco/genstar/gama/Genstars/testGenerateIpuPopulation/group_sample.csv
+			GROUP_ID_ATTRIBUTE_ON_GROUP=HouseholdID
+			GROUP_CONTROLLED_ATTRIBUTES=test_data/ummisco/genstar/gama/Genstars/testGenerateIpuPopulation/group_controlled_attributes.csv
+			GROUP_CONTROL_TOTALS=test_data/ummisco/genstar/gama/Genstars/testGenerateIpuPopulation/group_ipu_control_totals.csv
+			GROUP_SUPPLEMENTARY_ATTRIBUTES=test_data/ummisco/genstar/gama/Genstars/testGenerateIpuPopulation/group_supplementary_attributes.csv
+			COMPONENT_ATTRIBUTES=test_data/ummisco/genstar/gama/Genstars/testGenerateIpuPopulation/component_attributes.csv
+			COMPONENT_POPULATION_NAME=people
+			COMPONENT_SAMPLE_DATA=test_data/ummisco/genstar/gama/Genstars/testGenerateIpuPopulation/component_sample.csv
+			GROUP_ID_ATTRIBUTE_ON_COMPONENT=HouseholdID
+			COMPONENT_CONTROLLED_ATTRIBUTES=test_data/ummisco/genstar/gama/Genstars/testGenerateIpuPopulation/component_controlled_attributes.csv
+			COMPONENT_CONTROL_TOTALS=test_data/ummisco/genstar/gama/Genstars/testGenerateIpuPopulation/component_ipu_control_totals.csv
+			COMPONENT_SUPPLEMENTARY_ATTRIBUTES=test_data/ummisco/genstar/gama/Genstars/testGenerateIpuPopulation/component_supplementary_attributes.csv
+			COMPONENT_REFERENCE_ON_GROUP=inhabitans
+			GROUP_REFERENCE_ON_COMPONENT=my_household
+			MAX_ITERATIONS=4
+		 */
+		
+		final String base_path = "test_data/ummisco/genstar/gama/Genstars/testGenerateIpuPopulation/";
+		
+		final String ipuPopulationPropertiesFilePath = base_path + "IpuPopulationProperties.properties";
+
+		final String groupAttributesFilePath = base_path + "group_attributes.csv";
+		final String groupPopulationName = "household";
+		final String groupSampleDataFile = base_path + "group_sample.csv";
+		final String groupIdOnGroup = "HouseholdID";
+		final String groupControlledAttributesFile = base_path + "group_controlled_attributes.csv";
+		final String groupControlTotalsFile = base_path + "group_ipu_control_totals.csv";
+		final String groupSupplementaryAttributesFile = base_path + "group_supplementary_attributes.csv";
+		
+		final String componentAttributesFile = base_path + "component_attributes.csv";
+		final String componentPopulationName = "household";
+		final String componentSampleDataFile = base_path + "component_sample.csv";
+		final String componentIdOnGroup = "HouseholdID";
+		final String componentControlledAttributesFile = base_path + "component_controlled_attributes.csv";
+		final String componentControlTotalsFile = base_path + "component_ipu_control_totals.csv";
+		final String componentSupplementaryAttributesFile = base_path + "component_supplementary_attributes.csv";
+		
+		
+		new Expectations() {{
+			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
+			result = new Delegate() {
+				String delegate(IScope scope, String filePath, boolean mustExist) {
+					
+					if (filePath.endsWith("/IpuPopulationProperties.properties")) { return ipuPopulationPropertiesFilePath; }
+					
+					// group population
+					if (filePath.endsWith("/group_attributes.csv")) { return groupAttributesFilePath; }
+					if (filePath.endsWith("/group_sample.csv")) { return groupSampleDataFile; }
+					if (filePath.endsWith("/group_controlled_attributes.csv")) { return groupControlledAttributesFile; }
+					if (filePath.endsWith("/group_ipu_control_totals.csv")) { return groupControlTotalsFile; }
+					if (filePath.endsWith("/group_supplementary_attributes.csv")) { return groupSupplementaryAttributesFile; }
+					
+					// component population
+					if (filePath.endsWith("/component_attributes.csv")) { return componentAttributesFile; }
+					if (filePath.endsWith("/component_sample.csv")) { return componentSampleDataFile; }
+					if (filePath.endsWith("/component_controlled_attributes.csv")) { return componentControlledAttributesFile; }
+					if (filePath.endsWith("/component_ipu_control_totals.csv")) { return componentControlTotalsFile; }
+					if (filePath.endsWith("/component_supplementary_attributes.csv")) { return componentSupplementaryAttributesFile; }
+					
+					
+					return null;
+				}
+			};
+		}};
+
+	
+		IList generatedIpuPopulation = Genstars.generateIpuPopulation(scope, ipuPopulationPropertiesFilePath);
+		
+		
+		// verify the first three elements of a GAMA synthetic population
+		assertTrue(((String)generatedIpuPopulation.get(0)).equals("household")); // first element is the population name
+		assertTrue(((Map)generatedIpuPopulation.get(1)).isEmpty() ); // second element contains references to "group" agents
+		assertTrue( ((Map)generatedIpuPopulation.get(2)).get("people").equals("inhabitants") ); // third element contains references to "component" agents
+		
+		
+		// verify component populations
+		for (int i=3; i<generatedIpuPopulation.size(); i++) {
+			Map householdEntity = (Map)generatedIpuPopulation.get(i);
+			
+			IList componentPopulations = (IList) householdEntity.get(IPopulation.class);
+			for (Object o : componentPopulations) {
+				IList componentPopulation = (IList) o;
+				
+				// verify the first three elements of a GAMA synthetic population
+				assertTrue(((String)componentPopulation.get(0)).equals("people")); // first element is the population name
+				assertTrue(((Map)componentPopulation.get(1)).get("household").equals("my_household") ); // second element contains references to "group" agents
+				assertTrue( ((Map)componentPopulation.get(2)).isEmpty() ); // third element contains references to "component" agents
+			}
+		} 
+		 
 	}
 	
 	@Test public void testGenerateRandomSinglePopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) {
@@ -494,7 +593,7 @@ public class GenstarsTest {
 		final String dataSet1AttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/group_attributes.csv";
 		final String dataSet1ControlledAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/group_controlled_attributes.csv";
 		final String dataSet1PopulationFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/group_sample.csv";
-		final String dataSet1ControlTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/generated_controlled_totals.csv";
+		final String dataSet1ControlTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/generated_control_totals.csv";
 		
 		final String controlTotalPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/DataSet1_ControlTotals.properties";
 		
@@ -506,7 +605,7 @@ public class GenstarsTest {
 					if (filePath.endsWith("/dataSet1/group_attributes.csv")) { return dataSet1AttributesFilePath; }
 					if (filePath.endsWith("/dataSet1/group_controlled_attributes.csv")) { return dataSet1ControlledAttributesFilePath; }
 					if (filePath.endsWith("/dataSet1/group_sample.csv")) { return dataSet1PopulationFilePath; }
-					if (filePath.endsWith("/dataSet1/generated_controlled_totals.csv")) { return dataSet1ControlTotalFilePath; }
+					if (filePath.endsWith("/dataSet1/generated_control_totals.csv")) { return dataSet1ControlTotalFilePath; }
 					if (filePath.endsWith("/dataSet1/DataSet1_ControlTotals.properties")) { return controlTotalPropertiesFilePath; }
 					
 					return null;
@@ -536,7 +635,7 @@ public class GenstarsTest {
 			7,1,Low,type1,1
 			8,1,Low,type2,2
 			
-			==> generated_controlled_totals.csv
+			==> generated_control_totals.csv
 			Household Size,1,Household Income,High,3
 			Household Size,2,Household Income,High,1
 			Household Size,3,Household Income,High,2
@@ -573,7 +672,7 @@ public class GenstarsTest {
 		// dataSet1
 		final ISyntheticPopulationGenerator dataSet1Generator = new SampleBasedGenerator("dummy generator");
 		GenstarCsvFile dataSet1AttributesFile = new GenstarCsvFile(dataSet1AttributesFilePath, true);
-		AttributeUtils.createAttributesFromCSVFile(dataSet1Generator, dataSet1AttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(dataSet1Generator, dataSet1AttributesFile);
 		
 		AbstractAttribute householdSizeAttr = dataSet1Generator.getAttributeByNameOnData("Household Size");
 		AttributeValue size1 = new UniqueValue(DataType.INTEGER, "1");
@@ -662,7 +761,7 @@ public class GenstarsTest {
 		final String dataSet2AttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/attributes.csv";
 		final String dataSet2ControlledAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/controlled_attributes.csv";
 		final String dataSet2PopulationFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/people_sample.csv";
-		final String dataSet2ControlTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/generated_controlled_totals.csv";
+		final String dataSet2ControlTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/generated_control_totals.csv";
 		
 		final String controlTotalPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/DataSet2_ControlTotals.properties";
 		
@@ -674,7 +773,7 @@ public class GenstarsTest {
 					if (filePath.endsWith("/dataSet2/attributes.csv")) { return dataSet2AttributesFilePath; }
 					if (filePath.endsWith("/dataSet2/controlled_attributes.csv")) { return dataSet2ControlledAttributesFilePath; }
 					if (filePath.endsWith("/dataSet2/people_sample.csv")) { return dataSet2PopulationFilePath; }
-					if (filePath.endsWith("/dataSet2/generated_controlled_totals.csv")) { return dataSet2ControlTotalFilePath; }
+					if (filePath.endsWith("/dataSet2/generated_control_totals.csv")) { return dataSet2ControlTotalFilePath; }
 					if (filePath.endsWith("/dataSet2/DataSet2_ControlTotals.properties")) { return controlTotalPropertiesFilePath; }
 					
 					return null;
@@ -725,7 +824,7 @@ public class GenstarsTest {
 		// dataSet2
 		final ISyntheticPopulationGenerator dataSet2Generator = new SampleBasedGenerator("dummy generator");
 		GenstarCsvFile dataSet2AttributesFile = new GenstarCsvFile(dataSet2AttributesFilePath, true);
-		AttributeUtils.createAttributesFromCSVFile(dataSet2Generator, dataSet2AttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(dataSet2Generator, dataSet2AttributesFile);
 		
 		AbstractAttribute ageAttr = dataSet2Generator.getAttributeByNameOnData("Age");
 		// 0:15; 16:20; 21:25; 26:30; 31:50; 51:60; 61:75; 76:80; 81:100

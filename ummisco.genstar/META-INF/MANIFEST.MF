@@ -13,7 +13,11 @@ Export-Package: ummisco.genstar,
  ummisco.genstar.ipu,
  ummisco.genstar.metamodel;uses:="org.junit.rules",
  ummisco.genstar.metamodel.attributes,
+ ummisco.genstar.metamodel.generation_rules,
+ ummisco.genstar.metamodel.generators,
+ ummisco.genstar.metamodel.population,
  ummisco.genstar.metamodel.sample_data,
+ ummisco.genstar.sample_free,
  ummisco.genstar.util;uses:="org.uncommons.maths.random"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/derby.jar,

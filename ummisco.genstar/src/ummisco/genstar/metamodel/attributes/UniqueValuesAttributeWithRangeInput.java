@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 
 
 public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {

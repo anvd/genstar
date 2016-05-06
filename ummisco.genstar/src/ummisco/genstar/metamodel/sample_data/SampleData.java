@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.ipf.AbstractSampleData;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.PopulationType;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.PopulationType;
 import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
 
@@ -19,8 +17,6 @@ public class SampleData extends AbstractSampleData implements ISampleData { // T
 	private List<AbstractAttribute> attributes;
 	
 	private GenstarCsvFile data = null;
-	
-	private IPopulation sampleEntityPopulation;
 	
 	
 	public SampleData(final String populationName, final List<AbstractAttribute> attributes, GenstarCsvFile data) throws GenstarException {
@@ -39,11 +35,6 @@ public class SampleData extends AbstractSampleData implements ISampleData { // T
 		this.sampleEntityPopulation = GenstarUtils.loadSinglePopulation(PopulationType.SAMPLE_DATA_POPULATION, populationName, attributes, data);
 	}
 	
-	@Override
-	public IPopulation getSampleEntityPopulation() {
-		return sampleEntityPopulation;
-	}
-
 	@Override
 	public void recodeIdAttributes(final Entity targetEntity) throws GenstarException {
 		// TODO find the (only) ID attribute then recode it

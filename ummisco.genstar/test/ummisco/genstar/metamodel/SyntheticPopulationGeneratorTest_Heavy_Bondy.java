@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import ummisco.genstar.data.BondyData;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.population.IPopulation;
 
 public class SyntheticPopulationGeneratorTest_Heavy_Bondy {
 

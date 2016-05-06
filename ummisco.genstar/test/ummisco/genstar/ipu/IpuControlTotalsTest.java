@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 import mockit.Expectations;
@@ -25,7 +25,7 @@ public class IpuControlTotalsTest {
 		
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlTotals/group_attributes.csv", true);
 		final ISyntheticPopulationGenerator groupGenerator = new SampleBasedGenerator("Group generator");
-		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(groupGenerator, groupAttributesFile);
 		
 		// Household Size, Household Income, Number Of Cars
 		final List<AbstractAttribute> groupControlledAttributes = new ArrayList<AbstractAttribute>();
@@ -35,7 +35,7 @@ public class IpuControlTotalsTest {
 		
 		GenstarCsvFile componentAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlTotals/component_attributes.csv", true);
 		final ISyntheticPopulationGenerator componentGenerator = new SampleBasedGenerator("Component generator");
-		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(componentGenerator, componentAttributesFile);
 		
 		final GenstarCsvFile groupControlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/IpuControlTotals/group_ipu_control_totals.csv", false);
 		

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.RangeValue;
@@ -13,6 +12,7 @@ import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 
 public class AttributeUtils {
 
@@ -149,7 +149,7 @@ public class AttributeUtils {
 	}
 	
 	
-	public static void createAttributesFromCSVFile(final ISyntheticPopulationGenerator generator, final GenstarCsvFile attributesFile) throws GenstarException {
+	public static void createAttributesFromCsvFile(final ISyntheticPopulationGenerator generator, final GenstarCsvFile attributesFile) throws GenstarException {
 		
 		List<List<String>> attributeFileContent = attributesFile.getContent();
 		if ( attributeFileContent == null || attributeFileContent.isEmpty() ) { throw new GenstarException("Empty attribute file. File: " + attributesFile.getPath()); }

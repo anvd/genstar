@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 import ummisco.genstar.util.GenstarCsvFile;
 
 public class IpuControlledAndSupplementaryAttributes {

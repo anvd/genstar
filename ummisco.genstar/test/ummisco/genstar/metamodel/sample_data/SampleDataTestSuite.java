@@ -5,6 +5,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ GroupComponentSampleDataTest.class, SampleDataTest.class })
+@SuiteClasses({ CompoundSampleDataTest.class, SampleDataTest.class })
 public class SampleDataTestSuite {
 }

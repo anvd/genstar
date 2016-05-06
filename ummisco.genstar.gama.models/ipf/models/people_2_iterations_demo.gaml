@@ -12,7 +12,7 @@ global {
 
 		string attributesFilePath <- '../includes/people/attributes.csv';
 		string controlledAttributesListFilePath <- '../includes/people/controlled_attributes.csv';
-		string controlTotalsFilePath <- '../includes/people/controlled_totals.csv';
+		string controlTotalsFilePath <- '../includes/people/control_totals.csv';
 		string outputFilePath_1iteration <- '../outputs/people_2_iterations_demo/1iteration.csv';
 
 	 	write 'Start generating \'people\' population (1 iteration) ... ';

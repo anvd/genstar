@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 import mockit.Expectations;
@@ -59,10 +59,10 @@ public class IpuControlledAndSupplementaryAttributesTest {
 	@Test public void testGetGroupAndComponentControlledAttributes(@Mocked final IpuGenerationRule generationRule) throws GenstarException {
 		
 		final ISyntheticPopulationGenerator groupGenerator = new SampleBasedGenerator("group generator");
-		AttributeUtils.createAttributesFromCSVFile(groupGenerator, groupAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(groupGenerator, groupAttributesFile);
 		
 		final ISyntheticPopulationGenerator componentGenerator = new SampleBasedGenerator("component generator");
-		AttributeUtils.createAttributesFromCSVFile(componentGenerator, componentAttributesFile);
+		AttributeUtils.createAttributesFromCsvFile(componentGenerator, componentAttributesFile);
 		
 		
 		new Expectations() {{

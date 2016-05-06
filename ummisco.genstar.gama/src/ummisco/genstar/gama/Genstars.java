@@ -36,17 +36,17 @@ import msi.gaml.extensions.genstar.IGamaPopulationsLinker;
 import msi.gaml.types.IType;
 import msi.gaml.types.Types;
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.FrequencyDistributionGenerationRule;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.SampleFreeGenerator;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
 import ummisco.genstar.metamodel.sample_data.SampleData;
+import ummisco.genstar.sample_free.FrequencyDistributionGenerationRule;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.CsvWriter;
 import ummisco.genstar.util.GenstarCsvFile;
@@ -112,8 +112,8 @@ public abstract class Genstars {
 			// 2. Create the generator
 			SampleFreeGenerator generator = new SampleFreeGenerator("Population Generator", nbOfEntities);
 			generator.setPopulationName(populationName);
-			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
-			GamaGenstarUtils.createGenerationRulesFromCSVFile(scope, generator, generationRulesCSVFile);
+			AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
+			GamaGenstarUtils.createSampleFreeGenerationRules(scope, generator, generationRulesCSVFile);
 			
 			return GamaGenstarUtils.convertGenstarPopulationToGamaPopulation(generator.generate());
 		} catch (final GenstarException e) {
@@ -163,7 +163,7 @@ public abstract class Genstars {
 			
 			// 1. create the generator then add attributes
 			SampleFreeGenerator generator = new SampleFreeGenerator("dummy generator", 10);
-			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+			AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 			
 			// 2. read the distribution file format to know the input and output attributes
 			List<String> attributeNamesOnData = distributionFormatCSVFile.getHeaders();
@@ -288,7 +288,7 @@ public abstract class Genstars {
 			
 			// 2. create the generator then add attributes
 			ISyntheticPopulationGenerator generator = new SampleFreeGenerator("dummy generator", 10);
-			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+			AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 			
 			// 3. process ID attribute
 			if (idAttributeNameOnData != null) {
@@ -392,38 +392,41 @@ public abstract class Genstars {
 	comment = "",
 	examples = { @example(value = "list synthetic_population <- ipf_population('single_population_configuration.properties')",
 		equals = "",
-		test = false) }, see = { "frequency_distribution_single_population" })
-	public static IList generateIPFSinglePopulation(final IScope scope, final String populationPropertiesFilePath) {
+		test = false) }, see = { "ipf_compound_population, ipu_population, frequency_distribution_single_population" })
+	public static IList generateIPFSinglePopulation(final IScope scope, final String ipfSinglePopulationPropertiesFilePath) {
 		try {
 			
 			// 0. Load the properties file
-			Properties populationPropeties = null;
-			File populationPropertyFile = new File(FileUtils.constructAbsoluteFilePath(scope, populationPropertiesFilePath, true));
+			Properties ipfSinglePopulationPropeties = null;
+			File populationPropertyFile = new File(FileUtils.constructAbsoluteFilePath(scope, ipfSinglePopulationPropertiesFilePath, true));
 			try {
 				FileInputStream propertyInputStream = new FileInputStream(populationPropertyFile);
-				populationPropeties = new Properties();
-				populationPropeties.load(propertyInputStream);
+				ipfSinglePopulationPropeties = new Properties();
+				ipfSinglePopulationPropeties.load(propertyInputStream);
 			} catch (FileNotFoundException e) {
 				throw new GenstarException(e);
 			} catch (IOException e) {
 				throw new GenstarException(e);
 			}
 			
-			
+			/*
 			// 1. Read the ATTRIBUTES_PROPERTIES then create the generator
-			String attributesCSVFilePath = populationPropeties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.ATTRIBUTES_PROPERTY);
-			if (attributesCSVFilePath == null) { throw new GenstarException(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.ATTRIBUTES_PROPERTY + " property not found in " + populationPropertiesFilePath); }
+			String attributesCSVFilePath = populationPropeties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.IPF_POPULATION.ATTRIBUTES_PROPERTY);
+			if (attributesCSVFilePath == null) { throw new GenstarException(INPUT_DATA_FORMATS.PROPERTY_FILES.IPF_POPULATION.ATTRIBUTES_PROPERTY + " property not found in " + populationPropertiesFilePath); }
 			GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
 			SampleBasedGenerator generator = new SampleBasedGenerator("single rule generator");
-			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
+			AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 			
 			
 			// 2. Create the generation rule
-			GamaGenstarUtils.createSampleDataGenerationRule(scope, generator, "sample data generation rule", populationPropeties);
+			GamaGenstarUtils.createIpfGenerationRule(scope, generator, "sample data generation rule", populationPropeties);
+			*/
 			
+			// 1. Generate the Ge* population
+			IPopulation genstarIpfSinglePopulation = GamaGenstarUtils.generateIpfPopulation(scope, ipfSinglePopulationPropeties);
 
-			// 3. Generate the (Gen*) synthetic population then convert it to GAMA population
-			return GamaGenstarUtils.convertGenstarPopulationToGamaPopulation(generator.generate());
+			// 3. Convert the Gen* population to GAMA population
+			return GamaGenstarUtils.convertGenstarPopulationToGamaPopulation(genstarIpfSinglePopulation);
 		} catch (GenstarException e) {
 			throw GamaRuntimeException.error(e.getMessage(), scope);
 		}
@@ -437,38 +440,69 @@ public abstract class Genstars {
 	comment = "",
 	examples = { @example(value = "list synthetic_population <- ipf_compound_population('compound_population_configuration.properties')",
 		equals = "",
-		test = false) }, see = { "ipf_population, frequency_distribution_population" })
-	public static IList generateIPFCompoundPopulation(final IScope scope, final String populationPropertiesFilePath) {
+		test = false) }, see = { "ipf_population, ipu_population, frequency_distribution_population" })
+	public static IList generateIPFCompoundPopulation(final IScope scope, final String ipfCompoundPopulationPropertiesFilePath) {
 		
 		try {
 			// 0. Load the properties file
-			Properties sampleDataProperties = null;
-			File sampleDataPropertyFile = new File(FileUtils.constructAbsoluteFilePath(scope, populationPropertiesFilePath, true));
+			Properties ipfCompoundPopulationProperties = null;
+			File ipfCompoundPopulationPropertiesFile = new File(FileUtils.constructAbsoluteFilePath(scope, ipfCompoundPopulationPropertiesFilePath, true));
 			try {
-				FileInputStream propertyInputStream = new FileInputStream(sampleDataPropertyFile);
-				sampleDataProperties = new Properties();
-				sampleDataProperties.load(propertyInputStream);
+				FileInputStream propertyInputStream = new FileInputStream(ipfCompoundPopulationPropertiesFile);
+				ipfCompoundPopulationProperties = new Properties();
+				ipfCompoundPopulationProperties.load(propertyInputStream);
 			} catch (FileNotFoundException e) {
 				throw new GenstarException(e);
 			} catch (IOException e) {
 				throw new GenstarException(e);
 			}
 			
-			// 1. Read the ATTRIBUTES_PROPERTIES then create the generator
-			String attributesCSVFilePath = sampleDataProperties.getProperty(INPUT_DATA_FORMATS.PROPERTY_FILES.SAMPLE_DATA_POPULATION.ATTRIBUTES_PROPERTY);
-			GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
-			SampleBasedGenerator generator = new SampleBasedGenerator("single rule generator");
-			AttributeUtils.createAttributesFromCSVFile(generator, attributesCSVFile);
 			
-			// 2. Create the generation rule
-			GamaGenstarUtils.createSampleDataGenerationRule(scope, generator, "sample data generation rule", sampleDataProperties);
-	
-			// 3. Generate the (Gen*) synthetic population then convert it to GAMA population
-			return GamaGenstarUtils.convertGenstarPopulationToGamaPopulation(generator.generate());
+			// 1. Generate the Gen* population
+			IPopulation genstarIpfCompoundPopulation = GamaGenstarUtils.generateIpfPopulation(scope, ipfCompoundPopulationProperties);
+			
+			// 2. Convert the Gen* population to GAMA population
+			return GamaGenstarUtils.convertGenstarPopulationToGamaPopulation(genstarIpfCompoundPopulation);
 		} catch (GenstarException e) {
 			throw GamaRuntimeException.error(e.getMessage(), scope);
 		}
 	}
+	
+	
+	@operator(value = "ipu_population", type = IType.LIST, category = { IOperatorCategory.GENSTAR })
+	@doc(value = "generates a synthetic population using the IPU algorithm. The generated population can be passed to the 'create' statement to create agents.",
+	returns = "a list of maps in which each map represents the information (i.e., pairs of [attribute name : attribute value]) of a generated agent",
+	special_cases = { "" },
+	comment = "",
+	examples = { @example(value = "list synthetic_population <- ipu_population('ipu_population_configuration.properties')",
+		equals = "",
+		test = false) }, see = { "ipf_population, ipf_compound_population, frequency_distribution_population" })
+	public static IList generateIpuPopulation(final IScope scope, final String ipuPopulationPropertiesFilePath) {
+		
+		try {
+			// 0. Load the properties file
+			Properties ipuPopulationProperties = null;
+			File ipuPopulationPropertiesFile = new File(FileUtils.constructAbsoluteFilePath(scope, ipuPopulationPropertiesFilePath, true));
+			try {
+				FileInputStream propertyInputStream = new FileInputStream(ipuPopulationPropertiesFile);
+				ipuPopulationProperties = new Properties();
+				ipuPopulationProperties.load(propertyInputStream);
+			} catch (FileNotFoundException e) {
+				throw new GenstarException(e);
+			} catch (IOException e) {
+				throw new GenstarException(e);
+			}
+			
+			// 1. generate the Gen* population
+			IPopulation genstarIpuPopulation = GamaGenstarUtils.generateIpuPopulation(scope, ipuPopulationProperties);
+			
+			// 2. convert the Gen* population to GAMA population
+			return GamaGenstarUtils.convertGenstarPopulationToGamaPopulation(genstarIpuPopulation);
+		} catch (GenstarException ge) {
+			throw GamaRuntimeException.error(ge.getMessage(), scope);
+		}
+	}
+	
 	
 	@operator(value = "random_population", type = IType.LIST, category = { IOperatorCategory.GENSTAR })
 	@doc(value = "generates a random (single) synthetic population using the configuration information in the populationConfigurationFile property file.",
@@ -603,7 +637,7 @@ public abstract class Genstars {
 				ISyntheticPopulationGenerator generator = new SampleBasedGenerator("dummy generator");
 				
 				GenstarCsvFile attributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, populationAttributesFilePaths.get(populationName), true), true);
-				AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+				AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 				
 				populationAttributes.put(populationName, generator.getAttributes());
 				
@@ -641,7 +675,7 @@ public abstract class Genstars {
 		ISyntheticPopulationGenerator generator = new SampleBasedGenerator("dummy generator");
 		
 		GenstarCsvFile attributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesFilePath, true), true);
-		AttributeUtils.createAttributesFromCSVFile(generator, attributesFile);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 
 		Map<String, List<AbstractAttribute>> populationsAttributes = new HashMap<String, List<AbstractAttribute>>();
 		populationsAttributes.put(populationName, generator.getAttributes());

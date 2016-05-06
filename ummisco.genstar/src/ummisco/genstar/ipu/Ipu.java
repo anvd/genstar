@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.IPopulation;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
-import ummisco.genstar.metamodel.sample_data.GroupComponentSampleData;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
+import ummisco.genstar.metamodel.sample_data.CompoundSampleData;
 
 
 public class Ipu {
@@ -170,8 +170,8 @@ public class Ipu {
 	
 	private void fillIpuMatrix() throws GenstarException {
 		
-		GroupComponentSampleData groupComponentSampleData = generationRule.getSampleData();
-		String componentPopulationName = groupComponentSampleData.getComponentPopulationName();
+		CompoundSampleData compoundSampleData = generationRule.getSampleData();
+		String componentPopulationName = compoundSampleData.getSampleEntityPopulation().getName();
 		List<AbstractAttribute> groupControlledAttributes = generationRule.getGroupControlledAttributes();
 		List<AbstractAttribute> componentControlledAttributes = generationRule.getComponentControlledAttributes();
 		for (int row=0; row<numberOfRows; row++) {

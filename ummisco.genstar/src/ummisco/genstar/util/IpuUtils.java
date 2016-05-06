@@ -10,15 +10,20 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.Population;
-import ummisco.genstar.metamodel.PopulationType;
+import ummisco.genstar.ipu.IpuGenerationRule;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
+import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
+import ummisco.genstar.metamodel.population.Population;
+import ummisco.genstar.metamodel.population.PopulationType;
+import ummisco.genstar.metamodel.sample_data.CompoundSampleData;
+import ummisco.genstar.metamodel.sample_data.ISampleData;
+import ummisco.genstar.metamodel.sample_data.SampleData;
 
 public class IpuUtils {
 
@@ -389,5 +394,43 @@ public class IpuUtils {
 		}
 		
 		return samplePopulation;
+	}
+
+
+	public static void createIpuGenerationRule(final SampleBasedGenerator groupPopulationGenerator, final GenstarCsvFile groupSampleDataFile, 
+			final String groupIdAttributeNameOnGroup, final GenstarCsvFile groupControlledAttributesFile,
+			final GenstarCsvFile groupControlTotalsFile, final GenstarCsvFile groupSupplementaryAttributesFile, final String componentReferenceOnGroup,
+			final GenstarCsvFile componentAttributesFile, final String componentPopulationName, final GenstarCsvFile componentSampleDataFile, final String groupIdAttributeNameOnComponent,
+			final GenstarCsvFile componentControlledAttributesFile, final GenstarCsvFile componentControlTotalsFile, final GenstarCsvFile componentSupplementaryAttributesFile, final String groupReferenceOnComponent, 
+			final int maxIterations) throws GenstarException {
+	
+		// 1. create component population generator
+		SampleBasedGenerator componentPopulationGenerator = new SampleBasedGenerator("Component Generator");
+		AttributeUtils.createAttributesFromCsvFile(componentPopulationGenerator, componentAttributesFile);
+		componentPopulationGenerator.setPopulationName(componentPopulationName);
+		
+		// 2. initialize Ipu generation rule
+		IpuGenerationRule generationRule = new IpuGenerationRule("Ipu generation rule", groupPopulationGenerator, groupControlledAttributesFile, groupControlTotalsFile, groupSupplementaryAttributesFile, 
+				componentPopulationGenerator, componentControlledAttributesFile, componentControlTotalsFile, componentSupplementaryAttributesFile, maxIterations);
+		
+		// 3. initialize sample data
+		ISampleData groupSample = new SampleData(groupPopulationGenerator.getPopulationName(), groupPopulationGenerator.getAttributes(), groupSampleDataFile);
+		if (componentReferenceOnGroup != null) {
+			groupSample.getSampleEntityPopulation().addComponentReference(componentPopulationName, componentReferenceOnGroup);
+		}
+		
+		ISampleData componentSample = new SampleData(componentPopulationName, componentPopulationGenerator.getAttributes(), componentSampleDataFile);
+		if (groupReferenceOnComponent != null) {
+			componentSample.getSampleEntityPopulation().addGroupReference(groupSample.getSampleEntityPopulation().getName(), groupReferenceOnComponent);
+		}
+
+		AbstractAttribute groupIdAttributeOnGroupEntity = groupPopulationGenerator.getAttributeByNameOnData(groupIdAttributeNameOnGroup);
+		AbstractAttribute groupIdAttributeOnComponentEntity = componentPopulationGenerator.getAttributeByNameOnData(groupIdAttributeNameOnComponent);
+		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
+
+		// 4. set sample data to the generation rule
+		generationRule.setSampleData(sampleData);
+		
+		groupPopulationGenerator.setGenerationRule(generationRule);
 	}
 }

@@ -1,5 +1,8 @@
 package ummisco.genstar.util;
 
+import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+
 public final class INPUT_DATA_FORMATS {
 
 	public static final class CSV_FILES {
@@ -71,7 +74,7 @@ public final class INPUT_DATA_FORMATS {
 	
 	public static final class PROPERTY_FILES {
 		
-		public static final class SAMPLE_DATA_POPULATION {
+		public static final class IPF_POPULATION {
 			
 			public static final String POPULATION_NAME_PROPERTY = "POPULATION_NAME";
 			
@@ -83,7 +86,7 @@ public final class INPUT_DATA_FORMATS {
 			
 			public static final String CONTROLLED_ATTRIBUTES_PROPERTY = "CONTROLLED_ATTRIBUTES";
 			
-			public static final String CONTROLLED_TOTALS_PROPERTY = "CONTROLLED_TOTALS";
+			public static final String CONTROL_TOTALS_PROPERTY = "CONTROL_TOTALS";
 			
 			public static final String SUPPLEMENTARY_ATTRIBUTES_PROPERTY = "SUPPLEMENTARY_ATTRIBUTES"; 
 			
@@ -106,6 +109,51 @@ public final class INPUT_DATA_FORMATS {
 			public static final String COMPONENT_REFERENCE_ON_GROUP_PROPERTY = "COMPONENT_REFERENCE_ON_GROUP";
 			
 			public static final String GROUP_REFERENCE_ON_COMPONENT_PROPERTY = "GROUP_REFERENCE_ON_COMPONENT";
+		}
+		
+		
+		public static final class IPU_POPULATION {
+			
+			// group population +
+			public static final String GROUP_ATTRIBUTES_PROPERTY = "GROUP_ATTRIBUTES";
+
+			public static final String GROUP_POPULATION_NAME_PROPERTY = "GROUP_POPULATION_NAME";
+			
+			public static final String GROUP_SAMPLE_DATA_PROPERTY = "GROUP_SAMPLE_DATA";
+			
+			public static final String GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_GROUP";
+			
+			public static final String GROUP_CONTROLLED_ATTRIBUTES_PROPERTY = "GROUP_CONTROLLED_ATTRIBUTES";
+			
+			public static final String GROUP_CONTROL_TOTALS_PROPERTY = "GROUP_CONTROL_TOTALS";
+			
+			public static final String GROUP_SUPPLEMENTARY_ATTRIBUTES_PROPERTY = "GROUP_SUPPLEMENTARY_ATTRIBUTES"; 
+			// group population -
+			
+
+			// component population +
+			public static final String COMPONENT_ATTRIBUTES_PROPERTY = "COMPONENT_ATTRIBUTES";
+
+			public static final String COMPONENT_POPULATION_NAME_PROPERTY = "COMPONENT_POPULATION_NAME";
+			
+			public static final String COMPONENT_SAMPLE_DATA_PROPERTY = "COMPONENT_SAMPLE_DATA";
+
+			public static final String GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_COMPONENT";
+			
+			public static final String COMPONENT_CONTROLLED_ATTRIBUTES_PROPERTY = "COMPONENT_CONTROLLED_ATTRIBUTES";
+
+			public static final String COMPONENT_CONTROL_TOTALS_PROPERTY = "COMPONENT_CONTROL_TOTALS";
+			
+			public static final String COMPONENT_SUPPLEMENTARY_ATTRIBUTES_PROPERTY = "COMPONENT_SUPPLEMENTARY_ATTRIBUTES"; 
+			// component population -
+
+			
+			public static final String COMPONENT_REFERENCE_ON_GROUP_PROPERTY = "COMPONENT_REFERENCE_ON_GROUP";
+			
+			public static final String GROUP_REFERENCE_ON_COMPONENT_PROPERTY = "GROUP_REFERENCE_ON_COMPONENT";
+			
+			public static final String MAX_ITERATIONS_PROPERTY = "MAX_ITERATIONS";
+			
 		}
 		
 	}

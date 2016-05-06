@@ -142,13 +142,13 @@ public class GenstarCreateStatement extends AbstractStatementSequence {
 			
 			// extract initial values
 			List initialValues = new ArrayList();
-			IList genstarComponentPopulations = (IList) element.get(ummisco.genstar.metamodel.IPopulation.class);
+			IList genstarComponentPopulations = (IList) element.get(ummisco.genstar.metamodel.population.IPopulation.class);
 			if (genstarComponentPopulations == null) { // without Genstar component populations
 				initialValues.add(element);
 			} else {
 				GamaMap copyElement = GamaMapFactory.create();
 				copyElement.putAll(element);
-				copyElement.remove(ummisco.genstar.metamodel.IPopulation.class);
+				copyElement.remove(ummisco.genstar.metamodel.population.IPopulation.class);
 
 				initialValues.add(copyElement);
 			}

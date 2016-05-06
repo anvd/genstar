@@ -1,4 +1,4 @@
-Household Size,1,Household Income,Low,5
-Household Size,1,Household Income,High,10
-Household Size,2,Household Income,Low,15
-Household Size,2,Household Income,High,20
+Household Income,Low,Household Size,1,5
+Household Income,High,Household Size,1,10
+Household Income,Low,Household Size,2,15
+Household Income,High,Household Size,2,20

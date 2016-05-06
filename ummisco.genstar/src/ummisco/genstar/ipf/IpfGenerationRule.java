@@ -6,25 +6,26 @@ import java.util.List;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.Entity;
-import ummisco.genstar.metamodel.IPopulation;
-import ummisco.genstar.metamodel.Population;
-import ummisco.genstar.metamodel.PopulationType;
-import ummisco.genstar.metamodel.SampleBasedGenerationRule;
-import ummisco.genstar.metamodel.SampleBasedGenerator;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.generation_rules.SampleBasedGenerationRule;
+import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
+import ummisco.genstar.metamodel.population.Population;
+import ummisco.genstar.metamodel.population.PopulationType;
 import ummisco.genstar.metamodel.sample_data.ISampleData;
+import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
 import ummisco.genstar.util.SharedInstances;
 
 
 public class IpfGenerationRule extends SampleBasedGenerationRule {
-
-	public static final String RULE_TYPE_NAME = "Sample Data";
 	
 	public static final int DEFAULT_MAX_ITERATIONS = 3;
+
+	public static final String RULE_TYPE_NAME = "Sample Data";
 	
 	
 	private Ipf ipf;
@@ -40,8 +41,6 @@ public class IpfGenerationRule extends SampleBasedGenerationRule {
 	private GenstarCsvFile supplementaryAttributesFile;
 	
 	private ControlledAndSupplementaryAttributes controlledAndSupplementaryAttributes;
-	
-	private int maxIterations = DEFAULT_MAX_ITERATIONS;
 	
 	private boolean ipfRun = false;
 	
@@ -101,8 +100,8 @@ public class IpfGenerationRule extends SampleBasedGenerationRule {
 	
 	private void runInternalGeneration() throws GenstarException {
 		internalGeneratedPopulation = new Population(PopulationType.SYNTHETIC_POPULATION, sampleData.getSampleEntityPopulation().getName(), sampleData.getSampleEntityPopulation().getAttributes());
-		internalGeneratedPopulation.addGroupReferences(sampleData.getSampleEntityPopulation().getGroupReferences());
-		internalGeneratedPopulation.addComponentReferences(sampleData.getSampleEntityPopulation().getComponentReferences());
+		internalGeneratedPopulation.addGroupReferences(sampleData.getSampleEntityPopulation().getGroupReferences()); // BUG here: sampleData.getSampleEntityPopulation().getGroupReferences() == null
+		internalGeneratedPopulation.addComponentReferences(sampleData.getSampleEntityPopulation().getComponentReferences()); // BUG here sampleData.getSampleEntityPopulation().getComponentReferences() == null
 		
 		
 		for (AttributeValuesFrequency selectProba : selectionProbabilities) {
@@ -133,6 +132,8 @@ public class IpfGenerationRule extends SampleBasedGenerationRule {
 		
 		
 		IPopulation resultingPopulation = new Population(PopulationType.SYNTHETIC_POPULATION, sampleData.getSampleEntityPopulation().getName(), sampleData.getSampleEntityPopulation().getAttributes());
+		resultingPopulation.addGroupReferences(internalGeneratedPopulation.getGroupReferences());
+		resultingPopulation.addComponentReferences(internalGeneratedPopulation.getComponentReferences());
 		List<Entity> sourceEntities = internalGeneratedPopulation.getEntities();
 		List<Entity> targetEntities = resultingPopulation.createEntities(sourceEntities.size());
 		for (int index=0; index<sourceEntities.size(); index++) {
@@ -166,7 +167,7 @@ public class IpfGenerationRule extends SampleBasedGenerationRule {
 		return ipf;
 	}
 	
-	public ISampleData getSampleData() {
+	@Override public ISampleData getSampleData() {
 		return sampleData;
 	}
 	
@@ -200,20 +201,6 @@ public class IpfGenerationRule extends SampleBasedGenerationRule {
 	
 	public List<AbstractAttribute> getSupplementaryAttributes() {
 		return controlledAndSupplementaryAttributes.getSupplementaryAttributes();
-	}
-	
-	@Override public SampleBasedGenerator getGenerator() {
-		return (SampleBasedGenerator) populationGenerator;
-	}
-	
-	public void setMaxIterations(final int maxIterations) {
-		if (maxIterations <= 0) { throw new IllegalArgumentException("'maxIterations' parameter must be a positive integer."); }
-		
-		this.maxIterations = maxIterations;
-	}
-	
-	public int getMaxIterations() {
-		return maxIterations;
 	}
 
 	@Override
