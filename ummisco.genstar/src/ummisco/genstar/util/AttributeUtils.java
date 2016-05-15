@@ -36,14 +36,14 @@ public class AttributeUtils {
 		RangeValuesAttribute rangeAttribute = new RangeValuesAttribute(generator, attributeNameOnData, attributeNameOnEntity, dataType, UniqueValue.class);
 		
 		// 1. Parse and accumulate each range value token into a list.
-		StringTokenizer valueTokens = new StringTokenizer(values, INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.ATTRIBUTE_VALUE_DELIMITER);
+		StringTokenizer valueTokens = new StringTokenizer(values, CSV_FILE_FORMATS.ATTRIBUTES.ATTRIBUTE_VALUE_DELIMITER);
 		if (valueTokens.countTokens() == 0) { throw new GenstarException("No value is defined for the attribute '" + attributeNameOnData + "'"); }
 		List<String> rangeTokens = new ArrayList<String>();
 		while (valueTokens.hasMoreTokens()) { rangeTokens.add(valueTokens.nextToken()); }
 		
 		// 2. Created range values from the parsed tokens.
 		for (String t : rangeTokens) {
-			StringTokenizer minMaxValueTokens = new StringTokenizer(t, INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
+			StringTokenizer minMaxValueTokens = new StringTokenizer(t, CSV_FILE_FORMATS.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
 			if (minMaxValueTokens.countTokens() != 2) { throw new GenstarException("Invalid attribute range value format (file: " + minMaxValueTokens.toString() + ")"); }
 			
 			rangeAttribute.add(new RangeValue(dataType, minMaxValueTokens.nextToken().trim(), minMaxValueTokens.nextToken().trim()));
@@ -71,7 +71,7 @@ public class AttributeUtils {
 		UniqueValuesAttribute uniqueValueAttribute = new UniqueValuesAttribute(generator, attributeNameOnData, attributeNameOnEntity, dataType, valueClassOnEntity);
 		
 		// 1. Parse and accumulate each unique value token into a list.
-		StringTokenizer valueTokenizers = new StringTokenizer(values, INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.ATTRIBUTE_VALUE_DELIMITER);
+		StringTokenizer valueTokenizers = new StringTokenizer(values, CSV_FILE_FORMATS.ATTRIBUTES.ATTRIBUTE_VALUE_DELIMITER);
 		if (valueTokenizers.countTokens() == 0) { throw new GenstarException("No value is defined for the attribute '" + attributeNameOnData + "'"); }
 		List<String> uniqueValueTokens = new ArrayList<String>();
 		while (valueTokenizers.hasMoreTokens()) { uniqueValueTokens.add(valueTokenizers.nextToken()); }
@@ -99,7 +99,7 @@ public class AttributeUtils {
 			final DataType dataType, final String values, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
 		
 		// 1. Parse minValue and maxValue
-		StringTokenizer valueTokenizers = new StringTokenizer(values, INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
+		StringTokenizer valueTokenizers = new StringTokenizer(values, CSV_FILE_FORMATS.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
 		if (valueTokenizers.countTokens() == 0) { throw new GenstarException("No value is defined for the attribute '" + attributeNameOnData + "'"); }
 		if (valueTokenizers.countTokens() != 2) { throw new GenstarException("Invalid unique value with range input format. Attribute name on data: " + attributeNameOnData + ". Valid format is min_value:max_value"); }
 		
@@ -109,15 +109,15 @@ public class AttributeUtils {
 		String minValueToken = valueTokenizers.nextToken();
 		String maxValueToken = valueTokenizers.nextToken();
 		
-		if (minValueToken.equals(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MIN_VALUE_STRING)) {
+		if (minValueToken.equals(CSV_FILE_FORMATS.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MIN_VALUE_STRING)) {
 			minValueInt = Integer.MIN_VALUE;
-		} else if (minValueToken.equals(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MAX_VALUE_STRING)) {
+		} else if (minValueToken.equals(CSV_FILE_FORMATS.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MAX_VALUE_STRING)) {
 			minValueInt = Integer.MAX_VALUE;
 		}
 		
-		if (maxValueToken.equals(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MIN_VALUE_STRING)) {
+		if (maxValueToken.equals(CSV_FILE_FORMATS.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MIN_VALUE_STRING)) {
 			maxValueInt = Integer.MIN_VALUE;
-		} else if (maxValueToken.equals(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MAX_VALUE_STRING)) {
+		} else if (maxValueToken.equals(CSV_FILE_FORMATS.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MAX_VALUE_STRING)) {
 			maxValueInt = Integer.MAX_VALUE;
 		}
 		
@@ -154,18 +154,18 @@ public class AttributeUtils {
 		List<List<String>> attributeFileContent = attributesFile.getContent();
 		if ( attributeFileContent == null || attributeFileContent.isEmpty() ) { throw new GenstarException("Empty attribute file. File: " + attributesFile.getPath()); }
 		
-		if (attributesFile.getColumns() != INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.NB_OF_COLS) { 
-			throw new GenstarException("Attributes file must have " + INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.NB_OF_COLS + " columns. File: " + attributesFile.getPath()); 
+		if (attributesFile.getColumns() != CSV_FILE_FORMATS.ATTRIBUTES.NB_OF_COLS) { 
+			throw new GenstarException("Attributes file must have " + CSV_FILE_FORMATS.ATTRIBUTES.NB_OF_COLS + " columns. File: " + attributesFile.getPath()); 
 		}
 		
 		// 1. Parse the header
 		List<String> fileHeader = attributesFile.getHeaders();
-		if (fileHeader.size() != INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.NB_OF_COLS) {
-			throw new GenstarException("Attributes file header must have " + INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.NB_OF_COLS + " columns. File: " + attributesFile.getPath());
+		if (fileHeader.size() != CSV_FILE_FORMATS.ATTRIBUTES.NB_OF_COLS) {
+			throw new GenstarException("Attributes file header must have " + CSV_FILE_FORMATS.ATTRIBUTES.NB_OF_COLS + " columns. File: " + attributesFile.getPath());
 		}
 		for (int i=0; i<fileHeader.size(); i++) {
-			if (!fileHeader.get(i).equals(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.HEADERS[i])) {
-				throw new GenstarException("Invalid attribute file header must be " + INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.HEADER_STR + ". File: " + attributesFile.getPath());
+			if (!fileHeader.get(i).equals(CSV_FILE_FORMATS.ATTRIBUTES.HEADERS[i])) {
+				throw new GenstarException("Invalid attribute file header must be " + CSV_FILE_FORMATS.ATTRIBUTES.HEADER_STR + ". File: " + attributesFile.getPath());
 			}
 		}
 		
@@ -173,7 +173,7 @@ public class AttributeUtils {
 		int line = 1;
 		for ( List<String> attributeInfo : attributeFileContent) {
 			
-			if (attributeInfo.size() != INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.NB_OF_COLS) { throw new GenstarException("Invalid attribute file format: each row must have " + INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.NB_OF_COLS + " columns (file: " + attributesFile.getPath() + "."); }
+			if (attributeInfo.size() != CSV_FILE_FORMATS.ATTRIBUTES.NB_OF_COLS) { throw new GenstarException("Invalid attribute file format: each row must have " + CSV_FILE_FORMATS.ATTRIBUTES.NB_OF_COLS + " columns (file: " + attributesFile.getPath() + "."); }
 			
 			String attributeNameOnData = (String)attributeInfo.get(0);
 			String attributeNameOnEntity = (String)attributeInfo.get(1);
@@ -190,19 +190,19 @@ public class AttributeUtils {
 			
 			
 			String attributesFilePath = attributesFile.getPath();
-			if (valueTypeOnDataStr.equals(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.RANGE_VALUE_NAME)) {
+			if (valueTypeOnDataStr.equals(CSV_FILE_FORMATS.ATTRIBUTES.RANGE_VALUE_NAME)) {
 				try {
 					createRangeValueAttribute(generator, attributeNameOnData, attributeNameOnEntity, dataType, values, valueClassOnEntity);
 				} catch (Exception ex) {
 					throw new GenstarException("Can not create range value attribute. File: " + attributesFilePath + ", line: " + line, ex);
 				}
-			} else if (valueTypeOnDataStr.equals(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.UNIQUE_VALUE_NAME)) {
+			} else if (valueTypeOnDataStr.equals(CSV_FILE_FORMATS.ATTRIBUTES.UNIQUE_VALUE_NAME)) {
 				try {
 					createUniqueValueAttribute(generator, attributeNameOnData, attributeNameOnEntity, dataType, values, valueClassOnEntity);
 				} catch (Exception ex) {
 					throw new GenstarException("Can not create unique value attribute. File: " + attributesFilePath + ", line: " + line, ex);
 				}
-			} else if (valueTypeOnDataStr.equals(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.UNIQUE_VALUE_WITH_RANGE_INPUT_NAME)) {
+			} else if (valueTypeOnDataStr.equals(CSV_FILE_FORMATS.ATTRIBUTES.UNIQUE_VALUE_WITH_RANGE_INPUT_NAME)) {
 				try {
 					createUniqueValueAttributeWithRangeInput(generator, attributeNameOnData, attributeNameOnEntity, dataType, values, valueClassOnEntity);
 				} catch (Exception ex) {

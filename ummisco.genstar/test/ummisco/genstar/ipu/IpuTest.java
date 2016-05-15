@@ -65,7 +65,7 @@ public class IpuTest {
 		IPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, 
 				componentPopulationName, componentAttributesFile, groupIdAttributeNameOnGroupEntity, 
 				groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, minGroupEntitiesOfEachAttributeValuesSet, 
-				maxGroupEntitiesOfEachAttributeValuesSet);
+				maxGroupEntitiesOfEachAttributeValuesSet, null, null);
 		
 		
 		// write the generated population to CSV files
@@ -110,7 +110,7 @@ public class IpuTest {
 		
 		// extract 1%
 		float percentage = 1f;
-		IPopulation extractedPopulation1 = IpuUtils.extractIpuSamplePopulation(generatedCompoundPopulation, generatedCompoundPopulation.getName(), percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation1 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
 
 		final String groupPopulationOutputFile1 = based_extracted_populations_folder + "1_percent/extracted_group_population_1_percent.csv";
 		final String componentPopulationOutputFile1 = based_extracted_populations_folder + "1_percent/extracted_component_population_1_percent.csv";
@@ -123,7 +123,7 @@ public class IpuTest {
 		
 		// extract 5%
 		percentage = 5;
-		IPopulation extractedPopulation2 = IpuUtils.extractIpuSamplePopulation(generatedCompoundPopulation, generatedCompoundPopulation.getName(), percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation2 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
 		
 		final String groupPopulationOutputFile2 = based_extracted_populations_folder + "5_percent/extracted_group_population_5_percent.csv";
 		final String componentPopulationOutputFile2 = based_extracted_populations_folder + "5_percent/extracted_component_population_5_percent.csv";
@@ -136,7 +136,7 @@ public class IpuTest {
 		
 		// extract 10%
 		percentage = 10;
-		IPopulation extractedPopulation3 = IpuUtils.extractIpuSamplePopulation(generatedCompoundPopulation, generatedCompoundPopulation.getName(), percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation3 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
 		
 		final String groupPopulationOutputFile3 = based_extracted_populations_folder + "10_percent/extracted_group_population_10_percent.csv";
 		final String componentPopulationOutputFile3 = based_extracted_populations_folder + "10_percent/extracted_component_population_10_percent.csv";
@@ -149,7 +149,7 @@ public class IpuTest {
 		
 		// extract 20%
 		percentage = 20;
-		IPopulation extractedPopulation4 = IpuUtils.extractIpuSamplePopulation(generatedCompoundPopulation, generatedCompoundPopulation.getName(), percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation4 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
 		
 		final String groupPopulationOutputFile4 = based_extracted_populations_folder + "20_percent/extracted_group_population_20_percent.csv";
 		final String componentPopulationOutputFile4 = based_extracted_populations_folder + "20_percent/extracted_component_population_20_percent.csv";
@@ -163,7 +163,7 @@ public class IpuTest {
 		
 		// extract 30%
 		percentage = 30;
-		IPopulation extractedPopulation5 = IpuUtils.extractIpuSamplePopulation(generatedCompoundPopulation, generatedCompoundPopulation.getName(), percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation5 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
 		
 		final String groupPopulationOutputFile5 = based_extracted_populations_folder + "30_percent/extracted_group_population_30_percent.csv";
 		final String componentPopulationOutputFile5 = based_extracted_populations_folder + "30_percent/extracted_component_population_30_percent.csv";
@@ -286,6 +286,90 @@ public class IpuTest {
 	}
 	
 	
+	@Test public void testFillIpuMatrix(@Mocked final IpuGenerationRule generationRule) throws GenstarException {
+		// initialize generators and controlled attributes 
+		final SampleBasedGenerator groupGenerator = new SampleBasedGenerator("group generator");
+		GenstarCsvFile groupAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fillIpuMatrix/group_attributes.csv", true);
+		AttributeUtils.createAttributesFromCsvFile(groupGenerator, groupAttributesFile);
+		
+		// group controlled attributes: Household Size, Household Income
+		final List<AbstractAttribute> groupControlledAttributes = new ArrayList<AbstractAttribute>();
+		groupControlledAttributes.add(groupGenerator.getAttributeByNameOnData("Household Type"));
+
+		final GenstarCsvFile groupControlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fillIpuMatrix/group_ipu_control_totals.csv", false);
+		
+		final SampleBasedGenerator componentGenerator = new SampleBasedGenerator("componnent generator");
+		GenstarCsvFile componentAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fillIpuMatrix/component_attributes.csv", true);
+		AttributeUtils.createAttributesFromCsvFile(componentGenerator, componentAttributesFile);
+		
+		// component controlled attributes: Gender, Work
+		final List<AbstractAttribute> componentControlledAttributes = new ArrayList<AbstractAttribute>();
+		componentControlledAttributes.add(componentGenerator.getAttributeByNameOnData("Person Type"));
+
+		final GenstarCsvFile componentControlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fillIpuMatrix/component_ipu_control_totals.csv", false);
+		
+		
+		// initialize sample data
+		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttributeByNameOnData("Household ID");
+		groupIdAttributeOnGroupEntity.setIdentity(true);
+		GenstarCsvFile groupSampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fillIpuMatrix/group_sample.csv", true);
+		ISampleData groupSample = new SampleData("household", groupGenerator.getAttributes(), groupSampleDataFile);
+		
+		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttributeByNameOnData("Household ID");
+		GenstarCsvFile componentSampleFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fillIpuMatrix/component_sample.csv", true);
+		groupIdAttributeOnComponentEntity.setIdentity(true);
+		ISampleData componentSample = new SampleData("people", componentGenerator.getAttributes(), componentSampleFile);
+		
+		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
+		
+		// data for ipuControlTotals
+		new Expectations() {{
+			generationRule.getGroupControlledAttributes(); result = groupControlledAttributes;
+			generationRule.getGroupControlTotalsFile(); result = groupControlTotalsFile;
+			
+			generationRule.getComponentControlledAttributes(); result = componentControlledAttributes;
+			generationRule.getComponentControlTotalsFile(); result = componentControlTotalsFile;
+		}};
+		
+		
+		// initialize IpuControlTotals
+		final IpuControlTotals ipuControlTotals = new IpuControlTotals(generationRule);
+
+		
+		// data for Ipu
+		new Expectations() {{
+			generationRule.getControlTotals(); result = ipuControlTotals;
+			generationRule.getSampleData(); result = sampleData;
+		}};
+	
+		
+		Ipu ipu = new Ipu(generationRule);
+		
+		int[][] ipuMatrix = Deencapsulation.getField(ipu, "ipuMatrix");
+		assertTrue(ipuMatrix.length == sampleData.getSampleEntityPopulation().getNbOfEntities()); // rows: 8
+		assertTrue(ipuMatrix.length == 8); // rows: 8
+		assertTrue(ipuMatrix[0].length == 5); // columns: 5
+		assertTrue(ipuMatrix[0].length == ipuControlTotals.getGroupTypes() + ipuControlTotals.getComponentTypes()); // columns: 8
+		
+		int[][] ipuMatrixData = {
+				{ 1, 0, 1, 1, 1 },
+				{ 1, 0, 1, 0, 1 },
+				{ 1, 0, 2, 1, 0 },
+				{ 0, 1, 1, 0, 2 },
+				{ 0, 1, 0, 2, 1 },
+				{ 0, 1, 1, 1, 0 },
+				{ 0, 1, 2, 1, 2 },
+				{ 0, 1, 1, 1, 0 }
+		};
+		
+		for (int row=0; row<ipuMatrix.length; row++) {
+			for (int col=0; col<ipuMatrix[0].length; col++) {
+				assertTrue(ipuMatrix[row][col] == ipuMatrixData[row][col]);
+			}
+		}
+	}
+	
+	
 	@Test public void testFit(@Mocked final IpuGenerationRule generationRule) throws GenstarException {
 		// initialize generators and controlled attributes 
 		final SampleBasedGenerator groupGenerator = new SampleBasedGenerator("group generator");
@@ -371,6 +455,7 @@ public class IpuTest {
 		//ipu.printGoodnessOfFit();
 	}
 	
+	
 	@Test public void testFit1(@Mocked final IpuGenerationRule generationRule) throws GenstarException {
 		
 		// 0. initialize IpuGenerationRule
@@ -455,6 +540,7 @@ public class IpuTest {
 		assertTrue(weightedSums1Content0.get(2) == 9);
 		assertTrue(weightedSums1Content0.get(3) == 7);
 		assertTrue(weightedSums1Content0.get(4) == 7);
+		
 		assertTrue(weightedSums1Content0.size() == 5);
 		
 		List<List<Double>> weights1 = Deencapsulation.getField(ipu, "weights");

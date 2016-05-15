@@ -252,7 +252,7 @@ public class GenstarUtilsTest {
 		
 		// generate component entities
 		Deencapsulation.invoke(GenstarUtils.class, "generateComponentPopulation",  groupPopulation, componentPopulationName, 
-				componentAttributes, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, groupSizeAttribute);		
+				componentAttributes, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, groupSizeAttribute, String.class);		
 		
 		// assert that the number of generated component entities is correct
 		int nbOfGeneratedComponents = 0;
@@ -279,12 +279,19 @@ public class GenstarUtilsTest {
 		String groupSizeAttributeNameOnData = "Household Size";
 		int nbOfGroupEntities = 100;
 		
+		String componentReferenceOnGroup = "inhabitants";
+		String groupReferenceOnComponent = "household";
+		
 		IPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
-				groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeNameOnData, nbOfGroupEntities);
+				groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeNameOnData, nbOfGroupEntities, componentReferenceOnGroup, groupReferenceOnComponent);
 		
 		assertTrue(generatedCompoundPopulation.getEntities().size() == nbOfGroupEntities);
 		assertTrue(generatedCompoundPopulation.getEntities().get(0).getEntityAttributeValues().size() == groupAttributesFile.getRows() - 1);
 		
+		Map<String, String> componentReferences = generatedCompoundPopulation.getComponentReferences();
+		assertTrue(componentReferences.size() == 1);
+		assertTrue(componentReferences.get(componentPopulationName).equals(componentReferenceOnGroup));
+
 		Entity groupEntityWithComponents = null;
 		for (Entity groupEntity : generatedCompoundPopulation.getEntities()) {
 			if (!groupEntity.getComponentPopulations().isEmpty()) {
@@ -295,6 +302,10 @@ public class GenstarUtilsTest {
 		
 		IPopulation peoplePopulation = groupEntityWithComponents.getComponentPopulation(componentPopulationName);
 		assertTrue(peoplePopulation.getEntities().get(0).getEntityAttributeValues().size() == componentAttributesFile.getRows() - 1);
+		
+		Map<String, String> groupReferences = peoplePopulation.getGroupReferences();
+		assertTrue(groupReferences.size() == 1);
+		assertTrue(groupReferences.get(groupPopulationName).equals(groupReferenceOnComponent));
 		
 		// the number of generated component entities equal to the group size attribute value
 		AttributeValue sizeAttributeValueOnGroupEntity = groupEntityWithComponents.getEntityAttributeValue(generatedCompoundPopulation.getAttributeByNameOnData(groupSizeAttributeNameOnData)).getAttributeValueOnEntity();
@@ -314,12 +325,19 @@ public class GenstarUtilsTest {
 		String groupIdAttributeNameOnDataOfComponentEntity = "Household ID";
 		String groupSizeAttributeNameOnData = "Household Size";
 		
+		String componentReferenceOnGroup = "inhabitants";
+		String groupReferenceOnComponent = "household";
+
 		int minGroupEntitiesOfEachAttributeValuesSet1 = 2;
 		int maxGroupEntitiesOfEachAttributeValuesSet1 = 2;
 		IPopulation generatedCompoundPopulation1 = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, 
 				componentAttributesFile, groupIdAttributeNameOnDataOfGroupEntity, groupIdAttributeNameOnDataOfComponentEntity, groupSizeAttributeNameOnData, 
-				minGroupEntitiesOfEachAttributeValuesSet1, maxGroupEntitiesOfEachAttributeValuesSet1);
+				minGroupEntitiesOfEachAttributeValuesSet1, maxGroupEntitiesOfEachAttributeValuesSet1, componentReferenceOnGroup, groupReferenceOnComponent);
 		
+		Map<String, String> componentReferences = generatedCompoundPopulation1.getComponentReferences();
+		assertTrue(componentReferences.size() == 1);
+		assertTrue(componentReferences.get(componentPopulationName).equals(componentReferenceOnGroup));
+
 		// 1. verify the number of generated group entities
 		int nbOfEntities1 = 1;
 		List<AbstractAttribute> compoundPopulation1AttributesWithoutID = generatedCompoundPopulation1.getAttributes();
@@ -336,6 +354,10 @@ public class GenstarUtilsTest {
 			if (groupSizeValue > 0) {
 				IPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
 				assertTrue(componentPopulation.getNbOfEntities() == groupSizeValue);
+
+				Map<String, String> groupReferences = componentPopulation.getGroupReferences();
+				assertTrue(groupReferences.size() == 1);
+				assertTrue(groupReferences.get(groupPopulationName).equals(groupReferenceOnComponent));
 			} else {
 				assertTrue(groupEntity.getComponentPopulation(componentPopulationName) == null);
 			}
@@ -450,7 +472,7 @@ public class GenstarUtilsTest {
 	 	IPopulation compoundPopulation = GenstarUtils.loadCompoundPopulation(PopulationType.SYNTHETIC_POPULATION, 
 			groupPopulationName, groupAttributesFile, groupPopulationFile,
 			componentPopulationName, componentAttributesFile, componentPopulationFile, 
-			groupIdAttributeNameOnDataOnGroupEntity, groupIdAttributeNameOnDataOnComponentEntity);
+			groupIdAttributeNameOnDataOnGroupEntity, groupIdAttributeNameOnDataOnComponentEntity, null, null);
 
 		// verify the number of compound entities
 		assertTrue(compoundPopulation.getNbOfEntities() == groupPopulationFile.getRows() - 1);
@@ -462,11 +484,7 @@ public class GenstarUtilsTest {
 			if (_componentPop != null) { numberOfComponentEntities += _componentPop.getNbOfEntities(); }
 		}
 		assertTrue(numberOfComponentEntities == componentPopulationFile.getRows() - 1);
-	}
-	
-	
-	
-	
+	}	
 	
 
 	@Test public void testWriteSinglePopulationToCsvFile(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
@@ -514,7 +532,7 @@ public class GenstarUtilsTest {
 		int nbOfGroupEntities = 100;
 		
 		IPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, componentAttributesFile, 
-				groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities);
+				groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeName, nbOfGroupEntities, null, null);
 		
 		List<AbstractAttribute> componentPopulationAttributes = null;
 		int nbOfComponentEntities = 0;

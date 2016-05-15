@@ -32,7 +32,7 @@ public abstract class AbstractAttribute {
 	
 	private AttributeValue castDefaultValue;
 	
-	protected boolean isIdentity;
+	protected boolean isIdentity; // TODO remove this property
 	
 	
 	public AbstractAttribute(final ISyntheticPopulationGenerator populationGenerator, final String attributeNameOnData, final String attributeNameOnEntity, 

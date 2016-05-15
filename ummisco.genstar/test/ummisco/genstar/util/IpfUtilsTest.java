@@ -253,8 +253,8 @@ public class IpfUtilsTest {
 				// 2. parse the attribute value column
 				valueList.clear();
 				String attributeValueString = aRow.get(col+1);
-				if (attributeValueString.contains(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER)) { // range value
-					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
+				if (attributeValueString.contains(CSV_FILE_FORMATS.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER)) { // range value
+					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, CSV_FILE_FORMATS.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
 					valueList.add(rangeValueToken.nextToken());
 					valueList.add(rangeValueToken.nextToken());
 				} else { // unique value
@@ -304,7 +304,8 @@ public class IpfUtilsTest {
 		GenstarCsvFile controlledAttributesListFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/controlled_attributes_list.csv", false);
 		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/control_totals.csv", false);
 		GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/supplementary_attributes_list.csv", false);
-		IpfUtils.createIpfGenerationRule(generator, "dummy rule", sampleCSVFile, controlledAttributesListFile, controlTotalsFile, supplementaryAttributesFile, null, IpfGenerationRule.DEFAULT_MAX_ITERATIONS);
+//		IpfUtils.createIpfGenerationRule(generator, "dummy rule", sampleCSVFile, controlledAttributesListFile, controlTotalsFile, supplementaryAttributesFile, null, IpfGenerationRule.DEFAULT_MAX_ITERATIONS);
+		IpfUtils.createIpfGenerationRule(generator, "dummy rule", sampleCSVFile, controlledAttributesListFile, controlTotalsFile, supplementaryAttributesFile, IpfGenerationRule.DEFAULT_MAX_ITERATIONS);
 		
 		// 3. generate the population
 		IPopulation population = generator.generate();
@@ -329,10 +330,11 @@ public class IpfUtilsTest {
 		
 		
 //		AbstractAttribute householdIdAttribute = generator.getAttributeByNameOnEntity("householdID");
-		AbstractAttribute householdIdAttribute = null;
+//		AbstractAttribute householdIdAttribute = null;
 		
 		assertTrue(generator.getGenerationRule() == null);
-		IpfUtils.createIpfGenerationRule(generator, "sample data generation rule", sampleFile, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile, householdIdAttribute, IpfGenerationRule.DEFAULT_MAX_ITERATIONS);
+//		IpfUtils.createIpfGenerationRule(generator, "sample data generation rule", sampleFile, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile, householdIdAttribute, IpfGenerationRule.DEFAULT_MAX_ITERATIONS);
+		IpfUtils.createIpfGenerationRule(generator, "sample data generation rule", sampleFile, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile, IpfGenerationRule.DEFAULT_MAX_ITERATIONS);
 		
 		IpfGenerationRule rule = (IpfGenerationRule) generator.getGenerationRule();
 		assertTrue(rule != null);
@@ -356,19 +358,16 @@ public class IpfUtilsTest {
 		GenstarCsvFile componentSampleFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testCreateGroupComponentIpfGenerationRule/component_sample.csv", true);
 		GenstarCsvFile componentAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testCreateGroupComponentIpfGenerationRule/component_attributes.csv", true);
 		
-		String groupIdAttributeNameOnGroup = "Household ID";
-		String groupIdAttributeNameOnComponent = "Household ID";
+		String groupIdAttributeNameOnDataOfGroupEntity = "Household ID";
+		String groupIdAttributeNameOnDataOfComponentEntity = "Household ID";
 		String componentPopulationName = "people";
 		
-		// optional/supplementary properties (COMPONENT_REFERENCE_ON_GROUP, GROUP_REFERENCE_ON_COMPONENT)
-		Map<String, String> supplementaryProperties = new HashMap<String, String>();
-		supplementaryProperties.put(INPUT_DATA_FORMATS.PROPERTY_FILES.IPF_POPULATION.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY, groupIdAttributeNameOnGroup);
-		supplementaryProperties.put(INPUT_DATA_FORMATS.PROPERTY_FILES.IPF_POPULATION.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY, groupIdAttributeNameOnComponent);
-		 
 		
 		assertTrue(groupGenerator.getGenerationRule() == null);
 		IpfUtils.createCompoundIpfGenerationRule(groupGenerator, "group component sample data generation rule", groupSampleFile, groupControlledAttributesFile, groupControlledTotalsFile, 
-				groupSupplementaryAttributesFile, componentSampleFile, componentAttributesFile, componentPopulationName, IpfGenerationRule.DEFAULT_MAX_ITERATIONS, supplementaryProperties);
+				groupSupplementaryAttributesFile, null, groupIdAttributeNameOnDataOfGroupEntity,
+				componentSampleFile, componentAttributesFile, componentPopulationName, null, groupIdAttributeNameOnDataOfComponentEntity,
+				IpfGenerationRule.DEFAULT_MAX_ITERATIONS);
 		
 		IpfGenerationRule rule = (IpfGenerationRule)groupGenerator.getGenerationRule();
 		assertTrue(rule != null);

@@ -124,7 +124,7 @@ public class AttributeUtilsTest {
 			result = "Dummy CSV File";
 			
 			mockedAttributesCSVFile.getColumns();
-			result = INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.NB_OF_COLS;
+			result = CSV_FILE_FORMATS.ATTRIBUTES.NB_OF_COLS;
 
 			generator.addAttribute((AbstractAttribute) any);
 			times = 3;

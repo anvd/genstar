@@ -15,7 +15,6 @@ global {
 	map<string, string> generatedCompoundPopulationFilePaths;
 	map<string, string> populationAttributesFilePaths;
 	string attributesCSVFilePath;
-	map<string, string> populationIdAttributes;
 
 	
 	init {
@@ -40,7 +39,7 @@ global {
 		write 'Start writing the generated population to CSV file';
 		beginning_machine_time <- machine_time;
 		map<string, string> resultCompoundFilePaths <- population_to_csv(generated_population, 
-			generatedCompoundPopulationFilePaths, populationAttributesFilePaths, populationIdAttributes);
+			generatedCompoundPopulationFilePaths, populationAttributesFilePaths);
 		
 		write 'Finished writing the generated population to CSV file. Duration: ' + (machine_time - beginning_machine_time) + ' miliseconds';
 		write 'Open ' + population_output_file + ' to observe the generated populations';

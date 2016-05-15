@@ -119,13 +119,7 @@ public class IpuUtilsTest {
 	
 	
 	@Test public void testBuildIpuControlTotalsOfCompoundPopulation() throws GenstarException {
-		/*
-	public void buildIpuControlTotalsOfCompoundPopulation(final IPopulation compoundPopulation, final String componentPopulationName, 
-		final GenstarCSVFile groupControlledAttributesListFile, 
-			final GenstarCSVFile componentControlledAttributesListFile, final List<AttributeValuesFrequency> groupControlTotalsToBeBuilt, 
-			final List<AttributeValuesFrequency> componentControlTotalsToBeBuilt) throws GenstarException {
-		 */
-		
+
 		// 0. load a compound population from files
 		String base_folder_path1 = "test_data/ummisco/genstar/util/IpuUtils/buildIpuControlTotalsOfCompoundPopulation/generated_populations/";
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile(base_folder_path1 + "group_attributes.csv", true);
@@ -133,7 +127,7 @@ public class IpuUtilsTest {
 		GenstarCsvFile groupPopulationFile = new GenstarCsvFile(base_folder_path1 + "group_population.csv", true);
 		GenstarCsvFile componentPopulationFile = new GenstarCsvFile(base_folder_path1 + "component_population.csv", true);
 		IPopulation compoundPopulation = GenstarUtils.loadCompoundPopulation(PopulationType.SYNTHETIC_POPULATION, "household", groupAttributesFile, 
-				groupPopulationFile, "people", componentAttributesFile, componentPopulationFile, "Household ID", "Household ID");
+				groupPopulationFile, "people", componentAttributesFile, componentPopulationFile, "Household ID", "Household ID", null, null);
 		
 		// 1. build IPU control totals
 		String base_folder_path2 = "test_data/ummisco/genstar/util/IpuUtils/buildIpuControlTotalsOfCompoundPopulation/";
@@ -400,7 +394,7 @@ public class IpuUtilsTest {
 		GenstarCsvFile componentPopulationFile = new GenstarCsvFile(base_path + componentPopulationFileName, true);
 		IPopulation generatedCompoundPopulation = GenstarUtils.loadCompoundPopulation(PopulationType.SYNTHETIC_POPULATION, groupPopulationName, groupAttributesFile, 
 				groupPopulationFile, componentPopulationName, componentAttributesFile, 
-				componentPopulationFile, groupIdAttributeNameOnDataOfGroupEntity, groupIdAttributeNameOnDataOfComponentEntity);
+				componentPopulationFile, groupIdAttributeNameOnDataOfGroupEntity, groupIdAttributeNameOnDataOfComponentEntity, null, null);
 		
 		
 		// 1. build entity categories
@@ -545,11 +539,11 @@ public class IpuUtilsTest {
 		return null;
 	}
 	
-	
-	@Test public void testExtractIpuSamplePopulation() throws GenstarException {
+
+	@Test public void testExtractIpuPopulation() throws GenstarException {
 		// extractIpuSamplePopulation(final IPopulation originalPopulation, final String samplePopulationName, final float percentage, final Set<AbstractAttribute> ipuControlledAttributes)
 		
-		String base_path = "test_data/ummisco/genstar/util/IpuUtils/extractIpuSamplePopulation/";
+		String base_path = "test_data/ummisco/genstar/util/IpuUtils/extractIpuPopulation/";
 		
 		String groupPopulationName = "household";
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile(base_path + "group_attributes.csv", true);
@@ -561,12 +555,15 @@ public class IpuUtilsTest {
 		String groupIdAttributeNameOnComponentEntity = "Household ID";
 		String groupSizeAttributeNameOnData = "Household Size";
 		
+		String componentReferenceOnGroup = "inhabitants";
+		String groupReferenceOnComponent = "household";
+
 		// 0. generate an original population with 120 entities
 		int minGroupEntitiesOfEachAttributeValuesSet1 = 15;
 		int maxGroupEntitiesOfEachAttributeValuesSet1 = 15;
 		IPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, 
 				componentAttributesFile, groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeNameOnData, 
-				minGroupEntitiesOfEachAttributeValuesSet1, maxGroupEntitiesOfEachAttributeValuesSet1);
+				minGroupEntitiesOfEachAttributeValuesSet1, maxGroupEntitiesOfEachAttributeValuesSet1, componentReferenceOnGroup, groupReferenceOnComponent);
 		
 		AbstractAttribute householdSizeAttr = generatedCompoundPopulation.getAttributeByNameOnData("Household Size");
 		AbstractAttribute householdIncomeAttr = generatedCompoundPopulation.getAttributeByNameOnData("Household Income");
@@ -580,30 +577,23 @@ public class IpuUtilsTest {
 		
 		// extract 1% of the original population then do the verifications
 		float percentage = 0.1f;
-		IPopulation extractedPopulation1 = IpuUtils.extractIpuSamplePopulation(generatedCompoundPopulation, generatedCompoundPopulation.getName(), percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation1 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
 		assertTrue(extractedPopulation1.getNbOfEntities() == 8);
 		// TODO further verifications
 		
 		// extract 10% of the original population then do the verifications
 		percentage = 10;
-		IPopulation extractedPopulation2 = IpuUtils.extractIpuSamplePopulation(generatedCompoundPopulation, generatedCompoundPopulation.getName(), percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation2 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
 		assertTrue(extractedPopulation2.getNbOfEntities() == 12);
 		
 		// extract 30% of the original population then do the verifications
 		percentage = 30;
-		IPopulation extractedPopulation3 = IpuUtils.extractIpuSamplePopulation(generatedCompoundPopulation, generatedCompoundPopulation.getName(), percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation3 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
 		assertTrue(extractedPopulation3.getNbOfEntities() == 36);
 	}
 	
 	
 	@Test public void testCreateIpuGenerationRule() throws GenstarException {
-		/*
-	public static void createIpuGenerationRule(final SampleBasedGenerator groupPopulationGenerator, final GenstarCsvFile groupSampleDataFile, 
-			final String groupIdAttributeNameOnGroup, final GenstarCsvFile groupControlledAttributesFile,
-			final GenstarCsvFile groupControlledTotalsFile, final GenstarCsvFile groupSupplementaryAttributesFile, 
-			final GenstarCsvFile componentAttributesFile, final String componentPopulationName, final GenstarCsvFile componentSampleDataFile, final String groupIdAttributeNameOnComponent,
-			final GenstarCsvFile componentControlledAttributesFile, final GenstarCsvFile componentControlTotalsFile, final GenstarCsvFile componentSupplementaryAttributesFile, final int maxIterations) throws GenstarException {
-		 */
 		
 		String base_path = "test_data/ummisco/genstar/util/IpuUtils/testCreateIpuGenerationRule/";
 		

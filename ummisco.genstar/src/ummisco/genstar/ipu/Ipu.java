@@ -171,7 +171,7 @@ public class Ipu {
 	private void fillIpuMatrix() throws GenstarException {
 		
 		CompoundSampleData compoundSampleData = generationRule.getSampleData();
-		String componentPopulationName = compoundSampleData.getSampleEntityPopulation().getName();
+		String componentPopulationName = compoundSampleData.getOriginalComponentSampleData().getSampleEntityPopulation().getName();
 		List<AbstractAttribute> groupControlledAttributes = generationRule.getGroupControlledAttributes();
 		List<AbstractAttribute> componentControlledAttributes = generationRule.getComponentControlledAttributes();
 		for (int row=0; row<numberOfRows; row++) {

@@ -7,7 +7,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import mockit.Deencapsulation;
 import mockit.Delegate;
@@ -23,12 +28,16 @@ import org.junit.runner.RunWith;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.IpfGenerationRule;
 import ummisco.genstar.ipu.IpuGenerationRule;
-import ummisco.genstar.metamodel.generation_rules.SampleBasedGenerationRule;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.population.Entity;
+import ummisco.genstar.metamodel.population.IPopulation;
 import ummisco.genstar.metamodel.sample_data.CompoundSampleData;
 import ummisco.genstar.metamodel.sample_data.SampleData;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
+import ummisco.genstar.util.GenstarUtils;
 
 @RunWith(JMockit.class)
 public class GamaGenstarUtilsTest {
@@ -289,4 +298,306 @@ public class GamaGenstarUtilsTest {
 		GenstarCsvFile _componentSupplementaryAttributesFile = Deencapsulation.getField(generationRule, "componentSupplementaryAttributesFile");
 		assertTrue(_componentSupplementaryAttributesFile.getPath().equals(componentSupplementaryAttributesFile));
 	}
+	
+	
+	@Test public void testExtractIpuPopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
+
+		String base_path = "test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testExtractIpuPopulation/";
+		
+		// 0. generate an original population with 120 entities if necessary
+		String groupPopulationName = "household";
+		
+		File groupPopulationFile = new File(base_path + "household_population.csv");
+		if (!groupPopulationFile.exists()) {
+			GenstarCsvFile groupAttributesFile = new GenstarCsvFile(base_path + "group_attributes.csv", true);
+			
+			String componentPopulationName = "people";
+			GenstarCsvFile componentAttributesFile = new GenstarCsvFile(base_path + "component_attributes.csv", true);
+
+			String groupIdAttributeNameOnGroupEntity = "Household ID";
+			String groupIdAttributeNameOnComponentEntity = "Household ID";
+			String groupSizeAttributeNameOnData = "Household Size";
+			
+			// 0.1. generate an original population with 120 entities
+			int minGroupEntitiesOfEachAttributeValuesSet1 = 15;
+			int maxGroupEntitiesOfEachAttributeValuesSet1 = 15;
+			IPopulation generatedCompoundPopulation = GenstarUtils.generateRandomCompoundPopulation(groupPopulationName, groupAttributesFile, componentPopulationName, 
+					componentAttributesFile, groupIdAttributeNameOnGroupEntity, groupIdAttributeNameOnComponentEntity, groupSizeAttributeNameOnData, 
+					minGroupEntitiesOfEachAttributeValuesSet1, maxGroupEntitiesOfEachAttributeValuesSet1, null, null);
+			
+			AbstractAttribute householdSizeAttr = generatedCompoundPopulation.getAttributeByNameOnData("Household Size");
+			AbstractAttribute householdIncomeAttr = generatedCompoundPopulation.getAttributeByNameOnData("Household Income");
+			AbstractAttribute householdTypeAttr = generatedCompoundPopulation.getAttributeByNameOnData("Household Type");
+			
+			Set<AbstractAttribute> ipuControlledAttributes = new HashSet<AbstractAttribute>();
+			ipuControlledAttributes.add(householdSizeAttr);
+			ipuControlledAttributes.add(householdIncomeAttr);
+			ipuControlledAttributes.add(householdTypeAttr);
+			
+			// 0.2. save the generated population to CSV files
+			Map<String, String> csvFilePathsByPopulationNames = new HashMap<String, String>();
+			csvFilePathsByPopulationNames.put("household", base_path + "household_population.csv");
+			csvFilePathsByPopulationNames.put("people", base_path + "people_population.csv");
+			GenstarUtils.writePopulationToCsvFile(generatedCompoundPopulation, csvFilePathsByPopulationNames);
+		}
+		
+		
+		// 1. prepare data
+		/* IpuPopulationProperties_ZeroPointOne.properties
+		 * 
+			GROUP_ATTRIBUTES=test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testExtractIpuPopulation/group_attributes.csv
+			GROUP_POPULATION_NAME=household
+			GROUP_POPULATION_DATA=test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testExtractIpuPopulation/household_population.csv
+			GROUP_ID_ATTRIBUTE_ON_GROUP=HouseholdID
+			GROUP_CONTROLLED_ATTRIBUTES=test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testExtractIpuPopulation/group_controlled_attributes.csv
+			COMPONENT_ATTRIBUTES=test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testExtractIpuPopulation/component_attributes.csv
+			COMPONENT_POPULATION_NAME=people
+			COMPONENT_POPULATION_DATA=test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testExtractIpuPopulation/people_population.csv
+			GROUP_ID_ATTRIBUTE_ON_COMPONENT=HouseholdID
+			PERCENTAGE=0,1 
+		 */
+	
+		final String groupAttributesFilePath = base_path + "group_attributes.csv";
+//		final String groupPopulationName = "household";
+		final String groupPopulationDataFile = base_path + "household_population.csv";
+		final String groupIdOnGroup = "HouseholdID";
+		final String groupControlledAttributesFile = base_path + "group_controlled_attributes.csv";
+		
+		final String componentAttributesFile = base_path + "component_attributes.csv";
+		final String componentPopulationName = "people";
+		final String componentPopulationFile = base_path + "people_population.csv";
+		final String componentIdOnGroup = "HouseholdID";
+
+		
+		new Expectations() {{
+			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
+			result = new Delegate() {
+				String delegate(IScope scope, String filePath, boolean mustExist) {
+					// group population
+					if (filePath.endsWith("/group_attributes.csv")) {  return groupAttributesFilePath;  }
+					if (filePath.endsWith("/household_population.csv")) {  return groupPopulationDataFile; }
+					if (filePath.endsWith("/group_controlled_attributes.csv")) { return groupControlledAttributesFile; }
+					
+					// component population
+					if (filePath.endsWith("/component_attributes.csv")) { return componentAttributesFile; }
+					if (filePath.endsWith("/people_population.csv")) { return componentPopulationFile; }					
+					
+					return null;
+				}
+			};
+		}};
+		
+		
+		String ipuPopulationPropertiesFilePath_ZeroPointOne = base_path + "IpuPopulationProperties_ZeroPointOne.properties";
+		
+		Properties ipuPopulationProperties_ZeroPointOne = null;
+		File ipuPopulationPropertiesFile_ZeroPointOne = new File(ipuPopulationPropertiesFilePath_ZeroPointOne);
+		try {
+			FileInputStream propertyInputStream = new FileInputStream(ipuPopulationPropertiesFile_ZeroPointOne);
+			ipuPopulationProperties_ZeroPointOne = new Properties();
+			ipuPopulationProperties_ZeroPointOne.load(propertyInputStream);
+		} catch (FileNotFoundException e) {
+			throw new GenstarException(e);
+		} catch (IOException e) {
+			throw new GenstarException(e);
+		}
+		
+		
+		// 2. extract the generated population and verify the extracted populations
+		
+		IPopulation extractedPopulation_ZeroPointOne = GamaGenstarUtils.extractIpuPopulation(scope, ipuPopulationProperties_ZeroPointOne);
+		
+		
+		// 3. Verifications of the extracted population
+		//		extracted population's number of entities
+		assertTrue(extractedPopulation_ZeroPointOne.getNbOfEntities() == 8);
+		
+		
+		String ipuPopulationPropertiesFilePath_Ten = base_path + "IpuPopulationProperties_Ten.properties";
+		
+		Properties ipuPopulationProperties_Ten = null;
+		File ipuPopulationPropertiesFile_Ten = new File(ipuPopulationPropertiesFilePath_Ten);
+		try {
+			FileInputStream propertyInputStream = new FileInputStream(ipuPopulationPropertiesFile_Ten);
+			ipuPopulationProperties_Ten = new Properties();
+			ipuPopulationProperties_Ten.load(propertyInputStream);
+		} catch (FileNotFoundException e) {
+			throw new GenstarException(e);
+		} catch (IOException e) {
+			throw new GenstarException(e);
+		}
+		 
+		IPopulation extractedPopulation_Ten = GamaGenstarUtils.extractIpuPopulation(scope, ipuPopulationProperties_Ten);
+		assertTrue(extractedPopulation_Ten.getNbOfEntities() == 12);
+		
+		
+		String ipuPopulationPropertiesFilePath_Thirty = base_path + "IpuPopulationProperties_Thirty.properties";
+		
+		Properties ipuPopulationProperties_Thirty = null;
+		File ipuPopulationPropertiesFile_Thirty = new File(ipuPopulationPropertiesFilePath_Thirty);
+		try {
+			FileInputStream propertyInputStream = new FileInputStream(ipuPopulationPropertiesFile_Thirty);
+			ipuPopulationProperties_Thirty = new Properties();
+			ipuPopulationProperties_Thirty.load(propertyInputStream);
+		} catch (FileNotFoundException e) {
+			throw new GenstarException(e);
+		} catch (IOException e) {
+			throw new GenstarException(e);
+		}
+		 
+		IPopulation extractedPopulation_Thirty = GamaGenstarUtils.extractIpuPopulation(scope, ipuPopulationProperties_Thirty);
+		assertTrue(extractedPopulation_Thirty.getNbOfEntities() == 36);
+		 
+	}
+	
+	
+	@Test public void testGenerateRandomPopulation() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
+	
+	@Test public void testGenerateRandomCompoundPopulation() throws GenstarException {
+		fail("not yet implemented");
+	}
+	
+	
+	@Test public void testLoadSinglePopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
+		/*
+	public static IPopulation loadSinglePopulation(final IScope scope, final Properties singlePopulationProperties) throws GenstarException {
+		 */
+		
+		String base_path = "test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testLoadSinglePopulation/";
+		
+		final String attributesFilePath = base_path + "attributes.csv";
+		final String populationDataFile = base_path + "sample_data.csv";
+		
+
+		new Expectations() {{
+			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
+			result = new Delegate() {
+				String delegate(IScope scope, String filePath, boolean mustExist) {
+					// group population
+					if (filePath.endsWith("/attributes.csv")) {  return attributesFilePath;  }
+					if (filePath.endsWith("/sample_data.csv")) {  return populationDataFile; }
+					
+					return null;
+				}
+			};
+		}};
+
+	
+		final String propertiesFilePath = base_path + "SinglePopulationProperties.properties";
+		
+		Properties properties = null;
+		File propertiesFile = new File(propertiesFilePath);
+		try {
+			FileInputStream propertyInputStream = new FileInputStream(propertiesFile);
+			properties = new Properties();
+			properties.load(propertyInputStream);
+		} catch (FileNotFoundException e) {
+			throw new GenstarException(e);
+		} catch (IOException e) {
+			throw new GenstarException(e);
+		}
+		 
+		IPopulation loadedSinglePopulation = GamaGenstarUtils.loadSinglePopulation(scope, properties);
+
+	
+		// verify file entities' attribute values on entity with respect to populationFile content
+		GenstarCsvFile populationFile = new GenstarCsvFile(populationDataFile, true);
+		List<String> header = populationFile.getHeaders();
+		List<Entity> entities = loadedSinglePopulation.getEntities();
+		List<List<String>> fileContent = populationFile.getContent();
+		assertTrue(entities.size() == fileContent.size());
+		for (int row=0; row<entities.size(); row++) {
+			Entity e = entities.get(row);
+			
+			List<String> rowContent = populationFile.getRow(row);
+			for (int col=0; col<rowContent.size(); col++) {
+				assertTrue(((UniqueValue)e.getEntityAttributeValueByNameOnEntity(header.get(col)).getAttributeValueOnEntity()).getStringValue().equals(rowContent.get(col)));
+			}
+		}
+		
+		assertTrue(loadedSinglePopulation.getGroupReferences().isEmpty());
+		assertTrue(loadedSinglePopulation.getComponentReferences().isEmpty());
+	}
+	
+	
+	@Test public void testLoadCompoundPopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
+		/*
+	public static IPopulation loadCompoundPopulation(final IScope scope, final Properties compoundPopulationProperties) throws GenstarException {
+		 */
+
+		String base_path = "test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testLoadCompoundPopulation/";
+		
+		final String groupAttributesFilePath = base_path + "group_attributes.csv";
+		final String groupPopulationDataFile = base_path + "group_sample.csv";
+		
+		final String componentAttributesFile = base_path + "component_attributes.csv";
+		final String componentPopulationFilePath = base_path + "component_sample.csv";
+		
+	
+		new Expectations() {{
+			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
+			result = new Delegate() {
+				String delegate(IScope scope, String filePath, boolean mustExist) {
+					// group population
+					if (filePath.endsWith("/group_attributes.csv")) {  return groupAttributesFilePath;  }
+					if (filePath.endsWith("/group_sample.csv")) {  return groupPopulationDataFile; }
+					
+					// component population
+					if (filePath.endsWith("/component_attributes.csv")) { return componentAttributesFile; }
+					if (filePath.endsWith("/component_sample.csv")) { return componentPopulationFilePath; }					
+					
+					return null;
+				}
+			};
+		}};
+		
+		
+		final String propertiesFilePath = base_path + "CompoundPopulationProperties.properties";
+		
+		Properties properties = null;
+		File propertiesFile = new File(propertiesFilePath);
+		try {
+			FileInputStream propertyInputStream = new FileInputStream(propertiesFile);
+			properties = new Properties();
+			properties.load(propertyInputStream);
+		} catch (FileNotFoundException e) {
+			throw new GenstarException(e);
+		} catch (IOException e) {
+			throw new GenstarException(e);
+		}
+		 
+		IPopulation loadedCompoundPopulation = GamaGenstarUtils.loadCompoundPopulation(scope, properties);
+		 
+		
+		// verifications		
+		assertTrue(loadedCompoundPopulation.getName().equals("household"));
+		
+		// verify the number of compound entities
+		final GenstarCsvFile groupPopulationFile = new GenstarCsvFile(groupPopulationDataFile, true);
+		assertTrue(loadedCompoundPopulation.getNbOfEntities() == groupPopulationFile.getRows() - 1);
+		
+		// verify the number of component entities
+		int numberOfComponentEntities = 0;
+		for (Entity compoundEntity : loadedCompoundPopulation.getEntities()) {
+			IPopulation _componentPop = compoundEntity.getComponentPopulation("people");
+			if (_componentPop != null) {
+				numberOfComponentEntities += _componentPop.getNbOfEntities();
+				assertTrue(_componentPop.getGroupReferences().size() == 1);
+				assertTrue(_componentPop.getGroupReference("household").equals("my_household"));
+			}
+		}
+		final GenstarCsvFile componentPopulationFile = new GenstarCsvFile(componentPopulationFilePath, true);
+		assertTrue(numberOfComponentEntities == componentPopulationFile.getRows() - 1);
+		 
+		
+		assertTrue(loadedCompoundPopulation.getComponentReferences().size() == 1);
+		assertTrue(loadedCompoundPopulation.getComponentReference("people").equals("inhabitants"));
+		
+		assertTrue(loadedCompoundPopulation.getGroupReferences().size() == 0);
+		
+	}
 }
+

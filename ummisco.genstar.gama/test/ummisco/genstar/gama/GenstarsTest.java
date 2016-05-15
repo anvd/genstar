@@ -65,7 +65,7 @@ import ummisco.genstar.metamodel.population.IPopulation;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.CsvWriter;
 import ummisco.genstar.util.GenstarCsvFile;
-import ummisco.genstar.util.INPUT_DATA_FORMATS;
+import ummisco.genstar.util.CSV_FILE_FORMATS;
 
 @RunWith(JMockit.class)
 public class GenstarsTest {
@@ -120,7 +120,7 @@ public class GenstarsTest {
 			};
 		}};
 		
-		IList generatedPopulation = Genstars.generatePopulationFromFrequencyDistribution(scope, populationPropertiesFilePath);
+		IList generatedPopulation = Genstars.SampleFree.generatePopulationFromFrequencyDistribution(scope, populationPropertiesFilePath);
 		
 		// verify first three elements of the generatedPopulation
 		String populationName = (String) generatedPopulation.get(0);
@@ -167,11 +167,11 @@ public class GenstarsTest {
 			writer.writeRecord((String[])any); times = 57;
 			
 			// verify that one instance of GamaCSVFile is created
-			new GamaCSVFile(scope, resultDistributionCSVFilePath, INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.FIELD_DELIMITER, Types.STRING, true);
+			new GamaCSVFile(scope, resultDistributionCSVFilePath, CSV_FILE_FORMATS.ATTRIBUTES.FIELD_DELIMITER, Types.STRING, true);
 		}};
 		
 		
-		Genstars.createFrequencyDistributionFromSample(scope, attributesCSVFilePath, sampleDataCSVFilePath, distributionFormatCSVFilePath, resultDistributionCSVFilePath);
+		Genstars.SampleFree.createFrequencyDistributionFromSample(scope, attributesCSVFilePath, sampleDataCSVFilePath, distributionFormatCSVFilePath, resultDistributionCSVFilePath);
 	}
 	
 	
@@ -200,7 +200,7 @@ public class GenstarsTest {
 			};
 		}};
 		
-		IList generatedPopulation = Genstars.generateIPFSinglePopulation(scope, populationPropertiesFilePath);
+		IList generatedPopulation = Genstars.Ipf.generateIpfSinglePopulation(scope, populationPropertiesFilePath);
 		
 		// verify the first three elements of the generated population
 		assertTrue(((String)generatedPopulation.get(0)).equals("people"));
@@ -258,7 +258,7 @@ public class GenstarsTest {
 		}};
 		
 		
-		IList generatedPopulation = Genstars.generateIPFCompoundPopulation(scope, ipfCompoundPopulationPropertiesFilePath);
+		IList generatedPopulation = Genstars.Ipf.generateIpfCompoundPopulation(scope, ipfCompoundPopulationPropertiesFilePath);
 		
 		
 		// verify the first three elements of a GAMA synthetic population
@@ -357,7 +357,7 @@ public class GenstarsTest {
 		}};
 
 	
-		IList generatedIpuPopulation = Genstars.generateIpuPopulation(scope, ipuPopulationPropertiesFilePath);
+		IList generatedIpuPopulation = Genstars.Ipu.generateIpuPopulation(scope, ipuPopulationPropertiesFilePath);
 		
 		
 		// verify the first three elements of a GAMA synthetic population
@@ -408,7 +408,7 @@ public class GenstarsTest {
 		}};
 		
 		
-		IList generatedPopulation = Genstars.generateRandomSinglePopulation(scope, populationPropertiesFilePath);
+		IList generatedPopulation = Genstars.Utils.generateRandomSinglePopulation(scope, populationPropertiesFilePath);
 		 
 		// verify the first three elements of a GAMA synthetic population
 		assertTrue(((String)generatedPopulation.get(0)).equals("people")); // first element is the population name
@@ -456,7 +456,7 @@ public class GenstarsTest {
 		}};
 		
 		
-		IList generatedPopulation = Genstars.generateRandomCompoundPopulation(scope, populationPropertiesFilePath);
+		IList generatedPopulation = Genstars.Utils.generateRandomCompoundPopulation(scope, populationPropertiesFilePath);
 
 
 		// verify the first three elements of a GAMA synthetic population
@@ -515,7 +515,7 @@ public class GenstarsTest {
 		}};
 		
 		
-		IList groupPopulation = Genstars.generateRandomCompoundPopulation(scope, populationPropertiesFilePath);
+		IList groupPopulation = Genstars.Utils.generateRandomCompoundPopulation(scope, populationPropertiesFilePath);
 		
 		String groupPopulationName = "household";
 		String componentPopulationName = "people";
@@ -533,8 +533,8 @@ public class GenstarsTest {
 		populationIdAttributes.put(groupPopulationName, "HouseholdID");
 		populationIdAttributes.put(componentPopulationName, "HouseholdID");
 		
-		Map<String, String> resultCompoundFilePaths = Genstars.writePopulationsToCsvFiles(scope, groupPopulation, 
-				generatedCompoundPopulationFilePaths, populationAttributesFilePaths, populationIdAttributes);
+		Map<String, String> resultCompoundFilePaths = Genstars.Utils.writePopulationsToCsvFiles(scope, groupPopulation, 
+				generatedCompoundPopulationFilePaths, populationAttributesFilePaths);
 		
 		assertTrue(resultCompoundFilePaths.size() == 2);
 		assertTrue(resultCompoundFilePaths.get(groupPopulationName).equals(groupPopulationOutputFile));
@@ -566,7 +566,7 @@ public class GenstarsTest {
 			};
 		}};
 		
-		IList singlePopulation = Genstars.generateRandomSinglePopulation(scope, populationPropertiesFilePath);
+		IList singlePopulation = Genstars.Utils.generateRandomSinglePopulation(scope, populationPropertiesFilePath);
 		
 		
 		String populationName = "people";
@@ -578,8 +578,8 @@ public class GenstarsTest {
 		populationAttributesFilePaths.put(populationName, attributesCSVFilePath);
 		
 		
-		Map<String, String> resultFilePaths = Genstars.writePopulationsToCsvFiles(scope, singlePopulation, 
-				populationFilePaths, populationAttributesFilePaths, Collections.EMPTY_MAP);
+		Map<String, String> resultFilePaths = Genstars.Utils.writePopulationsToCsvFiles(scope, singlePopulation, 
+				populationFilePaths, populationAttributesFilePaths);
 
 		
 		assertTrue(resultFilePaths.size() == 1);
@@ -664,7 +664,7 @@ public class GenstarsTest {
 			Household Income,Low,Number Of Cars,3,0
 		 */
 		
-		Genstars.generateControlTotals(scope, controlTotalPropertiesFilePath, dataSet1ControlTotalFilePath);
+		Genstars.Ipf.generateControlTotals(scope, controlTotalPropertiesFilePath, dataSet1ControlTotalFilePath);
 		final GenstarCsvFile dataSet1controlTotalFile = new GenstarCsvFile(dataSet1ControlTotalFilePath, false);
 		assertTrue(dataSet1controlTotalFile.getColumns() == 5);
 		assertTrue(dataSet1controlTotalFile.getRows() == 26);
@@ -816,7 +816,7 @@ public class GenstarsTest {
 			Gender,false,4
 		 */
 		
-		Genstars.generateControlTotals(scope, controlTotalPropertiesFilePath, dataSet2ControlTotalFilePath);
+		Genstars.Ipf.generateControlTotals(scope, controlTotalPropertiesFilePath, dataSet2ControlTotalFilePath);
 		final GenstarCsvFile dataSet2controlTotalFile = new GenstarCsvFile(dataSet2ControlTotalFilePath, false);
 		assertTrue(dataSet2controlTotalFile.getColumns() == 3);
 		assertTrue(dataSet2controlTotalFile.getRows() == 11);

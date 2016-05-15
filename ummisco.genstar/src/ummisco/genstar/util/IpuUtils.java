@@ -83,8 +83,8 @@ public class IpuUtils {
 				// 2. parse the attribute value column
 				valueList.clear();
 				String attributeValueString = aRow.get(col+1);
-				if (attributeValueString.contains(INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER)) { // range value
-					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, INPUT_DATA_FORMATS.CSV_FILES.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
+				if (attributeValueString.contains(CSV_FILE_FORMATS.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER)) { // range value
+					StringTokenizer rangeValueToken = new StringTokenizer(attributeValueString, CSV_FILE_FORMATS.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
 					if (rangeValueToken.countTokens() != 2) { throw new GenstarException("Invalid range attribute value: '" + attributeValueString + "'. File: " + ipuControlTotalsFile.getPath()); }
 					valueList.add(rangeValueToken.nextToken());
 					valueList.add(rangeValueToken.nextToken());
@@ -343,11 +343,10 @@ public class IpuUtils {
 	
 	
 	// TODO does this method belong to this class?
-	public static IPopulation extractIpuSamplePopulation(final IPopulation originalPopulation, final String samplePopulationName, final float percentage, final Set<AbstractAttribute> ipuControlledAttributes) throws GenstarException {
+	public static IPopulation extractIpuPopulation(final IPopulation originalPopulation, final float percentage, final Set<AbstractAttribute> ipuControlledAttributes) throws GenstarException {
 		
 		// 0. parameters validation
 		if (originalPopulation == null) { throw new GenstarException("'originalPopulation' parameter can not be null"); }
-		if (samplePopulationName == null) { throw new GenstarException("'samplePopulationName' parameter can not be null"); }
 		if (percentage <= 0 || percentage > 100) { throw new GenstarException("value of 'percentage' parameter must be in (0, 100] range"); }
 		if (ipuControlledAttributes == null || ipuControlledAttributes.isEmpty()) { throw new GenstarException("'ipuControlledAttributes' parameter can neither be null nor empty"); }
 		
@@ -357,14 +356,15 @@ public class IpuUtils {
 		
 		
 		// 2. Build sample population
-		IPopulation samplePopulation = new Population(PopulationType.SAMPLE_DATA_POPULATION, samplePopulationName, originalPopulation.getAttributes());
-		
+		IPopulation extractedPopulation = new Population(PopulationType.SAMPLE_DATA_POPULATION, originalPopulation.getName(), originalPopulation.getAttributes());
+		extractedPopulation.addGroupReferences(originalPopulation.getGroupReferences());
+		extractedPopulation.addComponentReferences(originalPopulation.getGroupReferences());
 		
 		// 2.1. firstly, try to satisfy that each attributeValueSet has one selected entity in the extracted sample population
 		for (List<Entity> eCategory : entityCategories.values()) {
 			int entityIndex = SharedInstances.RandomNumberGenerator.nextInt(eCategory.size());
 			Entity selectedEntity = eCategory.get(entityIndex);
-			samplePopulation.createEntity(selectedEntity);
+			extractedPopulation.createEntity(selectedEntity);
 		}
 		
 		// 2.2. secondly, satisfy the "percentage" condition if possible
@@ -389,11 +389,11 @@ public class IpuUtils {
 				}
 				
 				Entity selectedEntity = entityCategories.get(selectedAvf).get(entityIndex);
-				samplePopulation.createEntity(selectedEntity);
+				extractedPopulation.createEntity(selectedEntity);
 			}
 		}
 		
-		return samplePopulation;
+		return extractedPopulation;
 	}
 
 
