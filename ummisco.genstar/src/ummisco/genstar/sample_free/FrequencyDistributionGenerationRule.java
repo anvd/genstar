@@ -377,7 +377,6 @@ public class FrequencyDistributionGenerationRule extends SampleFreeGenerationRul
 		return retVal;
 	}
 
-	// TODO same-purpose-method as setFrequency(Map<String, AttributeValue> attributeValues, int frequency) ?
 	public void setFrequency(final Map<AbstractAttribute, AttributeValue> attributeValues, final int frequency) throws GenstarException {
 		if (attributeValues == null || attributeValues.isEmpty()) { throw new GenstarException("'attributeValues' parameter can be neither null nor empty"); }
 		if (frequency < 0) { throw new GenstarException("'frequency' must not be negative"); }

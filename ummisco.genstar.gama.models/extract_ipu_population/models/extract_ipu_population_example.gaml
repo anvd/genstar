@@ -9,6 +9,7 @@ model extract_ipu_population_example
 global {
 	
 	string extracted_population_properties; 
+	list original_population;
 	
 	init {
 		// 0. generate a Gen* compound population (household - people) if necessary
@@ -17,10 +18,10 @@ global {
 		if (!file_exists(group_population_data_file_path)) {
 			string properties_file_path <- '../includes/RandomCompoundPopulationProperties.properties';
 			
-			list genstar_household_people_compound_population <- random_compound_population(properties_file_path);
+			original_population <- random_compound_population(properties_file_path);
 
 			
-			// 1 write genstar_household_people_compound_population to CSV files
+			// write genstar_household_people_compound_population to CSV files
 			map<string, string> populationOutputFilePaths;
 			put '../includes/generated_people_population.csv' at: 'people' in: populationOutputFilePaths;
 			put '../includes/generated_household_population.csv' at: 'household' in: populationOutputFilePaths;
@@ -29,7 +30,7 @@ global {
 			put '../includes/people_attributes.csv' at: 'people' in: populationAttributesFilePaths;
 			put '../includes/household_attributes.csv' at: 'household' in: populationAttributesFilePaths;
 			
-			map<string, string> results <- population_to_csv(genstar_household_people_compound_population, populationOutputFilePaths, populationAttributesFilePaths);
+			map<string, string> results <- population_to_csv(original_population, populationOutputFilePaths, populationAttributesFilePaths);
 			
 			loop population_name over: results.keys {
 				write 'write ' + population_name + ' population to ' + (results at population_name);
@@ -40,21 +41,38 @@ global {
 		// 1. extract the generated Gen* population
 		list extracted_population <- extract_ipu_population(extracted_population_properties);
 		
-		// 2. verify the extracted Gen* population
+		// 2. elaborate the extracted result
+		do elaborate_extracting_result(original_population, extracted_population);		
 		
 		// 3. create GAMA agents from the extracted Gen* population
 		genstar_create synthetic_population: extracted_population;
-		
-		// TODO load_compound_population
 		
 		write 'To further assess the extracting result, open original population in ../includes/generated_household_population.csv and browse the \'household\' population';
 	}
 	
 	
 	action elaborate_extracting_result(list original_population, list extracted_population) {
+		// first three elements of a synthetic population
+		//		population name, references to "group" agents, references to "component" agents
 		
+		write 'Elaborate the original and extracted population';
+		write '\tExtracted percent: ' + get_percentage();
+		write '\tOriginal population\'s size: ' + (length(original_population) - 3);
+		write '\tExtracted population\'s size: ' + (length(extracted_population) - 3);
 	}
 	
+	
+	int get_percentage {
+		if (extracted_population_properties = '../includes/ExtractedIpuPopulationProperties_ZeroPointOnePercent.properties') {
+			return 0;
+		} else if (extracted_population_properties = '../includes/ExtractedIpuPopulationProperties_TenPercents.properties') {
+			return 10;
+		} else if (extracted_population_properties = '../includes/ExtractedIpuPopulationProperties_ThirtyPercents.properties') {
+			return 30;
+		}
+		
+		return -1;
+	}
 }
 
 species household {

@@ -108,40 +108,40 @@ public class RangeValuesAttributeTest {
 	}
 	
 	
-	@Test public void testFindCorrespondingAttributeValue() throws GenstarException {
+	@Test public void testFindMatchingAttributeValueOnData1() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		List<String> list1 = new ArrayList<String>();
 		list1.add("1");
 		list1.add("2");
-		assertTrue(attr.findCorrespondingAttributeValueOnData(list1) == null);
+		assertTrue(attr.getMatchingAttributeValueOnData(list1) == null);
 
 		attr.add(new RangeValue(DataType.INTEGER, "1", "2"));
-		assertTrue(attr.findCorrespondingAttributeValueOnData(list1) != null);
+		assertTrue(attr.getMatchingAttributeValueOnData(list1) != null);
 		
 		
 		List<String> list2 = new ArrayList<String>();
 		list2.add("0");
-		assertTrue(attr.findCorrespondingAttributeValueOnData(list2) == null);
+		assertTrue(attr.getMatchingAttributeValueOnData(list2) == null);
 		
 		
 		List<String> list3 = new ArrayList<String>();
 		list3.add("1");
-		assertTrue(attr.findCorrespondingAttributeValueOnData(list3) != null);
+		assertTrue(attr.getMatchingAttributeValueOnData(list3) != null);
 		
 		
 		List<String> list4 = new ArrayList<String>();
 		list4.add("2");
-		assertTrue(attr.findCorrespondingAttributeValueOnData(list4) != null);
+		assertTrue(attr.getMatchingAttributeValueOnData(list4) != null);
 		
 		
 		List<String> list5 = new ArrayList<String>();
 		list5.add("3");
-		assertTrue(attr.findCorrespondingAttributeValueOnData(list5) == null);
+		assertTrue(attr.getMatchingAttributeValueOnData(list5) == null);
 	}
 	
-	@Test public void testFindMatchingAttributeValue() throws GenstarException {
+	@Test public void testFindMatchingAttributeValueOnData() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
@@ -152,20 +152,20 @@ public class RangeValuesAttributeTest {
 		attr.add(rangeValue);
 
 		AttributeValue rangeValue1 = new RangeValue(DataType.INTEGER, "1", "3");
-		AttributeValue matchingValue1 = attr.findMatchingAttributeValueOnData(rangeValue1);
+		AttributeValue matchingValue1 = attr.getMatchingAttributeValueOnData(rangeValue1);
 		assertTrue(matchingValue1 instanceof RangeValue);
 		assertTrue(matchingValue1.equals(rangeValue));
 		
 		AttributeValue rangeValue2 = new RangeValue(DataType.INTEGER, "0", "3");
-		AttributeValue matchingValue2 = attr.findMatchingAttributeValueOnData(rangeValue2);
+		AttributeValue matchingValue2 = attr.getMatchingAttributeValueOnData(rangeValue2);
 		assertTrue(matchingValue2 == null);
 		
 		AttributeValue uniqueValue1 = new UniqueValue(DataType.INTEGER, "1");
-		AttributeValue matchingValue3 = attr.findMatchingAttributeValueOnData(uniqueValue1);
+		AttributeValue matchingValue3 = attr.getMatchingAttributeValueOnData(uniqueValue1);
 		assertTrue(matchingValue3.equals(rangeValue));
 		
 		AttributeValue uniqueValue2 = new UniqueValue(DataType.INTEGER, "4");
-		AttributeValue matchingValue4 = attr.findMatchingAttributeValueOnData(uniqueValue2);
+		AttributeValue matchingValue4 = attr.getMatchingAttributeValueOnData(uniqueValue2);
 		assertTrue(matchingValue4 == null);
 	}
 

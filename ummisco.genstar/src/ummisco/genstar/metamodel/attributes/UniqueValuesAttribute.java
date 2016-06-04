@@ -53,8 +53,6 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		if (!(value.getClass().equals(valueClassOnData))) { throw new GenstarException("value must be an instance of " + valueClassOnData.getName()); }
 		if (!this.dataType.equals(value.dataType)) { throw new GenstarException("Incompatible valueType"); }
 		
-//		if (this.containsInstanceOfAttributeValue(value) || this.containsValueOfAttributeValue(value)) { return false; }
-//		if (this.getInstanceOfAttributeValue(value) != null || this.containsValueOfAttributeValue(value)) { return false; }
 		if (this.getInstanceOfAttributeValue(value) != null) { return false; }
 		
 		// FIXME containsValue
@@ -102,32 +100,7 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		return false;
 	}
 
-//	@Override public boolean containsInstanceOfAttributeValue(final AttributeValue value) {
-//		return valuesOnData.contains(value);
-//	}
-
-	/*
-	@Override
-	public boolean containsValueOfAttributeValue(final AttributeValue value) {
-//		if (this.containsInstanceOfAttributeValue(value)) { return true; }
-		if (this.getInstanceOfAttributeValue(value) != null) { return true; }
-		
-		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return true; }
-		
-		return false;
-	}
-	*/
 	
-	@Override
-	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {
-		if (valuesOnData.contains(value)) { return value; }
-		
-		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return v; }
-		
-		return null;
-	}
-	
-
 	@Override public void clear() {
 		valuesOnData.clear();
 	}
@@ -141,17 +114,27 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 	}
 
 	@Override
-	public AttributeValue findCorrespondingAttributeValueOnData(final List<String> stringValue) throws GenstarException {
-		if (stringValue == null || stringValue.isEmpty()) { throw new GenstarException("'stringValue' parameter can not be null or empty"); }
+	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {
+		if (valuesOnData.contains(value)) { return value; }
 		
-		if (isIdentity) {
-			if (stringValue.size() == 1) { return new UniqueValue(dataType, stringValue.get(0)); }
-		}
+		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return v; }
 		
-		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringValue.get(0)));
+		return null;
 	}
 	
-	@Override public AttributeValue findMatchingAttributeValueOnData(final AttributeValue attributeValue) throws GenstarException {
+
+	@Override
+	public AttributeValue getMatchingAttributeValueOnData(final List<String> stringRepresentationOfValue) throws GenstarException {
+		if (stringRepresentationOfValue == null || stringRepresentationOfValue.isEmpty()) { throw new GenstarException("'stringRepresentationOfValue' parameter can not be null or empty"); }
+		
+//		if (isIdentity) {
+//			if (stringValue.size() == 1) { return new UniqueValue(dataType, stringValue.get(0)); }
+//		}
+		
+		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringRepresentationOfValue.get(0)));
+	}
+	
+	@Override public AttributeValue getMatchingAttributeValueOnData(final AttributeValue attributeValue) { // throws GenstarException {
 		if (attributeValue instanceof UniqueValue) { return this.getInstanceOfAttributeValue(attributeValue); }
 		
 		RangeValue rangeValue = (RangeValue) attributeValue;

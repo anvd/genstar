@@ -73,18 +73,6 @@ public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 		return false;
 	}
 
-	/*
-	@Override
-	public boolean containsValueOfAttributeValue(AttributeValue value) {
-		if (value instanceof UniqueValue && value.getDataType().equals(DataType.INTEGER)) {
-			UniqueValue _value = (UniqueValue)value;
-			int intValue = _value.getIntValue();
-			return (minValue.getIntValue() <= intValue) && (intValue <= maxValue.getIntValue());
-		}
-
-		return false;
-	}
-	*/
 
 	@Override
 	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {
@@ -103,16 +91,25 @@ public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 	public void clear() {}
 
 	@Override
-	public AttributeValue findCorrespondingAttributeValueOnData(final List<String> stringValue) throws GenstarException {
+	public AttributeValue getMatchingAttributeValueOnData(final List<String> stringValue) throws GenstarException {
 		if (stringValue == null || stringValue.isEmpty()) { throw new GenstarException("'stringValue' parameter can not be null or empty"); }
 		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringValue.get(0)));
 	}
 
 	@Override
-	public AttributeValue findMatchingAttributeValueOnData(final AttributeValue attributeValue) throws GenstarException {
+	public AttributeValue getMatchingAttributeValueOnData(final AttributeValue attributeValue) { // throws GenstarException {
 		if (attributeValue instanceof UniqueValue) { return this.getInstanceOfAttributeValue(attributeValue); }
 
-		throw new GenstarException("Not supported operation for attributeValue of " + attributeValue.getClass().getName());
+		return null;
+		// throw new GenstarException("Not supported operation for attributeValue of " + attributeValue.getClass().getName());
+	}
+	
+	public UniqueValue getMinValue() {
+		return minValue;
+	}
+	
+	public UniqueValue getMaxValue() {
+		return maxValue;
 	}
 
 }

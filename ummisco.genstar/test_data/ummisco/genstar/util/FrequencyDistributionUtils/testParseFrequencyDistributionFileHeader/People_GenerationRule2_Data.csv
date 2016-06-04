@@ -1,0 +1,5 @@
+Category:Input,Gender:Output,Frequency
+C0,true,100
+C1,true,200
+C0,false,300
+C1,false,400

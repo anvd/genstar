@@ -1,5 +1,6 @@
 package ummisco.genstar.gama;
 
+// TODO move this class to "ummisco.genstar" project
 public class PROPERTY_FILES {
 
 	public static final class FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES {
@@ -10,7 +11,9 @@ public class PROPERTY_FILES {
 
 		public static final String GENERATION_RULES_PROPERTY = "GENERATION_RULES";
 
-		public static final String NUMBER_OF_ENTITIES = "NUMBER_OF_ENTITIES";
+		public static final String NUMBER_OF_ENTITIES_PROPERTY = "NUMBER_OF_ENTITIES";
+		
+		public static final String ANALYSIS_RESULT_OUTPUT_FOLDER_PROPERTY = "ANALYSIS_RESULT_OUTPUT_FOLDER";
 	}
 
 	public static final class RANDOM_POPULATION_PROPERTIES {
@@ -20,6 +23,8 @@ public class PROPERTY_FILES {
 		public static final String ATTRIBUTES_PROPERTY = "ATTRIBUTES";
 
 		public static final String NB_OF_ENTITIES_PROPERTY = "NB_OF_ENTITIES";
+		
+		public static final String ID_ATTRIBUTE_PROPERTY = "ID_ATTRIBUTE";
 	}
 
 	public static final class RANDOM_COMPOUND_POPULATION_PROPERTIES {

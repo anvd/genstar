@@ -38,7 +38,7 @@ global {
 			write '\nGeneration starts...';
 			float starting_time <- machine_time;
 			
-			string distribution_result_file <- frequency_distribution_from_sample(attribute_data, sample_data, distribution_format, resulting_distribution);
+			string distribution_result_file <- frequency_distribution(attribute_data, sample_data, distribution_format, resulting_distribution);
 
 			write 'Generation finishes. Duration: ' + (machine_time - starting_time) + ' miliseconds.';
 		} 
@@ -62,7 +62,7 @@ global {
 			write '\nGeneration starts...';
 			float starting_time <- machine_time;
 
-			string distribution_result_file <- frequency_distribution_from_sample(attribute_data, sample_data, distribution_format, resulting_distribution);
+			string distribution_result_file <- frequency_distribution(attribute_data, sample_data, distribution_format, resulting_distribution);
 
 			write 'Generation finishes. Duration: ' + (machine_time - starting_time) + ' miliseconds.';
 		} 

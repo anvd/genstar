@@ -19,6 +19,7 @@ import msi.gama.precompiler.GamlAnnotations.operator;
 import msi.gama.precompiler.IOperatorCategory;
 import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
+import msi.gama.util.GamaMap;
 import msi.gama.util.IList;
 import msi.gama.util.file.GamaCSVFile;
 import msi.gama.util.file.IGamaFile;
@@ -43,13 +44,13 @@ public abstract class Genstars {
 	public abstract static class SampleFree {
 		
 		@operator(value = "frequency_distribution_population", type = IType.LIST, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "generates a synthetic population from the input data provided by the CVS files. The generated population can be passed to the 'create' statement to create agents.",
+		@doc(value = "generates a synthetic population from a set of frequency distributions (sample-free approach). The generated population can be passed to the 'genstar_create' statement to create agents.",
 			returns = "a list of maps in which each map represents the information (i.e., pairs of [attribute name : attribute value]) of a generated agent",
 			special_cases = { "" },
 			comment = "",
-			examples = { @example(value = "list synthetic_population <- frequency_distribution_population('Attributes.csv', 'GenerationRules.csv', 14000)",
+			examples = { @example(value = "list synthetic_population <- frequency_distribution_population(population_configuration.properties)",
 				equals = "",
-				test = false) }, see = { "frequency_distribution_from_sample", "link_populations" })
+				test = false) }, see = { "frequency_distribution", "link_populations" })
 		public static IList generatePopulationFromFrequencyDistribution(final IScope scope, final String populationPropertiesFilePath) {
 
 			try {
@@ -77,27 +78,62 @@ public abstract class Genstars {
 		}
 		
 		
-		@operator(value = "frequency_distribution_from_sample", type = IType.FILE, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "generates a frequency distribution generation rule from a sample data then saves the resulting generation rule to a CSV file",
+		@operator(value = "frequency_distribution", type = IType.FILE, category = { IOperatorCategory.GENSTAR })
+		@doc(value = "generates a frequency distribution generation rule from a sample data or a population then saves the resulting generation rule to a CSV file",
 			returns = "a boolean value, indicating where the operator is successful or not",
 			special_cases = { "" },
 			comment = "",
 			examples = { @example(value = "file result_file <- frequency_distribution_from_sample('Attributes.csv', 'SampleData.csv', 'DistributionFormat.csv', 'ResultingDistribution.csv')",
 				equals = "a file containing the resulting frequency distribution generation rule and locating at the resultDistributionCSVFilePath path",
 				test = false) }, see = { "population_from_csv", "link_populations" })
-		public static IGamaFile createFrequencyDistributionFromSample(final IScope scope, final String attributesCSVFilePath, 
-				final String sampleDataCSVFilePath, final String distributionFormatCSVFilePath, final String resultDistributionCSVFilePath) {
+		public static String createFrequencyDistributionFromSample(final IScope scope, final String attributesFilePath, 
+				final String sampleDataFilePath, final String distributionFormatFilePath, final String resultDistributionFilePath) {
 			
 			try {
-				String exportFileName =  GamaGenstarUtils.createFrequencyDistributionFromSample(scope, attributesCSVFilePath, sampleDataCSVFilePath, distributionFormatCSVFilePath, resultDistributionCSVFilePath);
-				
-				return new GamaCSVFile(scope, exportFileName, CSV_FILE_FORMATS.ATTRIBUTES.FIELD_DELIMITER, Types.STRING, true);
+				return GamaGenstarUtils.createFrequencyDistributionFromSampleDataOrPopulationFile(scope, attributesFilePath, sampleDataFilePath, distributionFormatFilePath, resultDistributionFilePath);
 			} catch (final Exception e) {
 				if (e instanceof GamaRuntimeException) { throw (GamaRuntimeException) e; }
 				else { throw GamaRuntimeException.create(e, scope); }
 			}
 		}
 		
+		
+		/*
+		@operator(value = "analyse_frequency_distribution_population_to_file", type = IType.MAP, content_type = IType.INT, category = { IOperatorCategory.GENSTAR })
+		@doc(value = "analyze a synthetic population with respect to the frequency distributions then write analysis result to files",
+		returns = "",
+		special_cases = { "" },
+		comment = "",
+		examples = { @example(value = "map<string, list> analysisResult <- analyse_frequency_distribution_population_to_file(gamaPopulation, populationPropertiesFilePath, outputFolderPath)",
+			equals = "",
+			test = false) }, see = { "" })
+		public static GamaMap<String, IList<Integer>> analyseFrequencyDistributionPopulation_ToFile(final IScope scope, final IList population, final String attributesFilePath, List<String> frequencyDistributionFilesPath, final String outputFolderPath) {
+			
+			try {
+
+				GamaGenstarUtils.analyseFrequencyDistributionPopulation(scope, population, attributesFilePath, frequencyDistributionFilesPath);
+				
+				return null;
+				
+			} catch (final Exception e) {
+				throw GamaRuntimeException.create(e, scope);
+			}
+			
+		}
+		
+		
+		@operator(value = "analyse_frequency_distribution_population_to_console", type = IType.MAP, content_type = IType.INT, category = { IOperatorCategory.GENSTAR })
+		@doc(value = "analyze a synthetic population with respect to the frequency distributions then write analysis result to GAMA console",
+		returns = "",
+		special_cases = { "" },
+		comment = "",
+		examples = { @example(value = "map<string, list> analysisResult <- analyse_frequency_distribution_population_to_console(gamaPopulation, populationPropertiesFilePath)",
+			equals = "",
+			test = false) }, see = { "" })
+		public static GamaMap<String, IList<Integer>> analyseFrequencyDistributionPopulation_ToConsole(final IScope scope, final IList population, final String attributesFilePath, List<String> frequencyDistributionFilesPath) {
+			return null;
+		}
+		*/
 	}
 	
 	
@@ -195,7 +231,7 @@ public abstract class Genstars {
 		
 
 		@operator(value = "analyse_ipf_population_to_console", type = IType.LIST, content_type = IType.INT, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "analyze a synthetic population with respect to the control totals then write analysis result to the GAMA console if necessary",
+		@doc(value = "analyze a synthetic population with respect to the IPF control totals then write analysis result to the GAMA console if necessary",
 		returns = "",
 		special_cases = { "" },
 		comment = "",
@@ -231,7 +267,7 @@ public abstract class Genstars {
 		
 		
 		@operator(value = "analyse_ipf_population_to_file", type = IType.LIST, content_type = IType.INT, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "analyze a synthetic population with respect to the control totals then write analysis result to the GAMA console if necessary",
+		@doc(value = "analyze a synthetic population with respect to the IPF control totals then write analysis result to the GAMA console if necessary",
 		returns = "",
 		special_cases = { "" },
 		comment = "",
@@ -271,8 +307,9 @@ public abstract class Genstars {
 			
 		}
 		
+		
 		private static List<Integer> analyseIpfPopulation(final IScope scope, final IList gamaPopulation, final String attributesFilePath, 
-				final String controlledAttributesListFilePath, final String controlTotalsFilePath) throws GenstarException {
+				final String controlledAttributesListFilePath, final String ipfControlTotalsFilePath) throws GenstarException {
 			// convert GAMA population to Gen* population
 			String populationName = (String)gamaPopulation.get(0); // first element is the population name
 			Map<String, String> populationsAttributes = new HashMap<String, String>();
@@ -281,7 +318,7 @@ public abstract class Genstars {
 			IPopulation genstarPopulation = GamaGenstarUtils.convertGamaPopulationToGenstarPopulation(scope, gamaPopulation, populationsAttributes);
 			
 			// do the analysis
-			GenstarCsvFile controlTotalsFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
+			GenstarCsvFile controlTotalsFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, ipfControlTotalsFilePath, true), false);
 			GenstarCsvFile controlledAttributesListFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlledAttributesListFilePath, true), false);
 			return IpfUtils.analyseIpfPopulation(genstarPopulation, controlledAttributesListFile, controlTotalsFile);
 		}
@@ -368,6 +405,7 @@ public abstract class Genstars {
 	
 	
 	public abstract static class Utils {
+		
 		@operator(value = "link_populations", category = { IOperatorCategory.GENSTAR })
 		@doc(value = "Links populations",
 		returns = "",
@@ -460,7 +498,7 @@ public abstract class Genstars {
 		}
 
 		
-		@operator(value = "population_to_csv", type = IType.LIST, category = { IOperatorCategory.GENSTAR })
+		@operator(value = {"population_to_csv", "save_population" }, type = IType.LIST, category = { IOperatorCategory.GENSTAR })
 		@doc(value = "Writes a synthetic population to CSV file(s).",
 		returns = "A map in which keys are population names and values are absolute file paths to the CSV files of the corresponding populations.",
 		special_cases = { "" },
@@ -490,7 +528,7 @@ public abstract class Genstars {
 		}
 		
 		
-		@operator(value = "load_population", type = IType.LIST, category = { IOperatorCategory.GENSTAR })
+		@operator(value = { "load_population", "population_from_csv" }, type = IType.LIST, category = { IOperatorCategory.GENSTAR })
 		@doc(value = "Load a single population from CSV file(s).",
 		returns = "The loaded population in list format understood by genstar_create statement",
 		special_cases = { "" },
@@ -525,7 +563,7 @@ public abstract class Genstars {
 		}
 		
 		
-		@operator(value = "load_compound_population", type = IType.LIST, category = { IOperatorCategory.GENSTAR })
+		@operator(value = { "load_compound_population", "compound_population_from_csv" }, type = IType.LIST, category = { IOperatorCategory.GENSTAR })
 		@doc(value = "Load a compound population from CSV file(s).",
 		returns = "The loaded compound population in list format understood by genstar_create statement",
 		special_cases = { "" },

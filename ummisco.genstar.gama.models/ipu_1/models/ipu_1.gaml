@@ -1,7 +1,7 @@
 /**
  *  ipu_1
  *  Author: voducan
- *  Description: 
+ *  Description: An example of using the 'ipu_population' operator to generate a synthetic population using the Iterative Proportional Fitting (IPU) algorithm.
  */
 
 model ipu_1

@@ -139,13 +139,13 @@ public class Entity {
 		
 		// TODO call internalSetEntityAttributeValue
 		
-		if (!population.containAttribute(attribute)) { throw new GenstarException("No attribute found with " + attribute.getNameOnData() + " as name on " + population.getName() + " entity"); }
+		if (!population.containAttribute(attribute)) { throw new GenstarException("No attribute found with " + attribute.getNameOnData() + " as name on data of " + population.getName() + " entity"); }
 		
 		AttributeValue attributeValueOnData = null;
 		
 		// validation of attributeValueOnEntity
-		attributeValueOnData = attribute.findMatchingAttributeValueOnData(attributeValueOnEntity);
-		if (attributeValueOnData == null) { throw new GenstarException("No matching attribute value on data found for attribute value on entity: " + attributeValueOnEntity + " on attribute " + attribute.getNameOnData()); }
+		attributeValueOnData = attribute.getMatchingAttributeValueOnData(attributeValueOnEntity);
+		if (attributeValueOnData == null) {  throw new GenstarException(attributeValueOnEntity + " is not a valid value of " + attribute.getNameOnData()  + " attribute."); }
 		
 		
 		if (entityAttributeValues == Collections.EMPTY_MAP) {

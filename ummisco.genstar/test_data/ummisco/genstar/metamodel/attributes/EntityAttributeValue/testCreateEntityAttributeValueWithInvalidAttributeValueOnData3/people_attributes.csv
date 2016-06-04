@@ -1,0 +1,2 @@
+Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On Entity
+Age,age,int,Range,0:15; 16:20; 21:25; 26:30; 31:50; 51:60; 61:75; 76:80; 81:100,Unique

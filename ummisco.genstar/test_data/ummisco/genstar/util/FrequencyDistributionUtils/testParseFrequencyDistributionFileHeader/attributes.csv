@@ -1,0 +1,4 @@
+Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On Entity
+Category,category,string,Unique,C0; C1,Unique
+Gender,gender,bool,Unique,true; false,Unique
+Age,age,int,Range,0:4; 5:17,Unique

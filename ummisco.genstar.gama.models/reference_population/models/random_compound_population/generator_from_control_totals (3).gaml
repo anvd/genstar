@@ -79,7 +79,7 @@ global {
 				write 'Compute the frequency distribution of the re-generated household population from ' + percentage + ' percentage of the orginal population';
 				string resulting_distribution <- base_folder + percentage + base_percentage_folder + base_resulting_distribution_file + nb_controlled_attrs + 'controlled_attributes_' + percentage + percent_sample;
 				string distribution_format <- base_folder + 'household_distribution_format.csv';
-				string distribution_result_file <- frequency_distribution_from_sample(group_attributes_csv_file_path, group_population_output_file, distribution_format, resulting_distribution);
+				string distribution_result_file <- frequency_distribution(group_attributes_csv_file_path, group_population_output_file, distribution_format, resulting_distribution);
 			}
 		}
 	}

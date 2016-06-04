@@ -62,7 +62,7 @@ public class FourWayIpfTest {
 		if (!controlTotalsFile.exists()) {
 			int numberOfHouseholds = 1000;
 			List<List<String>> householdControlTotals = IpfUtils.generateIpfControlTotals(controlAttributesFile, numberOfHouseholds);
-			GenstarUtils.writeContentToCsvFile(householdControlTotals, controlTotalsFilePath);
+			GenstarUtils.writeStringContentToCsvFile(householdControlTotals, controlTotalsFilePath);
 		}
 		
 		// generate sample data if necessary
@@ -72,7 +72,7 @@ public class FourWayIpfTest {
 			int minEntitiesOfEachAttributeValuesSet = 1;
 			int maxEntitiesOfEachAttributeValuesSet = 3;
 			
-			IPopulation generatedSamplePopulation = GenstarUtils.generateRandomSinglePopulation(populationName, _attributesFile, minEntitiesOfEachAttributeValuesSet, maxEntitiesOfEachAttributeValuesSet);
+			IPopulation generatedSamplePopulation = GenstarUtils.generateRandomSinglePopulation(populationName, _attributesFile, null, minEntitiesOfEachAttributeValuesSet, maxEntitiesOfEachAttributeValuesSet);
 			
 			Map<String, String> csvFilePaths = new HashMap<String, String>();
 			csvFilePaths.put(populationName, _sampleDataFilePath);

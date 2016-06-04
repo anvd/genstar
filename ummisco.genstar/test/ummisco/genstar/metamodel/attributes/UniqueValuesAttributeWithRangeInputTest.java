@@ -62,16 +62,16 @@ public class UniqueValuesAttributeWithRangeInputTest {
 		List<String> stringValue0 = new ArrayList<String>();
 		stringValue0.add("0");
 		
-		AttributeValue value0 = attribute.findCorrespondingAttributeValueOnData(stringValue0);
+		AttributeValue value0 = attribute.getMatchingAttributeValueOnData(stringValue0);
 		assertTrue(value0 == null);
 		
 		List<String> stringValue1 = new ArrayList<String>();
 		stringValue1.add("1");
 		
-		AttributeValue value1 = attribute.findCorrespondingAttributeValueOnData(stringValue1);
+		AttributeValue value1 = attribute.getMatchingAttributeValueOnData(stringValue1);
 		assertTrue(value1 != null);
 		
-		AttributeValue _value1 = attribute.findCorrespondingAttributeValueOnData(stringValue1);
+		AttributeValue _value1 = attribute.getMatchingAttributeValueOnData(stringValue1);
 		assertTrue(value1.equals(_value1));
 	}
 	
@@ -82,22 +82,22 @@ public class UniqueValuesAttributeWithRangeInputTest {
 		UniqueValuesAttributeWithRangeInput attribute = new UniqueValuesAttributeWithRangeInput(generator, "dummy attribute", "dummy attribute", minValue, maxValue);
 
 		UniqueValue value1 = new UniqueValue(DataType.INTEGER, "0");
-		assertTrue(attribute.findMatchingAttributeValueOnData(value1) == null);
+		assertTrue(attribute.getMatchingAttributeValueOnData(value1) == null);
 		
 		UniqueValue value2 = new UniqueValue(DataType.INTEGER, "1");
-		AttributeValue _value2 = attribute.findMatchingAttributeValueOnData(value2);
+		AttributeValue _value2 = attribute.getMatchingAttributeValueOnData(value2);
 		assertTrue(value2.compareTo(_value2) == 0);
 		assertTrue(!value2.equals(_value2));
 		
-		AttributeValue __value2 = attribute.findMatchingAttributeValueOnData(value2);
+		AttributeValue __value2 = attribute.getMatchingAttributeValueOnData(value2);
 		assertTrue(_value2.equals(__value2));
 		
 		UniqueValue value3 = new UniqueValue(DataType.INTEGER, "10");
-		AttributeValue _value3 = attribute.findMatchingAttributeValueOnData(value3);
+		AttributeValue _value3 = attribute.getMatchingAttributeValueOnData(value3);
 		assertTrue(value3.compareTo(_value3) == 0);
 		assertTrue(!value3.equals(_value3));
 
-		AttributeValue __value3 = attribute.findMatchingAttributeValueOnData(value3);
+		AttributeValue __value3 = attribute.getMatchingAttributeValueOnData(value3);
 		assertTrue(_value3.equals(__value3));
 	}
 	

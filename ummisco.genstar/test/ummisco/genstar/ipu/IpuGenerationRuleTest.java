@@ -130,13 +130,11 @@ public class IpuGenerationRuleTest {
 		
 		// 2. initialize sample data
 		AbstractAttribute groupIdAttributeOnGroupEntity = rule.getGenerator().getAttributeByNameOnData("Household ID");
-		groupIdAttributeOnGroupEntity.setIdentity(true);
 		GenstarCsvFile groupSampleDataFile = new GenstarCsvFile(base_path + "group_sample.csv", true);
 		ISampleData groupSample = new SampleData("household", rule.getGenerator().getAttributes(), groupSampleDataFile);
 		
 		AbstractAttribute groupIdAttributeOnComponentEntity = rule.getComponentGenerator().getAttributeByNameOnData("Household ID");
 		GenstarCsvFile componentSampleFile = new GenstarCsvFile(base_path + "component_sample.csv", true);
-		groupIdAttributeOnComponentEntity.setIdentity(true);
 		ISampleData componentSample = new SampleData("people", rule.getComponentGenerator().getAttributes(), componentSampleFile);
 		
 		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
@@ -176,13 +174,11 @@ public class IpuGenerationRuleTest {
 		
 		// 2. initialize sample data
 		AbstractAttribute groupIdAttributeOnGroupEntity = rule.getGenerator().getAttributeByNameOnData("Household ID");
-		groupIdAttributeOnGroupEntity.setIdentity(true);
 		GenstarCsvFile groupSampleDataFile = new GenstarCsvFile(base_path + "group_sample.csv", true);
 		ISampleData groupSample = new SampleData("household", rule.getGenerator().getAttributes(), groupSampleDataFile);
 		
 		AbstractAttribute groupIdAttributeOnComponentEntity = rule.getComponentGenerator().getAttributeByNameOnData("Household ID");
 		GenstarCsvFile componentSampleFile = new GenstarCsvFile(base_path + "component_sample.csv", true);
-		groupIdAttributeOnComponentEntity.setIdentity(true);
 		ISampleData componentSample = new SampleData("people", rule.getComponentGenerator().getAttributes(), componentSampleFile);
 		
 		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);

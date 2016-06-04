@@ -44,9 +44,7 @@ public class CompoundSampleDataTest {
 		
 		// groupIdAttributeOnGroup, groupIdAttributeOnComponent
 		AbstractAttribute groupIdAttributeOnGroup = groupGenerator.getAttributeByNameOnData("Household_ID");
-		groupIdAttributeOnGroup.setIdentity(true);
 		AbstractAttribute groupIdAttributeOnComponent = componentGenerator.getAttributeByNameOnData("Household_ID");
-		groupIdAttributeOnComponent.setIdentity(true);
 		
 		ISampleData groupSampleData = new SampleData(groupGenerator.getPopulationName(), groupGenerator.getAttributes(), groupSampleFile);
 		ISampleData componentSampleData = new SampleData(componentGenerator.getPopulationName(), componentGenerator.getAttributes(), componentSampleFile);

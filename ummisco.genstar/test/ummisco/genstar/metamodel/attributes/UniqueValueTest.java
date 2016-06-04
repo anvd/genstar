@@ -133,20 +133,20 @@ public class UniqueValueTest {
 		attr.add(uniqueValue);
 
 		AttributeValue rangeValue1 = new RangeValue(DataType.INTEGER, "1", "3");
-		AttributeValue matchingValue1 = attr.findMatchingAttributeValueOnData(rangeValue1);
+		AttributeValue matchingValue1 = attr.getMatchingAttributeValueOnData(rangeValue1);
 		assertTrue(matchingValue1 instanceof UniqueValue);
 		assertTrue(matchingValue1.equals(uniqueValue));
 		
 		AttributeValue rangeValue2 = new RangeValue(DataType.INTEGER, "2", "3");
-		AttributeValue matchingValue2 = attr.findMatchingAttributeValueOnData(rangeValue2);
+		AttributeValue matchingValue2 = attr.getMatchingAttributeValueOnData(rangeValue2);
 		assertTrue(matchingValue2 == null);
 		
 		AttributeValue uniqueValue1 = new UniqueValue(DataType.INTEGER, "1");
-		AttributeValue matchingValue3 = attr.findMatchingAttributeValueOnData(uniqueValue1);
+		AttributeValue matchingValue3 = attr.getMatchingAttributeValueOnData(uniqueValue1);
 		assertTrue(matchingValue3.equals(uniqueValue));
 		
 		AttributeValue uniqueValue2 = new UniqueValue(DataType.INTEGER, "4");
-		AttributeValue matchingValue4 = attr.findMatchingAttributeValueOnData(uniqueValue2);
+		AttributeValue matchingValue4 = attr.getMatchingAttributeValueOnData(uniqueValue2);
 		assertTrue(matchingValue4 == null);
 	}
 }

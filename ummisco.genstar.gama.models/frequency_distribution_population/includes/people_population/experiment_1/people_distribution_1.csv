@@ -1,0 +1,13 @@
+Age:Output,Gender:Output,Work:Output,Frequency
+0:30,true,teacher,200
+0:30,true,architect,600
+0:30,false,teacher,700
+0:30,false,architect,100
+31:75,true,teacher,300
+31:75,true,architect,700
+31:75,false,teacher,700
+31:75,false,architect,200
+76:100,true,teacher,200
+76:100,true,architect,500
+76:100,false,teacher,600
+76:100,false,architect,200

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
+import ummisco.genstar.metamodel.generation_rules.SampleFreeGenerationRule;
 import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
 import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
@@ -41,6 +43,7 @@ import ummisco.genstar.sample_free.CustomSampleFreeGenerationRule;
 import ummisco.genstar.sample_free.FrequencyDistributionGenerationRule;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.CsvWriter;
+import ummisco.genstar.util.FrequencyDistributionUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
 import ummisco.genstar.util.CSV_FILE_FORMATS;
@@ -80,27 +83,27 @@ public class GamaGenstarUtils {
 	}
 	
 	
-	static IPopulation generateFrequencyDistributionPopulation(final IScope scope, final Properties populationProperties /* TODO change to frequencyDistributionPopulationProperties */) throws GenstarException {
+	static IPopulation generateFrequencyDistributionPopulation(final IScope scope, final Properties frequencyDistributionPopulationProperties) throws GenstarException {
 		
 		// 1. Read the properties
-		String populationName = populationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.POPULATION_NAME_PROPERTY);
+		String populationName = frequencyDistributionPopulationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.POPULATION_NAME_PROPERTY);
 		if (populationName == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.POPULATION_NAME_PROPERTY + " property not found"); }
 		
-		String attributesCSVFilePath = populationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.ATTRIBUTES_PROPERTY);
+		String attributesCSVFilePath = frequencyDistributionPopulationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.ATTRIBUTES_PROPERTY);
 		if (attributesCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.ATTRIBUTES_PROPERTY + " property not found"); }
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
 		
-		String generationRulesCSVFilePath = populationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.GENERATION_RULES_PROPERTY);
+		String generationRulesCSVFilePath = frequencyDistributionPopulationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.GENERATION_RULES_PROPERTY);
 		if (generationRulesCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.GENERATION_RULES_PROPERTY + " property not found"); }
 		GenstarCsvFile generationRulesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, generationRulesCSVFilePath, true), true);
 		
-		String nbOfEntitiesProperty = populationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.NUMBER_OF_ENTITIES);
-		if (nbOfEntitiesProperty == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.NUMBER_OF_ENTITIES + " property not found"); }
+		String nbOfEntitiesProperty = frequencyDistributionPopulationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.NUMBER_OF_ENTITIES_PROPERTY);
+		if (nbOfEntitiesProperty == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.NUMBER_OF_ENTITIES_PROPERTY + " property not found"); }
 		int nbOfEntities = 0;
 		try {
 			nbOfEntities = Integer.parseInt(nbOfEntitiesProperty);
 		} catch (NumberFormatException nfe) {
-			throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.NUMBER_OF_ENTITIES + " property can not contain a negative integer.");
+			throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.NUMBER_OF_ENTITIES_PROPERTY + " property can not contain a negative integer.");
 		}
 		if (nbOfEntities <= 0) { throw new GenstarException("Value of " + nbOfEntitiesProperty + " property must be a positive integer"); }
 		
@@ -109,57 +112,72 @@ public class GamaGenstarUtils {
 		SampleFreeGenerator generator = new SampleFreeGenerator("Population Generator", nbOfEntities);
 		generator.setPopulationName(populationName);
 		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
-		GamaGenstarUtils.createSampleFreeGenerationRules(scope, generator, generationRulesCSVFile);
+		List<GenstarCsvFile> generationRuleFiles = GamaGenstarUtils.createSampleFreeGenerationRules(scope, generator, generationRulesCSVFile);
+		
+		IPopulation population = generator.generate();
 		
 		
-		// 3. Generate the population
-		return generator.generate();
+		// 3. perform the post generation analysis if necessary  
+		String analysisResultOutputFolderPath = frequencyDistributionPopulationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.ANALYSIS_RESULT_OUTPUT_FOLDER_PROPERTY);
+		if (analysisResultOutputFolderPath != null) {
+			String reconstructedFolderPath = FileUtils.constructAbsoluteFilePath(scope, analysisResultOutputFolderPath, true);
+			FrequencyDistributionUtils.analyseFrequencyDistributionPopulation(population, generationRuleFiles, reconstructedFolderPath);
+		}
+		
+		
+		// 4. Generate the population
+		return population;
 	}
 	
 	
-	// TODO check potential duplication with "control_totals" or "ipf_control_totals"
-	static String createFrequencyDistributionFromSample(final IScope scope, final String attributesCSVFilePath, 
-			final String sampleDataCSVFilePath, final String distributionFormatCSVFilePath, final String resultDistributionCSVFilePath) throws GenstarException {
+	static String createFrequencyDistributionFromSampleDataOrPopulationFile(final IScope scope, final String attributesCsvFilePath, 
+			final String sampleDataCsvFilePath, final String distributionFormatCsvFilePath, final String resultDistributionCsvFilePath) throws GenstarException {
+//	TODO review this method due to two separate responsibilities
+//		+ build the frequency distribution
+//		+ save the frequency distribution to file
+		
 		
 		try {
 			// initialize CSV files
-			GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
-			GenstarCsvFile sampleDataCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, sampleDataCSVFilePath, true), true);
-			GenstarCsvFile distributionFormatCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, distributionFormatCSVFilePath, true), true);
+			GenstarCsvFile attributesCsvFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCsvFilePath, true), true);
+			GenstarCsvFile sampleDataCsvFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, sampleDataCsvFilePath, true), true);
+			GenstarCsvFile distributionFormatCsvFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, distributionFormatCsvFilePath, true), true);
 			
 			// 1. create the generator then add attributes
 			SampleFreeGenerator generator = new SampleFreeGenerator("dummy generator", 10);
-			AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
+			AttributeUtils.createAttributesFromCsvFile(generator, attributesCsvFile);
 			
 			// 2. read the distribution file format to know the input and output attributes
-			List<String> attributeNamesOnData = distributionFormatCSVFile.getHeaders();
+			List<String> attributeNamesOnData = distributionFormatCsvFile.getHeaders();
 			List<String> attributeNamesOnDataWithoutInputOutput = new ArrayList<String>();
-			if (attributeNamesOnData.size() < 1) { throw new GenstarException("First line of distribution format file must contain at least 2 elements. File: " + distributionFormatCSVFile.getPath() + "."); }
+			if (attributeNamesOnData.size() < 1) { throw new GenstarException("First line of distribution format file must contain at least 2 elements. File: " + distributionFormatCsvFile.getPath() + "."); }
 			for (int index=0; index < attributeNamesOnData.size(); index++) {
 				String attribute = attributeNamesOnData.get(index);
 				StringTokenizer t = new StringTokenizer(attribute, CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE.ATTRIBUTE_NAME_TYPE_DELIMITER);
-				if (t.countTokens() != 2) { throw new GenstarException("Element must have format attribute_name:Input or attribute_name:Output. File: " + distributionFormatCSVFile.getPath() + "."); }
+				if (t.countTokens() != 2) { throw new GenstarException("Element must have format attribute_name:Input or attribute_name:Output. File: " + distributionFormatCsvFile.getPath() + "."); }
 				
 				String attributeNameOnData = t.nextToken();
-				if (generator.getAttributeByNameOnData(attributeNameOnData) == null) { throw new GenstarException("Attribute '" + attributeNameOnData + "' is not defined. File: " + distributionFormatCSVFile.getPath() + "."); }
+				if (generator.getAttributeByNameOnData(attributeNameOnData) == null) { throw new GenstarException("Attribute '" + attributeNameOnData + "' is not defined. File: " + distributionFormatCsvFile.getPath() + "."); }
 				attributeNamesOnDataWithoutInputOutput.add(attributeNameOnData);
 				
 				String attributeType = t.nextToken();
 				if (!attributeType.equals(CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE.INPUT_ATTRIBUTE) && !attributeType.equals(CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE.OUTPUT_ATTRIBUTE)) {
-					throw new GenstarException("Attribute " + attributeNameOnData + " must either be Input or Output. File: " + distributionFormatCSVFile.getPath() + ".");
+					throw new GenstarException("Attribute " + attributeNameOnData + " must either be Input or Output. File: " + distributionFormatCsvFile.getPath() + ".");
 				}
 			}
 			
 			// 3. create a frequency generation rule from the sample data then write the generation rule to file.
-			FrequencyDistributionGenerationRule fdGenerationRule = GenstarUtils.createFrequencyDistributionGenerationRuleFromSampleData(generator, distributionFormatCSVFile, sampleDataCSVFile);
+			FrequencyDistributionGenerationRule fdGenerationRule = FrequencyDistributionUtils.createFrequencyDistributionGenerationRuleFromSampleDataOrPopulationFile(generator, distributionFormatCsvFile, sampleDataCsvFile);
 			
-			List<String[]> contents = new ArrayList<String[]>();
+//			List<String[]> contents = new ArrayList<String[]>();
+			List<List<String>> contents = new ArrayList<List<String>>();
 			
 			// write the header
 			String[] generationRuleAttributeNamesArray = new String[attributeNamesOnData.size() + 1];
 			attributeNamesOnData.toArray(generationRuleAttributeNamesArray);
 			generationRuleAttributeNamesArray[generationRuleAttributeNamesArray.length - 1] = "Frequency";
-			contents.add(generationRuleAttributeNamesArray);
+//			contents.add(generationRuleAttributeNamesArray);
+			contents.add(Arrays.asList(generationRuleAttributeNamesArray));
 			
 			
 			List<AbstractAttribute> generationRuleAttributes = new ArrayList<AbstractAttribute>();
@@ -170,33 +188,38 @@ public class GamaGenstarUtils {
 			Collections.sort(sortedAttributeValueFrequencies, new GenstarUtils.AttributeValuesFrequencyComparator(generationRuleAttributes));
 			
 			
-			//TODO refactor this code, use GenstarUtils.writeControlTotalsToCsvFile(controlTotals, csvFilePath);
-			// write attribute values frequencies to CSV file, one line for each AttributeValuesFrequency object
 			for (AttributeValuesFrequency avf : sortedAttributeValueFrequencies) {
-				String[] row = new String[attributeNamesOnData.size() + 1];
+//				String[] row = new String[attributeNamesOnData.size() + 1];
+				List<String> row = new ArrayList<String>();
 
 				// build the string representation of each set of attribute values
 				for (int i=0; i<generationRuleAttributes.size(); i++) {
 					AttributeValue av = avf.getAttributeValueOnData(generationRuleAttributes.get(i));
-					row[i] = av.toCsvString();
+//					row[i] = av.toCsvString();
+					row.add(av.toCsvString());
 				}
-				row[row.length - 1] = Integer.toString(avf.getFrequency());
+//				row[row.length - 1] = Integer.toString(avf.getFrequency());
+				row.add(Integer.toString(avf.getFrequency()));
 				
 				contents.add(row);
 			}
 			
+			// TODO delegate to GenstarUtils.writeStringContentToCsvFile
 			// save the CSV file
-			String exportFileName = FileUtils.constructAbsoluteFilePath(scope, resultDistributionCSVFilePath, false);
-			CsvWriter writer = new CsvWriter(exportFileName);
-			for ( String[] ss : contents ) { writer.writeRecord(ss); }
-			writer.close();
+			String exportFileName = FileUtils.constructAbsoluteFilePath(scope, resultDistributionCsvFilePath, false);
+//			CsvWriter writer = new CsvWriter(exportFileName);
+//			for ( String[] ss : contents ) { writer.writeRecord(ss); }
+//			writer.close();
+			
+			GenstarUtils.writeStringContentToCsvFile(contents, exportFileName);
 			
 			return exportFileName;
 		} catch (Exception e) {
 			throw new GenstarException(e);
 		}
 	}
-
+	
+	
 	
 	static IPopulation generateRandomSinglePopulation(final IScope scope, final Properties populationProperties) throws GenstarException {
 		// 1. Read the properties
@@ -211,10 +234,12 @@ public class GamaGenstarUtils {
 		if (nbOfEntitiesProperty == null) { throw new GenstarException(PROPERTY_FILES.RANDOM_POPULATION_PROPERTIES.NB_OF_ENTITIES_PROPERTY + " property not found"); }
 		int nbOfEntities = Integer.parseInt(nbOfEntitiesProperty);
 		if (nbOfEntities <= 0) { throw new GenstarException("Value of " + nbOfEntitiesProperty + " property must be a positive integer"); }
+		
+		String idAttributeNameOnData = populationProperties.getProperty(PROPERTY_FILES.RANDOM_POPULATION_PROPERTIES.ID_ATTRIBUTE_PROPERTY);
 
 		
 		// 2. Generate the population
-		return GenstarUtils.generateRandomSinglePopulation(populationName, attributesFile, nbOfEntities);
+		return GenstarUtils.generateRandomSinglePopulation(populationName, attributesFile, idAttributeNameOnData, nbOfEntities);
 	}
 	
 	
@@ -329,7 +354,6 @@ public class GamaGenstarUtils {
 			if (idAttributeNameOnData != null) {
 				AbstractAttribute idAttribute = generator.getAttributeByNameOnData(idAttributeNameOnData);
 				if (idAttribute == null) { throw new GenstarException(idAttributeNameOnData + " is not recognized as an attribute a valid"); }
-				idAttribute.setIdentity(true);
 			}
 			
 			// 4. ensure that all controlled attributes exist
@@ -596,7 +620,10 @@ public class GamaGenstarUtils {
 	}
 	
 	
-	public static void createSampleFreeGenerationRules(final IScope scope, final SampleFreeGenerator generator, final GenstarCsvFile sampleFreeGenerationRulesListFile) throws GenstarException {
+	public static List<GenstarCsvFile> createSampleFreeGenerationRules(final IScope scope, final SampleFreeGenerator generator, final GenstarCsvFile sampleFreeGenerationRulesListFile) throws GenstarException {
+		
+		List<GenstarCsvFile> generationRuleFiles = new ArrayList<GenstarCsvFile>();
+		
 		List<List<String>> fileContent = sampleFreeGenerationRulesListFile.getContent();
 		if ( fileContent == null || fileContent.isEmpty() ) { throw new GenstarException("Invalid Generation Rule file: content is empty (file: " + sampleFreeGenerationRulesListFile.getPath()  + ")"); }
 		int rows = fileContent.size();
@@ -622,38 +649,30 @@ public class GamaGenstarUtils {
 			String ruleDataFilePathOrJavaClass = (String)generationRuleInfo.get(1);
 			String ruleTypeName = (String)generationRuleInfo.get(2);
 			GenstarCsvFile ruleDataFile = null;
-			Properties properties = null;
+			
+			// initialize the (sample free) data file
 			if (!ruleTypeName.equals(CustomSampleFreeGenerationRule.RULE_TYPE_NAME)) {
-				if (ruleTypeName.equals(IpfGenerationRule.RULE_TYPE_NAME)) { // Sample Data Configuration is a property file
-					File sampleDataPropertyFile = new File(FileUtils.constructAbsoluteFilePath(scope, ruleDataFilePathOrJavaClass, true));
-					try {
-						FileInputStream propertyInputStream = new FileInputStream(sampleDataPropertyFile);
-						properties = new Properties();
-						properties.load(propertyInputStream);
-					} catch (FileNotFoundException e) {
-						throw new GenstarException(e);
-					} catch (IOException e) {
-						throw new GenstarException(e);
-					}
-				} else { // Frequency Distribution or Attribute Inference
-					ruleDataFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, ruleDataFilePathOrJavaClass, true), true);
-				}
+				
+				if (ruleTypeName.equals(IpfGenerationRule.RULE_TYPE_NAME)) { throw new GenstarException("Unsupported generation rule type: " + IpfGenerationRule.RULE_TYPE_NAME); }
+				
+				ruleDataFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, ruleDataFilePathOrJavaClass, true), true); // Frequency Distribution or Attribute Inference
 			}
 			
 			
 			if (ruleTypeName.equals(FrequencyDistributionGenerationRule.RULE_TYPE_NAME)) {
-				GenstarUtils.createFrequencyDistributionGenerationRule(generator, ruleName, ruleDataFile);
+				FrequencyDistributionUtils.createFrequencyDistributionGenerationRule(generator, ruleName, ruleDataFile);
+				generationRuleFiles.add(ruleDataFile); // ATTENTION: only save FrequencyDistributionGenerationRule file
 			} else if (ruleTypeName.equals(AttributeInferenceGenerationRule.RULE_TYPE_NAME)) {
 				GenstarUtils.createAttributeInferenceGenerationRule(generator, ruleName, ruleDataFile);
-			} else if (ruleTypeName.equals(IpfGenerationRule.RULE_TYPE_NAME)) {
-				throw new GenstarException("Unsupported generation rule type: " + IpfGenerationRule.RULE_TYPE_NAME);
-				//createSampleDataGenerationRule(scope, generator, ruleName, properties);
 			} else if (ruleTypeName.equals(CustomSampleFreeGenerationRule.RULE_TYPE_NAME)) { 
+				// ATTENTION: not "save" custom generation rule
 				GenstarUtils.createCustomGenerationRule(generator, ruleName, ruleDataFilePathOrJavaClass);
 			} else {
 				throw new GenstarException("Unsupported generation rule (" + ruleTypeName + "), file: " + sampleFreeGenerationRulesListFile.getPath());
 			}
 		}
+		
+		return generationRuleFiles;
 	}
 	
 	
@@ -809,6 +828,11 @@ public class GamaGenstarUtils {
 				componentReferenceOnGroup, groupReferenceOnComponent);
 	}
 
+
+	public static void analyseFrequencyDistributionPopulation(final IScope scope, final IList population, final Properties populationProperties) {
+		
+	}
+
 	
 	public static IPopulation convertGamaPopulationToGenstarPopulation(final IScope scope, final IList gamaPopulation, final Map<String, String> populationAttributesFilePathsByPopulationNames) throws GenstarException {
 		
@@ -913,4 +937,5 @@ public class GamaGenstarUtils {
 
 		return gamaPopulation;
 	}
+
 }

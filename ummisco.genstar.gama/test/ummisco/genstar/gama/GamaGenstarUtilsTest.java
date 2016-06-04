@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,11 +31,14 @@ import ummisco.genstar.ipf.IpfGenerationRule;
 import ummisco.genstar.ipu.IpuGenerationRule;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.generation_rules.SampleFreeGenerationRule;
 import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
+import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
 import ummisco.genstar.metamodel.population.Entity;
 import ummisco.genstar.metamodel.population.IPopulation;
 import ummisco.genstar.metamodel.sample_data.CompoundSampleData;
 import ummisco.genstar.metamodel.sample_data.SampleData;
+import ummisco.genstar.sample_free.FrequencyDistributionGenerationRule;
 import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
@@ -184,8 +188,48 @@ public class GamaGenstarUtilsTest {
 	}
 	
 	
-	@Test public void testCreateSampleFreeGenerationRules() {
-		fail("not yet implemented");
+	@Test public void testCreateSampleFreeGenerationRules(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
+		
+		/*
+	List<GenstarCsvFile> createSampleFreeGenerationRules(final IScope scope, final SampleFreeGenerator generator, final GenstarCsvFile sampleFreeGenerationRulesListFile) throws GenstarException {
+		 */
+		
+		final String basePath = "test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testCreateSampleFreeGenerationRules/";
+		final String attributesFilePath = basePath + "people_attributes.csv";
+		final String generationRulesFilePath = basePath + "People_GenerationRules.csv";
+		final String rule1FilePath = basePath + "people_distribution_1.csv";
+		final String rule2FilePath = basePath + "people_distribution_2.csv";
+		
+		new Expectations() {{
+			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
+			result = new Delegate() {
+				String delegate(IScope scope, String filePath, boolean mustExist) {
+					if (filePath.endsWith("people_distribution_1.csv")) { return rule1FilePath; }
+					if (filePath.endsWith("people_distribution_2.csv")) { return rule2FilePath; }
+										
+					return null;
+				}
+			};
+		}};		
+		
+		SampleFreeGenerator generator = new SampleFreeGenerator("generator", 100);
+		GenstarCsvFile attributesFile = new GenstarCsvFile(attributesFilePath, true);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
+		
+		GenstarCsvFile sampleFreeGenerationRulesListFile = new GenstarCsvFile(generationRulesFilePath, true);
+		
+		assertTrue(generator.getGenerationRules().size() == 0);
+
+		List<GenstarCsvFile> ruleFiles = GamaGenstarUtils.createSampleFreeGenerationRules(scope, generator, sampleFreeGenerationRulesListFile);
+		
+		assertTrue(ruleFiles.size() == 2);
+		assertTrue(ruleFiles.get(0).getPath().endsWith("people_distribution_1.csv"));
+		assertTrue(ruleFiles.get(1).getPath().endsWith("people_distribution_2.csv"));
+		
+		List<SampleFreeGenerationRule> rules = new ArrayList<SampleFreeGenerationRule>(generator.getGenerationRules()); 
+		assertTrue(rules.size() == 2);
+		assertTrue(rules.get(0) instanceof FrequencyDistributionGenerationRule);
+		assertTrue(rules.get(1) instanceof FrequencyDistributionGenerationRule);
 	}
 	
 	
@@ -524,9 +568,6 @@ public class GamaGenstarUtilsTest {
 	
 	
 	@Test public void testLoadCompoundPopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
-		/*
-	public static IPopulation loadCompoundPopulation(final IScope scope, final Properties compoundPopulationProperties) throws GenstarException {
-		 */
 
 		String base_path = "test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testLoadCompoundPopulation/";
 		
@@ -598,6 +639,71 @@ public class GamaGenstarUtilsTest {
 		
 		assertTrue(loadedCompoundPopulation.getGroupReferences().size() == 0);
 		
+	}
+	
+	
+	@Test public void testGenerateFrequencyDistributionPopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
+	
+		String basePath = "test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testGenerateFrequencyDistributionPopulation/";
+		
+		/*
+	static IPopulation generateFrequencyDistributionPopulation(final IScope scope, final Properties frequencyDistributionPopulationProperties) throws GenstarException {
+		 */
+		
+		final String peopleAttributesFilePath = basePath + "people_attributes.csv";
+		final String peopleDistribution1FilePath = basePath + "people_distribution_1.csv";
+		final String peopleDistribution2FilePath = basePath + "people_distribution_2.csv";
+		final String generationRulesFilePaths = basePath + "People_GenerationRules.csv";
+		final String outputFolderPath = basePath + "analysisResult";
+		
+		
+		new Expectations() {{
+			FileUtils.constructAbsoluteFilePath(scope, anyString, true);
+			result = new Delegate() {
+				String delegate(IScope scope, String filePath, boolean mustExist) {
+					if (filePath.endsWith("/people_attributes.csv")) {  return peopleAttributesFilePath;  }
+					if (filePath.endsWith("/people_distribution_1.csv")) {  return peopleDistribution1FilePath; }
+					if (filePath.endsWith("/people_distribution_2.csv")) {  return peopleDistribution2FilePath; }
+					if (filePath.endsWith("/People_GenerationRules.csv")) { return generationRulesFilePaths; }
+					if (filePath.endsWith("analysisResult")) { return outputFolderPath; }
+					
+					return null;
+				}
+			};
+		}};
+		
+		
+		// do the clean up if necessary (remove "analysis output files")
+		File outputFolder = new File(outputFolderPath);
+		File[] outputFiles = outputFolder.listFiles();
+		for (File f : outputFiles) { f.delete(); }
+		
+		
+		// load the property file
+		String propertiesFilePath = basePath + "PeoplePopulation.properties";
+		Properties frequencyDistributionPopulationProperties = null;
+		File propertiesFile = new File(propertiesFilePath);
+		try {
+			FileInputStream propertyInputStream = new FileInputStream(propertiesFile);
+			frequencyDistributionPopulationProperties = new Properties();
+			frequencyDistributionPopulationProperties.load(propertyInputStream);
+		} catch (FileNotFoundException e) {
+			throw new GenstarException(e);
+		} catch (IOException e) {
+			throw new GenstarException(e);
+		}
+
+		IPopulation population = GamaGenstarUtils.generateFrequencyDistributionPopulation(scope, frequencyDistributionPopulationProperties);
+		
+		// verify population name
+		assertTrue(population.getName().equals("people"));
+		
+		// verify number of entity
+		assertTrue(population.getEntities().size() == 5000);
+		
+		// verify the existence of "analysis output files"
+		outputFiles = outputFolder.listFiles();
+		assertTrue(outputFiles.length == 2);
 	}
 }
 

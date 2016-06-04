@@ -32,7 +32,7 @@ public abstract class AbstractAttribute {
 	
 	private AttributeValue castDefaultValue;
 	
-	protected boolean isIdentity; // TODO remove this property
+//	protected boolean isIdentity; // TODO remove this property
 	
 	
 	public AbstractAttribute(final ISyntheticPopulationGenerator populationGenerator, final String attributeNameOnData, final String attributeNameOnEntity, 
@@ -95,10 +95,6 @@ public abstract class AbstractAttribute {
 	protected void fireAttributeChangedEvent(final AttributeChangedEvent event) {
 		for (AttributeChangedListener l : attributeChangeListeners) { l.attributeChanged(event); }
 	}
-	
-	public abstract AttributeValue findCorrespondingAttributeValueOnData(final List<String> stringValue) throws GenstarException;
-	
-	public abstract AttributeValue findMatchingAttributeValueOnData(final AttributeValue attributeValue) throws GenstarException; // TODO remove as of duplicate with getInstanceOfAttributeValue
 
 	@Override public String toString() {
 		return this.getClass().getSimpleName() + " with dataType : " + dataType.getName() + "; nameOnData : " + this.nameOnData + "; nameOnEntity : " + this.nameOnEntity;
@@ -131,22 +127,6 @@ public abstract class AbstractAttribute {
 		this.attributeID = attributeID;
 	}
 	
-	public void setIdentity(final boolean identity) throws GenstarException {
-		if (identity) {
-			for (AbstractAttribute attr : populationGenerator.getAttributes()) {
-				if (attr.isIdentity && !attr.equals(this)) {
-					throw new GenstarException("A generator can not contain more than one identity attribute");
-				}
-			}
-		}
-		
-		this.isIdentity = identity;
-	}
-	
-	public boolean isIdentity() {
-		return isIdentity;
-	}
-
 	public abstract Set<AttributeValue> valuesOnData();
 	
 	public abstract boolean add(final AttributeValue value) throws GenstarException;
@@ -154,9 +134,12 @@ public abstract class AbstractAttribute {
 	public abstract boolean addAll(final Set<AttributeValue> values) throws GenstarException;
 	
 	public abstract boolean remove(final AttributeValue value);
-	
-	public abstract AttributeValue getInstanceOfAttributeValue(final AttributeValue value);
 
 	public abstract void clear();
-
+	
+	public abstract AttributeValue getInstanceOfAttributeValue(final AttributeValue value);
+	
+	public abstract AttributeValue getMatchingAttributeValueOnData(final List<String> stringRepresentationOfValue) throws GenstarException;
+	
+	public abstract AttributeValue getMatchingAttributeValueOnData(final AttributeValue attributeValue); // throws GenstarException;
 }

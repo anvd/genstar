@@ -1,8 +1,6 @@
 package ummisco.genstar.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -103,10 +101,7 @@ public class IpfUtils {
 		return resultingControlledAttributesValuesSubsets;
 	}
 	
-	
-	
-	
-	// ? TODO refactor to List<AttributeValuesFrequency> generateIpfControlTotals(final GenstarCSVFile attributesFile, final int total)
+		
 	public static List<List<String>> generateIpfControlTotals(final GenstarCsvFile attributesFile, final int total) throws GenstarException {
 		// parameters validation
 		if (attributesFile == null) { throw new GenstarException("Parameter attributesFile can not be null"); }
@@ -266,7 +261,7 @@ public class IpfUtils {
 				}
 				
 				
-				attributeValue = attribute.findCorrespondingAttributeValueOnData(valueList);
+				attributeValue = attribute.getMatchingAttributeValueOnData(valueList);
 				if (attributeValue == null) { throw new GenstarException("Attribute value '" + aRow.get(col+1) + "' not found in valid attribute values of " + attribute.getNameOnData()
 						+ ". File: " + ipfControlTotalsFile.getPath() + ", line: " + line); }
 				
@@ -365,52 +360,44 @@ public class IpfUtils {
 
 	
 	// TODO remove, no class uses this method
-	public static GenstarCsvFile writeAnalysisResultToFile(final GenstarCsvFile controlTotalsFile, final List<Integer> analysisResult, final String csvOutputFilePath) throws GenstarException {
-		
-		// parameters validation
-		if (controlTotalsFile == null || analysisResult == null || csvOutputFilePath == null) {
-			throw new GenstarException("Parameters controlTotalsFile, analysisResult, csvOutputFilePath can not be null");
-		}
-		
-		if (controlTotalsFile.getRows() != analysisResult.size()) {
-			throw new GenstarException("controlTotalsFile's row is different from analysisResult's size (" + controlTotalsFile.getRows() + " v.s. " + analysisResult.size() + ")");
-		}
-		
-		// write analysis result to file
-		CsvWriter writer = new CsvWriter(csvOutputFilePath);
-		try {
-			int line=0;
-			for (List<String> row : controlTotalsFile.getContent()) {
-				String[] newRow = new String[row.size() + 1];
-				newRow = Arrays.copyOf(row.toArray(new String[0]), newRow.length);
-				newRow[newRow.length - 1] = analysisResult.get(line).toString();
-				
-				writer.writeRecord(newRow);
-				line++;
-			}
-		} catch (IOException ioe) {
-			throw new GenstarException(ioe);
-		} finally {
-			writer.close();
-		}
-		
-		return new GenstarCsvFile(csvOutputFilePath, false);
-	}
+//	public static GenstarCsvFile writeAnalysisResultToFile(final GenstarCsvFile controlTotalsFile, final List<Integer> analysisResult, final String csvOutputFilePath) throws GenstarException {
+//		
+//		// parameters validation
+//		if (controlTotalsFile == null || analysisResult == null || csvOutputFilePath == null) {
+//			throw new GenstarException("Parameters controlTotalsFile, analysisResult, csvOutputFilePath can not be null");
+//		}
+//		
+//		if (controlTotalsFile.getRows() != analysisResult.size()) {
+//			throw new GenstarException("controlTotalsFile's row is different from analysisResult's size (" + controlTotalsFile.getRows() + " v.s. " + analysisResult.size() + ")");
+//		}
+//		
+//		// write analysis result to file
+//		CsvWriter writer = new CsvWriter(csvOutputFilePath);
+//		try {
+//			int line=0;
+//			for (List<String> row : controlTotalsFile.getContent()) {
+//				String[] newRow = new String[row.size() + 1];
+//				newRow = Arrays.copyOf(row.toArray(new String[0]), newRow.length);
+//				newRow[newRow.length - 1] = analysisResult.get(line).toString();
+//				
+//				writer.writeRecord(newRow);
+//				line++;
+//			}
+//		} catch (IOException ioe) {
+//			throw new GenstarException(ioe);
+//		} finally {
+//			writer.close();
+//		}
+//		
+//		return new GenstarCsvFile(csvOutputFilePath, false);
+//	}
 
 
-//	public static void createIpfGenerationRule(final SampleBasedGenerator generator, final String ruleName, final GenstarCsvFile sampleFile,
-//			final GenstarCsvFile controlledAttributesFile, final GenstarCsvFile controlledTotalsFile, 
-//			final GenstarCsvFile supplementaryAttributesFile, final AbstractAttribute idAttribute, final int maxIterations) throws GenstarException {
 	public static void createIpfGenerationRule(final SampleBasedGenerator generator, final String ruleName, final GenstarCsvFile sampleFile,
 			final GenstarCsvFile controlledAttributesFile, final GenstarCsvFile controlledTotalsFile, 
 			final GenstarCsvFile supplementaryAttributesFile, final int maxIterations) throws GenstarException {
 		
 		IpfGenerationRule rule = new IpfGenerationRule(generator, ruleName, controlledAttributesFile, controlledTotalsFile, supplementaryAttributesFile, maxIterations);
-		
-//		if (idAttribute != null) {
-//			if (!generator.getAttributes().contains(idAttribute)) { throw new GenstarException(idAttribute.getNameOnEntity() + " is not recognized as an attribute of the generator"); }
-//			idAttribute.setIdentity(true);
-//		}
 		
 		ISampleData sampleData = new SampleData(generator.getPopulationName(), generator.getAttributes(), sampleFile);
 		rule.setSampleData(sampleData);
@@ -434,7 +421,6 @@ public class IpfUtils {
 		
 		AbstractAttribute groupIdAttributeOnGroup = rule.getAttributeByNameOnData(groupIdAttributeNameOnDataOfGroupEntity);
 		if (groupIdAttributeOnGroup == null) { throw new GenstarException("'" + groupIdAttributeNameOnDataOfGroupEntity + "' is not a valid attribute"); }
-		groupIdAttributeOnGroup.setIdentity(true);
 		
 		AbstractAttribute groupIdAttributeOnComponent = componentGenerator.getAttributeByNameOnData(groupIdAttributeNameOnDataOfComponentEntity);
 		if (groupIdAttributeOnComponent == null) { throw new GenstarException("'" + groupIdAttributeOnComponent + "' is not a valid attribute"); }

@@ -1,0 +1,3 @@
+Name,File,Rule Type
+Distribution 1,test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testCreateSampleFreeGenerationRules/people_distribution_1.csv,Frequency Distribution
+Distribution 2,test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testCreateSampleFreeGenerationRules/people_distribution_2.csv,Frequency Distribution

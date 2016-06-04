@@ -56,7 +56,7 @@ global {
 			write 'Compute the frequency distribution of the re-generated household population, scenario ' + scenario_number;
 			string resulting_distribution <- base_folder + scenario_number + regenerated_file_path + base_resulting_distribution_file + scenario_number + '.csv';
 			string distribution_format <- base_folder + scenario_number + '/distributionFormat.csv';
-			string distribution_result_file <- frequency_distribution_from_sample(groupAttributesCSVFilePath, groupPopulationOutputFile, distribution_format, resulting_distribution);
+			string distribution_result_file <- frequency_distribution(groupAttributesCSVFilePath, groupPopulationOutputFile, distribution_format, resulting_distribution);
 		}
 	}
 	
@@ -101,7 +101,7 @@ global {
 			write 'Compute the frequency distribution of the re-generated people population, scenario ' + scenario_number;
 			string resulting_distribution <- people_base_folder + scenario_number + people_regenerated_file_path + base_resulting_distribution_file + scenario_number + '.csv';
 			string distribution_format <- people_base_folder + scenario_number + '/distributionFormat.csv';
-			string distribution_result_file <- frequency_distribution_from_sample(groupAttributesCSVFilePath, groupPopulationOutputFile, distribution_format, resulting_distribution);
+			string distribution_result_file <- frequency_distribution(groupAttributesCSVFilePath, groupPopulationOutputFile, distribution_format, resulting_distribution);
 		}
 	}
 }

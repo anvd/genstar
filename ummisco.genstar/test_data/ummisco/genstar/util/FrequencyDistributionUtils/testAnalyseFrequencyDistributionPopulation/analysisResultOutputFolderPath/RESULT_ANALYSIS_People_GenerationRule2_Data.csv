@@ -1,0 +1,5 @@
+Category:Input,Gender:Output,Frequency,Generated Frequency
+C0,true,100,1
+C1,true,200,1
+C0,false,300,2
+C1,false,400,1

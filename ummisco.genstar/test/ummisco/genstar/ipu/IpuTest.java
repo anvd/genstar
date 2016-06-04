@@ -203,13 +203,11 @@ public class IpuTest {
 		
 		// 3. initialize sample data
 		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttributeByNameOnData("Household ID");
-		groupIdAttributeOnGroupEntity.setIdentity(true);
 		GenstarCsvFile groupSampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/success/group_sample.csv", true);
 		ISampleData groupSample = new SampleData("household", groupGenerator.getAttributes(), groupSampleDataFile);
 		
 		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttributeByNameOnData("Household ID");
 		GenstarCsvFile componentSampleFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/success/component_sample.csv", true);
-		groupIdAttributeOnComponentEntity.setIdentity(true);
 		ISampleData componentSample = new SampleData("people", componentGenerator.getAttributes(), componentSampleFile);
 		
 		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
@@ -311,13 +309,11 @@ public class IpuTest {
 		
 		// initialize sample data
 		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttributeByNameOnData("Household ID");
-		groupIdAttributeOnGroupEntity.setIdentity(true);
 		GenstarCsvFile groupSampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fillIpuMatrix/group_sample.csv", true);
 		ISampleData groupSample = new SampleData("household", groupGenerator.getAttributes(), groupSampleDataFile);
 		
 		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttributeByNameOnData("Household ID");
 		GenstarCsvFile componentSampleFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fillIpuMatrix/component_sample.csv", true);
-		groupIdAttributeOnComponentEntity.setIdentity(true);
 		ISampleData componentSample = new SampleData("people", componentGenerator.getAttributes(), componentSampleFile);
 		
 		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
@@ -397,13 +393,11 @@ public class IpuTest {
 		
 		// initialize sample data
 		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttributeByNameOnData("Household ID");
-		groupIdAttributeOnGroupEntity.setIdentity(true);
 		GenstarCsvFile groupSampleDataFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fit/group_sample.csv", true);
 		ISampleData groupSample = new SampleData("household", groupGenerator.getAttributes(), groupSampleDataFile);
 		
 		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttributeByNameOnData("Household ID");
 		GenstarCsvFile componentSampleFile = new GenstarCsvFile("test_data/ummisco/genstar/ipu/Ipu/fit/component_sample.csv", true);
-		groupIdAttributeOnComponentEntity.setIdentity(true);
 		ISampleData componentSample = new SampleData("people", componentGenerator.getAttributes(), componentSampleFile);
 		
 		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
@@ -485,13 +479,11 @@ public class IpuTest {
 		
 		// 2. initialize sample data
 		AbstractAttribute groupIdAttributeOnGroupEntity = groupGenerator.getAttributeByNameOnData("Household ID");
-		groupIdAttributeOnGroupEntity.setIdentity(true);
 		GenstarCsvFile groupSampleDataFile = new GenstarCsvFile(base_path + "group_sample.csv", true);
 		ISampleData groupSample = new SampleData("household", groupGenerator.getAttributes(), groupSampleDataFile);
 		
 		AbstractAttribute groupIdAttributeOnComponentEntity = componentGenerator.getAttributeByNameOnData("Household ID");
 		GenstarCsvFile componentSampleFile = new GenstarCsvFile(base_path + "component_sample.csv", true);
-		groupIdAttributeOnComponentEntity.setIdentity(true);
 		ISampleData componentSample = new SampleData("people", componentGenerator.getAttributes(), componentSampleFile);
 		
 		final CompoundSampleData sampleData = new CompoundSampleData(groupSample, componentSample, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);

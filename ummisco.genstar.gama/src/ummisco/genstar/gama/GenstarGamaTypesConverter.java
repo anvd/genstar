@@ -94,26 +94,23 @@ public class GenstarGamaTypesConverter {
 		
 		UniqueValue genstarValue = new UniqueValue(genstarAttribute.getDataType(), gamaStringRepresentation);
 		
-		if (genstarAttribute.getNameOnData().equals("Household_ID")) {
-			System.out.println("genstarAttribute.getPopulationGenerator().getPopulationName(): " + genstarAttribute.getPopulationGenerator().getPopulationName() + ", genstarAttribute.isIdentity(): " + genstarAttribute.isIdentity());
-		}
-		
-		if (genstarAttribute.isIdentity()) {
-			if (genstarAttribute.getValueClassOnEntity().equals(UniqueValue.class)) { return genstarValue; }
-			else { // valueClassOnEntity == RangeValue.class
-				return genstarValue.cast(RangeValue.class);
-			}
-		}
+//		??
+//		if (genstarAttribute.isIdentity()) {
+//			if (genstarAttribute.getValueClassOnEntity().equals(UniqueValue.class)) { return genstarValue; }
+//			else { // valueClassOnEntity == RangeValue.class
+//				return genstarValue.cast(RangeValue.class);
+//			}
+//		}
 		
 		// Not an identity attribute then ensure the validity of the value
-		AttributeValue matchingGenstarValue = genstarAttribute.findMatchingAttributeValueOnData(genstarValue);
+		AttributeValue matchingGenstarValue = genstarAttribute.getMatchingAttributeValueOnData(genstarValue);
 		if (matchingGenstarValue == null) { throw new GenstarException(genstarAttribute.getNameOnEntity() + " isn't accepted " + gamaStringRepresentation + " as a valid value."); }
 		
 		if (genstarAttribute.getValueClassOnEntity().equals(UniqueValue.class)) { return genstarValue; }
 		else { // valueClassOnEntity == RangeValue.class
 			if (genstarAttribute instanceof RangeValuesAttribute) {  
 				return matchingGenstarValue; // RangeValue already
-			} else { // genstarAttribute instanceof UniqueValuesAttribute
+			} else { // genstarAttribute instanceof UniqueValuesAttribute OR UniqueValuesAttributeWithRangeInput
 				return matchingGenstarValue.cast(RangeValue.class); // cast UniqueValue to RangeValue
 			}
 		}

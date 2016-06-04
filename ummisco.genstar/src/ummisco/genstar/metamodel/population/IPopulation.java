@@ -54,10 +54,4 @@ public interface IPopulation extends IWithAttributes {
 	public abstract void addComponentReference(final String populationName, final String referenceAttribute) throws GenstarException;
 	
 	public abstract PopulationType getPopulationType();
-	
-	public abstract boolean isIdValueAlreadyInUsed(final int idValue) throws GenstarException;
-
-	public abstract int nextIdValue() throws GenstarException;
-	
-	public abstract AbstractAttribute getIdentityAttribute() throws GenstarException;
 }

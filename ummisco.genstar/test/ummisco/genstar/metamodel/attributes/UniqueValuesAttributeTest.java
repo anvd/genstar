@@ -106,48 +106,22 @@ public class UniqueValuesAttributeTest {
 		assertTrue(attr.valuesOnData().size() == 1);
 	}
 	
-	@Test public void testFindCorrespondingAttributeValue() throws GenstarException {
+	@Test public void testMatchingAttributeValueOnData() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		List<String> list1 = new ArrayList<String>();
 		list1.add("1");
-		AttributeValue oneValue = attr.findCorrespondingAttributeValueOnData(list1);
+		AttributeValue oneValue = attr.getMatchingAttributeValueOnData(list1);
 		assertTrue(oneValue == null);
 
 		UniqueValue uniqueValue = new UniqueValue(DataType.INTEGER, "1");
 		attr.add(uniqueValue);
 
-		oneValue = attr.findCorrespondingAttributeValueOnData(list1);
+		oneValue = attr.getMatchingAttributeValueOnData(list1);
 		assertTrue( ((UniqueValue) oneValue).getStringValue().equals("1"));
 	}
 	
-	/*
-	@Test public void testContainsValueOfAttributeValue() throws GenstarException {
-		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
-		
-		attr.add(new UniqueValue(DataType.INTEGER, "1"));
-		
-		assertTrue(attr.containsValueOfAttributeValue(new UniqueValue(DataType.INTEGER, "1")));
-		
-		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
-		assertTrue(attr.containsValueOfAttributeValue(testValue));
-	}
-	*/
-	
-	/*
-	@Test public void testConstainsInstanceOfAttributeValue() throws GenstarException {
-		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
-		
-		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
-		attr.add(testValue);
-		
-		assertFalse(attr.containsInstanceOfAttributeValue(new UniqueValue(DataType.INTEGER, "1")));		
-		assertTrue(attr.containsInstanceOfAttributeValue(testValue));
-	}
-	*/
 	
 	@Test public void testAddDuplicatedValues1() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
@@ -216,8 +190,4 @@ public class UniqueValuesAttributeTest {
 		attribute1.setDefaultValue(defaultValue2);
 	}
 	
-	@Test public void testSetIdentityOfTwoAttributes() throws GenstarException {
-		// hint: a population can only accept on identity attribute
-		fail("not yet implemented");
-	}
 }

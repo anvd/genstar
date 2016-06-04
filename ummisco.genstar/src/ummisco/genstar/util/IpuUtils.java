@@ -93,7 +93,7 @@ public class IpuUtils {
 				}
 				
 				
-				attributeValue = attribute.findCorrespondingAttributeValueOnData(valueList);
+				attributeValue = attribute.getMatchingAttributeValueOnData(valueList);
 				if (attributeValue == null) { throw new GenstarException("Attribute value '" + aRow.get(col+1) + "' not found in valid attribute values of " + attribute.getNameOnData()
 						+ ". File: " + ipuControlTotalsFile.getPath() + ", line: " + line); }
 				
@@ -285,7 +285,7 @@ public class IpuUtils {
 			controlTotalStrings.add(controlTotalString);
 		}
 
-		GenstarUtils.writeContentToCsvFile(controlTotalStrings, csvOutputFile); // write to csv file
+		GenstarUtils.writeStringContentToCsvFile(controlTotalStrings, csvOutputFile);
 	}
 	
 		

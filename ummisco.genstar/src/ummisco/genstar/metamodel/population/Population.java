@@ -27,11 +27,11 @@ public class Population implements IPopulation {
 	
 	private Map<String, String> componentReferences = Collections.EMPTY_MAP; // population_name :: GAMA_attribute_name
 	
-	private AbstractAttribute idAttribute;
+//	private AbstractAttribute idAttribute;
 	
-	private List<Integer> entityIds = Collections.EMPTY_LIST; 
+//	private List<Integer> entityIds = Collections.EMPTY_LIST; 
 	
-	private int currentMaxIdValue = 0;
+//	private int currentMaxIdValue = 0;
 	
 
 	public Population(final PopulationType type, final String name, final List<AbstractAttribute> attributes) throws GenstarException {
@@ -48,15 +48,15 @@ public class Population implements IPopulation {
 		this.attributes.addAll(attributes);
 		
 		// save the reference to identity attribute
-		for (AbstractAttribute attr : attributes) {
-			if (attr.isIdentity()) {
-				if (idAttribute != null) {
-					throw new GenstarException("Not support more than one identity attribute in a population. Both " + idAttribute.getNameOnData() + " and " + attr.getNameOnData() + " are identity attributes.");
-				}
-				
-				idAttribute = attr;
-			}
-		}
+//		for (AbstractAttribute attr : attributes) {
+//			if (attr.isIdentity()) {
+//				if (idAttribute != null) {
+//					throw new GenstarException("Not support more than one identity attribute in a population. Both " + idAttribute.getNameOnData() + " and " + attr.getNameOnData() + " are identity attributes.");
+//				}
+//				
+//				idAttribute = attr;
+//			}
+//		}
 	}
 	
 	@Override public int getNbOfEntities() {
@@ -294,33 +294,33 @@ public class Population implements IPopulation {
 		return type;
 	}
 
-	@Override public boolean isIdValueAlreadyInUsed(final int idValue) throws GenstarException {
-		if (idAttribute == null) { throw new GenstarException("This population has no identity attribute"); }
-		if (!idAttribute.isIdentity()) {
-			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
-		}
-
-		if (idValue < 0) { throw new GenstarException("Not support negative identity value"); }
-		
-		return (entityIds.contains(idValue));
-	}
-
-	@Override public int nextIdValue() throws GenstarException {
-		if (idAttribute == null) { throw new GenstarException("This population has no identity attribute"); }
-		if (!idAttribute.isIdentity()) {
-			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
-		}
-		
-		while (entityIds.contains(currentMaxIdValue)) { currentMaxIdValue++; }
-		
-		return currentMaxIdValue;
-	}
-	
-	@Override public AbstractAttribute getIdentityAttribute() throws GenstarException {
-		if (idAttribute != null && !idAttribute.isIdentity()) {
-			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
-		}
-		
-		return idAttribute;
-	}
+//	@Override public boolean isIdValueAlreadyInUsed(final int idValue) throws GenstarException {
+//		if (idAttribute == null) { throw new GenstarException("This population has no identity attribute"); }
+//		if (!idAttribute.isIdentity()) {
+//			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
+//		}
+//
+//		if (idValue < 0) { throw new GenstarException("Not support negative identity value"); }
+//		
+//		return (entityIds.contains(idValue));
+//	}
+//
+//	@Override public int nextIdValue() throws GenstarException {
+//		if (idAttribute == null) { throw new GenstarException("This population has no identity attribute"); }
+//		if (!idAttribute.isIdentity()) {
+//			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
+//		}
+//		
+//		while (entityIds.contains(currentMaxIdValue)) { currentMaxIdValue++; }
+//		
+//		return currentMaxIdValue;
+//	}
+//	
+//	@Override public AbstractAttribute getIdentityAttribute() throws GenstarException {
+//		if (idAttribute != null && !idAttribute.isIdentity()) {
+//			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
+//		}
+//		
+//		return idAttribute;
+//	}
 }

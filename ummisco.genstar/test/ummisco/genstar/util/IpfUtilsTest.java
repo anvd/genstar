@@ -261,7 +261,7 @@ public class IpfUtilsTest {
 					valueList.add(attributeValueString);
 				}
 				
-				attributeValue = attribute.findCorrespondingAttributeValueOnData(valueList);
+				attributeValue = attribute.getMatchingAttributeValueOnData(valueList);
 				attributeValues.put(attribute, attributeValue);
 			}
 			
@@ -287,7 +287,7 @@ public class IpfUtilsTest {
 		File sampleFile = new File(sampleFilePath);
 		if (!sampleFile.exists()) {
 			String populationName = "household population";
-			IPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation(populationName, attributesFile, 1, 3);
+			IPopulation generatedPopulation = GenstarUtils.generateRandomSinglePopulation(populationName, attributesFile, null, 1, 3);
 			
 			Map<String, String> csvFilePathsByPopulationNames = new HashMap<String, String>();
 			csvFilePathsByPopulationNames.put(populationName, sampleFilePath);
