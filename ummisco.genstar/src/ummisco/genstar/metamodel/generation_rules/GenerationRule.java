@@ -5,7 +5,7 @@ import ummisco.genstar.metamodel.IWithAttributes;
 import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 import ummisco.genstar.util.PersistentObject;
 
-
+@Deprecated
 public abstract class GenerationRule implements IWithAttributes {
 	
 	protected int generationRuleID = PersistentObject.NEW_OBJECT_ID;

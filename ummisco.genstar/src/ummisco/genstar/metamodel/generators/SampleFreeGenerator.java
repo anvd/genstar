@@ -14,6 +14,7 @@ import ummisco.genstar.metamodel.population.Population;
 import ummisco.genstar.metamodel.population.PopulationType;
 import ummisco.genstar.sample_free.FrequencyDistributionGenerationRule;
 
+@Deprecated
 public class SampleFreeGenerator extends AbstractSyntheticPopulationGenerator {
 	
 	protected SortedMap<Integer, SampleFreeGenerationRule> generationRules; // rule order begins by 0

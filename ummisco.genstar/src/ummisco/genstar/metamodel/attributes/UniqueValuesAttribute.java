@@ -5,32 +5,31 @@ import java.util.List;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 
 public class UniqueValuesAttribute extends AbstractAttribute {
 		
 	
 	private Set<UniqueValue> valuesOnData;
 
-	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType dataType) throws GenstarException {
-		this(populationGenerator, nameOnData, nameOnData, dataType, UniqueValue.class);
+	public UniqueValuesAttribute(final String nameOnData, final DataType dataType) throws GenstarException {
+		this(nameOnData, nameOnData, dataType, UniqueValue.class);
 	}
 
-	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		this(populationGenerator, nameOnData, nameOnData, dataType, valueClassOnEntity);
+	public UniqueValuesAttribute(final String nameOnData, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
+		this(nameOnData, nameOnData, dataType, valueClassOnEntity);
 	}
 
-	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final DataType dataType) throws GenstarException {
-		this(populationGenerator, nameOnData, nameOnEntity, dataType, UniqueValue.class);		
+	public UniqueValuesAttribute(final String nameOnData, final String nameOnEntity, final DataType dataType) throws GenstarException {
+		this(nameOnData, nameOnEntity, dataType, UniqueValue.class);		
 	}
 
-	public UniqueValuesAttribute(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		super(populationGenerator, nameOnData, nameOnEntity, dataType, valueClassOnEntity);
+	public UniqueValuesAttribute(final String nameOnData, final String nameOnEntity, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
+		super(nameOnData, nameOnEntity, dataType, valueClassOnEntity);
 
 		this.valueClassOnData = UniqueValue.class;
 		this.valuesOnData = new HashSet<UniqueValue>();
 		try {
-			this.setDefaultValue(valueClassOnData.getConstructor(DataType.class).newInstance(dataType));
+			this.setDefaultValue(valueClassOnData.getConstructor(DataType.class, AbstractAttribute.class).newInstance(dataType, this));
 		} catch (final Exception e) {
 			throw new GenstarException(e);
 		}
@@ -42,7 +41,7 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		if (!dataType.isValueValid(stringValue)) { throw new IllegalArgumentException("'" + stringValue + "' is not a(n) " + dataType.getName() + " value."); }
 		
 		// valuesOnData.add(new UniqueValue(dataType, stringValue));
-		this.add(new UniqueValue(dataType, stringValue));
+		this.add(new UniqueValue(dataType, stringValue, this));
 
 		// fire event
 		internalFireEvent();
@@ -144,11 +143,7 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 	public AttributeValue findCorrespondingAttributeValueOnData(final List<String> stringValue) throws GenstarException {
 		if (stringValue == null || stringValue.isEmpty()) { throw new GenstarException("'stringValue' parameter can not be null or empty"); }
 		
-		if (isIdentity) {
-			if (stringValue.size() == 1) { return new UniqueValue(dataType, stringValue.get(0)); }
-		}
-		
-		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringValue.get(0)));
+		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringValue.get(0), this));
 	}
 	
 	@Override public AttributeValue findMatchingAttributeValueOnData(final AttributeValue attributeValue) throws GenstarException {
@@ -162,5 +157,36 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		}
 		
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((valuesOnData == null) ? 0 : valuesOnData.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UniqueValuesAttribute other = (UniqueValuesAttribute) obj;
+		if (valuesOnData == null) {
+			if (other.valuesOnData != null)
+				return false;
+		} else if (!valuesOnData.equals(other.valuesOnData))
+			return false;
+		return true;
 	}
 }

@@ -4,6 +4,7 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.generation_rules.SampleBasedGenerationRule;
 import ummisco.genstar.metamodel.population.IPopulation;
 
+@Deprecated
 public class SampleBasedGenerator extends AbstractSyntheticPopulationGenerator {
 	
 	private SampleBasedGenerationRule generationRule;

@@ -10,10 +10,25 @@ import ummisco.genstar.metamodel.population.IPopulation;
 
 public interface ISyntheticPopulationGenerator extends IWithAttributes {
 	
+	/**
+	 * Unused method
+	 * @param id
+	 */
+	@Deprecated
 	public abstract void setID(final int id);
 	
+	/**
+	 * Unused method
+	 * @return
+	 */
+	@Deprecated
 	public abstract int getID();
 
+	/**
+	 * Only used for consol print and test / debug
+	 * @return
+	 */
+	@Deprecated
 	public abstract String getGeneratorName();
 	
 	public abstract void setPopulationName(final String populationName);
@@ -24,9 +39,24 @@ public interface ISyntheticPopulationGenerator extends IWithAttributes {
 	
 	public abstract void setNbOfEntities(final int nbOfEntities);
 
-	public abstract void addAttribute(final AbstractAttribute attribute) throws GenstarException;
+	/**
+	 * Add {@code attribute} to the {@link AbstractAttribute} set. This set describe attributes
+	 * of entity to synthesis
+	 * 
+	 * @param attribute
+	 * @return <code>true</code> if attribute is actually added, <code>false</code> otherwise
+	 * @throws GenstarException
+	 */
+	public abstract boolean addAttribute(final AbstractAttribute attribute) throws GenstarException;
 
-	public abstract void removeAttribute(final AbstractAttribute attribute);
+	/**
+	 * Remove {@code attribute} from {@link AbstractAttribute} set. This set represent attributes
+	 * of entity to synthesis
+	 * 
+	 * @param attribute
+	 * @return <code>true</code> if attribute has been remove, <code>false</code> otherwise
+	 */
+	public abstract boolean removeAttribute(final AbstractAttribute attribute);
 
 	public abstract IPopulation generate() throws GenstarException;
 	

@@ -28,7 +28,7 @@ public class UniqueValuesAttributeTest {
 	@Test
 	public void testNullPopulationParamConstructor() throws GenstarException {
 		exception.expect(GenstarException.class);
-		new UniqueValuesAttribute(null, "data var name", "entity var name", DataType.BOOL);
+		new UniqueValuesAttribute("data var name", "entity var name", DataType.BOOL);
 	}
 	
 	@Test
@@ -36,7 +36,7 @@ public class UniqueValuesAttributeTest {
 		exception.expect(GenstarException.class);
 
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		new UniqueValuesAttribute(p, null, "entity var name", DataType.BOOL);
+		new UniqueValuesAttribute(null, "entity var name", DataType.BOOL);
 	}
 	
 	@Test
@@ -44,7 +44,7 @@ public class UniqueValuesAttributeTest {
 		exception.expect(GenstarException.class);
 
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		new UniqueValuesAttribute(p, "data var name", null, DataType.BOOL);
+		new UniqueValuesAttribute("data var name", null, DataType.BOOL);
 	}
 	
 	@Test
@@ -52,20 +52,20 @@ public class UniqueValuesAttributeTest {
 		exception.expect(GenstarException.class);
 		
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		new UniqueValuesAttribute(p, "data var name", "entity var name", null);
+		new UniqueValuesAttribute("data var name", "entity var name", null);
 	}
 	
 	@Test
 	public void testNullParamsConstructor() throws GenstarException {
 		exception.expect(GenstarException.class);
 		
-		new UniqueValuesAttribute(null, null, null, (Class)null);
+		new UniqueValuesAttribute(null, null, (Class)null);
 	}
 	
 	@Test
 	public void testValidParamsConstructor() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.BOOL);
+		new UniqueValuesAttribute("data var name", "entity var name", DataType.BOOL);
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class UniqueValuesAttributeTest {
 		exception.expect(GenstarException.class);
 
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		UniqueValuesAttribute attr = new UniqueValuesAttribute("data var name", "entity var name", DataType.INTEGER);
 		
 		attr.add(null);
 	}
@@ -81,15 +81,15 @@ public class UniqueValuesAttributeTest {
 	@Test
 	public void testAddValidValue() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		UniqueValuesAttribute attr = new UniqueValuesAttribute("data var name", "entity var name", DataType.INTEGER);
 		
-		attr.add(new UniqueValue(DataType.INTEGER, "10"));
+		attr.add(new UniqueValue(DataType.INTEGER, "10", attr));
 	}
 	
 	@Test
 	public void testAddNullValues() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		UniqueValuesAttribute attr = new UniqueValuesAttribute("data var name", "entity var name", DataType.INTEGER);
 
 		exception.expect(GenstarException.class);
 		attr.addAll(null);
@@ -98,24 +98,24 @@ public class UniqueValuesAttributeTest {
 	@Test
 	public void testGetValues() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		UniqueValuesAttribute attr = new UniqueValuesAttribute("data var name", "entity var name", DataType.INTEGER);
 
 		assertTrue(attr.valuesOnData().isEmpty());
 		
-		attr.add(new UniqueValue(DataType.INTEGER, "1"));
+		attr.add(new UniqueValue(DataType.INTEGER, "1", attr));
 		assertTrue(attr.valuesOnData().size() == 1);
 	}
 	
 	@Test public void testFindCorrespondingAttributeValue() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		UniqueValuesAttribute attr = new UniqueValuesAttribute("data var name", "entity var name", DataType.INTEGER);
 		
 		List<String> list1 = new ArrayList<String>();
 		list1.add("1");
 		AttributeValue oneValue = attr.findCorrespondingAttributeValueOnData(list1);
 		assertTrue(oneValue == null);
 
-		UniqueValue uniqueValue = new UniqueValue(DataType.INTEGER, "1");
+		UniqueValue uniqueValue = new UniqueValue(DataType.INTEGER, "1", attr);
 		attr.add(uniqueValue);
 
 		oneValue = attr.findCorrespondingAttributeValueOnData(list1);
@@ -151,67 +151,67 @@ public class UniqueValuesAttributeTest {
 	
 	@Test public void testAddDuplicatedValues1() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		UniqueValuesAttribute attr = new UniqueValuesAttribute("data var name", "entity var name", DataType.INTEGER);
 		
-		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
+		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1", attr);
 		assertTrue(attr.add(testValue));
 		
 		assertFalse(attr.add(testValue));
 		
-		UniqueValue testValue1 = new UniqueValue(DataType.INTEGER, "1");
+		UniqueValue testValue1 = new UniqueValue(DataType.INTEGER, "1", attr);
 		assertFalse(attr.add(testValue1));
 	}
 	
 	@Test public void testGetInstanceOfValue() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
-		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
+		UniqueValuesAttribute attr = new UniqueValuesAttribute("data var name", "entity var name", DataType.INTEGER);
 		
-		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
+		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1", attr);
 		
 		assertTrue(attr.getInstanceOfAttributeValue(testValue) == null);
 		
 		attr.add(testValue);
 		assertTrue(attr.getInstanceOfAttributeValue(testValue) != null);
 		
-		UniqueValue testValue1 = new UniqueValue(DataType.INTEGER, "1");
+		UniqueValue testValue1 = new UniqueValue(DataType.INTEGER, "1", attr);
 		assertTrue(attr.getInstanceOfAttributeValue(testValue1).equals(testValue));
 	}
 	
 	@Test public void testGetDefaultValueOnEntity() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 
-		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER);
+		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute("dummy var", DataType.INTEGER);
 		assertTrue(attribute1.getDefaultValueOnEntity() instanceof UniqueValue);
-		assertTrue(attribute1.getDefaultValueOnEntity().isValueMatched(new UniqueValue(DataType.INTEGER)));
+		assertTrue(attribute1.getDefaultValueOnEntity().isValueMatched(new UniqueValue(DataType.INTEGER, attribute1)));
 
-		UniqueValuesAttribute attribute2 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER, RangeValue.class);
+		UniqueValuesAttribute attribute2 = new UniqueValuesAttribute("dummy var", DataType.INTEGER, RangeValue.class);
 		assertTrue(attribute2.getDefaultValueOnEntity() instanceof RangeValue);
-		assertTrue(attribute2.getDefaultValueOnEntity().isValueMatched(new RangeValue(DataType.INTEGER)));
+		assertTrue(attribute2.getDefaultValueOnEntity().isValueMatched(new RangeValue(DataType.INTEGER, attribute1)));
 	}
 	
 	@Test public void testGetDefaultValueOnData() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 
-		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER);
+		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute("dummy var", DataType.INTEGER);
 		assertTrue(attribute1.getDefaultValueOnData() instanceof UniqueValue);
-		assertTrue(attribute1.getDefaultValueOnData().isValueMatched(new UniqueValue(DataType.INTEGER)));
+		assertTrue(attribute1.getDefaultValueOnData().isValueMatched(new UniqueValue(DataType.INTEGER, attribute1)));
 
-		UniqueValuesAttribute attribute2 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER, RangeValue.class);
+		UniqueValuesAttribute attribute2 = new UniqueValuesAttribute("dummy var", DataType.INTEGER, RangeValue.class);
 		assertTrue(attribute2.getDefaultValueOnData() instanceof UniqueValue);
-		assertTrue(attribute2.getDefaultValueOnData().isValueMatched(new UniqueValue(DataType.INTEGER)));
+		assertTrue(attribute2.getDefaultValueOnData().isValueMatched(new UniqueValue(DataType.INTEGER, attribute1)));
 	}
 	
 	@Test public void testSetDefaultValue() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		
-		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute(p, "dummy var", DataType.INTEGER);
+		UniqueValuesAttribute attribute1 = new UniqueValuesAttribute("dummy var", DataType.INTEGER);
 
-		AttributeValue defaultValue1 = new UniqueValue(DataType.INTEGER, "1");
+		AttributeValue defaultValue1 = new UniqueValue(DataType.INTEGER, "1", attribute1);
 		attribute1.setDefaultValue(defaultValue1);
 		assertTrue(attribute1.getDefaultValueOnEntity().equals(defaultValue1));
 		assertTrue(attribute1.getDefaultValueOnData().equals(defaultValue1));
 
-		AttributeValue defaultValue2 = new RangeValue(DataType.INTEGER, "1", "2");
+		AttributeValue defaultValue2 = new RangeValue(DataType.INTEGER, "1", "2", attribute1);
 		exception.expect(GenstarException.class);
 		attribute1.setDefaultValue(defaultValue2);
 	}

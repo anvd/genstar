@@ -145,7 +145,7 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 			}
 			
 			Map<AbstractAttribute, AttributeValue> headPartnerAgeMap = new HashMap<AbstractAttribute, AttributeValue>();
-			UniqueValue headPartnerAgeAttrValue = new UniqueValue(DataType.INTEGER, Integer.toString(headPartnerAge));
+			UniqueValue headPartnerAgeAttrValue = new UniqueValue(DataType.INTEGER, Integer.toString(headPartnerAge), ageAttribute);
 			headPartnerAgeMap.put(ageAttribute, headPartnerAgeAttrValue);
 			
 			Entity headPartner = null;
@@ -370,12 +370,12 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 		// pick the first child
 		if (previousChildAge == 0) {
 			headKey = (RangeValue) liveBirthData.firstKey();
-			if ( headKey.isSuperior(new UniqueValue(motherAgeValue))) { return null; }
+			if ( headKey.isSuperior(new UniqueValue(motherAgeValue, null))) { return null; }
 		}
 		
 		for (AttributeValue ageRange : liveBirthData.keySet()) {
 			if (previousChildAge > 0 && ( (RangeValue) ageRange).cover(new UniqueValue(DataType.INTEGER, 
-					Integer.toString((Integer.parseInt(motherAgeValue.getStringValue()) - previousChildAge) ) ) ) ) {
+					Integer.toString((Integer.parseInt(motherAgeValue.getStringValue()) - previousChildAge) ), null ) ) ) {
 				headKey = (RangeValue) ageRange;
 			}
 			
@@ -408,7 +408,7 @@ public class SmachStupidPopLinker extends AbstractPopulationsLinker {
 		
 		
 		// pick a child according to the age from the InhabitantPopulation
-		UniqueValue childAgeValue = new UniqueValue(DataType.INTEGER, Integer.toString(childAge));
+		UniqueValue childAgeValue = new UniqueValue(DataType.INTEGER, Integer.toString(childAge), ageAttribute);
 		Map<AbstractAttribute, AttributeValue> childAgeAttributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		childAgeAttributeValues.put(ageAttribute, childAgeValue);
 		

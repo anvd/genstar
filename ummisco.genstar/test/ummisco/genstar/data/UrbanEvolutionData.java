@@ -67,20 +67,20 @@ public class UrbanEvolutionData {
 		buildingPopulationGenerator = new SampleFreeGenerator("Building population", 120);
 		
 		// create attributes +
-		UniqueValuesAttribute buildingTypeAttr = new UniqueValuesAttribute(buildingPopulationGenerator, "type", DataType.STRING);
-		for (String type : build_type_values) { buildingTypeAttr.add(new UniqueValue(DataType.STRING, type)); }
+		UniqueValuesAttribute buildingTypeAttr = new UniqueValuesAttribute("type", DataType.STRING);
+		for (String type : build_type_values) { buildingTypeAttr.add(new UniqueValue(DataType.STRING, type, buildingTypeAttr)); }
 		buildingPopulationGenerator.addAttribute(buildingTypeAttr);
 		
-		UniqueValuesAttribute buildingColorAttr = new UniqueValuesAttribute(buildingPopulationGenerator, "color", DataType.STRING);
-		for (String color : building_color_values) { buildingColorAttr.add(new UniqueValue(DataType.STRING, color)); }
+		UniqueValuesAttribute buildingColorAttr = new UniqueValuesAttribute("color", DataType.STRING);
+		for (String color : building_color_values) { buildingColorAttr.add(new UniqueValue(DataType.STRING, color, buildingColorAttr)); }
 		buildingPopulationGenerator.addAttribute(buildingColorAttr);
 		
-		UniqueValuesAttribute buildingSizeAttr = new UniqueValuesAttribute(buildingPopulationGenerator, "size", DataType.INTEGER);
-		for (int size : building_size_values) { buildingSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size))); }
+		UniqueValuesAttribute buildingSizeAttr = new UniqueValuesAttribute("size", DataType.INTEGER);
+		for (int size : building_size_values) { buildingSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size), buildingSizeAttr)); }
 		buildingPopulationGenerator.addAttribute(buildingSizeAttr);
 		
-		UniqueValuesAttribute buildingHeightAttr = new UniqueValuesAttribute(buildingPopulationGenerator, "height", DataType.FLOAT);
-		for (float height : building_height_values) { buildingHeightAttr.add(new UniqueValue(DataType.FLOAT, Float.toString(height))); }
+		UniqueValuesAttribute buildingHeightAttr = new UniqueValuesAttribute("height", DataType.FLOAT);
+		for (float height : building_height_values) { buildingHeightAttr.add(new UniqueValue(DataType.FLOAT, Float.toString(height), buildingHeightAttr)); }
 		buildingPopulationGenerator.addAttribute(buildingHeightAttr);
 		// create attributes -
 		
@@ -98,7 +98,7 @@ public class UrbanEvolutionData {
 		// set frequency
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		for (int i=0; i < build_type_nb.length; i++) {
-			attributeValues.put(buildingTypeAttr, new UniqueValue(DataType.STRING, build_type_values[i]));
+			attributeValues.put(buildingTypeAttr, new UniqueValue(DataType.STRING, build_type_values[i], buildingTypeAttr));
 			generationRule1.setFrequency(attributeValues, build_type_nb[i]);
 		}
 		
@@ -110,8 +110,8 @@ public class UrbanEvolutionData {
 		Map<AttributeValue, AttributeValue> rule2InferenceData = new HashMap<AttributeValue, AttributeValue>();
 		AttributeValue inferringValue, inferredValue;
 		for (int i=0; i<building_color_values.length; i++) {
-			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i]));
-			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, building_color_values[i]));
+			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i], buildingTypeAttr));
+			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, building_color_values[i], buildingTypeAttr));
 			
 			if (inferringValue == null || inferredValue == null) {
 				throw new GenstarException("Some attribute values are not contained in the inferring attribute or inferred attribute");
@@ -129,8 +129,8 @@ public class UrbanEvolutionData {
 		Map<AttributeValue, AttributeValue> rule3InferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (int i=0; i<building_size_values.length; i++) {
 			
-			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i]));
-			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.INTEGER, Integer.toString(building_size_values[i])));
+			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i], buildingTypeAttr));
+			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.INTEGER, Integer.toString(building_size_values[i]), buildingTypeAttr));
 			
 			if (inferringValue == null || inferredValue == null) {
 				throw new GenstarException("Some attribute values are not contained in the inferring attribute or inferred attribute");
@@ -147,8 +147,8 @@ public class UrbanEvolutionData {
 		// set inference data
 		Map<AttributeValue, AttributeValue> rule4InferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (int i=0; i<building_height_values.length; i++) {
-			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i]));
-			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.FLOAT, Float.toString(building_height_values[i])));
+			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i], buildingTypeAttr));
+			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.FLOAT, Float.toString(building_height_values[i]), buildingTypeAttr));
 
 			if (inferringValue == null || inferredValue == null) {
 				throw new GenstarException("Some attribute values are not contained in the inferring attribute or inferred attribute");

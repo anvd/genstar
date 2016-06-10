@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -34,7 +35,7 @@ public class Entity {
 		return componentPopulations.get(componentPopulationName);
 	}
 	
-	public IPopulation createComponentPopulation(final String populationName, final List<AbstractAttribute> attributes) throws GenstarException {
+	public IPopulation createComponentPopulation(final String populationName, final Set<AbstractAttribute> attributes) throws GenstarException {
 		if (populationName == null || populationName.isEmpty()) { throw new GenstarException("Parameter populationName can neither be null nor empty"); }
 		if (attributes == null || attributes.isEmpty()) { throw new GenstarException("Parameter attributes can neither be null nor empty"); }
 		
@@ -53,7 +54,7 @@ public class Entity {
 	}
 	
 	public List<EntityAttributeValue> getEntityAttributeValues() {
-		return new ArrayList<EntityAttributeValue>(entityAttributeValues.values()); // TODO return copy
+		return new ArrayList<>(entityAttributeValues.values()); // TODO return copy
 	}
 	
 	public EntityAttributeValue getEntityAttributeValue(final AbstractAttribute attribute) throws GenstarException {

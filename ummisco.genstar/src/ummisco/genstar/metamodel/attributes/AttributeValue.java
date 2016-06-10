@@ -30,19 +30,27 @@ public abstract class AttributeValue implements Comparable<AttributeValue> {
 	
 	protected DataType dataType;
 	
+	protected AbstractAttribute attribute;
+	
 	public AttributeValue(final DataType dataType) throws GenstarException {
 		if (dataType == null) { throw new GenstarException("'dataType' parameter can not be null"); }
 		
 		this.dataType = dataType;
 	}
 	
+	public AttributeValue(final DataType dataType, final AbstractAttribute attribut) throws GenstarException{
+		this(dataType);
+		this.attribute = attribut;
+	}
+	
 	public DataType getDataType() {
 		return dataType;
 	}
 	
-	@Override public int hashCode() {
+	// FIXME: very strange -- ask An why he did it
+	/*@Override public int hashCode() {
 		return 1;
-	}
+	}*/
 	
 	public abstract boolean isValueMatched(final AttributeValue otherValue);
 	
@@ -59,9 +67,50 @@ public abstract class AttributeValue implements Comparable<AttributeValue> {
 		return attributeValueID;
 	}
 	
+	public AbstractAttribute getAttribute(){
+		return attribute;
+	}
+	
 	public abstract int getValueTypeID();
 	
 	public abstract String getValueTypeName();
 	
 	public abstract String toCsvString();
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((attribute == null) ? 0 : attribute.getNameOnData().hashCode());
+		result = prime * result + attributeValueID;
+		result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AttributeValue other = (AttributeValue) obj;
+		if (attribute == null) {
+			if (other.attribute != null)
+				return false;
+		} else if (!attribute.equals(other.attribute))
+			return false;
+		if (attributeValueID != other.attributeValueID)
+			return false;
+		if (dataType != other.dataType)
+			return false;
+		return true;
+	}
 }

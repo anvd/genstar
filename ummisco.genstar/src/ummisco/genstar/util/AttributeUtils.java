@@ -33,7 +33,7 @@ public class AttributeUtils {
 	static void createRangeValueAttribute(final ISyntheticPopulationGenerator generator, final String attributeNameOnData, final String attributeNameOnEntity, 
 			final DataType dataType, final String values, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
 		
-		RangeValuesAttribute rangeAttribute = new RangeValuesAttribute(generator, attributeNameOnData, attributeNameOnEntity, dataType, UniqueValue.class);
+		RangeValuesAttribute rangeAttribute = new RangeValuesAttribute(attributeNameOnData, attributeNameOnEntity, dataType, UniqueValue.class);
 		
 		// 1. Parse and accumulate each range value token into a list.
 		StringTokenizer valueTokens = new StringTokenizer(values, CSV_FILE_FORMATS.ATTRIBUTES.ATTRIBUTE_VALUE_DELIMITER);
@@ -46,7 +46,7 @@ public class AttributeUtils {
 			StringTokenizer minMaxValueTokens = new StringTokenizer(t, CSV_FILE_FORMATS.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
 			if (minMaxValueTokens.countTokens() != 2) { throw new GenstarException("Invalid attribute range value format (file: " + minMaxValueTokens.toString() + ")"); }
 			
-			rangeAttribute.add(new RangeValue(dataType, minMaxValueTokens.nextToken().trim(), minMaxValueTokens.nextToken().trim()));
+			rangeAttribute.add(new RangeValue(dataType, minMaxValueTokens.nextToken().trim(), minMaxValueTokens.nextToken().trim(), rangeAttribute));
 		}
 		
 		generator.addAttribute(rangeAttribute);
@@ -68,7 +68,7 @@ public class AttributeUtils {
 	static void createUniqueValueAttribute(final ISyntheticPopulationGenerator generator, final String attributeNameOnData, final String attributeNameOnEntity, 
 			final DataType dataType, final String values, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
 		
-		UniqueValuesAttribute uniqueValueAttribute = new UniqueValuesAttribute(generator, attributeNameOnData, attributeNameOnEntity, dataType, valueClassOnEntity);
+		UniqueValuesAttribute uniqueValueAttribute = new UniqueValuesAttribute(attributeNameOnData, attributeNameOnEntity, dataType, valueClassOnEntity);
 		
 		// 1. Parse and accumulate each unique value token into a list.
 		StringTokenizer valueTokenizers = new StringTokenizer(values, CSV_FILE_FORMATS.ATTRIBUTES.ATTRIBUTE_VALUE_DELIMITER);
@@ -77,7 +77,7 @@ public class AttributeUtils {
 		while (valueTokenizers.hasMoreTokens()) { uniqueValueTokens.add(valueTokenizers.nextToken()); }
 		
 		// 2. Create unique values from the parsed tokens.
-		for (String t : uniqueValueTokens) { uniqueValueAttribute.add(new UniqueValue(dataType, t.trim())); }
+		for (String t : uniqueValueTokens) { uniqueValueAttribute.add(new UniqueValue(dataType, t.trim(), uniqueValueAttribute)); }
 		
 		generator.addAttribute(uniqueValueAttribute);
 	}
@@ -137,14 +137,15 @@ public class AttributeUtils {
 			}
 		}
 
+		UniqueValuesAttributeWithRangeInput uniqueValueAttributeWithRangeInput = null;
 		
 		// 2. Create unique values from the parsed tokens.
-		UniqueValue minValue = new UniqueValue(DataType.INTEGER, Integer.toString(minValueInt));
-		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, Integer.toString(maxValueInt));
+		UniqueValue minValue = new UniqueValue(DataType.INTEGER, Integer.toString(minValueInt), uniqueValueAttributeWithRangeInput);
+		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, Integer.toString(maxValueInt), uniqueValueAttributeWithRangeInput);
 
 		
 		// 3. create the attribute then add it to the generator
-		UniqueValuesAttributeWithRangeInput uniqueValueAttributeWithRangeInput = new UniqueValuesAttributeWithRangeInput(generator, attributeNameOnData, attributeNameOnEntity, minValue, maxValue);
+		uniqueValueAttributeWithRangeInput = new UniqueValuesAttributeWithRangeInput(attributeNameOnData, attributeNameOnEntity, minValue, maxValue);
 		generator.addAttribute(uniqueValueAttributeWithRangeInput);
 	}
 	

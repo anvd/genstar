@@ -43,16 +43,16 @@ public class EntityTest {
 		ISyntheticPopulationGenerator bondyPopulation = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
-		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER, UniqueValue.class);
-		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
-		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]));
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute("age_range_1", "age", DataType.INTEGER, UniqueValue.class);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]), ageRangesAttr1);
+		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]), ageRangesAttr1);
 		ageRangesAttr1.add(ageRange1);
 		ageRangesAttr1.add(ageRange2);
 		bondyPopulation.addAttribute(ageRangesAttr1);
 		
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(bondyPopulation, "sex", DataType.BOOL);
-		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]), sexAttr);
 		sexAttr.add(maleValueOrigin);
 		bondyPopulation.addAttribute(sexAttr);
 
@@ -76,16 +76,16 @@ public class EntityTest {
 		ISyntheticPopulationGenerator bondyPopulation = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
-		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER);
-		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
-		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]));
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute("age_range_1", "age", DataType.INTEGER);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]), ageRangesAttr1);
+		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]), ageRangesAttr1);
 		ageRangesAttr1.add(ageRange1);
 		ageRangesAttr1.add(ageRange2);
 		bondyPopulation.addAttribute(ageRangesAttr1);
 		
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(bondyPopulation, "sex", DataType.BOOL);
-		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]), sexAttr);
 		sexAttr.add(maleValueOrigin);
 		bondyPopulation.addAttribute(sexAttr);
 
@@ -109,23 +109,23 @@ public class EntityTest {
 		ISyntheticPopulationGenerator bondyPopulation = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
-		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER, UniqueValue.class);
-		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1])); // [0, 2]
-		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1])); // [3, 5]
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute("age_range_1", "age", DataType.INTEGER, UniqueValue.class);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]), ageRangesAttr1); // [0, 2]
+		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]), ageRangesAttr1); // [3, 5]
 		ageRangesAttr1.add(ageRange1);
 		ageRangesAttr1.add(ageRange2);
 		bondyPopulation.addAttribute(ageRangesAttr1);
 		
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(bondyPopulation, "sex", DataType.BOOL);
-		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]), sexAttr);
 		sexAttr.add(maleValueOrigin);
 		bondyPopulation.addAttribute(sexAttr);
 
 		
 		Entity entity = new Entity(bondyPopulation.generate());
 		
-		AttributeValue ageValue1 = new UniqueValue(DataType.INTEGER, "1");
+		AttributeValue ageValue1 = new UniqueValue(DataType.INTEGER, "1", ageRangesAttr1);
 		entity.setAttributeValueOnEntity(ageRangesAttr1, ageValue1);
 		
 		EntityAttributeValue eav1 = entity.getEntityAttributeValueByNameOnData("age_range_1");
@@ -144,16 +144,16 @@ public class EntityTest {
 		ISyntheticPopulationGenerator bondyPopulation = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulation.setNbOfEntities(1);
 		
-		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulation, "age_range_1", "age", DataType.INTEGER, UniqueValue.class);
-		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1])); // [0, 2]
-		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1])); // [3, 5]
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute("age_range_1", "age", DataType.INTEGER, UniqueValue.class);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]), ageRangesAttr1); // [0, 2]
+		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]), ageRangesAttr1); // [3, 5]
 		ageRangesAttr1.add(ageRange1);
 		ageRangesAttr1.add(ageRange2);
 		bondyPopulation.addAttribute(ageRangesAttr1);
 		
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(bondyPopulation, "sex", DataType.BOOL);
-		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]), sexAttr);
 		sexAttr.add(maleValueOrigin);
 		bondyPopulation.addAttribute(sexAttr);
 
@@ -162,7 +162,7 @@ public class EntityTest {
 
 		Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity = new HashMap<AbstractAttribute, AttributeValue>();
 		
-		AttributeValue ageValue1 = new UniqueValue(DataType.INTEGER, "1");
+		AttributeValue ageValue1 = new UniqueValue(DataType.INTEGER, "1", ageRangesAttr1);
 		attributeValuesOnEntity.put(ageRangesAttr1, ageValue1);
 		
 		attributeValuesOnEntity.put(sexAttr, maleValueOrigin);
@@ -196,8 +196,8 @@ public class EntityTest {
 		SampleFreeGenerator bondyPopulationGenerator = new SampleFreeGenerator("Population of Bondy", 100);
 		bondyPopulationGenerator.setNbOfEntities(1);
 		
-		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulationGenerator, "age_range_1", "age", DataType.INTEGER);
-		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute("age_range_1", "age", DataType.INTEGER);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]), ageRangesAttr1);
 		ageRangesAttr1.add(ageRange1);
 		bondyPopulationGenerator.addAttribute(ageRangesAttr1);
 
@@ -210,25 +210,25 @@ public class EntityTest {
 		assertTrue(entity1.matchAttributeValuesOnEntity(null));
 		
 		
-		UniqueValue ageRangeMatchAttrValue1 = new UniqueValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]));
+		UniqueValue ageRangeMatchAttrValue1 = new UniqueValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), ageRangesAttr1);
 		set1.put(ageRangesAttr1, ageRangeMatchAttrValue1);
 		assertTrue(entity1.matchAttributeValuesOnEntity(set1));
 		
 		
 		set1.clear();
-		UniqueValue ageRangeMatchAttrValue2 = new UniqueValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0] - 1));
+		UniqueValue ageRangeMatchAttrValue2 = new UniqueValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0] - 1), ageRangesAttr1);
 		set1.put(ageRangesAttr1, ageRangeMatchAttrValue2);
 		assertFalse(entity1.matchAttributeValuesOnEntity(set1));
 		
 		
 		set1.clear();
-		RangeValue ageRangeMatchAttrValue3 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
+		RangeValue ageRangeMatchAttrValue3 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]), ageRangesAttr1);
 		set1.put(ageRangesAttr1, ageRangeMatchAttrValue3);
 		assertTrue(entity1.matchAttributeValuesOnEntity(set1));
 		
 		
 		set1.clear();
-		RangeValue ageRangeMatchAttrValue4 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][1] + 1), Integer.toString(BondyData.age_ranges_1[0][1] + 2));
+		RangeValue ageRangeMatchAttrValue4 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][1] + 1), Integer.toString(BondyData.age_ranges_1[0][1] + 2), ageRangesAttr1);
 		set1.put(ageRangesAttr1, ageRangeMatchAttrValue4);
 		assertFalse(entity1.matchAttributeValuesOnEntity(set1));
 		

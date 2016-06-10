@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,8 +55,8 @@ public class PopulationTest {
 	}
 	
 	@Test(expected = GenstarException.class) public void testInitializePopulationWithDuplicatedAttributes() throws GenstarException {
-		List<AbstractAttribute> duplicatedAttributes = generator.getAttributes();
-		duplicatedAttributes.add(duplicatedAttributes.get(0));
+		Set<AbstractAttribute> duplicatedAttributes = generator.getAttributes();
+		duplicatedAttributes.add(duplicatedAttributes.iterator().next());
 		
 		new Population(PopulationType.SAMPLE_DATA_POPULATION, "population2", duplicatedAttributes);
 	}
@@ -114,7 +115,7 @@ public class PopulationTest {
 		entityAttributeValues.add(genderEAV);
 		
 		assertTrue(population.getEntities().size() == 0);
-		Entity e = population.createEntity(entityAttributeValues);
+		population.createEntity(entityAttributeValues);
 		assertTrue(population.getEntities().size() == 1);
 	}
 	
@@ -180,7 +181,7 @@ public class PopulationTest {
 		attributeValuesOnEntity.put(genderAttr, genderValues[0].cast(genderAttr.getValueClassOnEntity()));
 		
 		assertTrue(population.getEntities().size() == 0);
-		Entity e = population.createEntityWithAttributeValuesOnEntity(attributeValuesOnEntity);
+		population.createEntityWithAttributeValuesOnEntity(attributeValuesOnEntity);
 		assertTrue(population.getEntities().size() == 1);
 	}
 	
@@ -231,14 +232,14 @@ public class PopulationTest {
 		EntityAttributeValue categoryEAV1 = new EntityAttributeValue(categoryAttr, categoryValues[1], categoryValues[1]);
 		
 		// Age
+		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age");
 		List<AttributeValue> ageValuesOnEntity = new ArrayList<AttributeValue>();
-		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "0"));
-		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "1"));
-		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "2"));
-		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "3"));
-		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "4"));
-		
-		AbstractAttribute ageAttr = generator.getAttributeByNameOnData("Age"); 
+		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "0", ageAttr));
+		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "1", ageAttr));
+		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "2", ageAttr));
+		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "3", ageAttr));
+		ageValuesOnEntity.add(new UniqueValue(DataType.INTEGER, "4", ageAttr));
+		 
 		AttributeValue[] ageValues = ageAttr.valuesOnData().toArray(new AttributeValue[0]);
 		List<EntityAttributeValue> ageEVAs = new ArrayList<EntityAttributeValue>();
 		for (int i=0; i<ageValuesOnEntity.size(); i++) {
@@ -375,13 +376,13 @@ public class PopulationTest {
 		Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		// 1. query with age = 0 -> 2 entities
-		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0"));
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0", ageAttr));
 		List<Entity> entities1 = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity);
 		assertTrue(entities1.size() == 2);
 		
 		
 		// 2. query with age = 5 -> 0 entity
-		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "5"));
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "5", ageAttr));
 		List<Entity> entities2 = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity);
 		assertTrue(entities2.size() == 0);
 		
@@ -402,7 +403,7 @@ public class PopulationTest {
 		
 		// 5. query with age = 0 & category0 -> 2 entities
 		attributeValuesOnEntity.clear();
-		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0"));
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0", ageAttr));
 		attributeValuesOnEntity.put(categoryAttr, categoryValues0);
 		List<Entity> entities5 = population.getMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity);
 		assertTrue(entities5.size() == 1);
@@ -443,12 +444,12 @@ public class PopulationTest {
 		Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		// 1. query with age = 0 -> 2 entities
-		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0"));
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0", ageAttr));
 		assertTrue(population.countMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity) == 2);
 		
 		
 		// 2. query with age = 5 -> 0 entity
-		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "5"));
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "5", ageAttr));
 		assertTrue(population.countMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity) == 0);
 		
 		
@@ -466,7 +467,7 @@ public class PopulationTest {
 		
 		// 5. query with age = 0 & category0 -> 2 entities
 		attributeValuesOnEntity.clear();
-		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0"));
+		attributeValuesOnEntity.put(ageAttr, new UniqueValue(DataType.INTEGER, "0", ageAttr));
 		attributeValuesOnEntity.put(categoryAttr, categoryValues0);
 		assertTrue(population.countMatchingEntitiesByAttributeValuesOnEntity(attributeValuesOnEntity) == 1);
 		
@@ -485,7 +486,7 @@ public class PopulationTest {
 	@Test public void testContainAttribute() throws GenstarException {
 		Population population = new Population(PopulationType.SYNTHETIC_POPULATION, "population 1", generator.getAttributes());
 		
-		AbstractAttribute dummyAttribute = new UniqueValuesAttribute(generator, "dummy_attribute", DataType.INTEGER);
+		AbstractAttribute dummyAttribute = new UniqueValuesAttribute("dummy_attribute", DataType.INTEGER);
 		assertFalse(population.containAttribute(dummyAttribute));
 		
 		for (AbstractAttribute attr : generator.getAttributes()) { assertTrue(population.containAttribute(attr)); }

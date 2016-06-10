@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVWriter;
+
 import ummisco.genstar.exception.GenstarException;
 
+@Deprecated
 public class GenstarFileUtils {
 	public static String csvSeparator = ",";
 	

@@ -20,7 +20,7 @@ public class ProbabilityMassFunctionTest {
 	public ProbabilityMassFunctionTest() throws GenstarException {
 		liveBirthOrderAgeRanges = new ArrayList<RangeValue>();
 		for (int[] order : NationalLevelDistribution.liveBirthOrder) {
-			liveBirthOrderAgeRanges.add(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])));
+			liveBirthOrderAgeRanges.add(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1]), null));
 		}
 	}
 	

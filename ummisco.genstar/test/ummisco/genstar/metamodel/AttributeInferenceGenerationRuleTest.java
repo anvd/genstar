@@ -55,14 +55,14 @@ public class AttributeInferenceGenerationRuleTest {
 		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
-		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
-		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v))); }
-		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8"));
+		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute("pcs", DataType.INTEGER);
+		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v), pcsAttr)); }
+		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8", pcsAttr));
 		bondyInhabitantPopGenerator.addAttribute(pcsAttr);
 		
-		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute(bondyInhabitantPopGenerator, "hourlyNetWage", DataType.DOUBLE, RangeValue.class);
+		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute("hourlyNetWage", DataType.DOUBLE, RangeValue.class);
 		for (double[] wage_range : BondyData.hourly_net_wages) {
-			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2])));
+			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2]), hourlyNetWageAttr));
 		}
 		bondyInhabitantPopGenerator.addAttribute(hourlyNetWageAttr);
 		// create attributes -
@@ -75,14 +75,14 @@ public class AttributeInferenceGenerationRuleTest {
 		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
-		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
-		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v))); }
-		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8"));
+		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute("pcs", DataType.INTEGER);
+		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v), pcsAttr)); }
+		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8", pcsAttr));
 		bondyInhabitantPopGenerator.addAttribute(pcsAttr);
 		
-		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute(bondyInhabitantPopGenerator, "hourlyNetWage", DataType.DOUBLE, RangeValue.class);
+		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute("hourlyNetWage", DataType.DOUBLE, RangeValue.class);
 		for (double[] wage_range : BondyData.hourly_net_wages) {
-			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2])));
+			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2]), hourlyNetWageAttr));
 		}
 		bondyInhabitantPopGenerator.addAttribute(hourlyNetWageAttr);
 		// create attributes -
@@ -94,8 +94,8 @@ public class AttributeInferenceGenerationRuleTest {
 		
 		Map<AttributeValue, AttributeValue> pcsInferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (double[] net_wage : BondyData.hourly_net_wages) {
-			pcsInferenceData.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0])), 
-					new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2])));
+			pcsInferenceData.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0]), null), 
+					new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2]), null));
 		}
 		generationRule3.setInferenceData(pcsInferenceData);
 		
@@ -105,14 +105,14 @@ public class AttributeInferenceGenerationRuleTest {
 		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
-		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
-		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v))); }
-		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8"));
+		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute("pcs", DataType.INTEGER);
+		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v), pcsAttr)); }
+		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8", pcsAttr));
 		bondyInhabitantPopGenerator.addAttribute(pcsAttr);
 		
-		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute(bondyInhabitantPopGenerator, "hourlyNetWage", DataType.DOUBLE, RangeValue.class);
+		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute("hourlyNetWage", DataType.DOUBLE, RangeValue.class);
 		for (double[] wage_range : BondyData.hourly_net_wages) {
-			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2])));
+			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2]), hourlyNetWageAttr));
 		}
 		bondyInhabitantPopGenerator.addAttribute(hourlyNetWageAttr);
 		// create attributes -
@@ -129,14 +129,14 @@ public class AttributeInferenceGenerationRuleTest {
 		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
-		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
-		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v))); }
-		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8"));
+		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute("pcs", DataType.INTEGER);
+		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v), pcsAttr)); }
+		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8", pcsAttr));
 		bondyInhabitantPopGenerator.addAttribute(pcsAttr);
 		
-		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute(bondyInhabitantPopGenerator, "hourlyNetWage", DataType.DOUBLE, RangeValue.class);
+		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute("hourlyNetWage", DataType.DOUBLE, RangeValue.class);
 		for (double[] wage_range : BondyData.hourly_net_wages) {
-			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2])));
+			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2]), hourlyNetWageAttr));
 		}
 		bondyInhabitantPopGenerator.addAttribute(hourlyNetWageAttr);
 		// create attributes -
@@ -153,14 +153,14 @@ public class AttributeInferenceGenerationRuleTest {
 		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
-		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
-		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v))); }
-		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8"));
+		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute("pcs", DataType.INTEGER);
+		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v), pcsAttr)); }
+		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8", pcsAttr));
 		bondyInhabitantPopGenerator.addAttribute(pcsAttr);
 		
-		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute(bondyInhabitantPopGenerator, "hourlyNetWage", DataType.DOUBLE, RangeValue.class);
+		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute("hourlyNetWage", DataType.DOUBLE, RangeValue.class);
 		for (double[] wage_range : BondyData.hourly_net_wages) {
-			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2])));
+			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2]), hourlyNetWageAttr));
 		}
 		bondyInhabitantPopGenerator.addAttribute(hourlyNetWageAttr);
 		// create attributes -
@@ -171,8 +171,8 @@ public class AttributeInferenceGenerationRuleTest {
 
 		Map<AttributeValue, AttributeValue> pcsInferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (double[] net_wage : BondyData.hourly_net_wages) {
-			pcsInferenceData.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0]) + 1), 
-					new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2])));
+			pcsInferenceData.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0]) + 1, null), 
+					new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2]), null));
 		}
 		
 		exception.expect(GenstarException.class);
@@ -184,14 +184,14 @@ public class AttributeInferenceGenerationRuleTest {
 		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
-		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
-		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v))); }
-		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8"));
+		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute("pcs", DataType.INTEGER);
+		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v), pcsAttr)); }
+		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8", pcsAttr));
 		bondyInhabitantPopGenerator.addAttribute(pcsAttr);
 		
-		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute(bondyInhabitantPopGenerator, "hourlyNetWage", DataType.DOUBLE, RangeValue.class);
+		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute("hourlyNetWage", DataType.DOUBLE, RangeValue.class);
 		for (double[] wage_range : BondyData.hourly_net_wages) {
-			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2])));
+			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2]), hourlyNetWageAttr));
 		}
 		bondyInhabitantPopGenerator.addAttribute(hourlyNetWageAttr);
 		// create attributes -
@@ -202,8 +202,8 @@ public class AttributeInferenceGenerationRuleTest {
 
 		Map<AttributeValue, AttributeValue> pcsInferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (double[] net_wage : BondyData.hourly_net_wages) {
-			pcsInferenceData.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0])), 
-					new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2] + 1)));
+			pcsInferenceData.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0]), null), 
+					new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2] + 1), null));
 		}
 		
 		exception.expect(GenstarException.class);
@@ -215,14 +215,14 @@ public class AttributeInferenceGenerationRuleTest {
 		SampleFreeGenerator bondyInhabitantPopGenerator = new SampleFreeGenerator("Population of Bondy's Inhabitants", 51000);
 		
 		// create attributes +
-		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
-		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v))); }
-		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8"));
+		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute("pcs", DataType.INTEGER);
+		for (int v : BondyData.pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v), pcsAttr)); }
+		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8", pcsAttr));
 		bondyInhabitantPopGenerator.addAttribute(pcsAttr);
 		
-		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute(bondyInhabitantPopGenerator, "hourlyNetWage", DataType.DOUBLE, RangeValue.class);
+		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute("hourlyNetWage", DataType.DOUBLE, RangeValue.class);
 		for (double[] wage_range : BondyData.hourly_net_wages) {
-			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2])));
+			hourlyNetWageAttr.add(new RangeValue(DataType.DOUBLE, Double.toString(wage_range[1]), Double.toString(wage_range[2]), hourlyNetWageAttr));
 		}
 		bondyInhabitantPopGenerator.addAttribute(hourlyNetWageAttr);
 		// create attributes -
@@ -255,13 +255,13 @@ public class AttributeInferenceGenerationRuleTest {
 		for (double[] wage : BondyData.hourly_net_wages) {
 			
 			entity = new Entity(generator.generate());
-			entity.setAttributeValueOnData(inferringAttribute, new UniqueValue(DataType.INTEGER, Integer.toString((int) wage[0])));
+			entity.setAttributeValueOnData(inferringAttribute, new UniqueValue(DataType.INTEGER, Integer.toString((int) wage[0]), inferringAttribute));
 			
 			assertTrue(entity.getEntityAttributeValueByNameOnData(inferredAttribute.getNameOnEntity()) == null);
 			rule3.generate(entity);
 			
-			assertTrue(entity.getEntityAttributeValueByNameOnData(inferredAttribute.getNameOnEntity()).getAttributeValueOnData().equals(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]))));
-			assertTrue(entity.getEntityAttributeValueByNameOnData(inferredAttribute.getNameOnEntity()).getAttributeValueOnEntity().isValueMatched(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]))));
+			assertTrue(entity.getEntityAttributeValueByNameOnData(inferredAttribute.getNameOnEntity()).getAttributeValueOnData().equals(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]), inferredAttribute)));
+			assertTrue(entity.getEntityAttributeValueByNameOnData(inferredAttribute.getNameOnEntity()).getAttributeValueOnEntity().isValueMatched(new RangeValue(DataType.DOUBLE, Double.toString(wage[1]), Double.toString(wage[2]), inferredAttribute)));
 		}
 	}
 }

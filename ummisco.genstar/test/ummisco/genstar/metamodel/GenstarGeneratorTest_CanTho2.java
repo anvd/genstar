@@ -91,23 +91,23 @@ public class GenstarGeneratorTest_CanTho2 {
 
 		// create attributes +
 		
-		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute(householdPopGenerator1, "size", DataType.INTEGER);
+		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute("size", DataType.INTEGER);
 		for (int size = 1; size < (HouseholdData.household_size_by_types.length + 1); size++) {
-			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size)));
+			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size), householdSizeAttr));
 		}
 		householdPopGenerator1.addAttribute(householdSizeAttr);
 		
-		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute(householdPopGenerator1, "type", DataType.STRING);
+		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute("type", DataType.STRING);
 		for (String type : HouseholdData.household_type_values) {
-			householdTypeAttr.add(new UniqueValue(DataType.STRING, type));
+			householdTypeAttr.add(new UniqueValue(DataType.STRING, type, householdTypeAttr));
 		}
 		householdPopGenerator1.addAttribute(householdTypeAttr);
 		
+		UniqueValuesAttribute householdLivingPlaceAttr = new UniqueValuesAttribute("living_place", DataType.STRING);
 		
-		UniqueValue urbanValue = new UniqueValue(DataType.STRING, HouseholdData.living_place_values[0]);
-		UniqueValue ruralValue = new UniqueValue(DataType.STRING, HouseholdData.living_place_values[1]);
-		 
-		UniqueValuesAttribute householdLivingPlaceAttr = new UniqueValuesAttribute(householdPopGenerator1, "living_place", DataType.STRING);
+		UniqueValue urbanValue = new UniqueValue(DataType.STRING, HouseholdData.living_place_values[0], householdLivingPlaceAttr);
+		UniqueValue ruralValue = new UniqueValue(DataType.STRING, HouseholdData.living_place_values[1], householdLivingPlaceAttr);
+		
 		householdLivingPlaceAttr.add(urbanValue);
 		householdLivingPlaceAttr.add(ruralValue);
 		householdPopGenerator1.addAttribute(householdLivingPlaceAttr);
@@ -130,12 +130,12 @@ public class GenstarGeneratorTest_CanTho2 {
 		for (int[] types : HouseholdData.household_size_by_types) {
 			attributeValues.clear();
 			
-			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0])));
+			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0]), householdSizeAttr));
 			
 			// urban living places
 			attributeValues.put(householdLivingPlaceAttr, urbanValue);
 			for (int typeIndex=0; typeIndex<Scenario2.household_type2_values.length; typeIndex++) {
-				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, HouseholdData.household_type_values[typeIndex]));
+				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, HouseholdData.household_type_values[typeIndex], householdTypeAttr));
 				
 				generator1Rule1.setFrequency(attributeValues, types[typeIndex+1]);
 			}
@@ -143,7 +143,7 @@ public class GenstarGeneratorTest_CanTho2 {
 			// rural living places
 			attributeValues.put(householdLivingPlaceAttr, ruralValue);
 			for (int typeIndex=0; typeIndex<Scenario2.household_type2_values.length; typeIndex++) {
-				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, HouseholdData.household_type_values[typeIndex]));
+				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, HouseholdData.household_type_values[typeIndex], householdTypeAttr));
 
 				generator1Rule1.setFrequency(attributeValues, types[typeIndex+6]);
 			}

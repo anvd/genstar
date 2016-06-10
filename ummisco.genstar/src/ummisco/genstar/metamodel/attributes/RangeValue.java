@@ -12,18 +12,20 @@ public class RangeValue extends AttributeValue {
 	private String minStringValue = "";
 	
 	private String maxStringValue = "";
+
+	private String originalString = "";
 	
 	
-	public RangeValue(final RangeValue origin) throws GenstarException {
-		this(origin.dataType, origin.minStringValue, origin.maxStringValue);
+	public RangeValue(final RangeValue origin, final AbstractAttribute attribute) throws GenstarException {
+		this(origin.dataType, origin.minStringValue, origin.maxStringValue, origin.getAttribute());
 	}
 	
-	public RangeValue(final DataType dataType) throws GenstarException {
-		this(dataType, dataType.getDefaultStringValue(), dataType.getDefaultStringValue());
+	public RangeValue(final DataType dataType, final AbstractAttribute attribute) throws GenstarException {
+		this(dataType, dataType.getDefaultStringValue(), dataType.getDefaultStringValue(), attribute);
 	}
 	
-	public RangeValue(final DataType dataType, final String minStringValue, final String maxStringValue) throws GenstarException {
-		super(dataType);
+	public RangeValue(final DataType dataType, final String minStringValue, final String maxStringValue, final AbstractAttribute attribute) throws GenstarException {
+		super(dataType, attribute);
 		
 		if (minStringValue == null) { throw new GenstarException("'minStringValue' can not be null"); }
 		if (maxStringValue == null) { throw new GenstarException("'maxStringValue' can not be null"); }
@@ -35,6 +37,12 @@ public class RangeValue extends AttributeValue {
 		verifyValidity();
 	}
 	
+	public RangeValue(final DataType dataType, final String minStringValue, final String maxStringValue, final String originalString, final AbstractAttribute attribute) throws GenstarException {
+		this(dataType, minStringValue, maxStringValue, attribute);
+		this.originalString = originalString;
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void verifyValidity() throws GenstarException {
 		Comparable minComparable = dataType.getComparableValue(minStringValue);
 		Comparable maxComparable = dataType.getComparableValue(maxStringValue);
@@ -71,6 +79,7 @@ public class RangeValue extends AttributeValue {
 		return "RangeValue of " + dataType.getName() + " : [" + minStringValue + ", " + maxStringValue + "]";
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public int compareTo(final AttributeValue other) {
 		if (other instanceof RangeValue) {
@@ -115,6 +124,8 @@ public class RangeValue extends AttributeValue {
 				if (minDoubleValue == 0d && maxDoubleValue == 0d) { return "0"; }
 				
 				return Double.toString(minDoubleValue + (SharedInstances.RandomNumberGenerator.nextDouble() * (maxDoubleValue - minDoubleValue)));
+		default:
+			break;
 		}
 		
 		return null;
@@ -134,7 +145,7 @@ public class RangeValue extends AttributeValue {
 	}
 	
 	public boolean cover(final String numericString) throws GenstarException {
-		return cover(new UniqueValue(dataType, numericString));
+		return cover(new UniqueValue(dataType, numericString, this.getAttribute()));
 	}
 
 	public boolean isInferior(final AttributeValue otherValue) {
@@ -199,7 +210,7 @@ public class RangeValue extends AttributeValue {
 		String targetClassName = targetType.getName();
 		
 		if (targetClassName.equals(this.getClass().getName())) { return this; }
-		if (targetClassName.equals(UniqueValue.class.getName())) { return new UniqueValue(dataType, getValueInRange()); }
+		if (targetClassName.equals(UniqueValue.class.getName())) { return new UniqueValue(dataType, getValueInRange(), this.getAttribute()); }
 		
 		throw new GenstarException("'targetType' is not an appropriate type");
 	}
@@ -243,6 +254,58 @@ public class RangeValue extends AttributeValue {
 
 	@Override
 	public String toCsvString() {
-		return minStringValue + ":" + maxStringValue;
+		if(originalString.isEmpty())
+			return minStringValue + ":" + maxStringValue;
+		return originalString;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((maxStringValue == null) ? 0 : maxStringValue.hashCode());
+		result = prime * result + ((minStringValue == null) ? 0 : minStringValue.hashCode());
+		result = prime * result + ((originalString == null) ? 0 : originalString.hashCode());
+		result = prime * result + ((getAttribute() == null) ? 0 : getAttribute().getNameOnData().hashCode()); // WARNING: avoid stackoverflow for recursive call to hashcode
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RangeValue other = (RangeValue) obj;
+		if (maxStringValue == null) {
+			if (other.maxStringValue != null)
+				return false;
+		} else if (!maxStringValue.equals(other.maxStringValue))
+			return false;
+		if (minStringValue == null) {
+			if (other.minStringValue != null)
+				return false;
+		} else if (!minStringValue.equals(other.minStringValue))
+			return false;
+		if (originalString == null) {
+			if (other.originalString != null)
+				return false;
+		} else if (!originalString.equals(other.originalString))
+			return false;
+		if (getAttribute() == null) {
+			if (other.getAttribute() != null)
+				return false;
+		} else if (!getAttribute().getNameOnData().equals(other.getAttribute().getNameOnData())) // WARNING: avoid stackoverflow for recursive call to equals
+			return false;
+		return true;
 	}	
+	
 }

@@ -30,10 +30,10 @@ public class AttributeUtilsTest {
 	public final void testCreateUniqueValueAttribut(@Mocked final UniqueValuesAttribute attribute, @Mocked final UniqueValue uValue, @Mocked final ISyntheticPopulationGenerator mockedGenerator) throws GenstarException {
 		
 		new Expectations() {{
-			new UniqueValuesAttribute(mockedGenerator, "Category", "category", DataType.STRING, UniqueValue.class);
+			new UniqueValuesAttribute("Category", "category", DataType.STRING, UniqueValue.class);
 			times = 1;
 			
-			new UniqueValue((DataType) any, anyString);
+			new UniqueValue((DataType) any, anyString, attribute);
 			times = 8;
 			
 			attribute.add((UniqueValue) any);
@@ -53,10 +53,10 @@ public class AttributeUtilsTest {
 		
 		// record
 		new Expectations() {{
-			new RangeValuesAttribute(mockedGenerator, "Age", "age", DataType.INTEGER, UniqueValue.class);
+			new RangeValuesAttribute("Age", "age", DataType.INTEGER, UniqueValue.class);
 			times = 1;
 			
-			new RangeValue(DataType.INTEGER, (String) withNotNull(), (String) withNotNull());
+			new RangeValue(DataType.INTEGER, (String) withNotNull(), (String) withNotNull(), mockedRangeValuesAttribute);
 			times = 7;
 			
 			mockedRangeValuesAttribute.add((RangeValue) any);
@@ -146,7 +146,7 @@ public class AttributeUtilsTest {
 		
 		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 		
-		List<AbstractAttribute> attributes = generator.getAttributes();
+		List<AbstractAttribute> attributes = new ArrayList<>(generator.getAttributes());
 		assertTrue(attributes.size() == 2);
 		
 		assertTrue(attributes.get(0) instanceof UniqueValuesAttributeWithRangeInput);

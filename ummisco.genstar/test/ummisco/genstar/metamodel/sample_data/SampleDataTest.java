@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import mockit.integration.junit4.JMockit;
 
@@ -31,8 +32,8 @@ public class SampleDataTest {
 		GenstarCsvFile attributesCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/sample_data/SampleData/testGetSamtestInitializeSampleDataWithDuplicatedAttributespleEntities/attributes.csv", true);
 		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		
-		List<AbstractAttribute> duplicatedAttributes = generator.getAttributes();
-		duplicatedAttributes.add(duplicatedAttributes.get(0));
+		Set<AbstractAttribute> duplicatedAttributes = generator.getAttributes();
+		duplicatedAttributes.add(duplicatedAttributes.iterator().next());
 		
 		final GenstarCsvFile sampleDataCSVFile = new GenstarCsvFile("test_data/ummisco/genstar/metamodel/sample_data/SampleData/testGetSampleEntities/people_sample.csv", true);
 		
@@ -71,15 +72,15 @@ public class SampleDataTest {
 		
 		AbstractAttribute householdSizeAttr = generator.getAttributeByNameOnEntity("householdSize");
 		
-		AttributeValue householdSizeOne = new UniqueValue(householdSizeAttr.getDataType(), "1");
+		AttributeValue householdSizeOne = new UniqueValue(householdSizeAttr.getDataType(), "1", householdSizeAttr);
 		matchingCriteria.put(householdSizeAttr, householdSizeOne);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria) == 1);
 		
-		AttributeValue householdSizeTwo = new UniqueValue(householdSizeAttr.getDataType(), "2");
+		AttributeValue householdSizeTwo = new UniqueValue(householdSizeAttr.getDataType(), "2", householdSizeAttr);
 		matchingCriteria.put(householdSizeAttr, householdSizeTwo);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria) == 2);
 
-		AttributeValue householdFour = new UniqueValue(householdSizeAttr.getDataType(), "4");
+		AttributeValue householdFour = new UniqueValue(householdSizeAttr.getDataType(), "4", householdSizeAttr);
 		matchingCriteria.put(householdSizeAttr, householdFour);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria) == 0);
 		
@@ -87,18 +88,18 @@ public class SampleDataTest {
 		matchingCriteria.clear();
 		AbstractAttribute typeAttr = generator.getAttributeByNameOnData("Household Type");
 		
-		AttributeValue typeOne = new UniqueValue(typeAttr.getDataType(), "type1");
+		AttributeValue typeOne = new UniqueValue(typeAttr.getDataType(), "type1", typeAttr);
 		matchingCriteria.put(typeAttr, typeOne);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria) == 2);
 		
-		AttributeValue typeThree = new UniqueValue(typeAttr.getDataType(), "type3");
+		AttributeValue typeThree = new UniqueValue(typeAttr.getDataType(), "type3", typeAttr);
 		matchingCriteria.put(typeAttr, typeThree);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria) == 1);
 		
 		
 		matchingCriteria.clear();
 		AbstractAttribute incomeAttr = generator.getAttributeByNameOnData("Household Income");
-		AttributeValue incomeHigh = new UniqueValue(incomeAttr.getDataType(), "High");
+		AttributeValue incomeHigh = new UniqueValue(incomeAttr.getDataType(), "High", incomeAttr);
 		matchingCriteria.put(incomeAttr, incomeHigh);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria) == 3);
 		
@@ -114,11 +115,11 @@ public class SampleDataTest {
 		
 		AbstractAttribute nbOfCarsAttr = generator.getAttributeByNameOnData("Number Of Cars");
 		
-		AttributeValue carsOne = new UniqueValue(nbOfCarsAttr.getDataType(), "1");
+		AttributeValue carsOne = new UniqueValue(nbOfCarsAttr.getDataType(), "1", nbOfCarsAttr);
 		matchingCriteria.put(nbOfCarsAttr, carsOne);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria) == 0);
 		
-		AttributeValue carsThree = new UniqueValue(nbOfCarsAttr.getDataType(), "3");
+		AttributeValue carsThree = new UniqueValue(nbOfCarsAttr.getDataType(), "3", nbOfCarsAttr);
 		matchingCriteria.put(nbOfCarsAttr, carsThree);
 		assertTrue(sampleData.getSampleEntityPopulation().countMatchingEntitiesByAttributeValuesOnEntity(matchingCriteria) == 1);
 	}

@@ -75,6 +75,8 @@ public class ProbabilityMassFunction {
 				}
 				if (doubleTotalProba == 0) { throw new IllegalArgumentException("'data' must contain at least one positive value"); }
 				break;
+		default:
+			break;
 		}
 	}
 	
@@ -115,6 +117,8 @@ public class ProbabilityMassFunction {
 				}
 				
 				break;
+		default:
+			break;
 		}
 		
 		return null;

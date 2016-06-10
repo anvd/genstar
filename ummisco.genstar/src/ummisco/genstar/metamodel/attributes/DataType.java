@@ -36,13 +36,13 @@ public enum DataType {
 	
 	private int id;
 	
-	private Class wrapperClass;
+	private Class<?> wrapperClass;
 	
-	private Constructor wrapperConstructor;
+	private Constructor<?> wrapperConstructor;
 	
 	private String defaultStringValue;
 
-	private DataType(final String name, final int id, final Class wrapperClass, final String defaultStringValue) {
+	private DataType(final String name, final int id, final Class<?> wrapperClass, final String defaultStringValue) {
 		this.name = name;
 		this.id = id;
 		this.wrapperClass = wrapperClass;
@@ -64,7 +64,7 @@ public enum DataType {
 		return id;
 	}
 
-	public Class getWrapperClass() {
+	public Class<?> getWrapperClass() {
 		return wrapperClass;
 	}
 
@@ -78,9 +78,9 @@ public enum DataType {
 		return true;
 	}
 
-	public Comparable getComparableValue(final String value) {
+	public Comparable<?> getComparableValue(final String value) {
 		try {
-			return (Comparable) wrapperConstructor.newInstance(value);
+			return (Comparable<?>) wrapperConstructor.newInstance(value);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

@@ -29,7 +29,7 @@ public class SyntheticPopulationTest {
 		
 		IPopulation population = new Population(PopulationType.SYNTHETIC_POPULATION, "people", generator.getAttributes());
 		
-		AttributeValue ageValue0 = new UniqueValue(DataType.INTEGER, "0");
+		AttributeValue ageValue0 = new UniqueValue(DataType.INTEGER, "0", generator.getAttributeByNameOnEntity("Age"));
 		Map<AbstractAttribute, AttributeValue> attributeValuesOnEntity = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValuesOnEntity.put(generator.getAttributeByNameOnEntity("Age"), ageValue0);
 		

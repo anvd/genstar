@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 import ummisco.genstar.util.PersistentObject;
 
 
@@ -13,8 +12,6 @@ public abstract class AbstractAttribute {
 	
 	
 	protected int attributeID = PersistentObject.NEW_OBJECT_ID;
-	
-	protected ISyntheticPopulationGenerator populationGenerator;
 	
 	protected String nameOnData;
 	
@@ -32,18 +29,14 @@ public abstract class AbstractAttribute {
 	
 	private AttributeValue castDefaultValue;
 	
-	protected boolean isIdentity; // TODO remove this property
 	
-	
-	public AbstractAttribute(final ISyntheticPopulationGenerator populationGenerator, final String attributeNameOnData, final String attributeNameOnEntity, 
+	public AbstractAttribute(final String attributeNameOnData, final String attributeNameOnEntity, 
 			final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		if (populationGenerator == null) { throw new GenstarException("'population' parameter can not be null"); }
 		if (attributeNameOnData == null || attributeNameOnData.trim().length() == 0) { throw new GenstarException("'attributeNameOnData' parameter can not be null or empty"); }
 		if (attributeNameOnEntity == null || attributeNameOnEntity.trim().length() == 0) { throw new GenstarException("'attributeNameOnEntity' parameter can not be null or empty"); }
 		if (dataType == null) { throw new GenstarException("'dataType' parameter can not be null"); }
 		if (valueClassOnEntity == null) { throw new GenstarException("'valueClassOnEntity' can not be null"); }
-		
-		this.populationGenerator = populationGenerator;
+	
 		this.nameOnData = attributeNameOnData;
 		this.nameOnEntity = attributeNameOnEntity;
 		this.dataType = dataType;
@@ -69,10 +62,6 @@ public abstract class AbstractAttribute {
 	
 	public Class<? extends AttributeValue> getValueClassOnData() {
 		return valueClassOnData;
-	}
-	
-	public ISyntheticPopulationGenerator getPopulationGenerator() {
-		return populationGenerator;
 	}
 	
 	public void addAttributeChangedListener(final AttributeChangedListener l) {
@@ -130,22 +119,6 @@ public abstract class AbstractAttribute {
 	public void setAttributeID(final int attributeID) {
 		this.attributeID = attributeID;
 	}
-	
-	public void setIdentity(final boolean identity) throws GenstarException {
-		if (identity) {
-			for (AbstractAttribute attr : populationGenerator.getAttributes()) {
-				if (attr.isIdentity && !attr.equals(this)) {
-					throw new GenstarException("A generator can not contain more than one identity attribute");
-				}
-			}
-		}
-		
-		this.isIdentity = identity;
-	}
-	
-	public boolean isIdentity() {
-		return isIdentity;
-	}
 
 	public abstract Set<AttributeValue> valuesOnData();
 	
@@ -158,5 +131,67 @@ public abstract class AbstractAttribute {
 	public abstract AttributeValue getInstanceOfAttributeValue(final AttributeValue value);
 
 	public abstract void clear();
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((attributeChangeListeners == null) ? 0 : attributeChangeListeners.hashCode());
+		result = prime * result + attributeID;
+		result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+		result = prime * result + ((nameOnData == null) ? 0 : nameOnData.hashCode());
+		result = prime * result + ((nameOnEntity == null) ? 0 : nameOnEntity.hashCode());
+		result = prime * result + ((valueClassOnData == null) ? 0 : valueClassOnData.hashCode());
+		result = prime * result + ((valueClassOnEntity == null) ? 0 : valueClassOnEntity.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AbstractAttribute other = (AbstractAttribute) obj;
+		if (attributeChangeListeners == null) {
+			if (other.attributeChangeListeners != null)
+				return false;
+		} else if (!attributeChangeListeners.equals(other.attributeChangeListeners))
+			return false;
+		if (attributeID != other.attributeID)
+			return false;
+		if (dataType != other.dataType)
+			return false;
+		if (nameOnData == null) {
+			if (other.nameOnData != null)
+				return false;
+		} else if (!nameOnData.equals(other.nameOnData))
+			return false;
+		if (nameOnEntity == null) {
+			if (other.nameOnEntity != null)
+				return false;
+		} else if (!nameOnEntity.equals(other.nameOnEntity))
+			return false;
+		if (valueClassOnData == null) {
+			if (other.valueClassOnData != null)
+				return false;
+		} else if (!valueClassOnData.equals(other.valueClassOnData))
+			return false;
+		if (valueClassOnEntity == null) {
+			if (other.valueClassOnEntity != null)
+				return false;
+		} else if (!valueClassOnEntity.equals(other.valueClassOnEntity))
+			return false;
+		return true;
+	}
+
 
 }

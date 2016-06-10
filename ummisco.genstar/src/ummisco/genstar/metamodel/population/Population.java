@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -21,42 +22,28 @@ public class Population implements IPopulation {
 	
 	private String name;
 	
-	private List<Entity> entities = Collections.EMPTY_LIST;
+	private List<Entity> entities = Collections.emptyList();
 
-	private Map<String, String> groupReferences = Collections.EMPTY_MAP; // population_name :: GAMA_attribute_name
+	private Map<String, String> groupReferences = Collections.emptyMap(); // population_name :: GAMA_attribute_name
 	
-	private Map<String, String> componentReferences = Collections.EMPTY_MAP; // population_name :: GAMA_attribute_name
+	private Map<String, String> componentReferences = Collections.emptyMap(); // population_name :: GAMA_attribute_name
 	
 	private AbstractAttribute idAttribute;
 	
-	private List<Integer> entityIds = Collections.EMPTY_LIST; 
+	private List<Integer> entityIds = Collections.emptyList(); 
 	
 	private int currentMaxIdValue = 0;
 	
 
-	public Population(final PopulationType type, final String name, final List<AbstractAttribute> attributes) throws GenstarException {
+	public Population(final PopulationType type, final String name, final Set<AbstractAttribute> attributes) throws GenstarException {
 		if (type == null) { throw new GenstarException("Parameter type can not be null"); }
 		if (name == null) { throw new GenstarException("Parameter name can not be null"); }
 		if (attributes == null) { throw new GenstarException("Parameter attributes can not be null"); }
 		
-		Set<AbstractAttribute> attributesSet = new HashSet<AbstractAttribute>(attributes);
-		if (attributesSet.size() < attributes.size()) { throw new GenstarException("Some attributes are duplicated"); }
-		
 		this.type = type;
 		this.name = name;
-		this.attributes = new ArrayList<AbstractAttribute>();
-		this.attributes.addAll(attributes);
-		
-		// save the reference to identity attribute
-		for (AbstractAttribute attr : attributes) {
-			if (attr.isIdentity()) {
-				if (idAttribute != null) {
-					throw new GenstarException("Not support more than one identity attribute in a population. Both " + idAttribute.getNameOnData() + " and " + attr.getNameOnData() + " are identity attributes.");
-				}
-				
-				idAttribute = attr;
-			}
-		}
+		this.attributes = new ArrayList<AbstractAttribute>(attributes);
+
 	}
 	
 	@Override public int getNbOfEntities() {
@@ -99,8 +86,8 @@ public class Population implements IPopulation {
 		return name;
 	}
 
-	@Override public List<AbstractAttribute> getAttributes() {
-		return new ArrayList<AbstractAttribute>(attributes);
+	@Override public Set<AbstractAttribute> getAttributes() {
+		return new HashSet<AbstractAttribute>(attributes);
 	}	
 	
 	@Override public boolean containAttribute(final AbstractAttribute attribute) throws GenstarException {
@@ -131,7 +118,7 @@ public class Population implements IPopulation {
 		if (otherPopulation == null) return false;
 		if (!name.equals(otherPopulation.getName())) { return false; }
 		
-		List<AbstractAttribute> otherAttributes = otherPopulation.getAttributes();
+		Set<AbstractAttribute> otherAttributes = otherPopulation.getAttributes();
 		
 		if (attributes.size() != otherAttributes.size()) { return false; }
 		
@@ -218,7 +205,7 @@ public class Population implements IPopulation {
 	}
 	
 	private void internalAddEntity(final Entity entity) throws GenstarException {
-		if (entities == Collections.EMPTY_LIST) { entities = new ArrayList<Entity>(); }
+		if (entities == Collections.<Entity>emptyList()) { entities = new ArrayList<Entity>(); }
 		
 		entities.add(entity);
 		/*
@@ -296,9 +283,6 @@ public class Population implements IPopulation {
 
 	@Override public boolean isIdValueAlreadyInUsed(final int idValue) throws GenstarException {
 		if (idAttribute == null) { throw new GenstarException("This population has no identity attribute"); }
-		if (!idAttribute.isIdentity()) {
-			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
-		}
 
 		if (idValue < 0) { throw new GenstarException("Not support negative identity value"); }
 		
@@ -307,20 +291,38 @@ public class Population implements IPopulation {
 
 	@Override public int nextIdValue() throws GenstarException {
 		if (idAttribute == null) { throw new GenstarException("This population has no identity attribute"); }
-		if (!idAttribute.isIdentity()) {
-			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
-		}
 		
 		while (entityIds.contains(currentMaxIdValue)) { currentMaxIdValue++; }
 		
 		return currentMaxIdValue;
 	}
-	
-	@Override public AbstractAttribute getIdentityAttribute() throws GenstarException {
-		if (idAttribute != null && !idAttribute.isIdentity()) {
-			throw new GenstarException(idAttribute.getNameOnData() + " is no longer an identity attribute. This population object is no longer correctly functional.");
+
+	@Override
+	public String csvReport(CharSequence csvSep) {
+		String report = attributes.stream().map(att -> att.getNameOnData() + csvSep + "contingent" + csvSep + "pourcentage").collect(Collectors.joining(csvSep))+"\n";
+		List<String> lines = new ArrayList<>();
+		for(int i = 0; i < attributes.stream().mapToInt(att -> att.valuesOnData().size()).max().getAsInt(); i++)
+			lines.add("");
+		for(AbstractAttribute attribute : attributes){
+			int lineNumber = 0;
+			for(AttributeValue value : attribute.valuesOnData()){
+				long valCount = this.entities
+						.stream().filter(e -> e.getEntityAttributeValues()
+								.stream().anyMatch(ea -> ea.getAttributeValueOnData().equals(value))).count();
+				double valProp =  Math.round(Math.round(((valCount * 1d / this.entities.size()) * 1000))) / 10d;
+				if(lines.get(lineNumber).isEmpty())
+					lines.set(lineNumber, value.toCsvString() + csvSep + valCount + csvSep + valProp);
+				else
+					lines.set(lineNumber, lines.get(lineNumber) + csvSep + value.toCsvString() + csvSep + valCount + csvSep + valProp);
+				lineNumber++;
+			}
+			for(int i = lineNumber; i < lines.size(); i++)
+				if(lines.get(i).isEmpty())
+					lines.set(i, lines.get(i) + csvSep + "" + csvSep + "");
+				else
+					lines.set(i, lines.get(i) + csvSep + "" + csvSep + "" + csvSep + "");
 		}
-		
-		return idAttribute;
+		report += String.join("\n", lines);
+		return report;
 	}
 }

@@ -8,6 +8,7 @@ import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.generation_rules.SampleFreeGenerationRule;
 import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
 
+@Deprecated
 public abstract class CustomSampleFreeGenerationRule extends SampleFreeGenerationRule {
 
 	public static final String RULE_TYPE_NAME = "Custom Generation Rule"; // TODO change to "Custom Sample Free Generation Rule"

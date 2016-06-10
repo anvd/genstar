@@ -61,7 +61,7 @@ public class CompoundSampleData extends AbstractSampleData implements ICompoundS
 			AttributeValue groupIdValueOnGroup = groupIdOnGroupEav.getAttributeValueOnEntity(); // what to to with this value?
 			
 			int recodedID = nextIdValue(targetEntityPopulationName);
-			AttributeValue recodedIdValue = new UniqueValue(DataType.INTEGER, Integer.toString(recodedID));
+			AttributeValue recodedIdValue = new UniqueValue(DataType.INTEGER, Integer.toString(recodedID), groupIdAttributeOnGroupEntity);
 			attributeValues.clear();
 			attributeValues.put(groupIdAttributeOnGroupEntity, recodedIdValue);
 			

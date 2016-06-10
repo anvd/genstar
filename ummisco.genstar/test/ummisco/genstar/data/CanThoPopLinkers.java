@@ -181,8 +181,9 @@ public class CanThoPopLinkers {
 			if (availableInhabitants.isEmpty()) { return; }
 			
 			Map<AbstractAttribute, AttributeValue> livingPlaceMap = new HashMap<AbstractAttribute, AttributeValue>();
-			UniqueValue livingPlaceAttrValue = new UniqueValue(DataType.STRING, livingPlace);
-			livingPlaceMap.put(availableInhabitants.get(0).getPopulation().getAttributeByNameOnEntity("living_place"), livingPlaceAttrValue);
+			AbstractAttribute livingPlaceAttr = availableInhabitants.get(0).getPopulation().getAttributeByNameOnEntity("living_place");
+			UniqueValue livingPlaceAttrValue = new UniqueValue(DataType.STRING, livingPlace, livingPlaceAttr);
+			livingPlaceMap.put(livingPlaceAttr, livingPlaceAttrValue);
 
 			List<Entity> members = new ArrayList<Entity>();
 			

@@ -44,9 +44,7 @@ public class CompoundSampleDataTest {
 		
 		// groupIdAttributeOnGroup, groupIdAttributeOnComponent
 		AbstractAttribute groupIdAttributeOnGroup = groupGenerator.getAttributeByNameOnData("Household_ID");
-		groupIdAttributeOnGroup.setIdentity(true);
 		AbstractAttribute groupIdAttributeOnComponent = componentGenerator.getAttributeByNameOnData("Household_ID");
-		groupIdAttributeOnComponent.setIdentity(true);
 		
 		ISampleData groupSampleData = new SampleData(groupGenerator.getPopulationName(), groupGenerator.getAttributes(), groupSampleFile);
 		ISampleData componentSampleData = new SampleData(componentGenerator.getPopulationName(), componentGenerator.getAttributes(), componentSampleFile);
@@ -67,7 +65,7 @@ public class CompoundSampleDataTest {
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		for (List<String> row : groupSampleFile.getContent()) {
 			// Header: Household_ID,Household Size,Household Income,Household Type,Number Of Cars
-			UniqueValue householdIdValue = new UniqueValue(DataType.INTEGER, row.get(0));			
+			UniqueValue householdIdValue = new UniqueValue(DataType.INTEGER, row.get(0), groupIdAttributeOnGroup);			
 			Integer householdSize = Integer.parseInt(row.get(1));
 			
 			matchingCriteria.put(groupIdAttributeOnGroup, householdIdValue);

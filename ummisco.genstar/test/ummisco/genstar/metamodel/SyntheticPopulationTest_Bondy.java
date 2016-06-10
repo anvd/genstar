@@ -60,7 +60,7 @@ public class SyntheticPopulationTest_Bondy {
 		
 		EntityAttributeValue entityAgeAttrValue = firstInhabitant.getEntityAttributeValueByNameOnEntity("age");
 		UniqueValue ageAttrValue = (UniqueValue) entityAgeAttrValue.getAttributeValueOnEntity();
-		UniqueValue queryAgeAttributeValue = new UniqueValue(DataType.INTEGER, ageAttrValue.getStringValue());
+		UniqueValue queryAgeAttributeValue = new UniqueValue(DataType.INTEGER, ageAttrValue.getStringValue(), population.getAttributeByNameOnEntity("age"));
 		
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		attributeValues.put(population.getAttributeByNameOnEntity("age"), queryAgeAttributeValue);

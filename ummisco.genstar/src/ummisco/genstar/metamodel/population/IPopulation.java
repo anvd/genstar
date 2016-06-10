@@ -58,6 +58,13 @@ public interface IPopulation extends IWithAttributes {
 	public abstract boolean isIdValueAlreadyInUsed(final int idValue) throws GenstarException;
 
 	public abstract int nextIdValue() throws GenstarException;
-	
-	public abstract AbstractAttribute getIdentityAttribute() throws GenstarException;
+
+	/**
+	 * Report containt of population: count the number of entity for each {@link AttributeValue}
+	 * 
+	 * TODO: make report more "validation oriented"
+	 * 
+	 * @return {@link String} in form of a csv representation
+	 */
+	public abstract String csvReport(CharSequence csvSep);
 }

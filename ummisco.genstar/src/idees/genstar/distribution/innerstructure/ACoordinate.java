@@ -1,0 +1,150 @@
+package idees.genstar.distribution.innerstructure;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Represent the coordinate system of a coordinate matrix. Coordinates represent correlation between 
+ * parametric aspect {@code <A>}: there must be only one aspect per matrix dimension, but could have from 2 to
+ * all dimensions being present.
+ * <p>
+ * Coordinates serve to access {@link InDimensionalMatrix} through {@link InDimensionalMatrix#getVal(ACoordinate)}. 
+ * See also {@link InDimensionalMatrix#getVal(Collection)} and {@link InDimensionalMatrix#getVal(Object)} that rely 
+ * on {@link ACoordinate}
+ * <p>
+ * 
+ * @author kevinchapuis
+ *
+ * @param <A>
+ */
+public abstract class ACoordinate<D, A> {
+
+	private final Set<A> coordinate;
+	private int hashIndex = -1;
+	
+	/*
+	 * TODO: protected constructor and initialize in AnDimensionalMatrix to ensure not to have twins coordinate
+	 * May be a 'multiton' pattern like
+	 */
+	public ACoordinate(Set<A> coordinate){
+		this.coordinate = coordinate;
+	}
+	
+	/**
+	 * Gives the set of aspect (of parametric type {@code A}) this {@link ACoordinate} contains
+	 * 
+	 * @return {@link Set}
+	 */
+	public Set<A> values() {
+		return coordinate;
+	}
+
+	/**
+	 * The number of aspect this coordinate contains
+	 * 
+	 * @return
+	 */
+	public int size() {
+		return coordinate.size();
+	}
+	
+	/**
+	 * ask if the coordinate contains or not {@code coordAspect} argument. It is based on 
+	 * {@link Set#contains(Object)} implementations, so be specific about {@link #equals(Object)}
+	 * method specification of parametric type {@code <A>}
+	 * 
+	 * @param coordAspect
+	 * @return <code>true</code> if this {@link ACoordinate} contains {@code coordAspect} and <code>false</code> otherwise
+	 */
+	public boolean contains(A coordAspect){
+		return this.coordinate.contains(coordAspect);
+	}
+
+	/**
+	 * ask if the coordinate contains all the aspects passed in argument. It is based on
+	 * {@link Set#containsAll(Collection)} implementations
+	 * 
+	 * @param aspects
+	 * @return <code>true</code> if this {@link ACoordinate} contains all {@code aspects} and <code>false</code> otherwise
+	 * 
+	 * @see ACoordinate#contains(Object)
+	 */
+	public boolean containsAll(Collection<A> aspects) {
+		return this.coordinate.containsAll(aspects);
+	}
+
+	/**
+	 * Utility method to manage hash of coordinate to give each one
+	 * a distinct id
+	 * 
+	 * @param hashIndex
+	 */
+	public void setHashIndex(int hashIndex) {
+		this.hashIndex = hashIndex;
+	}
+	
+	/**
+	 * Return the set of dimension this coordinate is bind with
+	 * 
+	 * @return {@link Set} of dimension {@code <D>}
+	 */
+	public abstract Set<D> getDimensions();
+	
+	/**
+	 * Return the underlying coordinate: each dimension is
+	 * associated with one and only one aspect
+	 * 
+	 * @return {@link Map} that bind dimension to aspect
+	 */
+	public abstract Map<D, A> getMap();
+
+// -------------------------------------------------------------------
+	
+	@Override
+	public String toString(){
+		String s = "";
+		for(A aspect : coordinate)
+			if(s.isEmpty())
+				s+= "[["+aspect.toString()+"]";
+			else
+				s += " - ["+aspect.toString()+"]";
+		return s+"]";
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((coordinate == null) ? 0 : coordinate.hashCode());
+		result = prime * result + hashIndex;
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		@SuppressWarnings("rawtypes")
+		ACoordinate other = (ACoordinate) obj;
+		if (coordinate == null) {
+			if (other.coordinate != null)
+				return false;
+		} else if (!coordinate.equals(other.coordinate))
+			return false;
+		if (hashIndex != other.hashIndex)
+			return false;
+		return true;
+	}
+	
+}

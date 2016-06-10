@@ -65,11 +65,11 @@ public class PopulationTest_Elementary {
 		
 		assertTrue(population.getAttributes().size() == 0);
 
-		AbstractAttribute attr = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
+		AbstractAttribute attr = new UniqueValuesAttribute("dummy attribute", DataType.STRING);
 		population.addAttribute(attr);
 		assertTrue(population.getAttributes().size() == 1);
 
-		AbstractAttribute attr1 = new UniqueValuesAttribute(population, "dummy attribute1", DataType.STRING);
+		AbstractAttribute attr1 = new UniqueValuesAttribute("dummy attribute1", DataType.STRING);
 		population.addAttribute(attr1);
 		assertTrue(population.getAttributes().size() == 2);
 	}
@@ -78,10 +78,10 @@ public class PopulationTest_Elementary {
 	public void testDuplicatedAttributeName() throws GenstarException {
 		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 
-		AbstractAttribute attr = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
+		AbstractAttribute attr = new UniqueValuesAttribute("dummy attribute", DataType.STRING);
 		population.addAttribute(attr);
 
-		AbstractAttribute attr1 = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
+		AbstractAttribute attr1 = new UniqueValuesAttribute("dummy attribute", DataType.STRING);
 		exception.expect(GenstarException.class);
 		population.addAttribute(attr1);
 	}
@@ -90,7 +90,7 @@ public class PopulationTest_Elementary {
 		SampleFreeGenerator population1 = new SampleFreeGenerator("test population1", 1);
 		SampleFreeGenerator population2 = new SampleFreeGenerator("test population2", 1);
 
-		AbstractAttribute attr = new UniqueValuesAttribute(population1, "dummy attribute", DataType.STRING);
+		AbstractAttribute attr = new UniqueValuesAttribute("dummy attribute", DataType.STRING);
 		exception.expect(GenstarException.class);
 		population2.addAttribute(attr);
 	}
@@ -98,11 +98,11 @@ public class PopulationTest_Elementary {
 	@Test public void testGetAttributes() throws GenstarException {
 		SampleFreeGenerator population = new SampleFreeGenerator("test population", 1);
 
-		AbstractAttribute attr = new UniqueValuesAttribute(population, "dummy attribute", DataType.STRING);
+		AbstractAttribute attr = new UniqueValuesAttribute("dummy attribute", DataType.STRING);
 		population.addAttribute(attr);
 		assertTrue(population.getAttributes().size() == 1);
 
-		AbstractAttribute attr1 = new UniqueValuesAttribute(population, "dummy attribute1", DataType.STRING);
+		AbstractAttribute attr1 = new UniqueValuesAttribute("dummy attribute1", DataType.STRING);
 		population.addAttribute(attr1);
 		assertTrue(population.getAttributes().size() == 2);
 		

@@ -18,6 +18,7 @@ import ummisco.genstar.metamodel.population.Entity;
 import ummisco.genstar.util.GenstarUtils;
 import ummisco.genstar.util.SharedInstances;
 
+@Deprecated
 public class FrequencyDistributionGenerationRule extends SampleFreeGenerationRule { // TODO  implements AttributeChangedListener
 	
 	public static final int FREQUENCY_DISTRIBUTION_GENERATION_RULE_ID = 2;
@@ -59,8 +60,8 @@ public class FrequencyDistributionGenerationRule extends SampleFreeGenerationRul
 	}
 	
 	@Override
-	public List<AbstractAttribute> getAttributes() {
-		List<AbstractAttribute> retVal = new ArrayList<AbstractAttribute>();
+	public Set<AbstractAttribute> getAttributes() {
+		Set<AbstractAttribute> retVal = new HashSet<AbstractAttribute>();
 		retVal.addAll(inputAttributes.values());
 		retVal.addAll(outputAttributes.values());
 		
@@ -102,11 +103,6 @@ public class FrequencyDistributionGenerationRule extends SampleFreeGenerationRul
 	
 	private void verifyAddedAttributeValidity(final AbstractAttribute attribute) throws GenstarException {
 		if (attribute == null) { throw new GenstarException("'attribute' parameter can not be null"); }
-		
-		if (!attribute.getPopulationGenerator().equals(this.getGenerator())) { throw new GenstarException("Can not add '" + attribute.getNameOnEntity() + "' attribute to '" + this.getName() + "' distribution."
-				+ " Because of population different problem : attribute's population is " + attribute.getPopulationGenerator() + " while distribution's population is " + populationGenerator); }
-		
-		if (!attribute.getPopulationGenerator().containAttribute(attribute)) { throw new GenstarException("Can not add attribute the distribution because the attribute is not yet added to the population"); }
 		
 		if (inputAttributes.values().contains(attribute)) { throw new GenstarException("'inputAttributes' already contains '" + attribute.getNameOnEntity() + "' attribute."); }
 		

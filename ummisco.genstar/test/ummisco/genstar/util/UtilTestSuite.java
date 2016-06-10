@@ -6,8 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	AttributeUtilsTest.class, GenstarCsvFileTest.class, GenstarUtilsTest.class,
-	IpfUtilsTest.class, IpuUtilsTest.class
+	AttributeUtilsTest.class, GenstarCsvFileTest.class, GenstarUtilsTest.class
 })
 public class UtilTestSuite {
 

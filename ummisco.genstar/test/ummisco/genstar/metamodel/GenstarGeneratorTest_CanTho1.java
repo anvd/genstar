@@ -158,19 +158,19 @@ public class GenstarGeneratorTest_CanTho1 {
 		
 		// create attributes +
 		
-		RangeValuesAttribute ageRangesAttr = new RangeValuesAttribute(rulesOrder1InhabitantPopGenerator, "age", DataType.INTEGER, UniqueValue.class);
+		RangeValuesAttribute ageRangesAttr = new RangeValuesAttribute("age", DataType.INTEGER, UniqueValue.class);
 		for (int[] range : InhabitantData.age_ranges) {
-			ageRangesAttr.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangesAttr.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr));
 		}
 		rulesOrder1InhabitantPopGenerator.addAttribute(ageRangesAttr);
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(rulesOrder1InhabitantPopGenerator, "sex", DataType.BOOL);
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr));
 		rulesOrder1InhabitantPopGenerator.addAttribute(sexAttr);
 		
-		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute(rulesOrder1InhabitantPopGenerator, "district", DataType.STRING);
-		for (String district : InhabitantData.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district)); }
+		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute("district", DataType.STRING);
+		for (String district : InhabitantData.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district, districtAttr)); }
 		rulesOrder1InhabitantPopGenerator.addAttribute(districtAttr);
 		
 		// create attributes -
@@ -190,15 +190,15 @@ public class GenstarGeneratorTest_CanTho1 {
 		for (int[] range : InhabitantData.age_ranges) {
 			attributeValues.clear();
 			
-			attributeValues.put(ageRangesAttr, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
-			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]));
+			attributeValues.put(ageRangesAttr, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr));
+			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr);
 			attributeValues.put(sexAttr, sexAttrValue);
 			
 			// male
 			order1Rule1.setFrequency(attributeValues, range[2]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr));
 			order1Rule1.setFrequency(attributeValues, range[3]);
 		}
 		
@@ -216,15 +216,15 @@ public class GenstarGeneratorTest_CanTho1 {
 		for (int location[] : InhabitantData.locations) {
 			attributeValues.clear();
 			
-			districtValue = new UniqueValue(DataType.STRING, Scenario4.district_names[districtIndex]);
+			districtValue = new UniqueValue(DataType.STRING, Scenario4.district_names[districtIndex], districtAttr);
 			attributeValues.put(districtAttr, districtValue);
 			
 			// male
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr));
 			order1Rule2.setFrequency(attributeValues, location[0]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr));
 			order1Rule2.setFrequency(attributeValues, location[1]);
 		
 			
@@ -241,19 +241,19 @@ public class GenstarGeneratorTest_CanTho1 {
 		
 		// create attributes +
 		
-		RangeValuesAttribute ageRangesAttr = new RangeValuesAttribute(rulesOrder2InhabitantPopGenerator, "age", DataType.INTEGER, UniqueValue.class);
+		RangeValuesAttribute ageRangesAttr = new RangeValuesAttribute("age", DataType.INTEGER, UniqueValue.class);
 		for (int[] range : InhabitantData.age_ranges) {
-			ageRangesAttr.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangesAttr.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr));
 		}
 		rulesOrder2InhabitantPopGenerator.addAttribute(ageRangesAttr);
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(rulesOrder2InhabitantPopGenerator, "sex", DataType.BOOL);
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr));
 		rulesOrder2InhabitantPopGenerator.addAttribute(sexAttr);
 		
-		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute(rulesOrder2InhabitantPopGenerator, "district", DataType.STRING);
-		for (String district : InhabitantData.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district)); }
+		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute("district", DataType.STRING);
+		for (String district : InhabitantData.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district, districtAttr)); }
 		rulesOrder2InhabitantPopGenerator.addAttribute(districtAttr);
 		
 		// create attributes -
@@ -275,15 +275,15 @@ public class GenstarGeneratorTest_CanTho1 {
 		for (int location[] : InhabitantData.locations) {
 			attributeValues.clear();
 			
-			districtValue = new UniqueValue(DataType.STRING, InhabitantData.district_names[districtIndex]);
+			districtValue = new UniqueValue(DataType.STRING, InhabitantData.district_names[districtIndex], districtAttr);
 			attributeValues.put(districtAttr, districtValue);
 			
 			// male
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr));
 			order2Rule1.setFrequency(attributeValues, location[0]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr));
 			order2Rule1.setFrequency(attributeValues, location[1]);
 		
 			
@@ -302,15 +302,15 @@ public class GenstarGeneratorTest_CanTho1 {
 		for (int[] range : InhabitantData.age_ranges) {
 			attributeValues.clear();
 			
-			attributeValues.put(ageRangesAttr, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
-			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]));
+			attributeValues.put(ageRangesAttr, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr));
+			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr);
 			attributeValues.put(sexAttr, sexAttrValue);
 			
 			// male
 			order2Rule2.setFrequency(attributeValues, range[2]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr));
 			order2Rule2.setFrequency(attributeValues, range[3]);
 		}
 		

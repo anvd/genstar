@@ -33,20 +33,20 @@ public class AttributeValuesFrequencyTest {
 	@Test public void testMatchAttributeValues() throws GenstarException {
 		SampleFreeGenerator bondyPopulationGenerator = new SampleFreeGenerator("Population of Bondy", 100);
 		
-		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulationGenerator, "age_range_1", "age", DataType.INTEGER);
-		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
-		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]));
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute("age_range_1", "age", DataType.INTEGER);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]), ageRangesAttr1);
+		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]), ageRangesAttr1);
 		ageRangesAttr1.add(ageRange1);
 		ageRangesAttr1.add(ageRange2);
 		bondyPopulationGenerator.addAttribute(ageRangesAttr1);
 		
-		RangeValue copyAgeRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
+		RangeValue copyAgeRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]), ageRangesAttr1);
 		
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(bondyPopulationGenerator, "sex", DataType.BOOL);
-		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]));
-		UniqueValue maleValueCopy = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]));
-		UniqueValue femaleValue = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1]));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]), sexAttr);
+		UniqueValue maleValueCopy = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]), sexAttr);
+		UniqueValue femaleValue = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1]), sexAttr);
 		sexAttr.add(maleValueOrigin);
 		bondyPopulationGenerator.addAttribute(sexAttr);
 		
@@ -94,15 +94,15 @@ public class AttributeValuesFrequencyTest {
 	@Test public void testMatchEntity() throws GenstarException {
 		ISyntheticPopulationGenerator bondyPopulationGenerator = new SampleFreeGenerator("Population of Bondy", 100);
 		
-		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulationGenerator, "age_range_1", "age", DataType.INTEGER);
-		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
-		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]));
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute("age_range_1", "age", DataType.INTEGER);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]), ageRangesAttr1);
+		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]), ageRangesAttr1);
 		ageRangesAttr1.add(ageRange1);
 		ageRangesAttr1.add(ageRange2);
 		bondyPopulationGenerator.addAttribute(ageRangesAttr1);
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(bondyPopulationGenerator, "sex", DataType.BOOL);
-		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]), sexAttr);
 		sexAttr.add(maleValueOrigin);
 		bondyPopulationGenerator.addAttribute(sexAttr);
 		
@@ -145,15 +145,15 @@ public class AttributeValuesFrequencyTest {
 	@Test public void testMatchEntity1() throws GenstarException {
 		ISyntheticPopulationGenerator bondyPopulationGenerator = new SampleFreeGenerator("Population of Bondy", 100);
 		
-		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(bondyPopulationGenerator, "age_range_1", "age", DataType.INTEGER);
-		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]));
-		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]));
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute("age_range_1", "age", DataType.INTEGER);
+		RangeValue ageRange1 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[0][0]), Integer.toString(BondyData.age_ranges_1[0][1]), ageRangesAttr1);
+		RangeValue ageRange2 = new RangeValue(DataType.INTEGER, Integer.toString(BondyData.age_ranges_1[1][0]), Integer.toString(BondyData.age_ranges_1[1][1]), ageRangesAttr1);
 		ageRangesAttr1.add(ageRange1);
 		ageRangesAttr1.add(ageRange2);
 		bondyPopulationGenerator.addAttribute(ageRangesAttr1);
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(bondyPopulationGenerator, "sex", DataType.BOOL);
-		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		UniqueValue maleValueOrigin = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]), sexAttr);
 		sexAttr.add(maleValueOrigin);
 		bondyPopulationGenerator.addAttribute(sexAttr);
 

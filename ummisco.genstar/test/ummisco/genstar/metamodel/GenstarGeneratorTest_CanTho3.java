@@ -190,28 +190,28 @@ public class GenstarGeneratorTest_CanTho3 {
 		inhabitantPopGenerator.setPopulationName(INHABITANT_POPULATION_NAME);
 		
 		// create attributes +
-		RangeValuesAttribute ageRangesAttr = new RangeValuesAttribute(inhabitantPopGenerator, "age", DataType.INTEGER, UniqueValue.class);
+		RangeValuesAttribute ageRangesAttr = new RangeValuesAttribute("age", DataType.INTEGER, UniqueValue.class);
 		for (int[] range : Data.age_ranges) {
-			ageRangesAttr.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangesAttr.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr));
 		}
 		inhabitantPopGenerator.addAttribute(ageRangesAttr);
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(inhabitantPopGenerator, "sex", DataType.BOOL);
-		UniqueValue maleValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		UniqueValue maleValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr);
 		sexAttr.add(maleValue);
-		UniqueValue femaleValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]));
+		UniqueValue femaleValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr);
 		sexAttr.add(femaleValue);
 		inhabitantPopGenerator.addAttribute(sexAttr);
 		
-		UniqueValuesAttribute inhabitantLivingPlaceAttr = new UniqueValuesAttribute(inhabitantPopGenerator, "living_place", DataType.STRING);
-		UniqueValue urbanValue = new UniqueValue(DataType.STRING, living_place_values[0]);
+		UniqueValuesAttribute inhabitantLivingPlaceAttr = new UniqueValuesAttribute("living_place", DataType.STRING);
+		UniqueValue urbanValue = new UniqueValue(DataType.STRING, living_place_values[0], inhabitantLivingPlaceAttr);
 		inhabitantLivingPlaceAttr.add(urbanValue);
-		UniqueValue ruralValue = new UniqueValue(DataType.STRING, living_place_values[1]);
+		UniqueValue ruralValue = new UniqueValue(DataType.STRING, living_place_values[1], inhabitantLivingPlaceAttr);
 		inhabitantLivingPlaceAttr.add(ruralValue);
 		inhabitantPopGenerator.addAttribute(inhabitantLivingPlaceAttr);
 		
-		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute(inhabitantPopGenerator, "district", DataType.STRING);
-		for (String district : Data.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district)); }
+		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute("district", DataType.STRING);
+		for (String district : Data.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district, districtAttr)); }
 		inhabitantPopGenerator.addAttribute(districtAttr);
 		// create attributes -
 
@@ -230,7 +230,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		for (int[] range : Data.age_ranges) {
 			attributeValues.clear();
 			
-			attributeValues.put(ageRangesAttr, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			attributeValues.put(ageRangesAttr, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr));
 
 			attributeValues.put(inhabitantLivingPlaceAttr, urbanValue); // urban 
 			attributeValues.put(sexAttr, maleValue); // male
@@ -261,15 +261,15 @@ public class GenstarGeneratorTest_CanTho3 {
 		for (int location[] : Data.locations) {
 			attributeValues.clear();
 			
-			districtValue = new UniqueValue(DataType.STRING, Data.district_names[districtIndex]);
+			districtValue = new UniqueValue(DataType.STRING, Data.district_names[districtIndex], districtAttr);
 			attributeValues.put(districtAttr, districtValue);
 			
 			// male
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr));
 			inhabitantPopRule2.setFrequency(attributeValues, location[0]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr));
 			inhabitantPopRule2.setFrequency(attributeValues, location[1]);
 		
 			
@@ -284,20 +284,20 @@ public class GenstarGeneratorTest_CanTho3 {
 		householdPopGenerator.setPopulationName(HOUSEHOLD_POPULATION_NAME);
 
 		// create attributes +
-		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute(householdPopGenerator, "size", DataType.INTEGER);
+		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute("size", DataType.INTEGER);
 		for (int size = 1; size < (Data.household_size_by_types.length + 1); size++) {
-			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size)));
+			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size), householdSizeAttr));
 		}
 		householdPopGenerator.addAttribute(householdSizeAttr);
 		
-		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute(householdPopGenerator, "type", DataType.STRING);
+		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute("type", DataType.STRING);
 		for (String type : Data.household_type_values) {
-			householdTypeAttr.add(new UniqueValue(DataType.STRING, type));
+			householdTypeAttr.add(new UniqueValue(DataType.STRING, type, householdTypeAttr));
 		}
 		householdPopGenerator.addAttribute(householdTypeAttr);
 		
 		
-		UniqueValuesAttribute householdLivingPlaceAttr = new UniqueValuesAttribute(householdPopGenerator, "living_place", DataType.STRING);
+		UniqueValuesAttribute householdLivingPlaceAttr = new UniqueValuesAttribute("living_place", DataType.STRING);
 		householdLivingPlaceAttr.add(urbanValue);
 		householdLivingPlaceAttr.add(ruralValue);
 		householdPopGenerator.addAttribute(householdLivingPlaceAttr);
@@ -318,12 +318,12 @@ public class GenstarGeneratorTest_CanTho3 {
 		for (int[] types : Data.household_size_by_types) {
 			attributeValues.clear();
 			
-			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0])));
+			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0]), householdSizeAttr));
 			
 			// urban living places
 			attributeValues.put(householdLivingPlaceAttr, urbanValue);
 			for (int typeIndex=0; typeIndex<Data.household_type_values.length; typeIndex++) {
-				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, Data.household_type_values[typeIndex]));
+				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, Data.household_type_values[typeIndex], householdTypeAttr));
 				
 				householdPopRule1.setFrequency(attributeValues, types[typeIndex+1]);
 			}
@@ -331,7 +331,7 @@ public class GenstarGeneratorTest_CanTho3 {
 			// rural living places
 			attributeValues.put(householdLivingPlaceAttr, ruralValue);
 			for (int typeIndex=0; typeIndex<Data.household_type_values.length; typeIndex++) {
-				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, Data.household_type_values[typeIndex]));
+				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, Data.household_type_values[typeIndex], householdTypeAttr));
 
 				householdPopRule1.setFrequency(attributeValues, types[typeIndex+6]);
 			}
@@ -782,7 +782,7 @@ public class GenstarGeneratorTest_CanTho3 {
 		// put inhabitants into household basing on household's size and living_place
 		private void buildHousehold(final Entity householdEntity, final int size, final String livingPlace, final List<Entity> availableInhabitants) throws GenstarException {
 			Map<AbstractAttribute, AttributeValue> livingPlaceMap = new HashMap<AbstractAttribute, AttributeValue>();
-			UniqueValue livingPlaceAttrValue = new UniqueValue(DataType.STRING, livingPlace);
+			UniqueValue livingPlaceAttrValue = new UniqueValue(DataType.STRING, livingPlace, householdEntity.getPopulation().getAttributeByNameOnEntity("living_place"));
 //			livingPlaceMap.put("living_place", livingPlaceAttrValue);
 			livingPlaceMap.put(householdEntity.getPopulation().getAttributeByNameOnEntity("living_place"), livingPlaceAttrValue);
 

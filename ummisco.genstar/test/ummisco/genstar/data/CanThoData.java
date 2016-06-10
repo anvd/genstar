@@ -562,15 +562,15 @@ public final class CanThoData {
 		
 		// create attributes +
 		
-		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute(scenario1InhabitantPopGenerator, "age", DataType.INTEGER, UniqueValue.class);
+		RangeValuesAttribute ageRangesAttr1 = new RangeValuesAttribute("age", DataType.INTEGER, UniqueValue.class);
 		for (int[] range : Scenario1.age_ranges_1) {
-			ageRangesAttr1.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangesAttr1.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr1));
 		}
 		scenario1InhabitantPopGenerator.addAttribute(ageRangesAttr1);
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(scenario1InhabitantPopGenerator, "sex", DataType.BOOL);
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr));
 		scenario1InhabitantPopGenerator.addAttribute(sexAttr);
 		
 		// create attributes -
@@ -589,15 +589,15 @@ public final class CanThoData {
 		for (int[] range : Scenario1.age_ranges_1) {
 			attributeValues.clear();
 			
-			attributeValues.put(ageRangesAttr1, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
-			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]));
+			attributeValues.put(ageRangesAttr1, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr1));
+			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[0]), sexAttr);
 			attributeValues.put(sexAttr, sexAttrValue);
 			
 			// male
 			scenario1Rule1.setFrequency(attributeValues, range[2]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(BondyData.sexes[1]), sexAttr));
 			scenario1Rule1.setFrequency(attributeValues, range[3]);
 		}
 		 
@@ -608,15 +608,15 @@ public final class CanThoData {
 
 		// create attributes +
 		
-		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute(scenario1HouseholdPopGenerator, "size", DataType.INTEGER);
+		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute("size", DataType.INTEGER);
 		for (int size = 1; size < (Scenario1.household_size_by_types_1.length + 1); size++) {
-			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size)));
+			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size), householdSizeAttr));
 		}
 		scenario1HouseholdPopGenerator.addAttribute(householdSizeAttr);
 		
-		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute(scenario1HouseholdPopGenerator, "type", DataType.STRING);
+		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute("type", DataType.STRING);
 		for (String type : Scenario1.household_type1_values) {
-			householdTypeAttr.add(new UniqueValue(DataType.STRING, type));
+			householdTypeAttr.add(new UniqueValue(DataType.STRING, type, householdTypeAttr));
 		}
 		scenario1HouseholdPopGenerator.addAttribute(householdTypeAttr);
 		
@@ -634,9 +634,9 @@ public final class CanThoData {
 		for (int[] types : Scenario1.household_size_by_types_1) {
 			attributeValues.clear();
 			
-			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0])));
+			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0]), householdSizeAttr));
 			for (int typeIndex=0; typeIndex<Scenario1.household_type1_values.length; typeIndex++) {
-				hhTypeValue = new UniqueValue(DataType.STRING, Scenario1.household_type1_values[typeIndex]);
+				hhTypeValue = new UniqueValue(DataType.STRING, Scenario1.household_type1_values[typeIndex], householdTypeAttr);
 				attributeValues.put(householdTypeAttr, hhTypeValue);
 				
 				scenario1Rule2.setFrequency(attributeValues, types[typeIndex+1]);
@@ -651,23 +651,23 @@ public final class CanThoData {
 		
 		// create attributes +
 		
-		RangeValuesAttribute ageRangesAttr2 = new RangeValuesAttribute(scenario2InhabitantPopGenerator, "age", DataType.INTEGER, UniqueValue.class);
+		RangeValuesAttribute ageRangesAttr2 = new RangeValuesAttribute("age", DataType.INTEGER, UniqueValue.class);
 		for (int[] range : Scenario2.age_ranges_2) {
-			ageRangesAttr2.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangesAttr2.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr2));
 		}
 		scenario2InhabitantPopGenerator.addAttribute(ageRangesAttr2);
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(scenario2InhabitantPopGenerator, "sex", DataType.BOOL);
-		UniqueValue maleValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		UniqueValue maleValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr);
 		sexAttr.add(maleValue);
-		UniqueValue femaleValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]));
+		UniqueValue femaleValue = new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr);
 		sexAttr.add(femaleValue);
 		scenario2InhabitantPopGenerator.addAttribute(sexAttr);
 		
-		UniqueValuesAttribute inhabitantLivingPlaceAttr = new UniqueValuesAttribute(scenario2InhabitantPopGenerator, "living_place", DataType.STRING);
-		UniqueValue urbanValue = new UniqueValue(DataType.STRING, Scenario2.living_place_values[0]);
+		UniqueValuesAttribute inhabitantLivingPlaceAttr = new UniqueValuesAttribute("living_place", DataType.STRING);
+		UniqueValue urbanValue = new UniqueValue(DataType.STRING, Scenario2.living_place_values[0], inhabitantLivingPlaceAttr);
 		inhabitantLivingPlaceAttr.add(urbanValue);
-		UniqueValue ruralValue = new UniqueValue(DataType.STRING, Scenario2.living_place_values[1]);
+		UniqueValue ruralValue = new UniqueValue(DataType.STRING, Scenario2.living_place_values[1], inhabitantLivingPlaceAttr);
 		inhabitantLivingPlaceAttr.add(ruralValue);
 		scenario2InhabitantPopGenerator.addAttribute(inhabitantLivingPlaceAttr);
 		
@@ -688,7 +688,7 @@ public final class CanThoData {
 		for (int[] range : Scenario2.age_ranges_2) {
 			attributeValues.clear();
 			
-			attributeValues.put(ageRangesAttr2, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			attributeValues.put(ageRangesAttr2, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr2));
 
 			attributeValues.put(inhabitantLivingPlaceAttr, urbanValue); // urban 
 			attributeValues.put(sexAttr, maleValue); // male
@@ -712,19 +712,19 @@ public final class CanThoData {
 
 		// create attributes +
 		
-		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute(scenario2HouseholdPopGenerator, "size", DataType.INTEGER);
+		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute("size", DataType.INTEGER);
 		for (int size = 1; size < (Scenario2.household_size_by_types_2.length + 1); size++) {
-			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size)));
+			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size), householdSizeAttr));
 		}
 		scenario2HouseholdPopGenerator.addAttribute(householdSizeAttr);
 		
-		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute(scenario2HouseholdPopGenerator, "type", DataType.STRING);
+		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute("type", DataType.STRING);
 		for (String type : Scenario2.household_type2_values) {
-			householdTypeAttr.add(new UniqueValue(DataType.STRING, type));
+			householdTypeAttr.add(new UniqueValue(DataType.STRING, type, householdTypeAttr));
 		}
 		scenario2HouseholdPopGenerator.addAttribute(householdTypeAttr);
 		
-		UniqueValuesAttribute householdLivingPlaceAttr = new UniqueValuesAttribute(scenario2HouseholdPopGenerator, "living_place", DataType.STRING);
+		UniqueValuesAttribute householdLivingPlaceAttr = new UniqueValuesAttribute("living_place", DataType.STRING);
 		householdLivingPlaceAttr.add(urbanValue);
 		householdLivingPlaceAttr.add(ruralValue);
 		scenario2HouseholdPopGenerator.addAttribute(householdLivingPlaceAttr);
@@ -746,12 +746,12 @@ public final class CanThoData {
 		for (int[] types : Scenario2.household_size_by_types_2) {
 			attributeValues.clear();
 			
-			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0])));
+			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0]), householdSizeAttr));
 			
 			// urban living places
 			attributeValues.put(householdLivingPlaceAttr, urbanValue);
 			for (int typeIndex=0; typeIndex<Scenario2.household_type2_values.length; typeIndex++) {
-				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, Scenario2.household_type2_values[typeIndex]));
+				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, Scenario2.household_type2_values[typeIndex], householdTypeAttr));
 				
 				scenario2Rule2.setFrequency(attributeValues, types[typeIndex+1]);
 			}
@@ -759,7 +759,7 @@ public final class CanThoData {
 			// rural living places
 			attributeValues.put(householdLivingPlaceAttr, ruralValue);
 			for (int typeIndex=0; typeIndex<Scenario2.household_type2_values.length; typeIndex++) {
-				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, Scenario2.household_type2_values[typeIndex]));
+				attributeValues.put(householdTypeAttr, new UniqueValue(DataType.STRING, Scenario2.household_type2_values[typeIndex], householdTypeAttr));
 
 				scenario2Rule2.setFrequency(attributeValues, types[typeIndex+6]);
 			}
@@ -773,19 +773,19 @@ public final class CanThoData {
 		
 		// create attributes +
 		
-		RangeValuesAttribute ageRangesAttr3 = new RangeValuesAttribute(scenario3InhabitantPopGenerator, "age", DataType.INTEGER, UniqueValue.class);
+		RangeValuesAttribute ageRangesAttr3 = new RangeValuesAttribute("age", DataType.INTEGER, UniqueValue.class);
 		for (int[] range : Scenario3.age_ranges_3) {
-			ageRangesAttr3.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangesAttr3.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr3));
 		}
 		scenario3InhabitantPopGenerator.addAttribute(ageRangesAttr3);
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(scenario3InhabitantPopGenerator, "sex", DataType.BOOL);
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr));
 		scenario3InhabitantPopGenerator.addAttribute(sexAttr);
 		
-		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute(scenario3InhabitantPopGenerator, "district", DataType.STRING);
-		for (String district : Scenario3.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district)); }
+		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute("district", DataType.STRING);
+		for (String district : Scenario3.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district, districtAttr)); }
 		scenario3InhabitantPopGenerator.addAttribute(districtAttr);
 		
 		// create attributes -
@@ -806,15 +806,15 @@ public final class CanThoData {
 		for (int[] range : Scenario3.age_ranges_3) {
 			attributeValues.clear();
 			
-			attributeValues.put(ageRangesAttr3, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
-			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]));
+			attributeValues.put(ageRangesAttr3, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr3));
+			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]), sexAttr);
 			attributeValues.put(sexAttr, sexAttrValue);
 			
 			// male
 			scenario3Rule1.setFrequency(attributeValues, range[2]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1]), sexAttr));
 			scenario3Rule1.setFrequency(attributeValues, range[3]);
 		}
 		
@@ -832,15 +832,15 @@ public final class CanThoData {
 		for (int location[] : Scenario3.locations_3) {
 			attributeValues.clear();
 			
-			districtValue = new UniqueValue(DataType.STRING, Scenario3.district_names[districtIndex]);
+			districtValue = new UniqueValue(DataType.STRING, Scenario3.district_names[districtIndex], districtAttr);
 			attributeValues.put(districtAttr, districtValue);
 			
 			// male
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]), sexAttr));
 			scenario3Rule2.setFrequency(attributeValues, location[0]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1]), sexAttr));
 			scenario3Rule2.setFrequency(attributeValues, location[1]);
 		
 			
@@ -854,15 +854,15 @@ public final class CanThoData {
 
 		// create attributes +
 		
-		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute(scenario3HouseholdPopGenerator, "size", DataType.INTEGER);
+		UniqueValuesAttribute householdSizeAttr = new UniqueValuesAttribute("size", DataType.INTEGER);
 		for (int size = 1; size < (Scenario3.household_size_by_types_3.length + 1); size++) {
-			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size)));
+			householdSizeAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(size), householdSizeAttr));
 		}
 		scenario3HouseholdPopGenerator.addAttribute(householdSizeAttr);
 		
-		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute(scenario3HouseholdPopGenerator, "type", DataType.STRING);
+		UniqueValuesAttribute householdTypeAttr = new UniqueValuesAttribute("type", DataType.STRING);
 		for (String type : Scenario3.household_type3_values) {
-			householdTypeAttr.add(new UniqueValue(DataType.STRING, type));
+			householdTypeAttr.add(new UniqueValue(DataType.STRING, type, householdTypeAttr));
 		}
 		scenario3HouseholdPopGenerator.addAttribute(householdTypeAttr);
 		
@@ -880,9 +880,9 @@ public final class CanThoData {
 		for (int[] types : Scenario3.household_size_by_types_3) {
 			attributeValues.clear();
 			
-			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0])));
+			attributeValues.put(householdSizeAttr, new UniqueValue(DataType.INTEGER, Integer.toString(types[0]), householdSizeAttr));
 			for (int typeIndex=0; typeIndex<Scenario3.household_type3_values.length; typeIndex++) {
-				hhTypeValue = new UniqueValue(DataType.STRING, Scenario3.household_type3_values[typeIndex]);
+				hhTypeValue = new UniqueValue(DataType.STRING, Scenario3.household_type3_values[typeIndex], householdTypeAttr);
 				attributeValues.put(householdTypeAttr, hhTypeValue);
 				
 				scenario3Rule3.setFrequency(attributeValues, types[typeIndex+1]);
@@ -897,19 +897,19 @@ public final class CanThoData {
 		
 		// create attributes +
 		
-		RangeValuesAttribute ageRangesAttr4 = new RangeValuesAttribute(scenario4InhabitantPopGenerator, "age", DataType.INTEGER, UniqueValue.class);
+		RangeValuesAttribute ageRangesAttr4 = new RangeValuesAttribute("age", DataType.INTEGER, UniqueValue.class);
 		for (int[] range : Scenario4.age_ranges_4) {
-			ageRangesAttr4.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangesAttr4.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr4));
 		}
 		scenario4InhabitantPopGenerator.addAttribute(ageRangesAttr4);
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(scenario4InhabitantPopGenerator, "sex", DataType.BOOL);
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr));
 		scenario4InhabitantPopGenerator.addAttribute(sexAttr);
 		
-		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute(scenario4InhabitantPopGenerator, "district", DataType.STRING);
-		for (String district : Scenario4.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district)); }
+		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute("district", DataType.STRING);
+		for (String district : Scenario4.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district, districtAttr)); }
 		scenario4InhabitantPopGenerator.addAttribute(districtAttr);
 		
 		// create attributes -
@@ -930,15 +930,15 @@ public final class CanThoData {
 		for (int[] range : Scenario4.age_ranges_4) {
 			attributeValues.clear();
 			
-			attributeValues.put(ageRangesAttr4, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
-			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]));
+			attributeValues.put(ageRangesAttr4, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr4));
+			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]), sexAttr);
 			attributeValues.put(sexAttr, sexAttrValue);
 			
 			// male
 			scenario4Rule1.setFrequency(attributeValues, range[2]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1]), sexAttr));
 			scenario4Rule1.setFrequency(attributeValues, range[3]);
 		}
 		
@@ -956,15 +956,15 @@ public final class CanThoData {
 		for (int location[] : Scenario4.locations_4) {
 			attributeValues.clear();
 			
-			districtValue = new UniqueValue(DataType.STRING, Scenario4.district_names[districtIndex]);
+			districtValue = new UniqueValue(DataType.STRING, Scenario4.district_names[districtIndex], districtAttr);
 			attributeValues.put(districtAttr, districtValue);
 			
 			// male
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]), sexAttr));
 			scenario4Rule2.setFrequency(attributeValues, location[0]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1]), sexAttr));
 			scenario4Rule2.setFrequency(attributeValues, location[1]);
 		
 			
@@ -979,19 +979,19 @@ public final class CanThoData {
 		
 		// create attributes +
 		
-		RangeValuesAttribute ageRangesAttr5 = new RangeValuesAttribute(scenario5InhabitantPopGenerator, "age", DataType.INTEGER, UniqueValue.class);
+		RangeValuesAttribute ageRangesAttr5 = new RangeValuesAttribute("age", DataType.INTEGER, UniqueValue.class);
 		for (int[] range : Scenario5.age_ranges_5) {
-			ageRangesAttr5.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
+			ageRangesAttr5.add(new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr5));
 		}
 		scenario5InhabitantPopGenerator.addAttribute(ageRangesAttr5);
 		
-		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute(scenario5InhabitantPopGenerator, "sex", DataType.BOOL);
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0])));
-		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1])));
+		UniqueValuesAttribute sexAttr = new UniqueValuesAttribute("sex", DataType.BOOL);
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[0]), sexAttr));
+		sexAttr.add(new UniqueValue(DataType.BOOL, Boolean.toString(sexes[1]), sexAttr));
 		scenario5InhabitantPopGenerator.addAttribute(sexAttr);
 		
-		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute(scenario5InhabitantPopGenerator, "district", DataType.STRING);
-		for (String district : Scenario5.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district)); }
+		UniqueValuesAttribute districtAttr = new UniqueValuesAttribute("district", DataType.STRING);
+		for (String district : Scenario5.district_names) { districtAttr.add(new UniqueValue(DataType.STRING, district, districtAttr)); }
 		scenario5InhabitantPopGenerator.addAttribute(districtAttr);
 		
 		// create attributes -
@@ -1013,15 +1013,15 @@ public final class CanThoData {
 		for (int location[] : Scenario5.locations_5) {
 			attributeValues.clear();
 			
-			districtValue = new UniqueValue(DataType.STRING, Scenario5.district_names[districtIndex]);
+			districtValue = new UniqueValue(DataType.STRING, Scenario5.district_names[districtIndex], districtAttr);
 			attributeValues.put(districtAttr, districtValue);
 			
 			// male
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]), sexAttr));
 			scenario5Rule1.setFrequency(attributeValues, location[0]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1]), sexAttr));
 			scenario5Rule1.setFrequency(attributeValues, location[1]);
 		
 			
@@ -1040,15 +1040,15 @@ public final class CanThoData {
 		for (int[] range : Scenario5.age_ranges_5) {
 			attributeValues.clear();
 			
-			attributeValues.put(ageRangesAttr5, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1])));
-			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]));
+			attributeValues.put(ageRangesAttr5, new RangeValue(DataType.INTEGER, Integer.toString(range[0]), Integer.toString(range[1]), ageRangesAttr5));
+			sexAttrValue = new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[0]), sexAttr);
 			attributeValues.put(sexAttr, sexAttrValue);
 			
 			// male
 			scenario5Rule2.setFrequency(attributeValues, range[2]);
 			
 			// female
-			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1])));
+			attributeValues.put(sexAttr, new UniqueValue(DataType.BOOL, Boolean.toString(CanThoData.sexes[1]), sexAttr));
 			scenario5Rule2.setFrequency(attributeValues, range[3]);
 		}
 		

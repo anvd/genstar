@@ -2,6 +2,7 @@ package ummisco.genstar.sample_free;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,7 @@ import ummisco.genstar.metamodel.generation_rules.SampleFreeGenerationRule;
 import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
 import ummisco.genstar.metamodel.population.Entity;
 
+@Deprecated
 public class AttributeInferenceGenerationRule extends SampleFreeGenerationRule implements AttributeChangedListener {
 	
 	public static final int ATTRIBUTE_INFERENCE_GENERATION_RULE_ID = 1;
@@ -123,8 +125,8 @@ public class AttributeInferenceGenerationRule extends SampleFreeGenerationRule i
 	}
 
 	@Override
-	public List<AbstractAttribute> getAttributes() {
-		List<AbstractAttribute> retVal = new ArrayList<AbstractAttribute>();
+	public Set<AbstractAttribute> getAttributes() {
+		Set<AbstractAttribute> retVal = new HashSet<AbstractAttribute>();
 		retVal.add(inferringAttribute);
 		retVal.add(inferredAttribute);
 		

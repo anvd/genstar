@@ -1,8 +1,6 @@
 package ummisco.genstar.metamodel.sample_data;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
@@ -14,12 +12,12 @@ import ummisco.genstar.util.GenstarUtils;
 
 public class SampleData extends AbstractSampleData implements ISampleData { // TODO change to CSVSampleData
 	
-	private List<AbstractAttribute> attributes;
+	private Set<AbstractAttribute> attributes;
 	
 	private GenstarCsvFile data = null;
 	
 	
-	public SampleData(final String populationName, final List<AbstractAttribute> attributes, GenstarCsvFile data) throws GenstarException {
+	public SampleData(final String populationName, final Set<AbstractAttribute> attributes, GenstarCsvFile data) throws GenstarException {
 		if (populationName == null || populationName.isEmpty()) { throw new GenstarException("Parameter populationName can neither be null nor empty"); }
 		if (attributes == null) { throw new GenstarException("Parameter attributes can not be null"); }
 		if (data == null) { throw new GenstarException("Parameter data can not be null"); }
@@ -28,7 +26,7 @@ public class SampleData extends AbstractSampleData implements ISampleData { // T
 		if (attributesSet.size() < attributes.size()) { throw new GenstarException("Some attributes are duplicated"); }
 
 		this.populationName = populationName;
-		this.attributes = new ArrayList<AbstractAttribute>();
+		this.attributes = new HashSet<>();
 		this.attributes.addAll(attributes);
 		this.data = data;
 		

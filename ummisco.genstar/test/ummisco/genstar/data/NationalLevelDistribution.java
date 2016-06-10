@@ -55,8 +55,8 @@ public class NationalLevelDistribution {
 	static {
 		for (double[] entry : coupleAgeDifferences) {
 			try {
-				coupleAgeDifferencesAttributeValuesMap.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) entry[0])), 
-						new UniqueValue(DataType.DOUBLE, Double.toString(entry[1])) );
+				coupleAgeDifferencesAttributeValuesMap.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) entry[0]), null), 
+						new UniqueValue(DataType.DOUBLE, Double.toString(entry[1]), null) );
 			} catch (GenstarException e) {
 				e.printStackTrace();
 			}
@@ -84,10 +84,10 @@ public class NationalLevelDistribution {
 		
 		for (int[] order : liveBirthOrder) {
 			try {
-				firstBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(DataType.INTEGER, Integer.toString(order[2])));
-				secondBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(DataType.INTEGER, Integer.toString(order[3])));
-				thirdBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(DataType.INTEGER, Integer.toString(order[4])));
-				fourthBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1])), new UniqueValue(DataType.INTEGER, Integer.toString(order[5])));
+				firstBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1]), null), new UniqueValue(DataType.INTEGER, Integer.toString(order[2]), null));
+				secondBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1]), null), new UniqueValue(DataType.INTEGER, Integer.toString(order[3]), null));
+				thirdBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1]), null), new UniqueValue(DataType.INTEGER, Integer.toString(order[4]), null));
+				fourthBirthOrder.put(new RangeValue(DataType.INTEGER, Integer.toString(order[0]), Integer.toString(order[1]), null), new UniqueValue(DataType.INTEGER, Integer.toString(order[5]), null));
 			} catch (GenstarException e) {
 				e.printStackTrace();
 			}

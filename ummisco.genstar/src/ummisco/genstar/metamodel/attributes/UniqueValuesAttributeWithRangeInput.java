@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 
 
 public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
@@ -18,9 +17,9 @@ public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 	private UniqueValue maxValue;
 	
 
-	public UniqueValuesAttributeWithRangeInput(final ISyntheticPopulationGenerator populationGenerator, final String nameOnData, final String nameOnEntity, 
-			final UniqueValue minValue, final UniqueValue maxValue) throws GenstarException {
-		super(populationGenerator, nameOnData, nameOnEntity, DataType.INTEGER, UniqueValue.class);
+	public UniqueValuesAttributeWithRangeInput(final String nameOnData, final String nameOnEntity, final UniqueValue minValue, 
+			final UniqueValue maxValue) throws GenstarException {
+		super(nameOnData, nameOnEntity, DataType.INTEGER, UniqueValue.class);
 		
 		// parameters validation
 		if (minValue == null) { throw new GenstarException("'minValue' parameter can not be null"); }
@@ -35,8 +34,8 @@ public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 			throw new GenstarException(e);
 		}
 		
-		this.minValue = new UniqueValue(minValue);
-		this.maxValue = new UniqueValue(maxValue);
+		this.minValue = new UniqueValue(minValue, this);
+		this.maxValue = new UniqueValue(maxValue, this);
 		
 		initializeValuesOnData();
 	}
@@ -48,7 +47,7 @@ public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 		int maxValueInt = maxValue.getIntValue();
 		
 		for (int i=minValueInt; i<=maxValueInt; i++) {
-			internalValuesOnData.add(new UniqueValue(DataType.INTEGER, Integer.toString(i)));
+			internalValuesOnData.add(new UniqueValue(DataType.INTEGER, Integer.toString(i), this));
 		}
 	}
 
@@ -105,7 +104,7 @@ public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 	@Override
 	public AttributeValue findCorrespondingAttributeValueOnData(final List<String> stringValue) throws GenstarException {
 		if (stringValue == null || stringValue.isEmpty()) { throw new GenstarException("'stringValue' parameter can not be null or empty"); }
-		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringValue.get(0)));
+		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringValue.get(0), this));
 	}
 
 	@Override

@@ -22,9 +22,10 @@ import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 public class UniqueValuesAttributeWithRangeInputTest {
 
 	@Test public void testInitializeUniqueValuesAttributeWithRangeInputSuccessfully(@Mocked final ISyntheticPopulationGenerator generator) throws GenstarException {
-		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1");
-		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "10");
-		UniqueValuesAttributeWithRangeInput attribute = new UniqueValuesAttributeWithRangeInput(generator, "dummy attribute", "dummy attribute", minValue, maxValue);
+		UniqueValuesAttributeWithRangeInput attribute = null;
+		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1", attribute);
+		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "10", attribute);
+		attribute = new UniqueValuesAttributeWithRangeInput("dummy attribute", "dummy attribute", minValue, maxValue);
 		
 		List<AttributeValue> internalValuesOnData = Deencapsulation.getField(attribute, "internalValuesOnData");
 		assertTrue(internalValuesOnData.size() == 10);
@@ -37,14 +38,15 @@ public class UniqueValuesAttributeWithRangeInputTest {
 	}
 	
 	@Test public void testGetInstanceOfAttributeValue(@Mocked final ISyntheticPopulationGenerator generator) throws GenstarException {
-		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1");
-		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "10");
-		UniqueValuesAttributeWithRangeInput attribute = new UniqueValuesAttributeWithRangeInput(generator, "dummy attribute", "dummy attribute", minValue, maxValue);
+		UniqueValuesAttributeWithRangeInput attribute = null;
+		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1", attribute);
+		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "10", attribute);
+		attribute = new UniqueValuesAttributeWithRangeInput("dummy attribute", "dummy attribute", minValue, maxValue);
 
-		UniqueValue value1 = new UniqueValue(DataType.INTEGER, "0");
+		UniqueValue value1 = new UniqueValue(DataType.INTEGER, "0", attribute);
 		assertTrue(attribute.getInstanceOfAttributeValue(value1) == null);
 		
-		UniqueValue value2 = new UniqueValue(DataType.INTEGER, "1");
+		UniqueValue value2 = new UniqueValue(DataType.INTEGER, "1", attribute);
 		AttributeValue _value2 = attribute.getInstanceOfAttributeValue(value2);
 		assertTrue(value2.compareTo(_value2) == 0);
 		assertTrue(!value2.equals(_value2));
@@ -54,10 +56,10 @@ public class UniqueValuesAttributeWithRangeInputTest {
 	}
 	
 	@Test public void testFindCorrespondingAttributeValueOnData(@Mocked final ISyntheticPopulationGenerator generator) throws GenstarException {
-		
-		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1");
-		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "10");
-		UniqueValuesAttributeWithRangeInput attribute = new UniqueValuesAttributeWithRangeInput(generator, "dummy attribute", "dummy attribute", minValue, maxValue);
+		UniqueValuesAttributeWithRangeInput attribute = null;
+		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1", attribute);
+		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "10", attribute);
+		attribute = new UniqueValuesAttributeWithRangeInput("dummy attribute", "dummy attribute", minValue, maxValue);
 		
 		List<String> stringValue0 = new ArrayList<String>();
 		stringValue0.add("0");
@@ -76,15 +78,15 @@ public class UniqueValuesAttributeWithRangeInputTest {
 	}
 	
 	@Test public void testFindMatchingAttributeValueOnData(@Mocked final ISyntheticPopulationGenerator generator) throws GenstarException {
-		
-		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1");
-		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "10");
-		UniqueValuesAttributeWithRangeInput attribute = new UniqueValuesAttributeWithRangeInput(generator, "dummy attribute", "dummy attribute", minValue, maxValue);
+		UniqueValuesAttributeWithRangeInput attribute = null;
+		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1", attribute);
+		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "10", attribute);
+		attribute = new UniqueValuesAttributeWithRangeInput("dummy attribute", "dummy attribute", minValue, maxValue);
 
-		UniqueValue value1 = new UniqueValue(DataType.INTEGER, "0");
+		UniqueValue value1 = new UniqueValue(DataType.INTEGER, "0", attribute);
 		assertTrue(attribute.findMatchingAttributeValueOnData(value1) == null);
 		
-		UniqueValue value2 = new UniqueValue(DataType.INTEGER, "1");
+		UniqueValue value2 = new UniqueValue(DataType.INTEGER, "1", attribute);
 		AttributeValue _value2 = attribute.findMatchingAttributeValueOnData(value2);
 		assertTrue(value2.compareTo(_value2) == 0);
 		assertTrue(!value2.equals(_value2));
@@ -92,7 +94,7 @@ public class UniqueValuesAttributeWithRangeInputTest {
 		AttributeValue __value2 = attribute.findMatchingAttributeValueOnData(value2);
 		assertTrue(_value2.equals(__value2));
 		
-		UniqueValue value3 = new UniqueValue(DataType.INTEGER, "10");
+		UniqueValue value3 = new UniqueValue(DataType.INTEGER, "10", attribute);
 		AttributeValue _value3 = attribute.findMatchingAttributeValueOnData(value3);
 		assertTrue(value3.compareTo(_value3) == 0);
 		assertTrue(!value3.equals(_value3));
@@ -102,9 +104,10 @@ public class UniqueValuesAttributeWithRangeInputTest {
 	}
 	
 	@Test public void testValuesOnData(@Mocked final ISyntheticPopulationGenerator generator) throws GenstarException {
-		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1");
-		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "100");
-		UniqueValuesAttributeWithRangeInput attribute = new UniqueValuesAttributeWithRangeInput(generator, "dummy attribute", "dummy attribute", minValue, maxValue);
+		UniqueValuesAttributeWithRangeInput attribute = null;
+		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1", attribute);
+		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "100", attribute);
+		attribute = new UniqueValuesAttributeWithRangeInput("dummy attribute", "dummy attribute", minValue, maxValue);
 		
 		List<AttributeValue> values = new ArrayList<AttributeValue>(attribute.valuesOnData());
 		assertTrue(values.size() == 100);
