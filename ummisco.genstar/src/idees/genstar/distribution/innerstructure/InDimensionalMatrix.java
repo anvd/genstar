@@ -10,11 +10,14 @@ import idees.genstar.datareader.GSDataParser;
 import idees.genstar.distribution.exception.IllegalNDimensionalMatrixAccess;
 
 /**
- * Main interface that forces n dimensional matrix to specify: <br/>
- * 1) {@code <D>} the type of dimension to be used <br/>
- * 2) {@code <A>} the type of aspect dimensions contain <br/>
- * 3) {@code <T>} the type of value the matrix contains <br/>
- * <br/>
+ * Main interface that forces n dimensional matrix to specify: 
+ * <p>
+ * <ul>
+ *  <li> {@code <D>} the type of dimension to be used 
+ *  <li> {@code <A>} the type of aspect dimensions contain 
+ *  <li> {@code <T>} the type of value the matrix contains
+ * </ul> 
+ * <p>
  * There is also several methods to access and set the matrix
  * 
  * @author kevinchapuis
@@ -137,7 +140,7 @@ public interface InDimensionalMatrix<D, A, T extends Number> {
 	public AControl<T> getVal(ACoordinate<D, A> coordinate) throws IllegalNDimensionalMatrixAccess;
 
 	/**
-	 * Get the sum value of all matrix space characterized by the given {@code aspect}. <br/>
+	 * Get the sum value of all matrix space characterized by the given {@code aspect}. 
 	 * Concretely, the function sums all matrix values with coordinates that contains the {@code aspect} given in parameter. 
 	 * 
 	 * @param aspect
@@ -147,8 +150,8 @@ public interface InDimensionalMatrix<D, A, T extends Number> {
 	public AControl<T> getVal(A aspect) throws IllegalNDimensionalMatrixAccess;
 
 	/**
-	 * Get the sum value of all matrix space characterized by the given combination of {@code aspects}. <br/>
-	 * Concretely, the function sums all matrix values with coordinates that contains any valid combination of <br/> 
+	 * Get the sum value of all matrix space characterized by the given combination of {@code aspects}. 
+	 * Concretely, the function sums all matrix values with coordinates that contains any valid combination of  
 	 * the {@code aspects} given in parameter 
 	 * 
 	 * @param aspects
@@ -160,8 +163,8 @@ public interface InDimensionalMatrix<D, A, T extends Number> {
 	// --------------------------- Matrix settup --------------------------- //
 
 	/**
-	 * Safe add to the underlying matrix: this means, if {@code coordinates} have been <br/>
-	 * already binding to a given value, the call of {@link #addValue(Map, Number)} will <br/>
+	 * Safe add to the underlying matrix: this means, if {@code coordinates} have been 
+	 * already binding to a given value, the call of {@link #addValue(Map, Number)} will 
 	 * result in no change
 	 * 
 	 * @param coordinates

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,8 +17,11 @@ import java.util.TreeMap;
 
 import com.google.common.collect.Sets;
 
+import idees.genstar.configuration.GSAttDataType;
+import idees.genstar.datareader.exception.GenstarIllegalRangedData;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeFactory;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.DataType;
@@ -38,6 +42,8 @@ import ummisco.genstar.sample_free.FrequencyDistributionGenerationRule;
 
 
 public class GenstarUtils {
+	
+	public static AttributeFactory af = new AttributeFactory();
 
 	public static class AttributeValuesFrequencyComparator implements Comparator<AttributeValuesFrequency> {
 		
@@ -69,7 +75,7 @@ public class GenstarUtils {
 	}	
 
 	
-	public static void createFrequencyDistributionGenerationRule(final SampleFreeGenerator generator, final String ruleName, final GenstarCsvFile ruleFile) throws GenstarException {
+	public static void createFrequencyDistributionGenerationRule(final SampleFreeGenerator generator, final String ruleName, final GenstarCsvFile ruleFile) throws GenstarException, GenstarIllegalRangedData {
 		
 		List<List<String>> fileContent = ruleFile.getContent();
 		if ( fileContent == null || fileContent.isEmpty() ) { throw new GenstarException("Frequency Distribution Generation Rule file is empty (file: " + ruleFile.getPath() + ")"); }
@@ -130,12 +136,12 @@ public class GenstarUtils {
 					
 					String minValue = minMaxValueToken.nextToken().trim();
 					String maxValue = minMaxValueToken.nextToken().trim();
-					RangeValue rangeValue = new RangeValue(dataType, minValue, maxValue, concerningAttribute);
+					AttributeValue rangeValue = af.createValue(GSAttDataType.range, dataType, Arrays.asList(minValue, maxValue), concerningAttribute);
 					
 					attributeValues.put(concerningAttribute, rangeValue);
 				} else { // UniqueValuesAttribute
 					String value = (String)frequencyInfo.get(attributeIndex);
-					UniqueValue uniqueValue = new UniqueValue(dataType, value.trim(), concerningAttribute);
+					AttributeValue uniqueValue = af.createValue(GSAttDataType.unique, dataType, Arrays.asList(value.trim()), concerningAttribute);
 					
 					attributeValues.put(concerningAttribute, uniqueValue);
 				}
@@ -150,7 +156,7 @@ public class GenstarUtils {
 	}	
 	
 	
-	public static void createAttributeInferenceGenerationRule(final SampleFreeGenerator generator, final String ruleName, final GenstarCsvFile ruleFile) throws GenstarException {
+	public static void createAttributeInferenceGenerationRule(final SampleFreeGenerator generator, final String ruleName, final GenstarCsvFile ruleFile) throws GenstarException, GenstarIllegalRangedData {
 		
 		List<List<String>> fileContent = ruleFile.getContent();
 		if ( fileContent == null || fileContent.isEmpty() ) { throw new GenstarException("Attribute Inference Generation Rule file is empty (file: " + ruleFile.getPath() + ")"); }
@@ -185,9 +191,13 @@ public class GenstarUtils {
 				
 				String minValue = minMaxValueToken.nextToken().trim();
 				String maxValue = minMaxValueToken.nextToken().trim();
-				inferringValue = inferringAttribute.getInstanceOfAttributeValue(new RangeValue(inferringAttribute.getDataType(), minValue, maxValue, inferringAttribute));
+				inferringValue = inferringAttribute
+						.getInstanceOfAttributeValue(af.createValue(GSAttDataType.range, inferringAttribute.getDataType(), 
+								Arrays.asList(minValue, maxValue), inferringAttribute));
 			} else {
-				inferringValue = inferringAttribute.getInstanceOfAttributeValue(new UniqueValue(inferringAttribute.getDataType(), (String)inferenceInfo.get(0), inferringAttribute));
+				inferringValue = inferringAttribute
+						.getInstanceOfAttributeValue(af.createValue(GSAttDataType.unique, inferringAttribute.getDataType(), 
+								Arrays.asList((String)inferenceInfo.get(0)), inferringAttribute));
 			}
 			
 			if (inferredAttribute instanceof RangeValuesAttribute) {
@@ -196,9 +206,13 @@ public class GenstarUtils {
 				
 				String minValue = minMaxValueToken.nextToken().trim();
 				String maxValue = minMaxValueToken.nextToken().trim();
-				inferredValue = inferredAttribute.getInstanceOfAttributeValue(new RangeValue(inferredAttribute.getDataType(), minValue, maxValue, inferringAttribute));
+				inferredValue = inferredAttribute
+						.getInstanceOfAttributeValue(af.createValue(GSAttDataType.range, inferredAttribute.getDataType(), 
+								Arrays.asList(minValue, maxValue), inferringAttribute));
 			} else {
-				inferredValue = inferredAttribute.getInstanceOfAttributeValue(new UniqueValue(inferredAttribute.getDataType(), (String)inferenceInfo.get(1), inferringAttribute));
+				inferredValue = inferredAttribute
+						.getInstanceOfAttributeValue(af.createValue(GSAttDataType.unique, inferredAttribute.getDataType(), 
+								Arrays.asList((String)inferenceInfo.get(1)), inferringAttribute));
 			}
 			
 			if (inferringValue == null || inferredValue == null) { throw new GenstarException("Invalid Attribute Inference Generation Rule file content: Some attribute values are not contained in the inferring attribute or inferred attribute (file: " + ruleFile.getPath() + ")"); }
@@ -493,7 +507,7 @@ public class GenstarUtils {
 	public static IPopulation generateRandomCompoundPopulation(final String groupPopulationName, final GenstarCsvFile groupAttributesFile, 
 			final String componentPopulationName, final GenstarCsvFile componentAttributesFile, final String groupIdAttributeNameOnDataOfGroupEntity, 
 			final String groupIdAttributeNameOnDataOfComponentEntity, final String groupSizeAttributeNameOnData, 
-			final int nbOfGroupEntities, final String componentReferenceOnGroup, final String groupReferenceOnComponent) throws GenstarException {
+			final int nbOfGroupEntities, final String componentReferenceOnGroup, final String groupReferenceOnComponent) throws GenstarException, GenstarIllegalRangedData {
 		
 		// 0. parameters validation
 		if (groupPopulationName == null) { throw new GenstarException("Parameter groupPopulationName can not be null"); }
@@ -546,7 +560,7 @@ public class GenstarUtils {
 	public static IPopulation generateRandomCompoundPopulation(final String groupPopulationName, final GenstarCsvFile groupAttributesFile, 
 			final String componentPopulationName, final GenstarCsvFile componentAttributesFile, final String groupIdAttributeNameOnDataOfGroupEntity, 
 			final String groupIdAttributeNameOnDataOfComponentEntity, final String groupSizeAttributeNameOnData, final int minGroupEntitiesOfEachAttributeValuesSet, 
-			final int maxGroupEntitiesOfEachAttributeValuesSet, final String componentReferenceOnGroup, final String groupReferenceOnComponent) throws GenstarException {
+			final int maxGroupEntitiesOfEachAttributeValuesSet, final String componentReferenceOnGroup, final String groupReferenceOnComponent) throws GenstarException, GenstarIllegalRangedData {
 		
 		// 0. parameters validation
 		if (groupPopulationName == null) { throw new GenstarException("Parameter groupPopulationName can not be null"); }
@@ -622,7 +636,7 @@ public class GenstarUtils {
 			for (Map<AbstractAttribute, AttributeValue> groupAttributeValuesOnEntity : groupAttributeValuesOnEntityList) {
 				for (int entityIndex=0; entityIndex<minGroupEntitiesOfEachAttributeValuesSet; entityIndex++) {
 					Map<AbstractAttribute, AttributeValue> copyGroupAttributeValuesOnEntity = new HashMap<AbstractAttribute, AttributeValue>(groupAttributeValuesOnEntity);
-					copyGroupAttributeValuesOnEntity.put(groupIdAttributeOfGroupEntity, new UniqueValue(DataType.INTEGER, Integer.toString(groupID), groupIdAttributeOfGroupEntity)); // change ID value
+					copyGroupAttributeValuesOnEntity.put(groupIdAttributeOfGroupEntity, af.createValue(GSAttDataType.unique, DataType.INTEGER, Arrays.asList(Integer.toString(groupID)), groupIdAttributeOfGroupEntity)); // change ID value
 					
 					groupPopulation.createEntityWithAttributeValuesOnEntity(copyGroupAttributeValuesOnEntity);
 					groupID++;
@@ -635,7 +649,7 @@ public class GenstarUtils {
 				
 				for (int entityIndex=0; entityIndex<nbOfEntities; entityIndex++) {
 					Map<AbstractAttribute, AttributeValue> copyGroupAttributeValuesOnEntity = new HashMap<AbstractAttribute, AttributeValue>(groupAttributeValuesOnEntity);
-					copyGroupAttributeValuesOnEntity.put(groupIdAttributeOfGroupEntity, new UniqueValue(DataType.INTEGER, Integer.toString(groupID), groupIdAttributeOfGroupEntity)); // change ID value
+					copyGroupAttributeValuesOnEntity.put(groupIdAttributeOfGroupEntity, af.createValue(GSAttDataType.unique, DataType.INTEGER, Arrays.asList(Integer.toString(groupID)), groupIdAttributeOfGroupEntity)); // change ID value
 					
 					groupPopulation.createEntityWithAttributeValuesOnEntity(copyGroupAttributeValuesOnEntity);
 					groupID++;
@@ -664,7 +678,7 @@ public class GenstarUtils {
 	
 	
 	public static IPopulation loadSinglePopulation(final PopulationType populationType, final String populationName, final GenstarCsvFile attributesFile, 
-			final GenstarCsvFile singlePopulationFile) throws GenstarException { 
+			final GenstarCsvFile singlePopulationFile) throws GenstarException, GenstarIllegalRangedData { 
 		
 		SampleBasedGenerator generator = new SampleBasedGenerator("generator");
 		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
@@ -673,7 +687,7 @@ public class GenstarUtils {
 	}
 	
 	
-	public static IPopulation loadSinglePopulation(final PopulationType populationType, final String populationName, final Set<AbstractAttribute> attributes, final GenstarCsvFile singlePopulationFile) throws GenstarException {
+	public static IPopulation loadSinglePopulation(final PopulationType populationType, final String populationName, final Set<AbstractAttribute> attributes, final GenstarCsvFile singlePopulationFile) throws GenstarException, GenstarIllegalRangedData {
 		
 		// parameters validation
 		if (populationType == null || populationName == null || attributes == null || singlePopulationFile == null) {
@@ -760,7 +774,7 @@ public class GenstarUtils {
 			final String groupPopulationName, final GenstarCsvFile groupAttributesFile, final GenstarCsvFile groupPopulationFile,
 			final String componentPopulationName, final GenstarCsvFile componentAttributesFile, final GenstarCsvFile componentPopulationFile, 
 			final String groupIdAttributeNameOnDataOfGroupEntity, final String groupIdAttributeNameOnDataOfComponentEntity,
-			final String componentRefenceOnGroup, final String groupReferenceOnComponent) throws GenstarException {
+			final String componentRefenceOnGroup, final String groupReferenceOnComponent) throws GenstarException, GenstarIllegalRangedData {
 		
 		IPopulation groupPopulation = GenstarUtils.loadSinglePopulation(populationType, groupPopulationName, groupAttributesFile, groupPopulationFile);
 		if (componentRefenceOnGroup != null) { groupPopulation.addComponentReference(componentPopulationName, componentRefenceOnGroup); }
@@ -921,7 +935,7 @@ public class GenstarUtils {
 	}
 	
 	
-	private static IPopulation generateGroupPopulation(final String populationName, final Set<AbstractAttribute> groupAttributes, final AbstractAttribute groupIdAttributeOnGroupEntity, final int nbOfGroupEntities) throws GenstarException {
+	private static IPopulation generateGroupPopulation(final String populationName, final Set<AbstractAttribute> groupAttributes, final AbstractAttribute groupIdAttributeOnGroupEntity, final int nbOfGroupEntities) throws GenstarException, GenstarIllegalRangedData {
 		IPopulation groupPopulation = new Population(PopulationType.SYNTHETIC_POPULATION, populationName, groupAttributes);
 	
 		// 0. find groupIdAttributeIndexOnGroupEntity
@@ -959,7 +973,7 @@ public class GenstarUtils {
 			
 			for (int col=0; col<groupColumns; col++) {
 				if (col == groupIdAttributeIndexOnGroupEntity) { // ID attribute: value is computed automatically
-					attributeValuesOnEntity.put(groupIdAttributeOnGroupEntity, new UniqueValue(DataType.INTEGER, Integer.toString(groupIdValue), groupIdAttributeOnGroupEntity));
+					attributeValuesOnEntity.put(groupIdAttributeOnGroupEntity, af.createValue(GSAttDataType.unique, DataType.INTEGER, Arrays.asList(Integer.toString(groupIdValue)), groupIdAttributeOnGroupEntity));
 					groupIdValue++; // increase group ID attribute value by 1
 				} else {
 					values = groupAttributeValues.get(groupAtt.get(col));
@@ -1042,20 +1056,20 @@ public class GenstarUtils {
 	}
 
 	
-	public static AttributeValue createAttributeValue(final AbstractAttribute attribute, final Class<? extends AttributeValue> attributeClass, final DataType dataType, final List<String> stringValue) throws GenstarException {
+	public static AttributeValue createAttributeValue(final AbstractAttribute attribute, final Class<? extends AttributeValue> attributeClass, final DataType dataType, final List<String> stringValue) throws GenstarException, GenstarIllegalRangedData {
 		if (attributeClass == null || dataType == null || stringValue == null) {
 			throw new GenstarException("Parameters attributeClass, dataType, stringValue can not be null");
 		}
 		
 		if (attributeClass.equals(UniqueValue.class)) {
-			if (stringValue.size() >= 1) { return new UniqueValue(dataType, stringValue.get(0), attribute); }
+			if (stringValue.size() >= 1) { return af.createValue(GSAttDataType.unique, dataType, Arrays.asList(stringValue.get(0)), attribute); }
 
 			throw new GenstarException("Invalid stringValue " + stringValue);
 		}
 		
 		if (attributeClass.equals(RangeValue.class)) {
-			if (stringValue.size() == 1) { return new RangeValue(dataType, stringValue.get(0), stringValue.get(0), attribute); }
-			if (stringValue.size() >= 2) { return new RangeValue(dataType, stringValue.get(0), stringValue.get(1), attribute); }
+			if (stringValue.size() == 1) { return af.createValue(GSAttDataType.range, dataType, Arrays.asList(stringValue.get(0), stringValue.get(0)), attribute); }
+			if (stringValue.size() >= 2) { return af.createValue(GSAttDataType.range, dataType, Arrays.asList(stringValue.get(0), stringValue.get(1)), attribute); }
 			
 			throw new GenstarException("Invalid stringValue " + stringValue);
 		}

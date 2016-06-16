@@ -11,20 +11,20 @@ public class RangeValuesAttribute extends AbstractAttribute {
 	private Set<RangeValue> valuesOnData;
 	
 	
-	public RangeValuesAttribute(final String nameOnData, final DataType dataType) throws GenstarException {
+	protected RangeValuesAttribute(final String nameOnData, final DataType dataType) throws GenstarException {
 		this(nameOnData, nameOnData, dataType, RangeValue.class);
 	}
 
-	public RangeValuesAttribute(final String nameOnData, final DataType dataType, final Class<? extends AttributeValue> entityAttributeValueClass) throws GenstarException {
+	protected RangeValuesAttribute(final String nameOnData, final DataType dataType, final Class<? extends AttributeValue> entityAttributeValueClass) throws GenstarException {
 		this(nameOnData, nameOnData, dataType, entityAttributeValueClass);
 	}
 
-	public RangeValuesAttribute(final String nameOnData, final String nameOnEntity, final DataType dataType) throws GenstarException {
+	protected RangeValuesAttribute(final String nameOnData, final String nameOnEntity, final DataType dataType) throws GenstarException {
 		this(nameOnData, nameOnEntity, dataType, RangeValue.class);
 	}
 
-	public RangeValuesAttribute(final String nameOnData, final String nameOnEntity, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		super(nameOnData, nameOnEntity, dataType, valueClassOnEntity);
+	protected RangeValuesAttribute(final String nameOnData, final String nameOnEntity, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
+		super(nameOnData, nameOnEntity, dataType, valueClassOnEntity, null);
 
 		if (!dataType.isNumericValue()) { throw new IllegalArgumentException(this.getClass().getName() + " only supports Double, Float and Integer value."); }
 		

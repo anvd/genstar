@@ -32,13 +32,13 @@ public abstract class AttributeValue implements Comparable<AttributeValue> {
 	
 	protected AbstractAttribute attribute;
 	
-	public AttributeValue(final DataType dataType) throws GenstarException {
+	protected AttributeValue(final DataType dataType) throws GenstarException {
 		if (dataType == null) { throw new GenstarException("'dataType' parameter can not be null"); }
 		
 		this.dataType = dataType;
 	}
 	
-	public AttributeValue(final DataType dataType, final AbstractAttribute attribut) throws GenstarException{
+	protected AttributeValue(final DataType dataType, final AbstractAttribute attribut) throws GenstarException{
 		this(dataType);
 		this.attribute = attribut;
 	}
@@ -46,11 +46,6 @@ public abstract class AttributeValue implements Comparable<AttributeValue> {
 	public DataType getDataType() {
 		return dataType;
 	}
-	
-	// FIXME: very strange -- ask An why he did it
-	/*@Override public int hashCode() {
-		return 1;
-	}*/
 	
 	public abstract boolean isValueMatched(final AttributeValue otherValue);
 	

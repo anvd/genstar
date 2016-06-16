@@ -12,6 +12,7 @@ import idees.genstar.control.AControl;
 import idees.genstar.control.ControlFrequency;
 import idees.genstar.datareader.GSDataParser;
 import idees.genstar.distribution.exception.IllegalDistributionCreation;
+import idees.genstar.distribution.exception.MatrixCoordinateException;
 import idees.genstar.distribution.innerstructure.ACoordinate;
 import idees.genstar.distribution.innerstructure.AGSFullNDimensionalMatrix;
 import idees.genstar.distribution.innerstructure.AGSSegmentedNDimensionalMatrix;
@@ -120,7 +121,8 @@ public class GSConditionalDistribution extends AGSSegmentedNDimensionalMatrix<Do
 
 	// -------------- Back office -------------- //
 
-	private IGSSampler<ACoordinate<AbstractAttribute, AttributeValue>> createSampler() throws IllegalDistributionCreation{
+	private IGSSampler<ACoordinate<AbstractAttribute, AttributeValue>> createSampler() 
+			throws IllegalDistributionCreation, MatrixCoordinateException{
 		GSPerformanceUtil gspu = new GSPerformanceUtil("Compute independant-hypothesis-joint-distribution from conditional distribution\nTheoretical size = "+
 				this.getTheoreticalSpaceSize(), DEBUG_SYSO);
 		Map<Set<AttributeValue>, Double> sampleDistribution = new HashMap<>();

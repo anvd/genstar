@@ -17,15 +17,11 @@ import idees.genstar.configuration.GSConfiguration;
 import idees.genstar.configuration.GSDataFile;
 import idees.genstar.configuration.GSMetaDataType;
 import idees.genstar.configuration.xml.GenstarXmlSerializer;
-import idees.genstar.datareader.GSDataParser;
 import idees.genstar.datareader.exception.GenstarIllegalRangedData;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeFactory;
 import ummisco.genstar.metamodel.attributes.DataType;
-import ummisco.genstar.metamodel.attributes.RangeValue;
-import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
-import ummisco.genstar.metamodel.attributes.UniqueValue;
-import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 
 public class GSConfigurationCreatorBKK {
 
@@ -42,6 +38,8 @@ public class GSConfigurationCreatorBKK {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		AttributeFactory attf = new AttributeFactory();
 
 		if(new ArrayList<>(Arrays.asList(args)).isEmpty()){
 
@@ -60,7 +58,7 @@ public class GSConfigurationCreatorBKK {
 					GSMetaDataType.ContingenceTable, 1, 4, ';'));
 
 			try {
-				attributes.add(createAttribute("PAT NAME", "canton", DataType.STRING, 
+				attributes.add(attf.createAttribute("PAT NAME", "canton", DataType.STRING, 
 						Arrays.asList("Phra Borom Maha Ratchawang", "Wang Burapha Phirom", "Wat Ratchabophit", "Samran Rat", "San Chao Pho Suea",
 								"Sao Chingcha", "Bowon Niwet", "Talat Yot", "Chana Songkhram", "Ban Phan Thom", "Bang Khun Phrom", "Wat Sam Phraya",
 								"Dusit", "Wachira Phayaban", "Suan Chitlada", "Si Yaek Mahanak", "Thanon Nakhon Chai Si", "Krathum Rai", "Nong Chok",
@@ -82,7 +80,7 @@ public class GSConfigurationCreatorBKK {
 								"Lak Song", "Thung Song Hong", "Talat Bang Khen", "Sai Mai", "O Ngoen", "Khlong Thanon", "Khan Na Yao", "Saphan Sung",
 								"Wang Thonglang", "Sam Wa Tawantok", "Sam Wa Tawan-ok", "Bang Chan", "Sai Kong Din", "Sai Kong Din Tai", "Bang Na",
 								"Thawi Watthana", "Sala Thammasop", "Bang Mot", "Thung Khru", "Bang Bon"), GSAttDataType.unique));
-				attributes.add(createAttribute("PA NAME", "region", DataType.STRING, 
+				attributes.add(attf.createAttribute("PA NAME", "region", DataType.STRING, 
 						Arrays.asList("Phra Nakhon", "Dusit", "Nong Chok", "Bang Rak", "Bang Khen", "Bang Kapi", "Pathum Wan", "Pom Prap Sattru Phai",
 								"Phra Khanong", "Min Buri", "Lat Krabang", "Yan Nawa", "Samphanthawong", "Phaya Thai", "Thon Buri", "Bangkok Yai",
 								"Huai Khwang", "Khlong San", "Taling Chan", "Bangkok Noi", "Bang Khun Thian", "Phasi Charoen", "Nong Khaem", "Rat Burana",
@@ -90,22 +88,22 @@ public class GSConfigurationCreatorBKK {
 								"Suan Luang", "Chom Thong", "Don Mueang", "Ratchathewi", "Lat Phrao", "Watthana", "Bang Khae", "Lak Si", "Sai Mai",
 								"Khan Na Yao", "Saphan Sung", "Wang Thonglang", "Khlong Sam Wa", "Bang Na", "Thawi Watthana", "Thung Khru", "Bang Bon"), 
 						GSAttDataType.unique));
-				attributes.add(createAttribute("population", "population", DataType.STRING,
+				attributes.add(attf.createAttribute("population", "population", DataType.STRING,
 						Arrays.asList("POP"), GSAttDataType.unique));
 				/*attributes.add(createAttribute("nationality", "nationality", DataType.STRING, 
 						Arrays.asList("NAT1", "NATCHN", "NATBURM", "NATKAM", "NATLAO", "NATOTH", "NAT3"), GSAttDataType.unique));
 				attributes.add(createAttribute("religion", "religion", DataType.STRING, 
 						Arrays.asList("RG1", "RG2", "RG3", "RG4", "RG5", "RG6+7+8"), GSAttDataType.unique));*/
-				attributes.add(createAttribute("education", "education", DataType.STRING, 
+				attributes.add(attf.createAttribute("education", "education", DataType.STRING, 
 						Arrays.asList("GC00", "GC01", "GC02", "GC03", "GC04", "GC05", "GC06"), GSAttDataType.unique));
-				attributes.add(createAttribute("csp", "csp", DataType.STRING,
+				attributes.add(attf.createAttribute("csp", "csp", DataType.STRING,
 						Arrays.asList("TOCC1", "TOCC2", "TOCC3", "TOCC4", "TOCC5", "TOCC6", "TOCC7", "TOCC8", "TOCC9", "TTOCC"), 
 						GSAttDataType.unique)); 
-				attributes.add(createAttribute("tranche age", "age", DataType.INTEGER,
+				attributes.add(attf.createAttribute("tranche age", "age", DataType.INTEGER,
 						Arrays.asList("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59",
 								"60-64", "65-69", "70-74", "75-79", "80-84", "85-89", "90-94", "95-99", "100+"), 
 						GSAttDataType.range));
-				attributes.add(createAttribute("genre", "genre", DataType.STRING,
+				attributes.add(attf.createAttribute("genre", "genre", DataType.STRING,
 						Arrays.asList("Male", "Female"),
 						GSAttDataType.unique));
 			} catch (GenstarException | GenstarIllegalRangedData e1) {
@@ -135,38 +133,6 @@ public class GSConfigurationCreatorBKK {
 					gsd.getAttributes().size()+" attributs\n"+
 					gsd.getDataFiles().size()+" data files");
 		}
-	}
-
-	/*
-	 * TODO: a more flexible factory to create AbstractAttribute
-	 */
-	public static AbstractAttribute createAttribute(String nameOnData, String nameOnEntity, DataType dataType, List<String> values, 
-			GSAttDataType valueType) throws GenstarException, GenstarIllegalRangedData{
-		AbstractAttribute att = null;
-		GSDataParser parser = new GSDataParser();
-
-		if(valueType.equals(GSAttDataType.unique)){
-			att = new UniqueValuesAttribute(nameOnData, nameOnEntity, dataType, valueType.getAttributeOnEntityMetaDataClass());
-			for(String value : values){
-				att.add(new UniqueValue(dataType, value.trim(), att));
-			}
-		} else if (valueType.equals(GSAttDataType.range)){
-			att = new RangeValuesAttribute(nameOnData, nameOnEntity, dataType, valueType.getAttributeOnEntityMetaDataClass());
-			for(String val : values){
-				if(dataType.equals(DataType.INTEGER)){
-					List<Integer> intVal = parser.getRangedIntegerData(val, false, 0, 150);
-					att.add(new RangeValue(dataType, intVal.get(0).toString(), intVal.get(1).toString(), val, att));
-				}
-				if(dataType.equals(DataType.DOUBLE) || dataType.equals(DataType.FLOAT)){
-					List<Double> doublVal = parser.getRangedDoubleData(val, false, 0d, 150d);
-					att.add(new RangeValue(dataType, doublVal.get(0).toString(), doublVal.get(1).toString(), val, att));
-				}
-			}
-		} else {
-			throw new GenstarException("The attribute meta data type "+valueType+" is not applicable !");
-		}
-
-		return att;
 	}
 
 }

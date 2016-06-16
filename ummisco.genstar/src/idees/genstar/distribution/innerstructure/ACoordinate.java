@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import idees.genstar.distribution.exception.MatrixCoordinateException;
+
 /**
  * Represent the coordinate system of a coordinate matrix. Coordinates represent correlation between 
  * parametric aspect {@code <A>}: there must be only one aspect per matrix dimension, but could have from 2 to
@@ -20,16 +22,24 @@ import java.util.Set;
  */
 public abstract class ACoordinate<D, A> {
 
-	private final Set<A> coordinate;
+	private Set<A> coordinate;
 	private int hashIndex = -1;
 	
-	/*
-	 * TODO: protected constructor and initialize in AnDimensionalMatrix to ensure not to have twins coordinate
-	 * May be a 'multiton' pattern like
-	 */
-	public ACoordinate(Set<A> coordinate){
+	protected ACoordinate(Set<A> coordinate) throws MatrixCoordinateException{
+		if(!isCoordinateSetComplient(coordinate))
+			throw new MatrixCoordinateException("Coordinate must complies to the moto: One attribute, one value");
 		this.coordinate = coordinate;
 	}
+	
+	/**
+	 * Check if coordinate respect the specified constraint: <p>
+	 * For each dimension {@code D} represented by {@code A} values, they must only have one value. That is two values cannot
+	 * refer to the same dimension (attribute)  
+	 * 
+	 * @param coordinateSet
+	 * @return <code>true</code> if coordinate complies to the "one attribute, one value" moto, <code>false</code> otherwise
+	 */
+	protected abstract boolean isCoordinateSetComplient(Set<A> coordinateSet);
 	
 	/**
 	 * Gives the set of aspect (of parametric type {@code A}) this {@link ACoordinate} contains

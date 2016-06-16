@@ -1,0 +1,513 @@
+<GS__data__Configuration>
+  <GS__data__files>
+    <idees.genstar.configuration.GSDataFile>
+      <survey>test_data/idees/Rouen/insee_ménage/Ménage &amp; Enfants-Tableau 1.csv</survey>
+      <csvSeparator>;</csvSeparator>
+      <dataFileType>ContingenceTable</dataFileType>
+      <firstRowDataIndex>1</firstRowDataIndex>
+      <firstColumnDataIndex>1</firstColumnDataIndex>
+    </idees.genstar.configuration.GSDataFile>
+    <idees.genstar.configuration.GSDataFile>
+      <survey>test_data/idees/Rouen/insee_ménage/Taille ménage &amp; CSP référent-Tableau 1.csv</survey>
+      <csvSeparator>;</csvSeparator>
+      <dataFileType>ContingenceTable</dataFileType>
+      <firstRowDataIndex>1</firstRowDataIndex>
+      <firstColumnDataIndex>1</firstColumnDataIndex>
+    </idees.genstar.configuration.GSDataFile>
+    <idees.genstar.configuration.GSDataFile>
+      <survey>test_data/idees/Rouen/insee_ménage/Taille ménage &amp; Sex &amp; Age-Tableau 1.csv</survey>
+      <csvSeparator>;</csvSeparator>
+      <dataFileType>ContingenceTable</dataFileType>
+      <firstRowDataIndex>2</firstRowDataIndex>
+      <firstColumnDataIndex>1</firstColumnDataIndex>
+    </idees.genstar.configuration.GSDataFile>
+  </GS__data__files>
+  <GS__attributs>
+    <GS__unique__attribute>
+      <attributeID>-1</attributeID>
+      <nameOnData>Enfants</nameOnData>
+      <nameOnEntity>enfants</nameOnEntity>
+      <dataType>STRING</dataType>
+      <attributeChangeListeners/>
+      <valueClassOnData>ummisco.genstar.metamodel.attributes.UniqueValue</valueClassOnData>
+      <valueClassOnEntity>ummisco.genstar.metamodel.attributes.UniqueValue</valueClassOnEntity>
+      <defaultValue class="GS_unique_value" dataType="STRING">
+        <attributeValueID>-1</attributeValueID>
+        <attribute class="GS_unique_attribute" reference="../.."/>
+        <stringValue></stringValue>
+      </defaultValue>
+      <castDefaultValue class="GS_unique_value" reference="../defaultValue"/>
+      <referentAttribute class="GS_unique_attribute" reference=".."/>
+      <valuesOnData>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Aucun enfant de moins de 25 ans</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>4 enfants ou plus de moins de 25 ans</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>2 enfants de moins de 25 ans</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>1 enfant de moins de 25 ans</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>3 enfants de moins de 25 ans</stringValue>
+        </GS__unique__value>
+      </valuesOnData>
+    </GS__unique__attribute>
+    <GS__unique__attribute>
+      <attributeID>-1</attributeID>
+      <nameOnData>Taille</nameOnData>
+      <nameOnEntity>taille</nameOnEntity>
+      <dataType>INTEGER</dataType>
+      <attributeChangeListeners/>
+      <valueClassOnData>ummisco.genstar.metamodel.attributes.UniqueValue</valueClassOnData>
+      <valueClassOnEntity>ummisco.genstar.metamodel.attributes.UniqueValue</valueClassOnEntity>
+      <defaultValue class="GS_unique_value" dataType="INTEGER">
+        <attributeValueID>-1</attributeValueID>
+        <attribute class="GS_unique_attribute" reference="../.."/>
+        <stringValue>0</stringValue>
+      </defaultValue>
+      <castDefaultValue class="GS_unique_value" reference="../defaultValue"/>
+      <referentAttribute class="GS_unique_attribute" reference=".."/>
+      <valuesOnData>
+        <GS__unique__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>2</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>1</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>4</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>3</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>6</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>5</stringValue>
+        </GS__unique__value>
+      </valuesOnData>
+    </GS__unique__attribute>
+    <GS__aggreg__attribute>
+      <attributeID>-1</attributeID>
+      <nameOnData>Age référent</nameOnData>
+      <nameOnEntity>age référent</nameOnEntity>
+      <dataType>INTEGER</dataType>
+      <attributeChangeListeners/>
+      <valueClassOnData>ummisco.genstar.metamodel.attributes.RangeValue</valueClassOnData>
+      <valueClassOnEntity>ummisco.genstar.metamodel.attributes.RangeValue</valueClassOnEntity>
+      <referentAttribute class="GS_range_attribute">
+        <attributeID>-1</attributeID>
+        <nameOnData>Age</nameOnData>
+        <nameOnEntity>age</nameOnEntity>
+        <dataType>INTEGER</dataType>
+        <attributeChangeListeners/>
+        <valueClassOnData>ummisco.genstar.metamodel.attributes.RangeValue</valueClassOnData>
+        <valueClassOnEntity>ummisco.genstar.metamodel.attributes.RangeValue</valueClassOnEntity>
+        <defaultValue class="GS_range_value" dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_range_attribute" reference="../.."/>
+          <minStringValue>0</minStringValue>
+          <maxStringValue>0</maxStringValue>
+          <originalString></originalString>
+        </defaultValue>
+        <castDefaultValue class="GS_range_value" reference="../defaultValue"/>
+        <referentAttribute class="GS_range_attribute" reference=".."/>
+        <valuesOnData>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>10</minStringValue>
+            <maxStringValue>14</maxStringValue>
+            <originalString>10 à 14 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>60</minStringValue>
+            <maxStringValue>64</maxStringValue>
+            <originalString>60 à 64 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>15</minStringValue>
+            <maxStringValue>19</maxStringValue>
+            <originalString>15 à 19 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>65</minStringValue>
+            <maxStringValue>69</maxStringValue>
+            <originalString>65 à 69 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>100</minStringValue>
+            <maxStringValue>150</maxStringValue>
+            <originalString>100 ans ou plus</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>55</minStringValue>
+            <maxStringValue>59</maxStringValue>
+            <originalString>55 à 59 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>25</minStringValue>
+            <maxStringValue>29</maxStringValue>
+            <originalString>25 à 29 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>75</minStringValue>
+            <maxStringValue>79</maxStringValue>
+            <originalString>75 à 79 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>20</minStringValue>
+            <maxStringValue>24</maxStringValue>
+            <originalString>20 à 24 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>70</minStringValue>
+            <maxStringValue>74</maxStringValue>
+            <originalString>70 à 74 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>40</minStringValue>
+            <maxStringValue>44</maxStringValue>
+            <originalString>40 à 44 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>0</minStringValue>
+            <maxStringValue>5</maxStringValue>
+            <originalString>Moins de 5 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>5</minStringValue>
+            <maxStringValue>9</maxStringValue>
+            <originalString>5 à 9 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>30</minStringValue>
+            <maxStringValue>34</maxStringValue>
+            <originalString>30 à 34 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>80</minStringValue>
+            <maxStringValue>84</maxStringValue>
+            <originalString>80 à 84 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>35</minStringValue>
+            <maxStringValue>39</maxStringValue>
+            <originalString>35 à 39 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>85</minStringValue>
+            <maxStringValue>89</maxStringValue>
+            <originalString>85 à 89 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>50</minStringValue>
+            <maxStringValue>54</maxStringValue>
+            <originalString>50 à 54 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>90</minStringValue>
+            <maxStringValue>94</maxStringValue>
+            <originalString>90 à 94 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>45</minStringValue>
+            <maxStringValue>49</maxStringValue>
+            <originalString>45 à 49 ans</originalString>
+          </GS__range__value>
+          <GS__range__value dataType="INTEGER">
+            <attributeValueID>-1</attributeValueID>
+            <attribute class="GS_range_attribute" reference="../../.."/>
+            <minStringValue>95</minStringValue>
+            <maxStringValue>99</maxStringValue>
+            <originalString>95 à 99 ans</originalString>
+          </GS__range__value>
+        </valuesOnData>
+      </referentAttribute>
+      <mappedValues>
+        <Relative__path class="string">20 à 24 ans</Relative__path>
+        <Meta__data__type class="set">
+          <string>20 à 24 ans</string>
+        </Meta__data__type>
+        <Relative__path class="string">65 à 79 ans</Relative__path>
+        <Meta__data__type class="set">
+          <string>70 à 74 ans</string>
+          <string>75 à 79 ans</string>
+          <string>65 à 69 ans</string>
+        </Meta__data__type>
+        <Relative__path class="string">80 ans ou plus</Relative__path>
+        <Meta__data__type class="set">
+          <string>85 à 89 ans</string>
+          <string>90 à 94 ans</string>
+          <string>100 ans ou plus</string>
+          <string>95 à 99 ans</string>
+          <string>80 à 84 ans</string>
+        </Meta__data__type>
+        <Relative__path class="string">55 à 64 ans</Relative__path>
+        <Meta__data__type class="set">
+          <string>55 à 59 ans</string>
+          <string>60 à 64 ans</string>
+        </Meta__data__type>
+        <Relative__path class="string">Moins de 20 ans</Relative__path>
+        <Meta__data__type class="set">
+          <string>Moins de 5 ans</string>
+          <string>5 à 9 ans</string>
+          <string>10 à 14 ans</string>
+          <string>15 à 19 ans</string>
+        </Meta__data__type>
+        <Relative__path class="string">40 à 54 ans</Relative__path>
+        <Meta__data__type class="set">
+          <string>50 à 54 ans</string>
+          <string>40 à 44 ans</string>
+          <string>45 à 49 ans</string>
+        </Meta__data__type>
+        <Relative__path class="string">25 à 39 ans</Relative__path>
+        <Meta__data__type class="set">
+          <string>35 à 39 ans</string>
+          <string>25 à 29 ans</string>
+          <string>30 à 34 ans</string>
+        </Meta__data__type>
+      </mappedValues>
+      <valuesOnData>
+        <GS__range__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_aggreg_attribute" reference="../../.."/>
+          <minStringValue>0</minStringValue>
+          <maxStringValue>20</maxStringValue>
+          <originalString>Moins de 20 ans</originalString>
+        </GS__range__value>
+        <GS__range__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_aggreg_attribute" reference="../../.."/>
+          <minStringValue>65</minStringValue>
+          <maxStringValue>79</maxStringValue>
+          <originalString>65 à 79 ans</originalString>
+        </GS__range__value>
+        <GS__range__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_aggreg_attribute" reference="../../.."/>
+          <minStringValue>40</minStringValue>
+          <maxStringValue>54</maxStringValue>
+          <originalString>40 à 54 ans</originalString>
+        </GS__range__value>
+        <GS__range__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_aggreg_attribute" reference="../../.."/>
+          <minStringValue>55</minStringValue>
+          <maxStringValue>64</maxStringValue>
+          <originalString>55 à 64 ans</originalString>
+        </GS__range__value>
+        <GS__range__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_aggreg_attribute" reference="../../.."/>
+          <minStringValue>25</minStringValue>
+          <maxStringValue>39</maxStringValue>
+          <originalString>25 à 39 ans</originalString>
+        </GS__range__value>
+        <GS__range__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_aggreg_attribute" reference="../../.."/>
+          <minStringValue>20</minStringValue>
+          <maxStringValue>24</maxStringValue>
+          <originalString>20 à 24 ans</originalString>
+        </GS__range__value>
+        <GS__range__value dataType="INTEGER">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_aggreg_attribute" reference="../../.."/>
+          <minStringValue>80</minStringValue>
+          <maxStringValue>150</maxStringValue>
+          <originalString>80 ans ou plus</originalString>
+        </GS__range__value>
+      </valuesOnData>
+    </GS__aggreg__attribute>
+    <GS__unique__attribute>
+      <attributeID>-1</attributeID>
+      <nameOnData>Sexe référent</nameOnData>
+      <nameOnEntity>sexe référent</nameOnEntity>
+      <dataType>STRING</dataType>
+      <attributeChangeListeners/>
+      <valueClassOnData>ummisco.genstar.metamodel.attributes.UniqueValue</valueClassOnData>
+      <valueClassOnEntity>ummisco.genstar.metamodel.attributes.UniqueValue</valueClassOnEntity>
+      <defaultValue class="GS_unique_value" dataType="STRING">
+        <attributeValueID>-1</attributeValueID>
+        <attribute class="GS_unique_attribute" reference="../.."/>
+        <stringValue></stringValue>
+      </defaultValue>
+      <castDefaultValue class="GS_unique_value" reference="../defaultValue"/>
+      <referentAttribute class="GS_unique_attribute" reference=".."/>
+      <valuesOnData>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Hommes</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Femmes</stringValue>
+        </GS__unique__value>
+      </valuesOnData>
+    </GS__unique__attribute>
+    <GS__unique__attribute>
+      <attributeID>-1</attributeID>
+      <nameOnData>CSP référent</nameOnData>
+      <nameOnEntity>csp référent</nameOnEntity>
+      <dataType>STRING</dataType>
+      <attributeChangeListeners/>
+      <valueClassOnData>ummisco.genstar.metamodel.attributes.UniqueValue</valueClassOnData>
+      <valueClassOnEntity>ummisco.genstar.metamodel.attributes.UniqueValue</valueClassOnEntity>
+      <defaultValue class="GS_unique_value" dataType="STRING">
+        <attributeValueID>-1</attributeValueID>
+        <attribute class="GS_unique_attribute" reference="../.."/>
+        <stringValue></stringValue>
+      </defaultValue>
+      <castDefaultValue class="GS_unique_value" reference="../defaultValue"/>
+      <referentAttribute class="GS_unique_attribute" reference=".."/>
+      <valuesOnData>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Ouvriers</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Cadres et professions intellectuelles supérieures</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Autres personnes sans activité professionnelle</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Professions intermédiaires</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Agriculteurs exploitants</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Artisans. commerçants. chefs d&apos;entreprise</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Retraités</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Employés</stringValue>
+        </GS__unique__value>
+      </valuesOnData>
+    </GS__unique__attribute>
+    <GS__unique__attribute>
+      <attributeID>-1</attributeID>
+      <nameOnData>Ménage</nameOnData>
+      <nameOnEntity>ménage</nameOnEntity>
+      <dataType>STRING</dataType>
+      <attributeChangeListeners/>
+      <valueClassOnData>ummisco.genstar.metamodel.attributes.UniqueValue</valueClassOnData>
+      <valueClassOnEntity>ummisco.genstar.metamodel.attributes.UniqueValue</valueClassOnEntity>
+      <defaultValue class="GS_unique_value" dataType="STRING">
+        <attributeValueID>-1</attributeValueID>
+        <attribute class="GS_unique_attribute" reference="../.."/>
+        <stringValue></stringValue>
+      </defaultValue>
+      <castDefaultValue class="GS_unique_value" reference="../defaultValue"/>
+      <referentAttribute class="GS_unique_attribute" reference=".."/>
+      <valuesOnData>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Couple avec enfant(s)</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Famille monoparentale composée d&apos;une femme avec enfant(s)</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Famille monoparentale composée d&apos;un homme avec enfant(s)</stringValue>
+        </GS__unique__value>
+        <GS__unique__value dataType="STRING">
+          <attributeValueID>-1</attributeValueID>
+          <attribute class="GS_unique_attribute" reference="../../.."/>
+          <stringValue>Couple sans enfant</stringValue>
+        </GS__unique__value>
+      </valuesOnData>
+    </GS__unique__attribute>
+  </GS__attributs>
+</GS__data__Configuration>

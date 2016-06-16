@@ -37,6 +37,7 @@ import idees.genstar.distribution.innerstructure.AGSFullNDimensionalMatrix;
 import idees.genstar.distribution.innerstructure.AGSSegmentedNDimensionalMatrix;
 import idees.genstar.distribution.innerstructure.InDimensionalMatrix;
 import idees.genstar.exception.IncompatibleControlTotalException;
+import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
@@ -128,7 +129,7 @@ public class DistributionFactory {
 				distributionsSet.addAll(getDistributions(file, this.configuration.getAttributes()));
 		return distributionsSet;
 	}
-	
+
 	/**
 	 * TODO
 	 * 
@@ -143,9 +144,13 @@ public class DistributionFactory {
 		if(distributionsSet.size() == 1)
 			return createDistribution(distributionsSet.iterator().next());
 		else {
+			// 1) Align all the matrix in order for them to inform about the whole population
+
+			// 1.a) matrixes that have individual frame of reference
 			for(InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number> matrix : distributionsSet
-					.stream().filter(c -> c.getMetaDataType().equals(GSMetaDataType.IndivFrequenceTable))
+					.stream().filter(m -> m.getMetaDataType().equals(GSMetaDataType.IndivFrequenceTable))
 					.collect(Collectors.toList())){
+				// Choose the best referent matrix to align with
 				InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number> matrixOfReference = distributionsSet
 						.stream().filter(ctFitter -> !ctFitter.isIndividualFrameOfReference()
 								&& ctFitter.getDimensions().stream().anyMatch(d -> matrix.getDimensions().contains(d)))
@@ -154,18 +159,38 @@ public class DistributionFactory {
 						.findFirst().get(); 
 				getDistributionsAlign(matrix, matrixOfReference);
 			}
-			for(InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number> matrix : distributionsSet)
+
+			// TODO
+			// 1.b) matrixes that contains aggregated attributes
+			for(InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number> matrix : distributionsSet
+					.stream().filter(m -> m.getDimensions().stream().anyMatch(d -> !d.getReferentAttribute().equals(d) && d.valuesOnData().size() > 1))
+					.collect(Collectors.toSet())){
+				Set<AbstractAttribute> aggregAttributes = matrix.getDimensions()
+						.stream().filter(d -> !d.getReferentAttribute().equals(d) 
+								&& d.valuesOnData().size() > 1).collect(Collectors.toSet());
+				getDistributionDisaggregate(matrix, aggregAttributes.stream().map(a -> a.getReferentAttribute()).collect(Collectors.toSet()));
+			}
+
+			// TODO: better process
+			// 2) Remove matrix that represent align only purpose -> these with record attributes
+			Set<InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number>> distributionMatrix = new HashSet<>(distributionsSet);
+			distributionMatrix.removeAll(distributionsSet
+					.stream().filter(dm -> dm.getDimensions().stream().anyMatch(d -> !d.getReferentAttribute().equals(d) && d.valuesOnData().size() == 1))
+					.collect(Collectors.toSet()));
+
+			// 3) Make all matrixes being frequency matrix;
+			for(InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number> matrix : distributionMatrix)
 				getFrequencyMatrix(matrix);
-			return createDistribution(distributionsSet);
+			return createDistribution(distributionMatrix);
 		}
 	}
-	
+
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	// ------------------------------- MAIN BACK OFFICE ------------------------------- //
 	//////////////////////////////////////////////////////////////////////////////////////
-	
-	
+
+
 	/**
 	 * The one line entry to construct a distribution from a control table
 	 * 
@@ -205,13 +230,13 @@ public class DistributionFactory {
 			jointDistributionSet.add(createDistribution(controlTable));
 		return new GSConditionalDistribution(jointDistributionSet);
 	}
-	
-	
+
+
 	//////////////////////////////////////////////////////////////////////////////////////
 	// ----------------------------- TRANSPOSITION METHODS ---------------------------- //
 	//////////////////////////////////////////////////////////////////////////////////////	
-	
-	
+
+
 	/**
 	 * TODO: javadoc
 	 * 
@@ -248,7 +273,7 @@ public class DistributionFactory {
 	 */
 	@SuppressWarnings("unused")
 	private AGSFullNDimensionalMatrix<Integer> getContingentMatrix(InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number> matrix) 
-					throws IllegalNDimensionalMatrixAccess, IllegalAlignDistributions {
+			throws IllegalNDimensionalMatrixAccess, IllegalAlignDistributions {
 		if(matrix.getMetaDataType().equals(GSMetaDataType.IndivFrequenceTable))
 			throw new IllegalAlignDistributions("Cannot change individual frequency matrix into a contingency one befor alignement to global frame of reference", matrix.getMetaDataType());		
 		AGSFullNDimensionalMatrix<Integer> contingencyMatrix = 
@@ -278,7 +303,7 @@ public class DistributionFactory {
 
 		return contingencyMatrix;
 	}
-	
+
 	/**
 	 * Align the former {@link AGSControlTable} passed in argument with the last. 
 	 * <p>
@@ -306,7 +331,55 @@ public class DistributionFactory {
 		aligneMatrix.setMetaDataType(referenceMatrix.getMetaDataType());
 		return aligneMatrix;
 	}
-	
+
+	/**
+	 * 
+	 * @param matrix
+	 * @param collect
+	 * @throws IllegalNDimensionalMatrixAccess 
+	 * @throws GenstarException 
+	 */
+	private InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number> getDistributionDisaggregate(
+			InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number> matrix,
+			Set<AbstractAttribute> disaggregatedAttributes) 
+					throws IllegalNDimensionalMatrixAccess, GenstarException {
+		Set<AbstractAttribute> newAttributes = new HashSet<>(disaggregatedAttributes);
+		newAttributes.addAll(matrix.getDimensions().stream().filter(d -> d.getReferentAttribute().equals(d)).collect(Collectors.toSet()));
+		InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number> disaggregatedMatrix = new GSJointDistribution(
+				newAttributes.stream().collect(Collectors.toMap(d -> d, d -> d.valuesOnData())), GSMetaDataType.CompletFrequenceTable);
+
+		for(ACoordinate<AbstractAttribute, AttributeValue> oldCoord : matrix.getMatrix().keySet()){
+			if(newAttributes.stream().anyMatch(att -> oldCoord.getDimensions().contains(att))){
+
+				Set<AttributeValue> newCoord = new HashSet<>(oldCoord.getDimensions()
+						.stream().filter(d -> d.getReferentAttribute().equals(d))
+						.map(d -> oldCoord.getMap().get(d))
+						.collect(Collectors.toSet()));
+				double newVal = 0d;
+				
+				// disaggregated coordonate
+				Set<AbstractAttribute> oldAtts = oldCoord.getDimensions()
+						.stream().filter(d -> !d.getReferentAttribute().equals(d)).collect(Collectors.toSet());
+				// TODO a map of visited coordinate with updated frequence
+				Map<Set<AttributeValue>, Double> newCoordFreq = new HashMap<>();
+				
+				// TODO ensure that coordinate must have only one value per attribute
+				for(AbstractAttribute oldAtt : oldAtts){
+					AttributeValue oldVal = oldCoord.getMap().get(oldAtt);
+					for(AttributeValue val : oldAtt.getReferentAttribute().valuesOnData())
+						if(oldAtt.findMatchingAttributeValueOnData(val) != null)
+							for()
+							/* TODO add new key map coordinate with updated frequence*/;
+				}
+				disaggregatedMatrix.addValue(new GSCoordinate(newCoord), new ControlFrequency(newVal));
+			} else {
+				disaggregatedMatrix.addValue(oldCoord, matrix.getVal(oldCoord));
+			}
+		}	
+
+		return disaggregatedMatrix;
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////
 	// ------------------------------ MAIN INPUT METHOD ------------------------------- //
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -412,12 +485,24 @@ public class DistributionFactory {
 				if(vals.isEmpty())
 					continue;
 				if(vals.size() > 1){
+					Set<AbstractAttribute> inferedHeads = new HashSet<>();
+					List<String> headList = survey.readLines(0, file.getFirstRowDataIndex(), j);
+					if(headList.stream().allMatch(s -> s.isEmpty())) {
+						for(List<String> column : survey.readColumns(0, file.getFirstColumnDataIndex()))
+							inferedHeads.addAll(attributes
+									.stream().filter(a -> a.valuesOnData()
+											.stream().allMatch(av -> column.contains(av.toCsvString())))
+									.collect(Collectors.toSet()));
+					} else {
+						inferedHeads.addAll(headList
+								.stream().flatMap(s -> attributes.stream().filter(a -> a.getNameOnData().equals(s)))
+								.collect(Collectors.toSet()));
+					}
 					Set<AttributeValue> vals2 = new HashSet<>(vals);
-					vals = survey.readLines(0, file.getFirstRowDataIndex(), j).stream().flatMap(s -> attributes
-							.stream().filter(att -> att.getNameOnData().equals(s)))
-							.flatMap(att -> vals2
-									.stream().filter(v -> v.getAttribute().equals(att)))
-							.collect(Collectors.toSet());
+					for(AttributeValue val : vals2)
+						if(!inferedHeads.contains(val.getAttribute()))
+							vals.remove(val);
+					//vals = vals2.stream().filter(av -> inferedHeads.contains(av.getAttribute())).collect(Collectors.toSet());
 				}
 				if(rowHeaders.containsKey(i))
 					rowHeaders.get(i).addAll(vals);

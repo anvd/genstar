@@ -10,15 +10,15 @@ public class UniqueValue extends AttributeValue {
 	
 	private String stringValue;
 	
-	public UniqueValue(final UniqueValue origin, final AbstractAttribute attribute) throws GenstarException {
+	protected UniqueValue(final UniqueValue origin, final AbstractAttribute attribute) throws GenstarException {
 		this(origin.dataType, origin.stringValue, attribute);
 	}
 	
-	public UniqueValue(final DataType dataType, final AbstractAttribute attribute) throws GenstarException {
+	protected UniqueValue(final DataType dataType, final AbstractAttribute attribute) throws GenstarException {
 		this(dataType, dataType.getDefaultStringValue(), attribute);
 	}
 	
-	public UniqueValue(final DataType dataType, final String stringValue, final AbstractAttribute attribute) throws GenstarException {
+	protected UniqueValue(final DataType dataType, final String stringValue, final AbstractAttribute attribute) throws GenstarException {
 		super(dataType, attribute);
 		
 		if (stringValue == null) { throw new GenstarException("'stringValue' parameter can not be null"); }

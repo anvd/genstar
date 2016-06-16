@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import idees.genstar.datareader.exception.GenstarIllegalRangedData;
 import ummisco.genstar.metamodel.attributes.DataType;
@@ -164,6 +166,24 @@ public class GSDataParser {
 	        String valueWithDot = value.replaceAll(",",".");
 	        return Double.valueOf(valueWithDot);
 	    }
+	}
+
+	/**
+	 * Parse a {@link String} and retrieves numerical values
+	 * 
+	 * @param trim
+	 * @return
+	 */
+	public List<String> getNumber(String string) {
+		List<String> numbers = new ArrayList<>();
+		Pattern p = Pattern.compile("^-?[\\d+][\\.\\d+]?[E\\-\\d+]?");
+		Matcher m = p.matcher(string);
+		while (m.find()) {
+		  numbers.add(m.group());
+		}
+		//String s = string.replaceAll("^-?[\\d+][\\.\\d+]?[E\\-\\d+]?", " ");
+		//return Arrays.asList(s.trim().split(" "));
+		return numbers;
 	}
 
 }

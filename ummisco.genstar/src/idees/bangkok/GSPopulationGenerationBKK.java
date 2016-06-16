@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
@@ -65,10 +64,10 @@ public class GSPopulationGenerationBKK {
 		// TODO: move to generic removal of utility like attributs
 		// WARNING: l'attribut *POP* ne fait que donner le nombre d'individu par canton
 		// TIPS: l'attribut population est particulier parce qu'il n'a qu'une valeur -> on peut se servir de ces attributs uniquement pour fitter 
-		Set<InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number>> cts = jointDistributionsSet
+		/* Set<InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number>> cts = jointDistributionsSet
 				.stream().filter(ct -> ct.getDimensions()
 				.stream().map(AbstractAttribute::getNameOnData).anyMatch(s -> s.equals("population"))).collect(Collectors.toSet());
-		jointDistributionsSet.removeAll(cts);
+		jointDistributionsSet.removeAll(cts); */
 
 		// INFER DISTRIBUTION: joint or conditional (with independance when no data are available)
 		// TODO: inference is very limited -> implement baysian network and markov chain monte carlos inference algorithm

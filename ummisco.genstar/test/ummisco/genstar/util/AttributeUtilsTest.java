@@ -1,17 +1,16 @@
 package ummisco.genstar.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.DataType;
@@ -19,9 +18,7 @@ import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
-import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
 import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
-import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
 
 @RunWith(JMockit.class)
 public class AttributeUtilsTest {
@@ -135,21 +132,5 @@ public class AttributeUtilsTest {
 	
 	@Test public void testCreateAttributesFromCsvFile() throws GenstarException {
 		fail("not yet implemented");
-	}
-	
-	@Test public void testCreateUniqueValueAttributeWithRangeInput() throws GenstarException {
-		
-		ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
-		GenstarCsvFile attributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/AttributeUtils/testCreateUniqueValueAttributeWithRangeInput/attributes1.csv", true);
-		
-		assertTrue(generator.getAttributes().isEmpty());
-		
-		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
-		
-		List<AbstractAttribute> attributes = new ArrayList<>(generator.getAttributes());
-		assertTrue(attributes.size() == 2);
-		
-		assertTrue(attributes.get(0) instanceof UniqueValuesAttributeWithRangeInput);
-		assertTrue(attributes.get(1) instanceof UniqueValuesAttributeWithRangeInput);
 	}
 }

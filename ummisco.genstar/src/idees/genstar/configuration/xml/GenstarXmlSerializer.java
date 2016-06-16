@@ -16,9 +16,11 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import idees.genstar.configuration.GSMetaDataType;
 import idees.genstar.configuration.GSConfiguration;
+import ummisco.genstar.metamodel.attributes.AggregatedAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.RangeValue;
 import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
+import ummisco.genstar.metamodel.attributes.RecorderAttribute;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
 import ummisco.genstar.util.GenstarCsvFile;
@@ -32,11 +34,13 @@ public class GenstarXmlSerializer {
 	private static final String GS_FILE_LIST_ALIAS = "GS_data_files";
 
 	private static final String GS_ATTRIBUTE_LIST_ALIAS = "GS_attributs";
-	private static final String GS_UNIQUE_ATTRIBUTE_ALIAS = "GS_unique_attribut";
-	private static final String GS_UNIQUE_VALUE_ALIAS = "GS_unique_value";
-	private static final String GS_RANGE_ATTRIBUTE_ALIAS = "GS_range_attribut";
-	private static final String GS_RANGE_VALUE_ALIAS = "GS_range_value";
+	private static final String GS_UNIQUE_ATTRIBUTE_ALIAS = "GS_unique_attribute";
+	private static final String GS_RANGE_ATTRIBUTE_ALIAS = "GS_range_attribute";
+	private static final String GS_AGGREG_ATTRIBUTE_ALIAS = "GS_aggreg_attribute";
+	private static final String GS_RECORD_ATTRIBUTE_ALIAS = "GS_record_attribute";
 
+	private static final String GS_UNIQUE_VALUE_ALIAS = "GS_unique_value";
+	private static final String GS_RANGE_VALUE_ALIAS = "GS_range_value";
 	
 	private XStream xs = null;
 	private File mkdir = null;
@@ -55,6 +59,8 @@ public class GenstarXmlSerializer {
 		xs.alias(GS_UNIQUE_VALUE_ALIAS, UniqueValue.class);
 		xs.alias(GS_RANGE_ATTRIBUTE_ALIAS, RangeValuesAttribute.class);
 		xs.alias(GS_RANGE_VALUE_ALIAS, RangeValue.class);
+		xs.alias(GS_AGGREG_ATTRIBUTE_ALIAS, AggregatedAttribute.class);
+		xs.alias(GS_RECORD_ATTRIBUTE_ALIAS, RecorderAttribute.class);
 		
 		/*
 		 * Map Converter

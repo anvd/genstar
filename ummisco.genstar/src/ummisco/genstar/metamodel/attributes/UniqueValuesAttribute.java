@@ -11,20 +11,20 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 	
 	private Set<UniqueValue> valuesOnData;
 
-	public UniqueValuesAttribute(final String nameOnData, final DataType dataType) throws GenstarException {
+	protected UniqueValuesAttribute(final String nameOnData, final DataType dataType) throws GenstarException {
 		this(nameOnData, nameOnData, dataType, UniqueValue.class);
 	}
 
-	public UniqueValuesAttribute(final String nameOnData, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
+	protected UniqueValuesAttribute(final String nameOnData, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
 		this(nameOnData, nameOnData, dataType, valueClassOnEntity);
 	}
 
-	public UniqueValuesAttribute(final String nameOnData, final String nameOnEntity, final DataType dataType) throws GenstarException {
+	protected UniqueValuesAttribute(final String nameOnData, final String nameOnEntity, final DataType dataType) throws GenstarException {
 		this(nameOnData, nameOnEntity, dataType, UniqueValue.class);		
 	}
 
-	public UniqueValuesAttribute(final String nameOnData, final String nameOnEntity, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		super(nameOnData, nameOnEntity, dataType, valueClassOnEntity);
+	protected UniqueValuesAttribute(final String nameOnData, final String nameOnEntity, final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
+		super(nameOnData, nameOnEntity, dataType, valueClassOnEntity, null);
 
 		this.valueClassOnData = UniqueValue.class;
 		this.valuesOnData = new HashSet<UniqueValue>();

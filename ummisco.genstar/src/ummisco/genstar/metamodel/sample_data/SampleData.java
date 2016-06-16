@@ -3,6 +3,7 @@ package ummisco.genstar.metamodel.sample_data;
 import java.util.HashSet;
 import java.util.Set;
 
+import idees.genstar.datareader.exception.GenstarIllegalRangedData;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.population.Entity;
@@ -17,7 +18,7 @@ public class SampleData extends AbstractSampleData implements ISampleData { // T
 	private GenstarCsvFile data = null;
 	
 	
-	public SampleData(final String populationName, final Set<AbstractAttribute> attributes, GenstarCsvFile data) throws GenstarException {
+	public SampleData(final String populationName, final Set<AbstractAttribute> attributes, GenstarCsvFile data) throws GenstarException, GenstarIllegalRangedData {
 		if (populationName == null || populationName.isEmpty()) { throw new GenstarException("Parameter populationName can neither be null nor empty"); }
 		if (attributes == null) { throw new GenstarException("Parameter attributes can not be null"); }
 		if (data == null) { throw new GenstarException("Parameter data can not be null"); }

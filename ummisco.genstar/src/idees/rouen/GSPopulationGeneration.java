@@ -88,22 +88,9 @@ public class GSPopulationGeneration {
 			e.printStackTrace();
 		}
 
-		// Export control totals to csv
-		try {
-			int i = 1;
-			for(InDimensionalMatrix<AbstractAttribute, AttributeValue, ? extends Number> ct : jointDistributionsSet)
-				Files.write(Paths.get("./data_test/BKK/ControlTable/logBKK_t"+(i++) +".csv"), ct.toCsv(';').getBytes());
-			// TODO better toString method for InDimensionalMatrix
-			//Files.write(Paths.get("./data_test/BKK/Distribution/distBKK.txt"), distribution.toString().getBytes());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		// POPULATION SYNTHESIS
-		int popSize = 1000000;
-		int realBKKPopSize = 8305213;
-		ISyntheticPopulationGenerator dbg = new DistributionBasedGenerator(distribution, realBKKPopSize);
+		int popSize = 623486;
+		ISyntheticPopulationGenerator dbg = new DistributionBasedGenerator(distribution, popSize);
 		try {
 			population = dbg.generate();
 		} catch (GenstarException e) {
@@ -114,7 +101,7 @@ public class GSPopulationGeneration {
 			System.out.println("Pas le bon nombre d'agents généré: "+population.getNbOfEntities()+" plutôt que "+popSize);
 		else
 			try {
-				Files.write(Paths.get("./data_test/BKK/Population/BKKscale1_popReport.csv"), population.csvReport("; ").getBytes());
+				Files.write(Paths.get("./test_data/idees/Rouen/popReport.csv"), population.csvReport("; ").getBytes());
 				System.out.println("Done !");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

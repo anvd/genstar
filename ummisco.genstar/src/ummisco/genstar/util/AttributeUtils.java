@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import idees.genstar.configuration.GSAttDataType;
+import idees.genstar.datareader.exception.GenstarIllegalRangedData;
 import ummisco.genstar.exception.GenstarException;
+import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeFactory;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
-import ummisco.genstar.metamodel.attributes.RangeValue;
-import ummisco.genstar.metamodel.attributes.RangeValuesAttribute;
-import ummisco.genstar.metamodel.attributes.UniqueValue;
-import ummisco.genstar.metamodel.attributes.UniqueValuesAttribute;
-import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
 import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 
 public class AttributeUtils {
@@ -29,11 +28,13 @@ public class AttributeUtils {
 	 * @param values
 	 * @param valueClassOnEntity
 	 * @throws GenstarException
+	 * @throws GenstarIllegalRangedData 
 	 */
 	static void createRangeValueAttribute(final ISyntheticPopulationGenerator generator, final String attributeNameOnData, final String attributeNameOnEntity, 
-			final DataType dataType, final String values, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		
-		RangeValuesAttribute rangeAttribute = new RangeValuesAttribute(attributeNameOnData, attributeNameOnEntity, dataType, UniqueValue.class);
+			final DataType dataType, final String values, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException, GenstarIllegalRangedData {
+		AttributeFactory af = new AttributeFactory();
+		AbstractAttribute rangeAttribute = null;
+				//new RangeValuesAttribute(attributeNameOnData, attributeNameOnEntity, dataType, UniqueValue.class);
 		
 		// 1. Parse and accumulate each range value token into a list.
 		StringTokenizer valueTokens = new StringTokenizer(values, CSV_FILE_FORMATS.ATTRIBUTES.ATTRIBUTE_VALUE_DELIMITER);
@@ -42,13 +43,13 @@ public class AttributeUtils {
 		while (valueTokens.hasMoreTokens()) { rangeTokens.add(valueTokens.nextToken()); }
 		
 		// 2. Created range values from the parsed tokens.
+		List<String> rangeString = new ArrayList<>();
 		for (String t : rangeTokens) {
 			StringTokenizer minMaxValueTokens = new StringTokenizer(t, CSV_FILE_FORMATS.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
 			if (minMaxValueTokens.countTokens() != 2) { throw new GenstarException("Invalid attribute range value format (file: " + minMaxValueTokens.toString() + ")"); }
-			
-			rangeAttribute.add(new RangeValue(dataType, minMaxValueTokens.nextToken().trim(), minMaxValueTokens.nextToken().trim(), rangeAttribute));
+			rangeString.add(minMaxValueTokens.nextToken().trim()+" - "+minMaxValueTokens.nextToken().trim());
 		}
-		
+		rangeAttribute = af.createAttribute(attributeNameOnData, attributeNameOnEntity, dataType, rangeString, GSAttDataType.range);
 		generator.addAttribute(rangeAttribute);
 	}
 
@@ -64,11 +65,13 @@ public class AttributeUtils {
 	 * @param values
 	 * @param valueClassOnEntity
 	 * @throws GenstarException
+	 * @throws GenstarIllegalRangedData 
 	 */
 	static void createUniqueValueAttribute(final ISyntheticPopulationGenerator generator, final String attributeNameOnData, final String attributeNameOnEntity, 
-			final DataType dataType, final String values, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
+			final DataType dataType, final String values, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException, GenstarIllegalRangedData {
 		
-		UniqueValuesAttribute uniqueValueAttribute = new UniqueValuesAttribute(attributeNameOnData, attributeNameOnEntity, dataType, valueClassOnEntity);
+		AttributeFactory af = new AttributeFactory();
+		AbstractAttribute uniqueValueAttribute = null;
 		
 		// 1. Parse and accumulate each unique value token into a list.
 		StringTokenizer valueTokenizers = new StringTokenizer(values, CSV_FILE_FORMATS.ATTRIBUTES.ATTRIBUTE_VALUE_DELIMITER);
@@ -77,76 +80,11 @@ public class AttributeUtils {
 		while (valueTokenizers.hasMoreTokens()) { uniqueValueTokens.add(valueTokenizers.nextToken()); }
 		
 		// 2. Create unique values from the parsed tokens.
-		for (String t : uniqueValueTokens) { uniqueValueAttribute.add(new UniqueValue(dataType, t.trim(), uniqueValueAttribute)); }
+		List<String> uniqueValues = new ArrayList<>();
+		for (String t : uniqueValueTokens) { uniqueValues.add(t.trim()); }
 		
+		uniqueValueAttribute = af.createAttribute(attributeNameOnData, attributeNameOnEntity, dataType, uniqueValues, GSAttDataType.unique);
 		generator.addAttribute(uniqueValueAttribute);
-	}
-	
-	
-	/**
-	 * Creates a unique value attribute with range input.
-	 * The range value is encoded as follows: min_value:max_value
-	 * 
-	 * @param generator
-	 * @param attributeNameOnData
-	 * @param attributeNameOnEntity
-	 * @param dataType
-	 * @param values
-	 * @param valueClassOnEntity
-	 * @throws GenstarException
-	 */
-	static void createUniqueValueAttributeWithRangeInput(final ISyntheticPopulationGenerator generator, final String attributeNameOnData, final String attributeNameOnEntity, 
-			final DataType dataType, final String values, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
-		
-		// 1. Parse minValue and maxValue
-		StringTokenizer valueTokenizers = new StringTokenizer(values, CSV_FILE_FORMATS.ATTRIBUTES.MIN_MAX_VALUE_DELIMITER);
-		if (valueTokenizers.countTokens() == 0) { throw new GenstarException("No value is defined for the attribute '" + attributeNameOnData + "'"); }
-		if (valueTokenizers.countTokens() != 2) { throw new GenstarException("Invalid unique value with range input format. Attribute name on data: " + attributeNameOnData + ". Valid format is min_value:max_value"); }
-		
-		int minValueInt = -1;
-		int maxValueInt = -1;
-
-		String minValueToken = valueTokenizers.nextToken();
-		String maxValueToken = valueTokenizers.nextToken();
-		
-		if (minValueToken.equals(CSV_FILE_FORMATS.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MIN_VALUE_STRING)) {
-			minValueInt = Integer.MIN_VALUE;
-		} else if (minValueToken.equals(CSV_FILE_FORMATS.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MAX_VALUE_STRING)) {
-			minValueInt = Integer.MAX_VALUE;
-		}
-		
-		if (maxValueToken.equals(CSV_FILE_FORMATS.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MIN_VALUE_STRING)) {
-			maxValueInt = Integer.MIN_VALUE;
-		} else if (maxValueToken.equals(CSV_FILE_FORMATS.ATTRIBUTES.UNIQUE_VALUES_ATTRIBUTE_WITH_RANGE_INPUT.MAX_VALUE_STRING)) {
-			maxValueInt = Integer.MAX_VALUE;
-		}
-		
-		if (minValueInt == -1) {
-			try {
-				minValueInt = Integer.parseInt(minValueToken);
-			} catch (NumberFormatException nfe) {
-				throw new GenstarException("Invalid attribute " + attributeNameOnData + " format. " + minValueToken + " is not a valid integer");
-			}
-		}
-		
-		if (maxValueInt == -1) {
-			try {
-				maxValueInt = Integer.parseInt(maxValueToken);
-			} catch (NumberFormatException nfe) {
-				throw new GenstarException("Invalid attribute " + attributeNameOnData + " format. " + maxValueToken + " is not a valid integer");
-			}
-		}
-
-		UniqueValuesAttributeWithRangeInput uniqueValueAttributeWithRangeInput = null;
-		
-		// 2. Create unique values from the parsed tokens.
-		UniqueValue minValue = new UniqueValue(DataType.INTEGER, Integer.toString(minValueInt), uniqueValueAttributeWithRangeInput);
-		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, Integer.toString(maxValueInt), uniqueValueAttributeWithRangeInput);
-
-		
-		// 3. create the attribute then add it to the generator
-		uniqueValueAttributeWithRangeInput = new UniqueValuesAttributeWithRangeInput(attributeNameOnData, attributeNameOnEntity, minValue, maxValue);
-		generator.addAttribute(uniqueValueAttributeWithRangeInput);
 	}
 	
 	
@@ -202,12 +140,6 @@ public class AttributeUtils {
 					createUniqueValueAttribute(generator, attributeNameOnData, attributeNameOnEntity, dataType, values, valueClassOnEntity);
 				} catch (Exception ex) {
 					throw new GenstarException("Can not create unique value attribute. File: " + attributesFilePath + ", line: " + line, ex);
-				}
-			} else if (valueTypeOnDataStr.equals(CSV_FILE_FORMATS.ATTRIBUTES.UNIQUE_VALUE_WITH_RANGE_INPUT_NAME)) {
-				try {
-					createUniqueValueAttributeWithRangeInput(generator, attributeNameOnData, attributeNameOnEntity, dataType, values, valueClassOnEntity);
-				} catch (Exception ex) {
-					throw new GenstarException("Can not create unique value attribute with range input. File: " + attributesFilePath + ", line: " + line, ex);
 				}
 			} else {
 				throw new GenstarException("Invalid attribute file: unsupported value type (file: " + attributesFilePath + ")");

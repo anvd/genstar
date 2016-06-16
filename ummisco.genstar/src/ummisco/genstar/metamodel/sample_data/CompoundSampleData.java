@@ -1,10 +1,14 @@
 package ummisco.genstar.metamodel.sample_data;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import idees.genstar.configuration.GSAttDataType;
+import idees.genstar.datareader.exception.GenstarIllegalRangedData;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
+import ummisco.genstar.metamodel.attributes.AttributeFactory;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
@@ -49,8 +53,10 @@ public class CompoundSampleData extends AbstractSampleData implements ICompoundS
 				originalComponentSampleData.getSampleEntityPopulation(), groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity);
 	}
 	
-	public void recodeIdAttributes(final Entity targetGroupEntity) throws GenstarException {
+	public void recodeIdAttributes(final Entity targetGroupEntity) 
+			throws GenstarException, GenstarIllegalRangedData {
 		String targetEntityPopulationName = targetGroupEntity.getPopulation().getName();
+		AttributeFactory af = new AttributeFactory();
 		
 		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
 		if (targetEntityPopulationName.equals(originalGroupSampleData.getSampleEntityPopulation().getName())) { // targetEntity.getPopulation().isCompatible(groupSampleData.getSampleEntityPopulation())
@@ -61,7 +67,7 @@ public class CompoundSampleData extends AbstractSampleData implements ICompoundS
 			AttributeValue groupIdValueOnGroup = groupIdOnGroupEav.getAttributeValueOnEntity(); // what to to with this value?
 			
 			int recodedID = nextIdValue(targetEntityPopulationName);
-			AttributeValue recodedIdValue = new UniqueValue(DataType.INTEGER, Integer.toString(recodedID), groupIdAttributeOnGroupEntity);
+			AttributeValue recodedIdValue = af.createValue(GSAttDataType.unique, DataType.INTEGER, Arrays.asList(Integer.toString(recodedID)), groupIdAttributeOnGroupEntity);
 			attributeValues.clear();
 			attributeValues.put(groupIdAttributeOnGroupEntity, recodedIdValue);
 			

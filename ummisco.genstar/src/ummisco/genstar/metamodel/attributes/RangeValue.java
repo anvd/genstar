@@ -16,15 +16,15 @@ public class RangeValue extends AttributeValue {
 	private String originalString = "";
 	
 	
-	public RangeValue(final RangeValue origin, final AbstractAttribute attribute) throws GenstarException {
+	protected RangeValue(final RangeValue origin, final AbstractAttribute attribute) throws GenstarException {
 		this(origin.dataType, origin.minStringValue, origin.maxStringValue, origin.getAttribute());
 	}
 	
-	public RangeValue(final DataType dataType, final AbstractAttribute attribute) throws GenstarException {
+	protected RangeValue(final DataType dataType, final AbstractAttribute attribute) throws GenstarException {
 		this(dataType, dataType.getDefaultStringValue(), dataType.getDefaultStringValue(), attribute);
 	}
 	
-	public RangeValue(final DataType dataType, final String minStringValue, final String maxStringValue, final AbstractAttribute attribute) throws GenstarException {
+	protected RangeValue(final DataType dataType, final String minStringValue, final String maxStringValue, final AbstractAttribute attribute) throws GenstarException {
 		super(dataType, attribute);
 		
 		if (minStringValue == null) { throw new GenstarException("'minStringValue' can not be null"); }
@@ -37,7 +37,7 @@ public class RangeValue extends AttributeValue {
 		verifyValidity();
 	}
 	
-	public RangeValue(final DataType dataType, final String minStringValue, final String maxStringValue, final String originalString, final AbstractAttribute attribute) throws GenstarException {
+	protected RangeValue(final DataType dataType, final String minStringValue, final String maxStringValue, final String originalString, final AbstractAttribute attribute) throws GenstarException {
 		this(dataType, minStringValue, maxStringValue, attribute);
 		this.originalString = originalString;
 	}

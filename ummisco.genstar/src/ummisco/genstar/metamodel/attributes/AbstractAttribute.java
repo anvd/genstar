@@ -10,7 +10,7 @@ import ummisco.genstar.util.PersistentObject;
 
 public abstract class AbstractAttribute {
 	
-	
+	// link to DB -> TODO: erase ? 
 	protected int attributeID = PersistentObject.NEW_OBJECT_ID;
 	
 	protected String nameOnData;
@@ -29,9 +29,13 @@ public abstract class AbstractAttribute {
 	
 	private AttributeValue castDefaultValue;
 	
+	private AttributeValue emptyValue;
 	
-	public AbstractAttribute(final String attributeNameOnData, final String attributeNameOnEntity, 
-			final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity) throws GenstarException {
+	private AbstractAttribute referentAttribute;
+	
+	
+	protected AbstractAttribute(final String attributeNameOnData, final String attributeNameOnEntity, 
+			final DataType dataType, final Class<? extends AttributeValue> valueClassOnEntity, AbstractAttribute referentAttribute) throws GenstarException {
 		if (attributeNameOnData == null || attributeNameOnData.trim().length() == 0) { throw new GenstarException("'attributeNameOnData' parameter can not be null or empty"); }
 		if (attributeNameOnEntity == null || attributeNameOnEntity.trim().length() == 0) { throw new GenstarException("'attributeNameOnEntity' parameter can not be null or empty"); }
 		if (dataType == null) { throw new GenstarException("'dataType' parameter can not be null"); }
@@ -42,6 +46,7 @@ public abstract class AbstractAttribute {
 		this.dataType = dataType;
 		this.attributeChangeListeners = new ArrayList<AttributeChangedListener>();
 		this.valueClassOnEntity = valueClassOnEntity;
+		this.referentAttribute = (referentAttribute == null ? this : referentAttribute);
 	}
 	
 	public String getNameOnData() {
@@ -54,6 +59,10 @@ public abstract class AbstractAttribute {
 
 	public DataType getDataType() {
 		return dataType;
+	}
+	
+	public AbstractAttribute getReferentAttribute(){
+		return referentAttribute;
 	}
 	
 	public Class<? extends AttributeValue> getValueClassOnEntity() {
@@ -102,6 +111,14 @@ public abstract class AbstractAttribute {
 		
 		this.defaultValue = defaultValue;
 		this.castDefaultValue = defaultValue.cast(valueClassOnEntity);
+	}
+	
+	public void setEmptyValue(AttributeValue emptyValue) {
+		this.emptyValue = emptyValue;
+	}
+	
+	public AttributeValue getEmptyValue(){
+		return emptyValue;
 	}
 	
 	public AttributeValue getDefaultValueOnEntity() {

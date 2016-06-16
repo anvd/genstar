@@ -50,7 +50,7 @@ public class GSStreamSample implements IGSSampler<ACoordinate<AbstractAttribute,
 	}
 	
 	@Override
-	public ACoordinate<AbstractAttribute,AttributeValue> draw(){
+	public ACoordinate<AbstractAttribute, AttributeValue> draw(){
 		double rand = random.nextDouble();
 		int floor = 0;
 		int top = indexedKey.size() - 1;

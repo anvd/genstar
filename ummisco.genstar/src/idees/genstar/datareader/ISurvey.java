@@ -3,7 +3,7 @@ package idees.genstar.datareader;
 import java.util.List;
 
 /**
- * Main interface for access to survey as a table (List of list) <br/>
+ * Main interface for access to survey as a table (List of list) 
  * Data are access through line (raw) and variable (column) indexes.
  * 
  * @author kevinchapuis
@@ -21,8 +21,8 @@ public interface ISurvey {
 	public abstract String read(int rowIndex, int columnIndex);
 	
 	/**
-	 * Return an ordered list of String that gives the content <br/>
-	 * of the line at the given index (i.e. at row {@link rowNum}) of the survey. <br/> 
+	 * Return an ordered list of String that gives the content 
+	 * of the line at the given index (i.e. at row {@link rowNum}) of the survey.  
 	 * Other format of cell content is read as a null String
 	 * 
 	 * 0-based count of rows
@@ -33,8 +33,8 @@ public interface ISurvey {
 	public abstract List<String> readLine(int rowIndex);
 
 	/**
-	 * Return an ordered list of lines (a list of string) from {@code fromFirstRowIndex} inclusive to <br/>
-	 * {@code toLastRowIndex} exclusive <br/>
+	 * Return an ordered list of lines (a list of string) from {@code fromFirstRowIndex} inclusive to 
+	 * {@code toLastRowIndex} exclusive 
 	 * 0-based count of rows
 	 * 
 	 * @param fromFirstRowIndex
@@ -45,7 +45,7 @@ public interface ISurvey {
 			int fromFirstRowIndex, int toLastRowIndex);
 
 	/**
-	 * Return an ordered list of lines (a {@link List} of {@link List} of {@link String}) from {@code fromFirstRowIndex} inclusive to <br/>
+	 * Return an ordered list of lines (a {@link List} of {@link List} of {@link String}) from {@code fromFirstRowIndex} inclusive to 
 	 * {@code toLastRowIndex} exclusive for the unique column at index {@code columnIndex}
 	 * 
 	 * @param fromFirstRowIndex
@@ -58,8 +58,8 @@ public interface ISurvey {
 			int columnIndex);
 	
 	/**
-	 * Return an ordered list of lines (a {@link List} of {@link List} of {@link String}) from {@code fromFirstRowIndex} inclusive to <br/>
-	 * {@code toLastRowIndex} exclusive, considering only column from {@code fromFirstColumnIndex} inclusive to <br/>
+	 * Return an ordered list of lines (a {@link List} of {@link List} of {@link String}) from {@code fromFirstRowIndex} inclusive to 
+	 * {@code toLastRowIndex} exclusive, considering only column from {@code fromFirstColumnIndex} inclusive to 
 	 * {@code toLastColumnIndex} exclusive
 	 * 
 	 * @param fromFirstRowIndex
@@ -73,7 +73,7 @@ public interface ISurvey {
 			int fromFirstColumnIndex, int toLastColumnIndex);
 
 	/**
-	 * Return an ordered list of variable value (a {@link List} of {@link String}). It represents data <br/>
+	 * Return an ordered list of variable value (a {@link List} of {@link String}). It represents data 
 	 * associated to a column of the data table
 	 * 
 	 * @param columnIndex
@@ -82,7 +82,7 @@ public interface ISurvey {
 	public abstract List<String> readColumn(int columnIndex);
 
 	/**
-	 * Return an ordered list of variable (a list of list of variable values). It represents data <br/>
+	 * Return an ordered list of variable (a list of list of variable values). It represents data 
 	 * associated to n variable from {@code fromFirstColumnIndex} inclusive to {@code toLastColumnIndex} exclusive
 	 * 
 	 * @param fromFirstColumnIndex
@@ -93,8 +93,8 @@ public interface ISurvey {
 			int fromFirstColumnIndex, int toLastColumnIndex);
 
 	/**
-	 * Return an ordered list of variable value (a {@link List} of {@link String}) for a specific line. It represents <br/>
-	 * data associated to a n variable from {@code fromFirstColumnIndex} inclusive to {@code toLastColumnIndex} exclusive <br/>
+	 * Return an ordered list of variable value (a {@link List} of {@link String}) for a specific line. It represents 
+	 * data associated to a n variable from {@code fromFirstColumnIndex} inclusive to {@code toLastColumnIndex} exclusive 
 	 * for the unique line at index {@code rowIndex}
 	 * 
 	 * @param fromFirstColumnIndex
@@ -107,8 +107,8 @@ public interface ISurvey {
 			int rowIndex);
 	
 	/**
-	 * Return an ordered list of variable for certain lines ({@see #readVariablesOnListTable(int, int)}) <br/>
-	 * It represents data associated to n variable from {@code fromFirstColumnIndex} inclusive to {@code toLastColumnIndex} <br/>
+	 * Return an ordered list of variable for certain lines ({@see #readVariablesOnListTable(int, int)}) 
+	 * It represents data associated to n variable from {@code fromFirstColumnIndex} inclusive to {@code toLastColumnIndex} 
 	 * exclusive for m lines from {@code fromFirstRowIndex} inclusive to {@code toLastRowIndex} exclusive 
 	 * 
 	 * @param fromFirstRowIndex

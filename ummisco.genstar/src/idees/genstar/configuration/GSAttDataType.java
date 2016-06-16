@@ -7,8 +7,7 @@ import ummisco.genstar.metamodel.attributes.UniqueValue;
 public enum GSAttDataType {
 	
 	unique (UniqueValue.class, UniqueValue.class),
-	range (RangeValue.class, RangeValue.class),
-	rangeToUnique (RangeValue.class, UniqueValue.class);
+	range (RangeValue.class, RangeValue.class);
 	
 	private Class<? extends AttributeValue> dataClazz;
 	private Class<? extends AttributeValue> entityClazz;

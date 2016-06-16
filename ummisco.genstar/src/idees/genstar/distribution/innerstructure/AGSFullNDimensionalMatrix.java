@@ -15,6 +15,7 @@ import idees.genstar.configuration.GSMetaDataType;
 import idees.genstar.control.AControl;
 import idees.genstar.distribution.GSCoordinate;
 import idees.genstar.distribution.exception.IllegalNDimensionalMatrixAccess;
+import idees.genstar.distribution.exception.MatrixCoordinateException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 
@@ -32,14 +33,16 @@ public abstract class AGSFullNDimensionalMatrix<T extends Number> implements InD
 	private final Map<AbstractAttribute, Set<AttributeValue>> dimensions;
 	protected final Map<ACoordinate<AbstractAttribute, AttributeValue>, AControl<T>> matrix;
 
-	private final ACoordinate<AbstractAttribute, AttributeValue> emptyCoordinate = new GSCoordinate(Collections.<AttributeValue>emptySet());
+	private ACoordinate<AbstractAttribute, AttributeValue> emptyCoordinate = null;
 
 	// ----------------------- CONSTRUCTORS ----------------------- //
 
-	public AGSFullNDimensionalMatrix(Map<AbstractAttribute, Set<AttributeValue>> dimensionAspectMap, GSMetaDataType metaDataType) {
+	public AGSFullNDimensionalMatrix(Map<AbstractAttribute, Set<AttributeValue>> dimensionAspectMap, GSMetaDataType metaDataType) 
+			throws MatrixCoordinateException {
 		this.dimensions = new HashMap<>(dimensionAspectMap);
 		this.matrix = new HashMap<>(getTheoreticalSpaceSize() / 4);
 		this.dataType = metaDataType;
+		this.emptyCoordinate = new GSCoordinate(Collections.<AttributeValue>emptySet());
 	}
 		
 	// ------------------------- META DATA ------------------------ //
