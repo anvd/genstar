@@ -9,10 +9,143 @@
 model ipf_evaluation
 
 global {
+	string population_attributes_file_path <- '../includes/setup/household_attributes.csv';
+	map<string, string> population_attributes_file_paths;
 	
+	
+	init {
+		put population_attributes_file_path at: 'household' in: population_attributes_file_paths;
+		
+		do extract_samples;
+		do generate_control_totals;
+		do generate_ipf_populations;
+	}
+	
+	
+	action extract_samples {
+		write 'Start extracting samples ...';
+		
+		string base_path <- '../includes/ipf_evaluation/extracted_ipf_samples/';
+		list<string> sample_properties_file_paths <- [
+			base_path + 'scenario_1/ExtractedIpfHouseholdPopulation_TwoPercents_1.properties',
+			base_path + 'scenario_2/ExtractedIpfHouseholdPopulation_TwoPercents_2.properties',
+			base_path + 'scenario_3/ExtractedIpfHouseholdPopulation_TwoPercents_3.properties'
+		];
+		
+		list<string> extracted_population_file_paths <- [
+			base_path + 'scenario_1/household_sample_1.csv',
+			base_path + 'scenario_2/household_sample_2.csv',
+			base_path + 'scenario_3/household_sample_3.csv'
+		];
+		
+		loop i from: 0 to: (length(sample_properties_file_paths) - 1) {
+			write '\tStart extracting sample for ' + (sample_properties_file_paths at i) + '...';
+			list extracted_household_population <- extract_ipf_population(sample_properties_file_paths at i);
+			write '\tFinished extracting sample.';
+			
+			// save extracted sample
+			write '\tStart saving extracted sample to ' + (extracted_population_file_paths at i) + '...';
+			map<string, string> population_file_paths;
+			put (extracted_population_file_paths at i) at: 'household' in: population_file_paths;
+			do save_population(extracted_household_population, population_file_paths);
+			write '\tFinished saving extracted sample.';
+		}
+
+		write 'Finished extracting samples.\n';
+	}
+	
+	
+	action generate_control_totals {
+		write 'Start generating control totals ...';
+		
+		string base_path <- '../includes/ipf_evaluation/generated_ipf_control_totals/';
+		list<string> control_totals_properties_file_paths <- [
+			base_path + 'scenario_1/household_control_totals_1.properties',
+			base_path + 'scenario_2/household_control_totals_2.properties',
+			base_path + 'scenario_3/household_control_totals_3.properties'
+		];
+		
+		loop i from: 0 to: length(control_totals_properties_file_paths) - 1 {
+			write '\tStart generating control totals for ' + (control_totals_properties_file_paths at i) + ' ...';
+			string result_control_totals_file_path <- ipf_control_totals(control_totals_properties_file_paths at i);
+			write 'Finished generating and saving Ipf control totals to \'' + result_control_totals_file_path + '\'.';
+		}
+		
+		write 'Finished generating control totals.\n';
+	}
+	
+	
+	action generate_ipf_populations {
+		write 'Start generating, saving Ipf populations and analyzing generated population ...';
+		
+		string base_path <- '../includes/ipf_evaluation/generated_populations/';
+		list<string> population_generator_properties_file_paths <- [
+			base_path + 'scenario_1/ipf_configuration_1.properties',
+			base_path + 'scenario_2/ipf_configuration_2.properties',
+			base_path + 'scenario_3/ipf_configuration_3.properties'
+		];
+		
+		list<string> generated_population_file_paths <- [
+			base_path + 'scenario_1/generated_household_population_1.csv',
+			base_path + 'scenario_2/generated_household_population_2.csv',
+			base_path + 'scenario_3/generated_household_population_3.csv'
+		];
+		
+		loop i from: 0 to: (length(population_generator_properties_file_paths) - 1) {
+			write '\tStart generating population for \'' + (population_generator_properties_file_paths at i) + '\'...';
+			list household_population <- ipf_population(population_generator_properties_file_paths at i);
+			write '\tFinished generating population.';
+			
+			// save the generated population
+			write '\tStart saving generated popultion to \'' + (generated_population_file_paths at i) + '\' ...';
+			map<string, string> population_file_paths;
+			put (generated_population_file_paths at i) at: 'household' in: population_file_paths;
+			do save_population(household_population, population_file_paths);
+			write '\tFinished saving generated popultion.';
+			
+			// do the analysis
+			do analyze_generated_population(household_population, i);
+			
+		}
+
+		write '\tFinished generating, saving Ipf populations and analyzing generated population.\n';
+	}
+
+
+	action save_population(list household_population, map<string, string> population_file_paths) {
+		map<string, string> resulting_population_file_paths <- population_to_csv(household_population, population_file_paths, population_attributes_file_paths);
+	}
+	
+	
+	action analyze_generated_population(list household_population, int i) {
+		
+		string base_path1 <- '../includes/ipf_evaluation/generated_ipf_control_totals/';
+		list<string> controlled_attributes_file_paths <- [
+			base_path1 + 'scenario_1/household_controlled_attributes_1.csv',
+			base_path1 + 'scenario_2/household_controlled_attributes_2.csv',
+			base_path1 + 'scenario_3/household_controlled_attributes_3.csv'
+		];
+		
+		string base_path2 <- '../includes/ipf_evaluation/generated_populations/';
+		list<string> result_analysis_file_paths <- [
+			base_path2 + 'scenario_1/RESULT_ANALYSIS_generated_household_population_1.csv',
+			base_path2 + 'scenario_2/RESULT_ANALYSIS_generated_household_population_2.csv',
+			base_path2 + 'scenario_3/RESULT_ANALYSIS_generated_household_population_3.csv'
+		];
+		
+		list<string> control_totals_file_paths <- [
+			base_path1 + 'scenario_1/household_control_totals_1.csv',
+			base_path1 + 'scenario_2/household_control_totals_2.csv',
+			base_path1 + 'scenario_3/household_control_totals_3.csv'
+		];
+
+		write '\tStart writing analyzing result to ' + (result_analysis_file_paths at i);
+		string analysisResult <- analyse_ipf_population_to_file(household_population, population_attributes_file_path, (controlled_attributes_file_paths at i), (control_totals_file_paths at i), (result_analysis_file_paths at i));
+		write '\tFinished writing analyzing result ';
+	}
 }
 
-experiment ipf_generator type: gui {
+experiment ipf_evaluation_expr type: gui {
 	output {
 		
 	}

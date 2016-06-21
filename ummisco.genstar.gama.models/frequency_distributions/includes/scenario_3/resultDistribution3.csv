@@ -1,0 +1,9 @@
+Category:Input,Age:Input,Gender:Output,Frequency
+C0,0:4,false,2
+C0,0:4,true,3
+C0,5:17,false,3
+C0,5:17,true,7
+C1,0:4,false,5
+C1,0:4,true,3
+C1,5:17,false,5
+C1,5:17,true,2

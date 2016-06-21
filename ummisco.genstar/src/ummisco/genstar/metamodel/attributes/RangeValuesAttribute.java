@@ -41,12 +41,11 @@ public class RangeValuesAttribute extends AbstractAttribute {
 	// FIXME move up to parent class, use the "valueClassOnData" for the validation process
 	@Override public boolean add(final AttributeValue rangeValue) throws GenstarException {
 		if (rangeValue == null) { throw new GenstarException("'rangeValue' parameter can not be null."); }
-		
 		if (!rangeValue.getClass().equals(this.valueClassOnData)) { throw new GenstarException("'rangeValue' must be an instance of " + valueClassOnData.getSimpleName()); }
-		
 		if (!this.dataType.equals(rangeValue.dataType)) { throw new GenstarException("Incompatible valueType between rangeValue and attribute : " + rangeValue.dataType.getName() + " v.s. " + this.dataType.getName()); }
 		
-		if (this.getInstanceOfAttributeValue(rangeValue) != null) { return false; }
+		if (this.containInstanceOfAttributeValue(rangeValue)) { return false; }
+		if (this.getMatchingAttributeValueOnData(rangeValue) != null) { return false; }
 		
 		valuesOnData.add((RangeValue) rangeValue);
 
@@ -106,35 +105,41 @@ public class RangeValuesAttribute extends AbstractAttribute {
 
 	
 	@Override
-	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {
-		if (valuesOnData.contains(value)) { return value; }
+	public boolean containInstanceOfAttributeValue(final AttributeValue value) {
+//		if (!(value.getDataType().equals(this.dataType))) { return null; }
+
+		return (valuesOnData.contains(value)); // { return value; }
 		
-		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return v; }
+//		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return v; }
 		
-		return null;
+//		return null;
 	}
 
 	@Override
 	public AttributeValue getMatchingAttributeValueOnData(final List<String> stringRepresentationOfValue) throws GenstarException {
 		if (stringRepresentationOfValue == null || stringRepresentationOfValue.isEmpty()) { throw new GenstarException("'stringRepresentationOfValue' parameter can not be null or empty"); }
 		
-//		if (isIdentity) {
-//			if (stringValue.size() == 1) { return new RangeValue(dataType, stringValue.get(0), stringValue.get(0)); }
-//			if (stringValue.size() >= 2) { return new RangeValue(dataType, stringValue.get(0), stringValue.get(1)); }
-//			
-//			throw new GenstarException("Invalid stringValue " + stringValue);
-//		}
-		
 		if (stringRepresentationOfValue.size() == 1) {
 			for (AttributeValue v : valuesOnData) { if ( ((RangeValue) v).cover(stringRepresentationOfValue.get(0)) ) return v; }
 			return null;
 		}
 		
-		return getInstanceOfAttributeValue(new RangeValue(dataType, stringRepresentationOfValue.get(0), stringRepresentationOfValue.get(1)));
+		RangeValue potentialMatchingValue = new RangeValue(dataType, stringRepresentationOfValue.get(0), stringRepresentationOfValue.get(1));
+		for (RangeValue value : valuesOnData) { if (potentialMatchingValue.compareTo(value) == 0) { return value; } }
+		
+		return null;
 	}
 
-	@Override public AttributeValue getMatchingAttributeValueOnData(final AttributeValue attributeValue) { // throws GenstarException {
-		if (attributeValue instanceof RangeValue) { return this.getInstanceOfAttributeValue(attributeValue); }
+	@Override public AttributeValue getMatchingAttributeValueOnData(final AttributeValue attributeValue) throws GenstarException {
+		
+		if (attributeValue == null) { throw new GenstarException("'attributeValue' parameter can not be null"); }
+		
+		for (RangeValue value : valuesOnData) { if (value.equals(attributeValue)) { return value; } }
+		
+		if (attributeValue instanceof RangeValue) { 
+			for (RangeValue value : valuesOnData) { if (value.compareTo(attributeValue) == 0) { return value; } }
+			return null;
+		}
 		
 		UniqueValue uniqueValue = (UniqueValue) attributeValue;
 		if (attributeValue.getDataType().isNumericValue()) {

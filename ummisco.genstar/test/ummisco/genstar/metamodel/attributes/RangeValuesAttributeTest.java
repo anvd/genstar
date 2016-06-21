@@ -74,8 +74,7 @@ public class RangeValuesAttributeTest {
 		attr.addAll(null);
 	}
 	
-	/*
-	@Test public void testConstainsInstanceOfAttributeValue() throws GenstarException {
+	@Test public void testContainInstanceOfAttributeValue() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		RangeValuesAttribute attr = new RangeValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
@@ -84,12 +83,15 @@ public class RangeValuesAttributeTest {
 		list1.add("2");
 		AttributeValue rangeValue = new RangeValue(DataType.INTEGER, "1", "2");
 		
-		assertTrue(attr.containsInstanceOfAttributeValue(rangeValue) == false);
+		assertFalse(attr.containInstanceOfAttributeValue(rangeValue));
 		
 		attr.add(rangeValue);
-		assertTrue(attr.containsInstanceOfAttributeValue(rangeValue));
+		assertTrue(attr.containInstanceOfAttributeValue(rangeValue));
+		
+		AttributeValue rangeValue1 = new RangeValue(DataType.INTEGER, "1", "2");
+		assertFalse(attr.containInstanceOfAttributeValue(rangeValue1));
 	}
-	*/
+	
 
 	@Test public void testDefaultValueOnEntity() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);

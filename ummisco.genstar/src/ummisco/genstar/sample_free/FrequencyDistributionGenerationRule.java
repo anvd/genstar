@@ -389,7 +389,7 @@ public class FrequencyDistributionGenerationRule extends SampleFreeGenerationRul
 	@Override
 	public void generate(final Entity entity) throws GenstarException {
 		
-		// TODO if (order == 0) -> optimization to improve the exactness!!!
+		// TODO if (order == 0) -> optimization to improve the accuracy!!!
 		
 		if (entity == null) { throw new GenstarException("'entity' parameter can not be null"); }
 		
@@ -409,7 +409,6 @@ public class FrequencyDistributionGenerationRule extends SampleFreeGenerationRul
 		if (total == 0) {
 			for (int order=0; order < outputAttributes.size(); order++) {
 				outputAttribute = outputAttributes.get(order);
-//				entity.setAttributeValueOnData(outputAttribute.getNameOnData(), outputAttribute.getDefaultValue());
 				entity.setAttributeValueOnData(outputAttribute, outputAttribute.getDefaultValueOnData());
 			}
 			

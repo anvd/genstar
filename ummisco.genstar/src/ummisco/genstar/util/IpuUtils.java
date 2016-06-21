@@ -14,6 +14,9 @@ import ummisco.genstar.ipu.IpuGenerationRule;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.DataType;
+import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
+import ummisco.genstar.metamodel.attributes.UniqueValue;
 import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
 import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
@@ -225,39 +228,12 @@ public class IpuUtils {
 		// fill groupControlTotalsToBeBuilt
 		groupControlTotalsToBeBuilt.addAll(groupAvfs);
 		Collections.sort(groupControlTotalsToBeBuilt, new GenstarUtils.AttributeValuesFrequencyComparator(groupControlledAttributes));
-		/*
-		List<AttributeValuesFrequency> sortedGroupAvfs = new ArrayList<AttributeValuesFrequency>(groupAvfs);
-		Collections.sort(sortedGroupAvfs, new GenstarUtils.AttributeValuesFrequencyComparator(groupControlledAttributes));
-		for (AttributeValuesFrequency groupAvf : sortedGroupAvfs) {
-			List<String> groupControlTotal = new ArrayList<String>();
-			for (AbstractAttribute groupControlledAttr : groupControlledAttributes) {
-				groupControlTotal.add(groupControlledAttr.getNameOnData());
-				groupControlTotal.add(groupAvf.getAttributeValueOnData(groupControlledAttr).toCsvString());
-			}
-			
-			groupControlTotal.add(Integer.toString(groupAvf.getFrequency()));
-			groupControlTotalsToBeBuilt.add(groupControlTotal);
-		}
-		*/
-		
+
 		
 		// fill componentControlTotalsToBeBuilt
 		componentControlTotalsToBeBuilt.addAll(componentAvfs);
 		Collections.sort(componentControlTotalsToBeBuilt, new GenstarUtils.AttributeValuesFrequencyComparator(componentControlledAttributes));
-		/*
-		List<AttributeValuesFrequency> sortedComponentAvfs = new ArrayList<AttributeValuesFrequency>(componentAvfs);
-		Collections.sort(sortedComponentAvfs, new GenstarUtils.AttributeValuesFrequencyComparator(componentControlledAttributes));
-		for (AttributeValuesFrequency componentAvf : componentAvfs) {
-			List<String> componentControlTotal = new ArrayList<String>();
-			for (AbstractAttribute componentControlledAttr : componentControlledAttributes) {
-				componentControlTotal.add(componentControlledAttr.getNameOnData());
-				componentControlTotal.add(componentAvf.getAttributeValueOnData(componentControlledAttr).toCsvString());
-			}
-			
-			componentControlTotal.add(Integer.toString(componentAvf.getFrequency()));
-			componentControlTotalsToBeBuilt.add(componentControlTotal);
-		}
-		*/
+
 	}
 
 	
@@ -289,7 +265,7 @@ public class IpuUtils {
 	}
 	
 		
-	public static Map<AttributeValuesFrequency, List<Entity>> buildEntityCategories(final IPopulation population, final Set<AbstractAttribute> ipuControlledAttributes) throws GenstarException {
+	public static Map<AttributeValuesFrequency, List<Entity>> buildIpuEntityCategories(final IPopulation population, final Set<AbstractAttribute> ipuControlledAttributes) throws GenstarException {
 		Map<AttributeValuesFrequency, List<Entity>> entityCategories = new HashMap<AttributeValuesFrequency, List<Entity>>();
 		
 		// 0. parameters validations
@@ -342,17 +318,31 @@ public class IpuUtils {
 	}
 	
 	
-	// TODO does this method belong to this class?
-	public static IPopulation extractIpuPopulation(final IPopulation originalPopulation, final float percentage, final Set<AbstractAttribute> ipuControlledAttributes) throws GenstarException {
+	public static IPopulation extractIpuPopulation(final IPopulation originalPopulation, final float percentage, final Set<AbstractAttribute> ipuControlledAttributes,
+			final UniqueValuesAttributeWithRangeInput groupIdAttributeOnGroupEntity, final UniqueValuesAttributeWithRangeInput groupIdAttributeOnComponentEntity, final String componentPopulationName) throws GenstarException {
 		
 		// 0. parameters validation
 		if (originalPopulation == null) { throw new GenstarException("'originalPopulation' parameter can not be null"); }
 		if (percentage <= 0 || percentage > 100) { throw new GenstarException("value of 'percentage' parameter must be in (0, 100] range"); }
 		if (ipuControlledAttributes == null || ipuControlledAttributes.isEmpty()) { throw new GenstarException("'ipuControlledAttributes' parameter can neither be null nor empty"); }
 		
+		for (AbstractAttribute controlledAttr : ipuControlledAttributes) {
+			if (!originalPopulation.containAttribute(controlledAttr)) {
+				throw new GenstarException(controlledAttr.getNameOnData() + " is not a valid attribute of the population");
+			}
+		}
+		
+		if (groupIdAttributeOnGroupEntity == null || groupIdAttributeOnComponentEntity == null) {
+			throw new GenstarException("\'groupIdAttributeOnGroupEntity\' and \'groupIdAttributeOnComponentEntity\' can not be null");
+		}
+		
+		if (ipuControlledAttributes.contains(groupIdAttributeOnGroupEntity)) {
+			throw new GenstarException("\'groupIdAttributeOnGroupEntity\' can\'t be a controlled attribute");
+		}
+		
 	
 		// 1. Build entity categories: group entities into categories with respect to attribute value sets of IPU controlled totals
-		Map<AttributeValuesFrequency, List<Entity>> entityCategories = buildEntityCategories(originalPopulation, ipuControlledAttributes);
+		Map<AttributeValuesFrequency, List<Entity>> entityCategories = buildIpuEntityCategories(originalPopulation, ipuControlledAttributes);
 		
 		
 		// 2. Build sample population
@@ -361,10 +351,17 @@ public class IpuUtils {
 		extractedPopulation.addComponentReferences(originalPopulation.getGroupReferences());
 		
 		// 2.1. firstly, try to satisfy that each attributeValueSet has one selected entity in the extracted sample population
+		int recodedIdAttributeValue = groupIdAttributeOnGroupEntity.getMinValue().getIntValue(); // recoded ID attribute value begins with the minimal supported value of the ID attribute
 		for (List<Entity> eCategory : entityCategories.values()) {
 			int entityIndex = SharedInstances.RandomNumberGenerator.nextInt(eCategory.size());
+			
 			Entity selectedEntity = eCategory.get(entityIndex);
-			extractedPopulation.createEntity(selectedEntity);
+			Entity createdEntity = extractedPopulation.createEntity(selectedEntity);
+
+			// recode id attribute
+			GenstarUtils.recodeIdAttribute(createdEntity, groupIdAttributeOnGroupEntity, 
+					 groupIdAttributeOnComponentEntity, componentPopulationName, recodedIdAttributeValue);
+			recodedIdAttributeValue++;
 		}
 		
 		// 2.2. secondly, satisfy the "percentage" condition if possible
@@ -389,12 +386,44 @@ public class IpuUtils {
 				}
 				
 				Entity selectedEntity = entityCategories.get(selectedAvf).get(entityIndex);
-				extractedPopulation.createEntity(selectedEntity);
+				Entity createdEntity = extractedPopulation.createEntity(selectedEntity);
+
+				// recode id attribute
+				GenstarUtils.recodeIdAttribute(createdEntity, groupIdAttributeOnGroupEntity, 
+						 groupIdAttributeOnComponentEntity, componentPopulationName, recodedIdAttributeValue);
+				recodedIdAttributeValue++;
 			}
 		}
 		
 		return extractedPopulation;
 	}
+	
+	
+	// TODO remove
+	/*
+	private static void recodeIdAttribute(final Entity groupEntity, final AbstractAttribute groupIdAttributeOnGroupEntity, 
+			final AbstractAttribute groupIdAttributeOnComponentEntity, final String componentPopulationName, int recodedID) throws GenstarException {
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
+		AttributeValue recodedIdValue = new UniqueValue(DataType.INTEGER, Integer.toString(recodedID));
+		attributeValues.clear();
+		attributeValues.put(groupIdAttributeOnGroupEntity, recodedIdValue);
+		
+		groupEntity.setAttributeValuesOnEntity(attributeValues); // recode ID of group entity
+		
+		
+		// recode ID of component entities
+		IPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
+		if (componentPopulation != null) {
+			for (Entity componentEntity : componentPopulation.getEntities()) {
+				attributeValues.clear();
+				attributeValues.put(groupIdAttributeOnComponentEntity, recodedIdValue);
+				
+				componentEntity.setAttributeValuesOnEntity(attributeValues);
+			}
+		}
+	}
+	*/
 
 
 	public static void createIpuGenerationRule(final SampleBasedGenerator groupPopulationGenerator, final GenstarCsvFile groupSampleDataFile, 

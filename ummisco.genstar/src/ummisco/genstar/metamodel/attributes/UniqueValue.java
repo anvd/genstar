@@ -70,7 +70,6 @@ public class UniqueValue extends AttributeValue {
 				throw new IllegalArgumentException("Can not compare two instances of UniqueValue having different valueTypes : " + dataType.getName() + " v.s. " + otherValue.dataType.getName());
 			}
 			
-			// FIXME performance issue due to object creation!
 			Comparable thisComparableValue = dataType.getComparableValue(stringValue);
 			Comparable otherComparableValue = otherValue.dataType.getComparableValue(otherValue.stringValue);
 			return thisComparableValue.compareTo(otherComparableValue);

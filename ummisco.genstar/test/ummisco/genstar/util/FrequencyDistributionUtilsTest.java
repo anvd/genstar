@@ -1,18 +1,16 @@
 package ummisco.genstar.util;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 
 import org.junit.Assert;
@@ -36,7 +34,7 @@ import ummisco.genstar.sample_free.FrequencyDistributionGenerationRule;
 @RunWith(JMockit.class)
 public class FrequencyDistributionUtilsTest {
 
-	@Test public void testCreateFrequencyDistributionGenerationFromSampleDataOrPopulationFile() throws GenstarException {
+	@Test public void testCreateFrequencyDistributionGenerationRuleFromSampleDataOrPopulationFile() throws GenstarException {
 		// input: distributionFormatCSVFile & sampleDataCSVFile
 		// output: the newly created FrequencyDistributionGenerationRule
 		
@@ -229,5 +227,345 @@ public class FrequencyDistributionUtilsTest {
 			}
 		}
 	}
+	
+	
+	@Test public void testGenerateAndSaveFrequencyDistributions() throws GenstarException {
+		/*
+	public static List<String> generateAndSaveFrequencyDistributions(final SampleFreeGenerator generator, final GenstarCsvFile sampleDataOrPopulationFile, 
+			final List<GenstarCsvFile> distributionFormatCsvFiles, final List<String> resultDistributionCsvFilePaths) {
+		 */
+		
+		String basePath = "test_data/ummisco/genstar/util/FrequencyDistributionUtils/testGenerateAndSaveFrequencyDistributions/";
+		
+		SampleFreeGenerator generator = new SampleFreeGenerator("generator");
+		GenstarCsvFile attributesFile = new GenstarCsvFile(basePath + "attributes.csv", true);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 
+		String distribution1FilePath = basePath + "distributionFormat1.csv";
+		String distribution2FilePath = basePath + "distributionFormat2.csv";
+		
+		String resultDistribution1FilePath = basePath + "resultDistribution1.csv";
+		String resultDistribution2FilePath = basePath + "resultDistribution2.csv";
+		
+		File resultDistribution1File = new File(resultDistribution1FilePath);
+		if (resultDistribution1File.exists()) { resultDistribution1File.delete(); }
+		
+		File resultDistribution2File = new File(resultDistribution2FilePath);
+		if (resultDistribution2File.exists()) { resultDistribution2File.delete(); }
+		
+		
+		GenstarCsvFile distribution1CsvFile = new GenstarCsvFile(distribution1FilePath, true);
+		GenstarCsvFile distribution2CsvFile = new GenstarCsvFile(distribution2FilePath, true);
+		List<GenstarCsvFile> distributionFormatCsvFiles = new ArrayList<GenstarCsvFile>();
+		distributionFormatCsvFiles.add(distribution1CsvFile);
+		distributionFormatCsvFiles.add(distribution2CsvFile);
+		
+		
+		List<String> resultDistributionCsvFilePaths = new ArrayList<String>();
+		resultDistributionCsvFilePaths.add(resultDistribution1FilePath);
+		resultDistributionCsvFilePaths.add(resultDistribution2FilePath);
+		
+		
+		GenstarCsvFile sampleDataOrPopulationFile = new GenstarCsvFile(basePath + "sampleData.csv", true);
+		
+		List<String> results = FrequencyDistributionUtils.generateAndSaveFrequencyDistributions(generator, sampleDataOrPopulationFile, 
+				distributionFormatCsvFiles, resultDistributionCsvFilePaths);
+		assertTrue(results.size() == 2);
+		
+		File recreatedResultDistribution1File = new File(resultDistribution1FilePath);
+		assertTrue(recreatedResultDistribution1File.exists());
+		
+		File recreatedCesultDistribution2File = new File(resultDistribution2FilePath);
+		assertTrue(recreatedCesultDistribution2File.exists());
+	}
+
+	
+	@Test public void testGenerateAndSaveFrequencyDistribution() throws GenstarException {
+		/*
+	public static String generateAndSaveFrequencyDistribution(final SampleFreeGenerator generator, final GenstarCsvFile sampleDataOrPopulationFile, 
+			final GenstarCsvFile distributionFormatCsvFile, final String resultDistributionCsvFilePath) throws GenstarException {
+		 */
+		
+		String basePath = "test_data/ummisco/genstar/util/FrequencyDistributionUtils/testGenerateAndSaveFrequencyDistribution/";
+		
+		SampleFreeGenerator generator = new SampleFreeGenerator("generator");
+		GenstarCsvFile attributesFile = new GenstarCsvFile(basePath + "attributes.csv", true);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
+		
+		/*
+		 sampleData.csv
+		category,gender,age
+		C0,false,5
+		C0,true,5
+		C1,false,5
+		C1,true,5
+		C1,false,10
+		 */
+		GenstarCsvFile sampleDataOrPopulationFile = new GenstarCsvFile(basePath + "sampleData.csv", true);
+		
+		GenstarCsvFile distributionFormatCsvFile1 = new GenstarCsvFile(basePath + "distributionFormat1.csv", true);
+		
+		String resultDistributionCsvFilePath1 = basePath + "resultDistribution1.csv";
+		File resultFile1 = new File(resultDistributionCsvFilePath1);
+		if (resultFile1.exists()) { resultFile1.delete(); }
+		
+		File deletedResultFile1 = new File(resultDistributionCsvFilePath1);
+		assertFalse(deletedResultFile1.exists());
+		
+		FrequencyDistributionUtils.generateAndSaveFrequencyDistribution(generator, sampleDataOrPopulationFile, distributionFormatCsvFile1, resultDistributionCsvFilePath1);
+		
+		File recreatedResultFile1 = new File(resultDistributionCsvFilePath1);
+		assertTrue(recreatedResultFile1.exists());
+		
+		
+		/*
+		 distributionFormat1.csv
+		 	Category:Output,Age:Output
+		 */
+		GenstarCsvFile recreatedResultCsvFile1 = new GenstarCsvFile(resultDistributionCsvFilePath1, true);
+		assertTrue(recreatedResultCsvFile1.getColumns() == 3);
+		assertTrue(recreatedResultCsvFile1.getRows() == 5);
+		
+		/*
+		 resultDistribution1.csv
+		 	Category:Output,Age:Output,Frequency
+		 	C0,0:4,0
+		 	C0,5:17,2
+		 	C1,0:4,0
+		 	C1,5:17,3
+		 */
+		List<String> resultDistribution1Header = recreatedResultCsvFile1.getHeaders();
+		assertTrue(resultDistribution1Header.size() == 3);
+		assertTrue(resultDistribution1Header.get(0).equals("Category:Output"));
+		assertTrue(resultDistribution1Header.get(1).equals("Age:Output"));
+		assertTrue(resultDistribution1Header.get(2).equals("Frequency"));
+		
+		
+		FrequencyDistributionGenerationRule rule1 = FrequencyDistributionUtils.createFrequencyDistributionGenerationRuleFromRuleDataFile(generator, "rule 1", recreatedResultCsvFile1);
+		
+		AbstractAttribute categoryAttribute = generator.getAttributeByNameOnData("Category");
+		AbstractAttribute ageAttribute = generator.getAttributeByNameOnData("Age");
+		
+		AttributeValue c0Value = new UniqueValue(DataType.STRING, "C0"); 
+		AttributeValue c1Value = new UniqueValue(DataType.STRING, "C1");
+		
+		AttributeValue age_0_4 = new RangeValue(DataType.INTEGER, "0", "4");
+		AttributeValue age_5_17 = new RangeValue(DataType.INTEGER, "5", "17");
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues1 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues1.put(categoryAttribute, c0Value);
+		attributeValues1.put(ageAttribute, age_0_4);
+		
+		List<AttributeValuesFrequency> avfs1 = rule1.findAttributeValuesFrequencies(attributeValues1);
+		assertTrue(avfs1.size() == 1);
+		assertTrue(avfs1.get(0).getFrequency() == 0);
+
+		Map<AbstractAttribute, AttributeValue> attributeValues2 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues2.put(categoryAttribute, c0Value);
+		attributeValues2.put(ageAttribute, age_5_17);
+		
+		List<AttributeValuesFrequency> avfs2 = rule1.findAttributeValuesFrequencies(attributeValues2);
+		assertTrue(avfs2.size() == 1);
+		assertTrue(avfs2.get(0).getFrequency() == 2);
+		
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues3 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues3.put(categoryAttribute, c1Value);
+		attributeValues3.put(ageAttribute, age_0_4);
+		
+		List<AttributeValuesFrequency> avfs3 = rule1.findAttributeValuesFrequencies(attributeValues3);
+		assertTrue(avfs3.size() == 1);
+		assertTrue(avfs3.get(0).getFrequency() == 0);
+
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues4 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues4.put(categoryAttribute, c1Value);
+		attributeValues4.put(ageAttribute, age_5_17);
+		
+		List<AttributeValuesFrequency> avfs4 = rule1.findAttributeValuesFrequencies(attributeValues4);
+		assertTrue(avfs4.size() == 1);
+		assertTrue(avfs4.get(0).getFrequency() == 3);
+		
+		
+		/*
+		 distributionFormat2.csv
+		 	Category:Output,Gender:Output,Age:Output
+		 */
+		GenstarCsvFile distributionFormatCsvFile2 = new GenstarCsvFile(basePath + "distributionFormat2.csv", true);
+		
+		String resultDistributionCsvFilePath2 = basePath + "resultDistribution2.csv";
+		File resultFile2 = new File(resultDistributionCsvFilePath2);
+		if (resultFile2.exists()) { resultFile2.delete(); }
+		
+		File deletedResultFile2 = new File(resultDistributionCsvFilePath2);
+		assertFalse(deletedResultFile2.exists());
+		
+		FrequencyDistributionUtils.generateAndSaveFrequencyDistribution(generator, sampleDataOrPopulationFile, distributionFormatCsvFile2, resultDistributionCsvFilePath2);
+		
+		File recreatedResultFile2 = new File(resultDistributionCsvFilePath2);
+		assertTrue(recreatedResultFile2.exists());
+		 
+		/*
+		 sampleData.csv
+		category,gender,age
+		C0,false,5
+		C0,true,5
+		C1,false,5
+		C1,true,5
+		C1,false,10
+		 */
+		/*
+		 resultDistribution2.csv
+		 	Category:Output,Gender:Output,Age:Output,Frequency
+		 	C0,false,0:4,0
+		 	C0,false,5:17,1
+		 	C0,true,0:4,0
+		 	C0,true,5:17,1
+		 	C1,false,0:4,0
+		 	C1,false,5:17,2
+		 	C1,true,0:4,0
+		 	C1,true,5:17,1
+		 */
+		
+		GenstarCsvFile recreatedResultCsvFile2 = new GenstarCsvFile(resultDistributionCsvFilePath2, true);
+		assertTrue(recreatedResultCsvFile2.getColumns() == 4);
+		assertTrue(recreatedResultCsvFile2.getRows() == 9);
+		
+		FrequencyDistributionGenerationRule distributionRule2 = FrequencyDistributionUtils.createFrequencyDistributionGenerationRuleFromRuleDataFile(generator, "rule 2", recreatedResultCsvFile2);
+
+		AbstractAttribute genderAttribute = generator.getAttributeByNameOnData("Gender");
+		AttributeValue falseValue = new UniqueValue(DataType.BOOL, "false");
+		AttributeValue trueValue = new UniqueValue(DataType.BOOL, "true");
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues5 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues5.put(categoryAttribute, c0Value);
+		attributeValues5.put(ageAttribute, age_0_4);
+		attributeValues5.put(genderAttribute, falseValue);
+		
+		List<AttributeValuesFrequency> avfs5 = distributionRule2.findAttributeValuesFrequencies(attributeValues5);
+		assertTrue(avfs5.size() == 1);
+		assertTrue(avfs5.get(0).getFrequency() == 0);
+		
+
+		Map<AbstractAttribute, AttributeValue> attributeValues6 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues6.put(categoryAttribute, c1Value);
+		attributeValues6.put(ageAttribute, age_5_17);
+		attributeValues6.put(genderAttribute, trueValue);
+
+		List<AttributeValuesFrequency> avfs6 = distributionRule2.findAttributeValuesFrequencies(attributeValues6);
+		assertTrue(avfs6.size() == 1);
+		assertTrue(avfs6.get(0).getFrequency() == 1);
+		 
+	}
+	
+	
+	@Test public void testCreateFrequencyDistributionGenerationRuleFromRuleDataFile() throws GenstarException {
+		
+		/*
+	public static FrequencyDistributionGenerationRule createFrequencyDistributionGenerationRuleFromRuleDataFile(final SampleFreeGenerator generator, final String ruleName, final GenstarCsvFile ruleFile) throws GenstarException {
+		 */
+		
+		String basePath = "test_data/ummisco/genstar/util/FrequencyDistributionUtils/testCreateFrequencyDistributionGenerationRuleFromRuleDataFile/";
+		
+		SampleFreeGenerator generator = new SampleFreeGenerator("generator");
+		GenstarCsvFile attributesFile = new GenstarCsvFile(basePath + "attributes.csv", true);
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
+		
+		String ruleName1 = "rule 1";
+		
+		/*
+		 ruleData1.csv
+		 	Category:Output,Age:Output,Frequency
+			C0,0:4,0
+			C0,5:17,2
+			C1,0:4,0
+			C1,5:17,3
+		 */
+		GenstarCsvFile ruleFile1 = new GenstarCsvFile(basePath + "ruleData1.csv", true);
+		FrequencyDistributionGenerationRule distributionRule1 = FrequencyDistributionUtils.createFrequencyDistributionGenerationRuleFromRuleDataFile(generator, ruleName1, ruleFile1);
+		
+		AbstractAttribute categoryAttribute = generator.getAttributeByNameOnData("Category");
+		AbstractAttribute ageAttribute = generator.getAttributeByNameOnData("Age");
+		
+		AttributeValue c0Value = new UniqueValue(DataType.STRING, "C0"); 
+		AttributeValue c1Value = new UniqueValue(DataType.STRING, "C1");
+		
+		AttributeValue age_0_4 = new RangeValue(DataType.INTEGER, "0", "4");
+		AttributeValue age_5_17 = new RangeValue(DataType.INTEGER, "5", "17");
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues1 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues1.put(categoryAttribute, c0Value);
+		attributeValues1.put(ageAttribute, age_0_4);
+		
+		List<AttributeValuesFrequency> avfs1 = distributionRule1.findAttributeValuesFrequencies(attributeValues1);
+		assertTrue(avfs1.size() == 1);
+		assertTrue(avfs1.get(0).getFrequency() == 0);
+		
+
+		Map<AbstractAttribute, AttributeValue> attributeValues2 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues2.put(categoryAttribute, c0Value);
+		attributeValues2.put(ageAttribute, age_5_17);
+		
+		List<AttributeValuesFrequency> avfs2 = distributionRule1.findAttributeValuesFrequencies(attributeValues2);
+		assertTrue(avfs2.size() == 1);
+		assertTrue(avfs2.get(0).getFrequency() == 2);
+		
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues3 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues3.put(categoryAttribute, c1Value);
+		attributeValues3.put(ageAttribute, age_0_4);
+		
+		List<AttributeValuesFrequency> avfs3 = distributionRule1.findAttributeValuesFrequencies(attributeValues3);
+		assertTrue(avfs3.size() == 1);
+		assertTrue(avfs3.get(0).getFrequency() == 0);
+
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues4 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues4.put(categoryAttribute, c1Value);
+		attributeValues4.put(ageAttribute, age_5_17);
+		
+		List<AttributeValuesFrequency> avfs4 = distributionRule1.findAttributeValuesFrequencies(attributeValues4);
+		assertTrue(avfs4.size() == 1);
+		assertTrue(avfs4.get(0).getFrequency() == 3);
+		
+
+		/*
+		 ruleData2.csv
+		 	Category:Output,Age:Output,Gender:Output,Frequency
+			C0,0:4,false,1
+			C0,0:4,true,2
+			C0,5:17,false,3
+			C0,5:17,true,4
+			C1,0:4,false,5
+			C1,0:4,true,6
+			C1,5:17,false,7
+			C1,5:17,true,8
+		 */
+		GenstarCsvFile ruleFile2 = new GenstarCsvFile(basePath + "ruleData2.csv", true);
+		FrequencyDistributionGenerationRule distributionRule2 = FrequencyDistributionUtils.createFrequencyDistributionGenerationRuleFromRuleDataFile(generator, "rule 2", ruleFile2);
+		assertTrue(distributionRule2.getAttributeValuesFrequencies().size() == 8);
+		
+		AbstractAttribute genderAttribute = generator.getAttributeByNameOnData("Gender");
+		AttributeValue falseValue = new UniqueValue(DataType.BOOL, "false");
+		AttributeValue trueValue = new UniqueValue(DataType.BOOL, "true");
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues5 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues5.put(categoryAttribute, c0Value);
+		attributeValues5.put(ageAttribute, age_0_4);
+		attributeValues5.put(genderAttribute, falseValue);
+		
+		List<AttributeValuesFrequency> avfs5 = distributionRule2.findAttributeValuesFrequencies(attributeValues5);
+		assertTrue(avfs5.size() == 1);
+		assertTrue(avfs5.get(0).getFrequency() == 1);
+		
+
+		Map<AbstractAttribute, AttributeValue> attributeValues6 = new HashMap<AbstractAttribute, AttributeValue>();
+		attributeValues6.put(categoryAttribute, c1Value);
+		attributeValues6.put(ageAttribute, age_5_17);
+		attributeValues6.put(genderAttribute, trueValue);
+
+		List<AttributeValuesFrequency> avfs6 = distributionRule2.findAttributeValuesFrequencies(attributeValues6);
+		assertTrue(avfs6.size() == 1);
+		assertTrue(avfs6.get(0).getFrequency() == 8);
+	}
 }

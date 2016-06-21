@@ -30,7 +30,7 @@ global {
 					+ slash + result_control_totals_base_file + nb_attrs + point_csv;
 			
 			write 'Start generating control totals for ' + nb_attrs + ' controlled attributes';
-			file control_totals_file <- control_totals(control_totals_configuration_file, control_totals_file_path);
+			file control_totals_file <- ipf_control_totals(control_totals_configuration_file, control_totals_file_path);
 			write 'Finished generating control totals for ' + nb_attrs + ' controlled attributes. Wrote result to ' + control_totals_file_path;
 		}
 		

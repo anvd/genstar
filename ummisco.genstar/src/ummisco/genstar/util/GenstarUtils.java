@@ -102,9 +102,9 @@ public class GenstarUtils {
 				
 				String minValue = minMaxValueToken.nextToken().trim();
 				String maxValue = minMaxValueToken.nextToken().trim();
-				inferringValue = inferringAttribute.getInstanceOfAttributeValue(new RangeValue(inferringAttribute.getDataType(), minValue, maxValue));
+				inferringValue = inferringAttribute.getMatchingAttributeValueOnData(new RangeValue(inferringAttribute.getDataType(), minValue, maxValue));
 			} else {
-				inferringValue = inferringAttribute.getInstanceOfAttributeValue(new UniqueValue(inferringAttribute.getDataType(), (String)inferenceInfo.get(0)));
+				inferringValue = inferringAttribute.getMatchingAttributeValueOnData(new UniqueValue(inferringAttribute.getDataType(), (String)inferenceInfo.get(0)));
 			}
 			
 			if (inferredAttribute instanceof RangeValuesAttribute) {
@@ -113,9 +113,9 @@ public class GenstarUtils {
 				
 				String minValue = minMaxValueToken.nextToken().trim();
 				String maxValue = minMaxValueToken.nextToken().trim();
-				inferredValue = inferredAttribute.getInstanceOfAttributeValue(new RangeValue(inferredAttribute.getDataType(), minValue, maxValue));
+				inferredValue = inferredAttribute.getMatchingAttributeValueOnData(new RangeValue(inferredAttribute.getDataType(), minValue, maxValue));
 			} else {
-				inferredValue = inferredAttribute.getInstanceOfAttributeValue(new UniqueValue(inferredAttribute.getDataType(), (String)inferenceInfo.get(1)));
+				inferredValue = inferredAttribute.getMatchingAttributeValueOnData(new UniqueValue(inferredAttribute.getDataType(), (String)inferenceInfo.get(1)));
 			}
 			
 			if (inferringValue == null || inferredValue == null) { throw new GenstarException("Invalid Attribute Inference Generation Rule file content: Some attribute values are not contained in the inferring attribute or inferred attribute (file: " + ruleFile.getPath() + ")"); }
@@ -942,6 +942,10 @@ public class GenstarUtils {
 	
 	
 	public static Map<AbstractAttribute, AttributeValue> buildAttributeValueMap(final Set<AbstractAttribute> attributes, final List<AttributeValue> values) throws GenstarException {
+		
+		if (attributes == null || values == null) { throw new GenstarException("'attributes' and/or 'values' parameters can not be null"); }
+		if (attributes.size() != values.size()) { throw new GenstarException("'attributes' and 'values' must have the same size"); }
+		
 		Map<AbstractAttribute, AttributeValue> retVal = new HashMap<AbstractAttribute, AttributeValue>();
 		
 		List<AbstractAttribute> copyAttributes = new ArrayList<AbstractAttribute>();
@@ -950,8 +954,7 @@ public class GenstarUtils {
 		for (AttributeValue v : values) {
 			concernedAttr = null;
 			for (AbstractAttribute attr : copyAttributes) {
-//				if (attr.containsInstanceOfAttributeValue(v)) { 
-				if (attr.getInstanceOfAttributeValue(v) != null) { 
+				if (attr.containInstanceOfAttributeValue(v)) { 
 					retVal.put(attr, v); 
 					concernedAttr = attr;
 					break;
@@ -959,6 +962,8 @@ public class GenstarUtils {
 			}
 			copyAttributes.remove(concernedAttr);
 		}
+		
+		if (!copyAttributes.isEmpty()) { throw new GenstarException("One or several attributes don't have corresponding value(s)"); }
 		
 		return retVal;
 	}
@@ -1018,5 +1023,34 @@ public class GenstarUtils {
 			}
 		}
 	}
+	
+	
+	public static void recodeIdAttribute(final Entity groupEntity, final AbstractAttribute groupIdAttributeOnGroupEntity, 
+			final AbstractAttribute groupIdAttributeOnComponentEntity, final String componentPopulationName, int recodedID) throws GenstarException {
+		
+		// TODO parameters validation
+		
+		Map<AbstractAttribute, AttributeValue> attributeValues = new HashMap<AbstractAttribute, AttributeValue>();
+		AttributeValue recodedIdValue = new UniqueValue(DataType.INTEGER, Integer.toString(recodedID));
+		attributeValues.clear();
+		attributeValues.put(groupIdAttributeOnGroupEntity, recodedIdValue);
+		
+		groupEntity.setAttributeValuesOnEntity(attributeValues); // recode ID of group entity
+		
+		
+		// recode ID of component entities
+		if (groupIdAttributeOnComponentEntity != null && componentPopulationName != null) {
+			IPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
+			if (componentPopulation != null) {
+				for (Entity componentEntity : componentPopulation.getEntities()) {
+					attributeValues.clear();
+					attributeValues.put(groupIdAttributeOnComponentEntity, recodedIdValue);
+					
+					componentEntity.setAttributeValuesOnEntity(attributeValues);
+				}
+			}
+		}
+	}
+	
 	
 }

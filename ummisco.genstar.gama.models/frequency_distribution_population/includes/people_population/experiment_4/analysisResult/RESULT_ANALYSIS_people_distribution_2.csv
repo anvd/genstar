@@ -1,0 +1,5 @@
+Gender:Input,Work:Output,Frequency,Generated Frequency
+true,teacher,700,696
+true,architect,1800,1795
+false,teacher,2000,1992
+false,architect,500,517

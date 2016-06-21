@@ -40,10 +40,6 @@ public class EntityAttributeValueTest {
 		assertTrue(entitySexValue.getAttributeValueOnEntity().equals(maleValueOrigin));
 	}
 	
-	@Test public void testCreateEntityAttributeValueWithInvalidParameters() throws GenstarException {
-		fail("Not yet implemented");
-	}
-	
 	@Test(expected = GenstarException.class) public void testCreateEntityAttributeValueWithInvalidAttributeValueOnData() throws GenstarException {
 		String basePath = "test_data/ummisco/genstar/metamodel/attributes/EntityAttributeValue/testCreateEntityAttributeValueWithInvalidAttributeValueOnData/";
 		

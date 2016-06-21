@@ -1,6 +1,8 @@
 package ummisco.genstar.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +66,7 @@ public class FrequencyDistributionUtils {
 	}
 	
 	
-	public static FrequencyDistributionGenerationRule createFrequencyDistributionGenerationRule(final SampleFreeGenerator generator, final String ruleName, final GenstarCsvFile ruleFile) throws GenstarException {
+	public static FrequencyDistributionGenerationRule createFrequencyDistributionGenerationRuleFromRuleDataFile(final SampleFreeGenerator generator, final String ruleName, final GenstarCsvFile ruleFile) throws GenstarException {
 		
 		List<List<String>> fileContent = ruleFile.getContent();
 		if ( fileContent == null || fileContent.isEmpty() ) { throw new GenstarException("Frequency Distribution Generation Rule file is empty (file: " + ruleFile.getPath() + ")"); }
@@ -82,7 +84,6 @@ public class FrequencyDistributionUtils {
 		
 		
 		// 3. Parse the frequency distribution file (row by row) and set frequencies
-//		parseFrequencyDistributionFileContentAndSetFrequencies(generationRule, ruleAttributes, ruleFile);
 		for (List<String> ruleFileRow : ruleFile.getContent()) { 
 			Map<AbstractAttribute, AttributeValue> rowAttributeValues = parseFrequencyDistributionFileRow(ruleAttributes, ruleFileRow);
 			int frequency = Integer.parseInt(ruleFileRow.get(ruleFileRow.size() - 1));
@@ -262,5 +263,84 @@ public class FrequencyDistributionUtils {
 		}
 		 
 		return generationRule;
+	}
+	
+	
+	public static List<String> generateAndSaveFrequencyDistributions(final SampleFreeGenerator generator, final GenstarCsvFile sampleDataOrPopulationFile, 
+			final List<GenstarCsvFile> distributionFormatCsvFiles, final List<String> resultDistributionCsvFilePaths) throws GenstarException {
+		
+		// TODO parameters validation
+		
+		
+		List<String> frequencyDistributionFilePaths = new ArrayList<String>();
+		for (int index=0; index<distributionFormatCsvFiles.size(); index++) {
+			frequencyDistributionFilePaths.add(FrequencyDistributionUtils.generateAndSaveFrequencyDistribution(generator, sampleDataOrPopulationFile, 
+					distributionFormatCsvFiles.get(index), resultDistributionCsvFilePaths.get(index)));
+		}
+		
+		
+		return frequencyDistributionFilePaths;
+	}
+
+
+	public static String generateAndSaveFrequencyDistribution(final SampleFreeGenerator generator, final GenstarCsvFile sampleDataOrPopulationFile, 
+			final GenstarCsvFile distributionFormatCsvFile, final String resultDistributionCsvFilePath) throws GenstarException {
+		
+		// 1. create a frequency generation rule from the sample/population data then write the generation rule to file.
+		FrequencyDistributionGenerationRule fdGenerationRule = FrequencyDistributionUtils.createFrequencyDistributionGenerationRuleFromSampleDataOrPopulationFile(generator, distributionFormatCsvFile, sampleDataOrPopulationFile);
+		
+
+		// 2. initialize the distribution format file and parse it
+		List<String> distributionFileHeader = distributionFormatCsvFile.getHeaders();
+		List<String> attributeNamesOnDataFromLeftToRight = new ArrayList<String>();
+		if (distributionFileHeader.size() < 1) { throw new GenstarException("First line of distribution format file must contain at least 2 elements. File: " + distributionFormatCsvFile.getPath() + "."); }
+		for (int index=0; index < distributionFileHeader.size(); index++) {
+			String attribute = distributionFileHeader.get(index);
+			StringTokenizer t = new StringTokenizer(attribute, CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE.ATTRIBUTE_NAME_TYPE_DELIMITER);
+			if (t.countTokens() != 2) { throw new GenstarException("Element must have format attribute_name:Input or attribute_name:Output. File: " + distributionFormatCsvFile.getPath() + "."); }
+			
+			String attributeNameOnData = t.nextToken();
+			if (generator.getAttributeByNameOnData(attributeNameOnData) == null) { throw new GenstarException("Attribute '" + attributeNameOnData + "' is not defined. File: " + distributionFormatCsvFile.getPath() + "."); }
+			attributeNamesOnDataFromLeftToRight.add(attributeNameOnData);
+			
+			String attributeType = t.nextToken();
+			if (!attributeType.equals(CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE.INPUT_ATTRIBUTE) && !attributeType.equals(CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_GENERATION_RULE.OUTPUT_ATTRIBUTE)) {
+				throw new GenstarException("Attribute " + attributeNameOnData + " must either be Input or Output. File: " + distributionFormatCsvFile.getPath() + ".");
+			}
+		}
+
+		List<List<String>> resultDistributionFileContent = new ArrayList<List<String>>();
+		
+		// write the header
+		String[] generationRuleAttributeNamesArray = new String[distributionFileHeader.size() + 1];
+		distributionFileHeader.toArray(generationRuleAttributeNamesArray);
+		generationRuleAttributeNamesArray[generationRuleAttributeNamesArray.length - 1] = "Frequency";
+		resultDistributionFileContent.add(Arrays.asList(generationRuleAttributeNamesArray));
+		
+		
+		List<AbstractAttribute> generationRuleAttributes = new ArrayList<AbstractAttribute>();
+		for (String a : attributeNamesOnDataFromLeftToRight) { generationRuleAttributes.add(generator.getAttributeByNameOnData(a)); }
+		
+		// sort the attributeValueFrequencies
+		List<AttributeValuesFrequency> sortedAttributeValueFrequencies = new ArrayList<AttributeValuesFrequency>(fdGenerationRule.getAttributeValuesFrequencies());
+		Collections.sort(sortedAttributeValueFrequencies, new GenstarUtils.AttributeValuesFrequencyComparator(generationRuleAttributes));
+		
+		
+		for (AttributeValuesFrequency avf : sortedAttributeValueFrequencies) {
+			List<String> row = new ArrayList<String>();
+
+			// build the string representation of each set of attribute values
+			for (int i=0; i<generationRuleAttributes.size(); i++) {
+				AttributeValue av = avf.getAttributeValueOnData(generationRuleAttributes.get(i));
+				row.add(av.toCsvString());
+			}
+			row.add(Integer.toString(avf.getFrequency()));
+			
+			resultDistributionFileContent.add(row);
+		}
+		
+		// save the CSV file
+		GenstarUtils.writeStringContentToCsvFile(resultDistributionFileContent, resultDistributionCsvFilePath);		
+		return resultDistributionCsvFilePath;
 	}
 }

@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
 import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
 import ummisco.genstar.metamodel.population.Entity;
 import ummisco.genstar.metamodel.population.IPopulation;
@@ -107,10 +108,29 @@ public class IpuTest {
 		ipuControlledAttributes.add(householdIncomeAttr);
 		ipuControlledAttributes.add(householdTypeAttr);
 		 
+		/*
+		String groupIdAttributeNameOnGroupEntity = "Household ID";
+		String groupIdAttributeNameOnComponentEntity = "Household ID";
+		 */
+		UniqueValuesAttributeWithRangeInput groupIdAttributeOnGroupEntity = (UniqueValuesAttributeWithRangeInput)generatedCompoundPopulation.getAttributeByNameOnData(groupIdAttributeNameOnGroupEntity);
+		UniqueValuesAttributeWithRangeInput groupIdAttributeOnComponentEntity = null;
+		for (Entity groupEntity : generatedCompoundPopulation.getEntities()) {
+			IPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
+			if (componentPopulation != null) {
+				groupIdAttributeOnComponentEntity = (UniqueValuesAttributeWithRangeInput)componentPopulation.getAttributeByNameOnData(groupIdAttributeNameOnComponentEntity);
+				break;
+			}
+		}
 		
+		
+		
+		/*
+	public static IPopulation extractIpuPopulation(final IPopulation originalPopulation, final float percentage, final Set<AbstractAttribute> ipuControlledAttributes,
+			final UniqueValuesAttributeWithRangeInput groupIdAttributeOnGroupEntity, final UniqueValuesAttributeWithRangeInput groupIdAttributeOnComponentEntity, final String componentPopulationName) throws GenstarException {
+		 */
 		// extract 1%
 		float percentage = 1f;
-		IPopulation extractedPopulation1 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation1 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, componentPopulationName);
 
 		final String groupPopulationOutputFile1 = based_extracted_populations_folder + "1_percent/extracted_group_population_1_percent.csv";
 		final String componentPopulationOutputFile1 = based_extracted_populations_folder + "1_percent/extracted_component_population_1_percent.csv";
@@ -123,7 +143,7 @@ public class IpuTest {
 		
 		// extract 5%
 		percentage = 5;
-		IPopulation extractedPopulation2 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation2 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, componentPopulationName);
 		
 		final String groupPopulationOutputFile2 = based_extracted_populations_folder + "5_percent/extracted_group_population_5_percent.csv";
 		final String componentPopulationOutputFile2 = based_extracted_populations_folder + "5_percent/extracted_component_population_5_percent.csv";
@@ -136,7 +156,7 @@ public class IpuTest {
 		
 		// extract 10%
 		percentage = 10;
-		IPopulation extractedPopulation3 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation3 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, componentPopulationName);
 		
 		final String groupPopulationOutputFile3 = based_extracted_populations_folder + "10_percent/extracted_group_population_10_percent.csv";
 		final String componentPopulationOutputFile3 = based_extracted_populations_folder + "10_percent/extracted_component_population_10_percent.csv";
@@ -149,7 +169,7 @@ public class IpuTest {
 		
 		// extract 20%
 		percentage = 20;
-		IPopulation extractedPopulation4 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation4 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, componentPopulationName);
 		
 		final String groupPopulationOutputFile4 = based_extracted_populations_folder + "20_percent/extracted_group_population_20_percent.csv";
 		final String componentPopulationOutputFile4 = based_extracted_populations_folder + "20_percent/extracted_component_population_20_percent.csv";
@@ -163,7 +183,7 @@ public class IpuTest {
 		
 		// extract 30%
 		percentage = 30;
-		IPopulation extractedPopulation5 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation5 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, componentPopulationName);
 		
 		final String groupPopulationOutputFile5 = based_extracted_populations_folder + "30_percent/extracted_group_population_30_percent.csv";
 		final String componentPopulationOutputFile5 = based_extracted_populations_folder + "30_percent/extracted_component_population_30_percent.csv";

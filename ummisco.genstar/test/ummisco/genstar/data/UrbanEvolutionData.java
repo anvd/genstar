@@ -110,8 +110,8 @@ public class UrbanEvolutionData {
 		Map<AttributeValue, AttributeValue> rule2InferenceData = new HashMap<AttributeValue, AttributeValue>();
 		AttributeValue inferringValue, inferredValue;
 		for (int i=0; i<building_color_values.length; i++) {
-			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i]));
-			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, building_color_values[i]));
+			inferringValue = buildingTypeAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.STRING, build_type_values[i]));
+			inferredValue = buildingColorAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.STRING, building_color_values[i]));
 			
 			if (inferringValue == null || inferredValue == null) {
 				throw new GenstarException("Some attribute values are not contained in the inferring attribute or inferred attribute");
@@ -129,8 +129,8 @@ public class UrbanEvolutionData {
 		Map<AttributeValue, AttributeValue> rule3InferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (int i=0; i<building_size_values.length; i++) {
 			
-			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i]));
-			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.INTEGER, Integer.toString(building_size_values[i])));
+			inferringValue = buildingTypeAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.STRING, build_type_values[i]));
+			inferredValue = buildingSizeAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.INTEGER, Integer.toString(building_size_values[i])));
 			
 			if (inferringValue == null || inferredValue == null) {
 				throw new GenstarException("Some attribute values are not contained in the inferring attribute or inferred attribute");
@@ -147,8 +147,8 @@ public class UrbanEvolutionData {
 		// set inference data
 		Map<AttributeValue, AttributeValue> rule4InferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (int i=0; i<building_height_values.length; i++) {
-			inferringValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, build_type_values[i]));
-			inferredValue = buildingTypeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.FLOAT, Float.toString(building_height_values[i])));
+			inferringValue = buildingTypeAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.STRING, build_type_values[i]));
+			inferredValue = buildingHeightAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.FLOAT, Float.toString(building_height_values[i])));
 
 			if (inferringValue == null || inferredValue == null) {
 				throw new GenstarException("Some attribute values are not contained in the inferring attribute or inferred attribute");

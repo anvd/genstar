@@ -137,9 +137,9 @@ public abstract class AbstractAttribute {
 
 	public abstract void clear();
 	
-	public abstract AttributeValue getInstanceOfAttributeValue(final AttributeValue value);
+	public abstract boolean containInstanceOfAttributeValue(final AttributeValue value);
 	
 	public abstract AttributeValue getMatchingAttributeValueOnData(final List<String> stringRepresentationOfValue) throws GenstarException;
 	
-	public abstract AttributeValue getMatchingAttributeValueOnData(final AttributeValue attributeValue); // throws GenstarException;
+	public abstract AttributeValue getMatchingAttributeValueOnData(final AttributeValue attributeValue) throws GenstarException;
 }

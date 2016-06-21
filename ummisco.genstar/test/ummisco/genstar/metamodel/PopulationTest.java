@@ -491,22 +491,6 @@ public class PopulationTest {
 		for (AbstractAttribute attr : generator.getAttributes()) { assertTrue(population.containAttribute(attr)); }
 	}
 	
-	@Test public void testIsIdValueAlreadyInUsed() throws GenstarException {
-		fail("not yet implemented");
-	}
-	
-	@Test public void testNextIdValue() throws GenstarException {
-		fail("not yet implemented");
-	}
-	
-	@Test public void testGetIdentityAttribute() throws GenstarException {
-		fail("not yet implemented");
-	}
-	
-	@Test public void testGetIdentityAttributeWhenIdentityAttributeChanged() throws GenstarException {
-		fail("not yet implemented");
-	}
-	
 	@Test public void testIsCompatible() throws GenstarException {
 		fail("not yet implemented");
 	}

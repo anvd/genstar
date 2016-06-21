@@ -46,7 +46,7 @@ public final class CSV_FILE_FORMATS {
 		//		Name, File, Type
 		public static final String HEADER_STR = "Name,File,Rule Type";
 		public static final int NB_OF_COLS = 3;
-		public static String[] HEADERS = new String[NB_OF_COLS];
+		public static final String[] HEADERS = new String[NB_OF_COLS];
 		static {
 			HEADERS[0] = "Name";
 			HEADERS[1] = "File";
@@ -64,5 +64,19 @@ public final class CSV_FILE_FORMATS {
 		public static final String INPUT_ATTRIBUTE = "Input";
 		public static final String OUTPUT_ATTRIBUTE = "Output";
 		public static final String FREQUENCY = "Frequency";
+	}
+	
+	
+	public static final class FREQUENCY_DISTRIBUTION_FORMATS_LIST {
+		
+		// Header
+		//		Format File,Output File
+		public static final String HEADER_STR = "Format File,Output File";
+		public static final int NB_OF_COLS = 2;
+		public static final String[] HEADERS = new String[NB_OF_COLS];
+		static {
+			HEADERS[0] = "Format File";
+			HEADERS[1] = "Output File";
+		}
 	}
 }

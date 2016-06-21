@@ -1,7 +1,8 @@
 /**
  *  extract_ipu_population_example
  *  Author: voducan
- *  Description: 
+ *  Description: This is an example of using the "extract_ipu_population" operator to extract a sample from a population.
+ * 				The extracted sample can then be used as input sample of the IPU algorithm (i.e., "ipu_population" operator)
  */
 
 model extract_ipu_population_example
@@ -62,9 +63,9 @@ global {
 	}
 	
 	
-	int get_percentage {
+	float get_percentage {
 		if (extracted_population_properties = '../includes/ExtractedIpuPopulationProperties_ZeroPointOnePercent.properties') {
-			return 0;
+			return 0.1;
 		} else if (extracted_population_properties = '../includes/ExtractedIpuPopulationProperties_TenPercents.properties') {
 			return 10;
 		} else if (extracted_population_properties = '../includes/ExtractedIpuPopulationProperties_ThirtyPercents.properties') {

@@ -53,9 +53,8 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 		if (!(value.getClass().equals(valueClassOnData))) { throw new GenstarException("value must be an instance of " + valueClassOnData.getName()); }
 		if (!this.dataType.equals(value.dataType)) { throw new GenstarException("Incompatible valueType"); }
 		
-		if (this.getInstanceOfAttributeValue(value) != null) { return false; }
-		
-		// FIXME containsValue
+		if (this.containInstanceOfAttributeValue(value)) { return false; }
+		if (this.getMatchingAttributeValueOnData(value) != null) { return false; }
 		
 		valuesOnData.add((UniqueValue)value);
 
@@ -114,12 +113,14 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 	}
 
 	@Override
-	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {
-		if (valuesOnData.contains(value)) { return value; }
+	public boolean containInstanceOfAttributeValue(final AttributeValue value) {
+//		if (!(value.getDataType().equals(this.dataType))) { return null; }
 		
-		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return v; }
+		return valuesOnData.contains(value); // { return true; }
 		
-		return null;
+//		for (AttributeValue v : valuesOnData) { if (v.compareTo(value) == 0) return v; }
+		
+//		return null;
 	}
 	
 
@@ -131,11 +132,26 @@ public class UniqueValuesAttribute extends AbstractAttribute {
 //			if (stringValue.size() == 1) { return new UniqueValue(dataType, stringValue.get(0)); }
 //		}
 		
-		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringRepresentationOfValue.get(0)));
+		if (stringRepresentationOfValue.size() == 1) {
+			UniqueValue uniqueValue = new UniqueValue(this.dataType, stringRepresentationOfValue.get(0));
+			for (UniqueValue value : valuesOnData) { if (value.compareTo(uniqueValue) == 0) { return value; } }
+			return null;
+		}
+		
+		RangeValue rangeValue = new RangeValue(dataType, stringRepresentationOfValue.get(0), stringRepresentationOfValue.get(1));
+		for (UniqueValue value : valuesOnData) { if (rangeValue.cover(value)) { return value; } }
+		
+		return null;
 	}
 	
-	@Override public AttributeValue getMatchingAttributeValueOnData(final AttributeValue attributeValue) { // throws GenstarException {
-		if (attributeValue instanceof UniqueValue) { return this.getInstanceOfAttributeValue(attributeValue); }
+	@Override public AttributeValue getMatchingAttributeValueOnData(final AttributeValue attributeValue) throws GenstarException {
+		
+		if (attributeValue == null) { throw new GenstarException("'attributeValue' parameter can not be null"); }
+		
+		if (attributeValue instanceof UniqueValue) { 
+			for (UniqueValue value : valuesOnData) { if (value.compareTo(attributeValue) == 0) { return value; } }
+			return null;
+		}
 		
 		RangeValue rangeValue = (RangeValue) attributeValue;
 		if (rangeValue.getDataType().isNumericValue() && this.dataType.isNumericValue()) {

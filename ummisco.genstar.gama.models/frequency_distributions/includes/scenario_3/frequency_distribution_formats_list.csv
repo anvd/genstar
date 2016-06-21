@@ -1,0 +1,4 @@
+Format File,Output File
+../includes/scenario_3/distributionFormat1.csv,../includes/scenario_3/resultDistribution1.csv
+../includes/scenario_3/distributionFormat2.csv,../includes/scenario_3/resultDistribution2.csv
+../includes/scenario_3/distributionFormat3.csv,../includes/scenario_3/resultDistribution3.csv

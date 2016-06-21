@@ -705,5 +705,73 @@ public class GamaGenstarUtilsTest {
 		outputFiles = outputFolder.listFiles();
 		assertTrue(outputFiles.length == 2);
 	}
+	
+	
+	@Test public void testGenerateFrequencyDistributionsFromSampleDataOrPopulationFile(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
+		
+		/*
+	static List<String> generateFrequencyDistributionsFromSampleDataOrPopulationFile(final IScope scope, final Properties frequencyDistributionsProperties) throws GenstarException {
+		 */
+		
+		String basePath = "test_data/ummisco/genstar/gama/GamaGenstarUtilsTest/testGenerateFrequencyDistributionsFromSampleDataOrPopulationFile/";
+		
+		String propertiesFilePath = basePath + "frequency_distributions.properties";
+		Properties frequencyDistributionsProperties = null;
+		File propertiesFile = new File(propertiesFilePath);
+		try {
+			FileInputStream propertyInputStream = new FileInputStream(propertiesFile);
+			frequencyDistributionsProperties = new Properties();
+			frequencyDistributionsProperties.load(propertyInputStream);
+		} catch (FileNotFoundException e) {
+			throw new GenstarException(e);
+		} catch (IOException e) {
+			throw new GenstarException(e);
+		}
+		
+		
+		
+		
+		final String attributesFilePath = basePath + "attributes.csv";
+		final String populationDataFilePath = basePath + "sampleData.csv";
+		final String distributionFormatsListFilePath = basePath + "frequency_distribution_formats_list.csv";
+		final String distributionFormat1FilePath = basePath + "distributionFormat1.csv";
+		final String distributionFormat2FilePath = basePath + "distributionFormat2.csv";
+		final String resultDistribution1FilePath = basePath + "resultDistribution1.csv";
+		final String resultDistribution2FilePath = basePath + "resultDistribution2.csv";
+		
+		File resultFile1 = new File(resultDistribution1FilePath);
+		if (resultFile1.exists()) { resultFile1.delete(); }
+
+		File resultFile2 = new File(resultDistribution2FilePath);
+		if (resultFile2.exists()) { resultFile2.delete(); }
+		
+		new Expectations() {{
+			FileUtils.constructAbsoluteFilePath(scope, anyString, anyBoolean);
+			result = new Delegate() {
+				String delegate(IScope scope, String filePath, boolean mustExist) {
+					if (filePath.endsWith("/attributes.csv")) {  return attributesFilePath;  }
+					if (filePath.endsWith("/sampleData.csv")) {  return populationDataFilePath; }					
+					if (filePath.endsWith("/frequency_distribution_formats_list.csv")) {  return distributionFormatsListFilePath; }					
+					if (filePath.endsWith("/distributionFormat1.csv")) {  return distributionFormat1FilePath; }
+					if (filePath.endsWith("/distributionFormat2.csv")) {  return distributionFormat2FilePath; }
+					if (filePath.endsWith("/resultDistribution1.csv")) { return resultDistribution1FilePath; }
+					if (filePath.endsWith("/resultDistribution2.csv")) { return resultDistribution2FilePath; }
+					
+					
+					return null;
+				}
+			};
+		}};
+		 
+		
+		GamaGenstarUtils.generateFrequencyDistributionsFromSampleOrPopulationData(scope, frequencyDistributionsProperties);
+		
+		
+		File recreatedResultFile1 = new File(resultDistribution1FilePath);
+		assertTrue(recreatedResultFile1.exists());
+
+		File recreatedRile2 = new File(resultDistribution2FilePath);
+		assertTrue (recreatedRile2.exists());
+	}
 }
 

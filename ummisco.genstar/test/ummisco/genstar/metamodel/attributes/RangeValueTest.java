@@ -70,6 +70,12 @@ public class RangeValueTest {
 	}
 	
 	@Test public void testCast() throws GenstarException {
-		fail("not yet implemented");
+		RangeValue rangeValue = new RangeValue(DataType.INTEGER, "1", "3");
+		
+		assertTrue(rangeValue.cast(RangeValue.class).equals(rangeValue));
+		
+		UniqueValue castValue = (UniqueValue) rangeValue.cast(UniqueValue.class);
+		assertTrue(castValue.dataType.equals(rangeValue.dataType));
+		assertTrue(rangeValue.cover(castValue));
 	}
 }

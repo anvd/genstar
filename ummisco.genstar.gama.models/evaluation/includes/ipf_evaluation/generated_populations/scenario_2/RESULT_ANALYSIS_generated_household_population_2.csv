@@ -1,0 +1,21 @@
+Household Income,High,Household Type,type1,571,561
+Household Income,High,Household Type,type2,757,755
+Household Income,High,Household Type,type3,620,633
+Household Income,Low,Household Type,type1,540,564
+Household Income,Low,Household Type,type2,731,748
+Household Income,Low,Household Type,type3,424,383
+Household Income,High,HouseholdSize,1,733,734
+Household Income,Low,HouseholdSize,1,512,512
+Household Income,High,HouseholdSize,2,611,611
+Household Income,Low,HouseholdSize,2,517,517
+Household Income,High,HouseholdSize,3,604,604
+Household Income,Low,HouseholdSize,3,666,666
+HouseholdSize,1,Household Type,type1,383,377
+HouseholdSize,1,Household Type,type2,566,574
+HouseholdSize,1,Household Type,type3,296,295
+HouseholdSize,2,Household Type,type1,349,359
+HouseholdSize,2,Household Type,type2,426,420
+HouseholdSize,2,Household Type,type3,353,349
+HouseholdSize,3,Household Type,type1,379,389
+HouseholdSize,3,Household Type,type2,496,509
+HouseholdSize,3,Household Type,type3,395,372

@@ -23,6 +23,7 @@ import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.DataType;
 import ummisco.genstar.metamodel.attributes.UniqueValue;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
 import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
 import ummisco.genstar.metamodel.population.Entity;
@@ -326,10 +327,10 @@ public class IpuUtilsTest {
 		AttributeValue incomeLow = new UniqueValue(DataType.STRING, "Low");
 		AttributeValue incomeHigh = new UniqueValue(DataType.STRING, "High");
 		*/
-		AttributeValue size1 = householdSizeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.INTEGER, "1"));
-		AttributeValue size2 = householdSizeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.INTEGER, "2"));
-		AttributeValue incomeLow = householdIncomeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, "Low"));
-		AttributeValue incomeHigh = householdIncomeAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.STRING, "High"));
+		AttributeValue size1 = householdSizeAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.INTEGER, "1"));
+		AttributeValue size2 = householdSizeAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.INTEGER, "2"));
+		AttributeValue incomeLow = householdIncomeAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.STRING, "Low"));
+		AttributeValue incomeHigh = householdIncomeAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.STRING, "High"));
 		
 		assertTrue(size1 != null);
 		assertTrue(size2 != null);
@@ -373,10 +374,10 @@ public class IpuUtilsTest {
 	}
 
 	
-	@Test public void testBuildEntityCategories() throws GenstarException {
-		// TODO Map<AttributeValuesFrequency, List<Entity>> buildEntityCategories(final IPopulation population, final Set<AbstractAttribute> ipuControlledAttributes)
+	@Test public void testBuildIpuEntityCategories() throws GenstarException {
+		// TODO Map<AttributeValuesFrequency, List<Entity>> buildIpuEntityCategories(final IPopulation population, final Set<AbstractAttribute> ipuControlledAttributes)
 		
-		String base_path = "test_data/ummisco/genstar/util/IpuUtils/buildEntityCategories/";
+		String base_path = "test_data/ummisco/genstar/util/IpuUtils/buildIpuEntityCategories/";
 		String groupPopulationName = "household";
 		String groupAttributesFileName = "group_attributes.csv";
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile(base_path + groupAttributesFileName, true);
@@ -392,22 +393,22 @@ public class IpuUtilsTest {
 		// 0. load the population from files
 		GenstarCsvFile groupPopulationFile = new GenstarCsvFile(base_path + groupPopulationFileName, true);
 		GenstarCsvFile componentPopulationFile = new GenstarCsvFile(base_path + componentPopulationFileName, true);
-		IPopulation generatedCompoundPopulation = GenstarUtils.loadCompoundPopulation(PopulationType.SYNTHETIC_POPULATION, groupPopulationName, groupAttributesFile, 
+		IPopulation loadedCompoundPopulation = GenstarUtils.loadCompoundPopulation(PopulationType.SYNTHETIC_POPULATION, groupPopulationName, groupAttributesFile, 
 				groupPopulationFile, componentPopulationName, componentAttributesFile, 
 				componentPopulationFile, groupIdAttributeNameOnDataOfGroupEntity, groupIdAttributeNameOnDataOfComponentEntity, null, null);
 		
 		
 		// 1. build entity categories
-		AbstractAttribute householdSizeAttr = generatedCompoundPopulation.getAttributeByNameOnData("Household Size");
-		AbstractAttribute householdIncomeAttr = generatedCompoundPopulation.getAttributeByNameOnData("Household Income");
-		AbstractAttribute householdTypeAttr = generatedCompoundPopulation.getAttributeByNameOnData("Household Type");
+		AbstractAttribute householdSizeAttr = loadedCompoundPopulation.getAttributeByNameOnData("Household Size");
+		AbstractAttribute householdIncomeAttr = loadedCompoundPopulation.getAttributeByNameOnData("Household Income");
+		AbstractAttribute householdTypeAttr = loadedCompoundPopulation.getAttributeByNameOnData("Household Type");
 		
 		Set<AbstractAttribute> ipuControlledAttributes = new HashSet<AbstractAttribute>();
 		ipuControlledAttributes.add(householdSizeAttr);
 		ipuControlledAttributes.add(householdIncomeAttr);
 		ipuControlledAttributes.add(householdTypeAttr);
 
-		Map<AttributeValuesFrequency, List<Entity>> householdCategories = IpuUtils.buildEntityCategories(generatedCompoundPopulation, ipuControlledAttributes);
+		Map<AttributeValuesFrequency, List<Entity>> householdCategories = IpuUtils.buildIpuEntityCategories(loadedCompoundPopulation, ipuControlledAttributes);
 		Set<AttributeValuesFrequency> categoryAvfs = householdCategories.keySet();
 		
 		
@@ -574,22 +575,50 @@ public class IpuUtilsTest {
 		ipuControlledAttributes.add(householdIncomeAttr);
 		ipuControlledAttributes.add(householdTypeAttr);
 		
+		UniqueValuesAttributeWithRangeInput groupIdAttributeOnGroupEntity = (UniqueValuesAttributeWithRangeInput) generatedCompoundPopulation.getAttributeByNameOnData("Household ID");
+		UniqueValuesAttributeWithRangeInput groupIdAttributeOnComponentEntity = null;
+		for (Entity groupEntity : generatedCompoundPopulation.getEntities()) {
+			IPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
+			if (componentPopulation != null) {
+				groupIdAttributeOnComponentEntity = (UniqueValuesAttributeWithRangeInput) componentPopulation.getAttributeByNameOnData("Household ID");
+				break;
+			}
+		}
+		
 		
 		// extract 1% of the original population then do the verifications
 		float percentage = 0.1f;
-		IPopulation extractedPopulation1 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation1 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes, 
+				groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, componentPopulationName);
 		assertTrue(extractedPopulation1.getNbOfEntities() == 8);
+		int idValue = 0;
+		for (Entity groupEntity : extractedPopulation1.getEntities()) { // ensure that entities are correctly recoded
+			assertTrue(((UniqueValue)groupEntity.getEntityAttributeValue(groupIdAttributeOnGroupEntity).getAttributeValueOnEntity()).getIntValue() == idValue);
+			idValue++;
+		}
 		// TODO further verifications
 		
 		// extract 10% of the original population then do the verifications
 		percentage = 10;
-		IPopulation extractedPopulation2 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation2 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes, 
+				groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, componentPopulationName);
 		assertTrue(extractedPopulation2.getNbOfEntities() == 12);
+		idValue = 0;
+		for (Entity groupEntity : extractedPopulation2.getEntities()) { // ensure that entities are correctly recoded
+			assertTrue(((UniqueValue)groupEntity.getEntityAttributeValue(groupIdAttributeOnGroupEntity).getAttributeValueOnEntity()).getIntValue() == idValue);
+			idValue++;
+		}
 		
 		// extract 30% of the original population then do the verifications
 		percentage = 30;
-		IPopulation extractedPopulation3 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes);
+		IPopulation extractedPopulation3 = IpuUtils.extractIpuPopulation(generatedCompoundPopulation, percentage, ipuControlledAttributes, 
+				groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, componentPopulationName);
 		assertTrue(extractedPopulation3.getNbOfEntities() == 36);
+		idValue = 0;
+		for (Entity groupEntity : extractedPopulation3.getEntities()) { // ensure that entities are correctly recoded
+			assertTrue(((UniqueValue)groupEntity.getEntityAttributeValue(groupIdAttributeOnGroupEntity).getAttributeValueOnEntity()).getIntValue() == idValue);
+			idValue++;
+		}
 	}
 	
 	

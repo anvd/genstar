@@ -21,7 +21,6 @@ public class IpfControlTotals {
 	private List<AttributeValuesFrequency> avFrequencies;
 
 	
-//	public IpfControlTotals(final List<AbstractAttribute> controlledAttribute, final GenstarCsvFile ipfControlTotalsFile) throws GenstarException {
 	public IpfControlTotals(final IpfGenerationRule generationRule) throws GenstarException {
 		if (generationRule == null) { throw new GenstarException("'generationRule' parameter can not be null"); }
 		

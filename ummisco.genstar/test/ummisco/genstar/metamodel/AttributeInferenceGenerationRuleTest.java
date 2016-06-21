@@ -94,8 +94,11 @@ public class AttributeInferenceGenerationRuleTest {
 		
 		Map<AttributeValue, AttributeValue> pcsInferenceData = new HashMap<AttributeValue, AttributeValue>();
 		for (double[] net_wage : BondyData.hourly_net_wages) {
-			pcsInferenceData.put(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0])), 
-					new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2])));
+			
+			AttributeValue inferringValue = pcsAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0])));
+			AttributeValue inferredValue = hourlyNetWageAttr.getMatchingAttributeValueOnData(new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2])));
+			
+			pcsInferenceData.put(inferringValue, inferredValue);
 		}
 		generationRule3.setInferenceData(pcsInferenceData);
 		
@@ -255,7 +258,7 @@ public class AttributeInferenceGenerationRuleTest {
 		for (double[] wage : BondyData.hourly_net_wages) {
 			
 			entity = new Entity(generator.generate());
-			entity.setAttributeValueOnData(inferringAttribute, new UniqueValue(DataType.INTEGER, Integer.toString((int) wage[0])));
+			entity.setAttributeValueOnData(inferringAttribute, inferringAttribute.getMatchingAttributeValueOnData(new UniqueValue(DataType.INTEGER, Integer.toString((int) wage[0]))));
 			
 			assertTrue(entity.getEntityAttributeValueByNameOnData(inferredAttribute.getNameOnEntity()) == null);
 			rule3.generate(entity);

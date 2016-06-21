@@ -3,6 +3,7 @@ package ummisco.genstar.gama;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -138,44 +139,45 @@ public class GenstarsTest {
 	}
 	
 	
-	/*
-	public static IGamaFile createFrequencyDistributionFromSample(final IScope scope, final String attributesCSVFilePath, 
-			final String sampleDataCSVFilePath, final String distributionFormatCSVFilePath, final String resultDistributionCSVFilePath) {
-	 */
-	@Test public void testCreateFrequencyDistributionFromSample(@Mocked final IScope scope, @Mocked final FileUtils fileUtils, 
-			@Mocked final CsvWriter writer, @Mocked final GamaCSVFile csvFile) throws IOException {
+	@Test public void testGenerateFrequencyDistributionsFromSampleDataOrPopulationFile(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws IOException {
 		
-		final String attributesCSVFilePath = "test_data/ummisco/genstar/gama/Genstars/testCreateFrequencyDistributionFromSample/attributes.csv";
-		final String distributionFormatCSVFilePath = "test_data/ummisco/genstar/gama/Genstars/testCreateFrequencyDistributionFromSample/distributionFormat.csv";
-		final String sampleDataCSVFilePath = "test_data/ummisco/genstar/gama/Genstars/testCreateFrequencyDistributionFromSample/sampleData.csv";
-		final String resultDistributionCSVFilePath = "test_data/ummisco/genstar/gama/Genstars/testCreateFrequencyDistributionFromSample/resultDistribution.csv";
-		// resultDistribution.csv
+		String basePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateFrequencyDistributionsFromSampleDataOrPopulationFile/";
+		final String propertiesFilePath = basePath + "frequency_distributions.properties";
+		
 		new Expectations() {{
 			FileUtils.constructAbsoluteFilePath(scope, anyString, anyBoolean);
 			result = new Delegate() {
 				String delegate(IScope scope, String filePath, boolean mustExist) {
-					if (filePath.endsWith("attributes.csv")) { return attributesCSVFilePath; }
-					if (filePath.endsWith("distributionFormat.csv")) { return distributionFormatCSVFilePath; }
-					if (filePath.endsWith("sampleData.csv")) { return sampleDataCSVFilePath; }
-					if (filePath.endsWith("resultDistribution.csv")) { return resultDistributionCSVFilePath; }
+					if (filePath.endsWith("frequency_distributions.properties")) { return propertiesFilePath; }
 					
 					return null;
 				}
 			};
-			
-			// verify CsvWriter is invovoked 57 times (including 1 for header and 8*7 for file content), see distributionFormat.csv and attributes.csv
-			writer.writeRecord((String[])any); times = 57;
-			
-			// verify that one instance of GamaCSVFile is created
-			new GamaCSVFile(scope, resultDistributionCSVFilePath, CSV_FILE_FORMATS.ATTRIBUTES.FIELD_DELIMITER, Types.STRING, true);
 		}};
 		
+
+		// clean up if necessary
+		String resultFilePath1 = basePath + "resultDistribution1.csv";
+		String resultFilePath2 = basePath + "resultDistribution2.csv";
 		
-		Genstars.SampleFree.createFrequencyDistributionFromSample(scope, attributesCSVFilePath, sampleDataCSVFilePath, distributionFormatCSVFilePath, resultDistributionCSVFilePath);
+		File resultFile1 = new File(resultFilePath1);
+		if (resultFile1.exists()) { resultFile1.delete(); }
+		
+		File resultFile2 = new File(resultFilePath2);
+		if (resultFile2.exists()) { resultFile2.delete(); }
+		
+		Genstars.SampleFree.generateFrequencyDistributionsFromSampleDataOrPopulationFile(scope, propertiesFilePath);
+		
+		File recreatedResultFile1 = new File(resultFilePath1);
+		assertTrue(recreatedResultFile1.exists());
+		
+		File recreatedResultFile2 = new File(resultFilePath2);
+		assertTrue(recreatedResultFile2.exists());
+		
 	}
 	
 	
-	@Test public void testGenerateIPFSinglePopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) {
+	@Test public void testGenerateIpfSinglePopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) {
 		
 		final String populationPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFSinglePopulation/IpfSinglePopulationProperties.properties";
 		final String attributesCSVFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIPFSinglePopulation/attributes.csv";
@@ -213,7 +215,7 @@ public class GenstarsTest {
 		// TODO verify that the generated population is "single"
 	}
 	
-	@Test public void testGenerateIPFCompoundPopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) {
+	@Test public void testGenerateIpfCompoundPopulation(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) {
 		
 		/*
 		ATTRIBUTES=test_data/ummisco/genstar/gama/Genstars/testGenerateIPFCompoundPopulation/group_attributes.csv
@@ -542,7 +544,7 @@ public class GenstarsTest {
 	}
 	
 	
-	@Test public void testWriteSinglePopulationToCSVFile(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
+	@Test public void testWriteSinglePopulationToCsvFile(@Mocked final IScope scope, @Mocked final FileUtils fileUtils) throws GenstarException {
 		
 		/*
 		POPULATION_NAME=people
@@ -587,15 +589,15 @@ public class GenstarsTest {
 	}
 	
 	
-	@Test public void testGenerateControlTotalsDataSet1(@Mocked final IScope scope, @Mocked final FileUtils fileUtils, @Mocked final IpfGenerationRule generationRule) throws GenstarException {
+	@Test public void testGenerateIpfControlTotalsDataSet1(@Mocked final IScope scope, @Mocked final FileUtils fileUtils, @Mocked final IpfGenerationRule generationRule) throws GenstarException {
 		
 		// dataSet1
-		final String dataSet1AttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/group_attributes.csv";
-		final String dataSet1ControlledAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/group_controlled_attributes.csv";
-		final String dataSet1PopulationFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/group_sample.csv";
-		final String dataSet1ControlTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/generated_control_totals.csv";
+		final String dataSet1AttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIpfControlTotals/dataSet1/group_attributes.csv";
+		final String dataSet1ControlledAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIpfControlTotals/dataSet1/group_controlled_attributes.csv";
+		final String dataSet1PopulationFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIpfControlTotals/dataSet1/group_sample.csv";
+		final String dataSet1ControlTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIpfControlTotals/dataSet1/generated_control_totals.csv";
 		
-		final String controlTotalPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet1/DataSet1_ControlTotals.properties";
+		final String controlTotalPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIpfControlTotals/dataSet1/DataSet1_ControlTotals.properties";
 		
 		// /dataSet1/group_controlled_attributes.csv
 		new Expectations() {{
@@ -636,35 +638,39 @@ public class GenstarsTest {
 			8,1,Low,type2,2
 			
 			==> generated_control_totals.csv
-			Household Size,1,Household Income,High,3
-			Household Size,2,Household Income,High,1
-			Household Size,3,Household Income,High,2
-			Household Size,1,Household Income,Low,2
-			Household Size,2,Household Income,Low,0
-			Household Size,3,Household Income,Low,0
-			Household Size,1,Number Of Cars,0,0
-			Household Size,1,Number Of Cars,1,2
-			Household Size,1,Number Of Cars,2,1
-			Household Size,1,Number Of Cars,3,2
-			Household Size,2,Number Of Cars,0,0
-			Household Size,2,Number Of Cars,1,0
-			Household Size,2,Number Of Cars,2,1
-			Household Size,2,Number Of Cars,3,0
-			Household Size,3,Number Of Cars,0,0
-			Household Size,3,Number Of Cars,1,1
-			Household Size,3,Number Of Cars,2,1
-			Household Size,3,Number Of Cars,3,1
-			Household Income,High,Number Of Cars,0,0
-			Household Income,High,Number Of Cars,1,2
-			Household Income,High,Number Of Cars,2,2
-			Household Income,High,Number Of Cars,3,3
-			Household Income,Low,Number Of Cars,0,0
-			Household Income,Low,Number Of Cars,1,1
-			Household Income,Low,Number Of Cars,2,1
-			Household Income,Low,Number Of Cars,3,0
+				Household Income,High,Household Size,1,5
+				Household Income,High,Household Size,2,2
+				Household Income,High,Household Size,3,4
+				Household Income,Low,Household Size,1,3
+				Household Income,Low,Household Size,2,4
+				Household Income,Low,Household Size,3,1
+				Number Of Cars,0,Household Size,1,2
+				Number Of Cars,1,Household Size,1,2
+				Number Of Cars,2,Household Size,1,1
+				Number Of Cars,3,Household Size,1,3
+				Number Of Cars,0,Household Size,2,2
+				Number Of Cars,1,Household Size,2,2
+				Number Of Cars,2,Household Size,2,1
+				Number Of Cars,3,Household Size,2,1
+				Number Of Cars,0,Household Size,3,1
+				Number Of Cars,1,Household Size,3,2
+				Number Of Cars,2,Household Size,3,1
+				Number Of Cars,3,Household Size,3,1
+				Household Income,High,Number Of Cars,0,3
+				Household Income,High,Number Of Cars,1,3
+				Household Income,High,Number Of Cars,2,2
+				Household Income,High,Number Of Cars,3,3
+				Household Income,Low,Number Of Cars,0,2
+				Household Income,Low,Number Of Cars,1,3
+				Household Income,Low,Number Of Cars,2,1
+				Household Income,Low,Number Of Cars,3,2
 		 */
 		
-		Genstars.Ipf.generateControlTotals(scope, controlTotalPropertiesFilePath, dataSet1ControlTotalFilePath);
+		// delete the resulting file if exists
+		File resultingFile = new File(dataSet1ControlTotalFilePath);
+		if (resultingFile.exists()) { resultingFile.delete(); }
+		
+		Genstars.Ipf.generateIpfControlTotals(scope, controlTotalPropertiesFilePath);
 		final GenstarCsvFile dataSet1controlTotalFile = new GenstarCsvFile(dataSet1ControlTotalFilePath, false);
 		assertTrue(dataSet1controlTotalFile.getColumns() == 5);
 		assertTrue(dataSet1controlTotalFile.getRows() == 26);
@@ -696,9 +702,6 @@ public class GenstarsTest {
 		
 
 		new Expectations() {{
-			generationRule.getGenerator();
-			result = dataSet1Generator;
-			
 			generationRule.getControlTotalsFile();
 			result = dataSet1controlTotalFile;
 			
@@ -710,19 +713,19 @@ public class GenstarsTest {
 		IpfControlTotals dataSet1ControlTotals = new IpfControlTotals(generationRule);
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		
-		// Household Size,1,Household Income,High,3
+		// Household Size,1,Household Income,High,5
 		matchingCriteria.put(householdSizeAttr, size1);
 		matchingCriteria.put(householdIncomeAttr, incomeHigh);
 		List<AttributeValuesFrequency> avfs = dataSet1ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
 		assertTrue(avfs.size() == 1);
-		assertTrue(avfs.get(0).getFrequency() == 3);
+		assertTrue(avfs.get(0).getFrequency() == 5);
 		
-		// Household Size,2,Household Income,Low,0
+		// Household Size,2,Household Income,Low,4
 		matchingCriteria.put(householdSizeAttr, size2);
 		matchingCriteria.put(householdIncomeAttr, incomeLow);
 		avfs = dataSet1ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
 		assertTrue(avfs.size() == 1);
-		assertTrue(avfs.get(0).getFrequency() == 0);
+		assertTrue(avfs.get(0).getFrequency() == 4);
 		
 		// Household Size,1,Number Of Cars,1,2
 		matchingCriteria.clear();
@@ -732,12 +735,12 @@ public class GenstarsTest {
 		assertTrue(avfs.size() == 1);
 		assertTrue(avfs.get(0).getFrequency() == 2);
 		
-		// Household Size,2,Number Of Cars,0,0
+		// Household Size,2,Number Of Cars,0,2
 		matchingCriteria.put(householdSizeAttr, size2);
 		matchingCriteria.put(nbOfCarsAttr, zeroCar);
 		avfs = dataSet1ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
 		assertTrue(avfs.size() == 1);
-		assertTrue(avfs.get(0).getFrequency() == 0);
+		assertTrue(avfs.get(0).getFrequency() == 2);
 		
 		// Household Income,High,Number Of Cars,3,3
 		matchingCriteria.clear();
@@ -747,23 +750,23 @@ public class GenstarsTest {
 		assertTrue(avfs.size() == 1);
 		assertTrue(avfs.get(0).getFrequency() == 3);
 		
-		// Household Income,Low,Number Of Cars,3,0
+		// Household Income,Low,Number Of Cars,3,2
 		matchingCriteria.put(householdIncomeAttr, incomeLow);
 		avfs = dataSet1ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
 		assertTrue(avfs.size() == 1);
-		assertTrue(avfs.get(0).getFrequency() == 0);
+		assertTrue(avfs.get(0).getFrequency() == 2);
 	}
 	
 	
-	@Test public void testGenerateControlTotalsDataSet2(@Mocked final IScope scope, @Mocked final FileUtils fileUtils, @Mocked final IpfGenerationRule generationRule) throws GenstarException {
+	@Test public void testGenerateIpfControlTotalsDataSet2(@Mocked final IScope scope, @Mocked final FileUtils fileUtils, @Mocked final IpfGenerationRule generationRule) throws GenstarException {
 		
 		// dataSet2
-		final String dataSet2AttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/attributes.csv";
-		final String dataSet2ControlledAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/controlled_attributes.csv";
-		final String dataSet2PopulationFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/people_sample.csv";
-		final String dataSet2ControlTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/generated_control_totals.csv";
+		final String dataSet2AttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIpfControlTotals/dataSet2/attributes.csv";
+		final String dataSet2ControlledAttributesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIpfControlTotals/dataSet2/controlled_attributes.csv";
+		final String dataSet2PopulationFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIpfControlTotals/dataSet2/people_sample.csv";
+		final String dataSet2ControlTotalFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIpfControlTotals/dataSet2/generated_control_totals.csv";
 		
-		final String controlTotalPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateControlTotals/dataSet2/DataSet2_ControlTotals.properties";
+		final String controlTotalPropertiesFilePath = "test_data/ummisco/genstar/gama/Genstars/testGenerateIpfControlTotals/dataSet2/DataSet2_ControlTotals.properties";
 		
 
 		new Expectations() {{
@@ -784,6 +787,13 @@ public class GenstarsTest {
 		
 		// dataSet2
 		/*
+		 * attributes.csv
+				Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On Entity
+				Age,age,int,Range,0:15; 16:20,Unique
+				Gender,gender,bool,Unique,true; false,Unique
+				Work,work,string,Unique,agriculteur; artisant,Unique
+		 */
+		/*
 		 * controlled_attributes.csv
 				Age
 				Gender
@@ -791,35 +801,30 @@ public class GenstarsTest {
 		/*
 		 * people_sample.csv
 			age,gender,work
-			18,true,ouvrier
-			32,true,agriculteur
-			40,false,ouvrier_agricole
-			45,true,agriculteur
-			17,false,agriculteur
-			10,true,sans_activite
-			76,true,enseignant
-			70,false,sans_activite
-			40,false,conducteur
-			38,true,commercant
+			1,true,agriculteur
+			2,true,agriculteur
+			3,false,agriculteur
+			4,false,agriculteur
+			16,true,artisant
+			17,true,artisant
+			18,false,artisant
+			19,false,artisant			
 			
 			==>
-			Age,0:15,1
-			Age,16:20,2
-			Age,21:25,0
-			Age,26:30,0
-			Age,31:50,5
-			Age,51:60,0
-			Age,61:75,1
-			Age,76:80,1
-			Age,81:100,0
-			Gender,true,6
-			Gender,false,4
+				Age,0:15,4
+				Age,16:20,4
+				Gender,true,4
+				Gender,false,4
 		 */
 		
-		Genstars.Ipf.generateControlTotals(scope, controlTotalPropertiesFilePath, dataSet2ControlTotalFilePath);
+		// delete the resulting file if exists
+		File resultingFile = new File(dataSet2ControlTotalFilePath);
+		if (resultingFile.exists()) { resultingFile.delete(); }
+		
+		Genstars.Ipf.generateIpfControlTotals(scope, controlTotalPropertiesFilePath);
 		final GenstarCsvFile dataSet2controlTotalFile = new GenstarCsvFile(dataSet2ControlTotalFilePath, false);
 		assertTrue(dataSet2controlTotalFile.getColumns() == 3);
-		assertTrue(dataSet2controlTotalFile.getRows() == 11);
+		assertTrue(dataSet2controlTotalFile.getRows() == 4);
 		
 		// dataSet2
 		final ISyntheticPopulationGenerator dataSet2Generator = new SampleBasedGenerator("dummy generator");
@@ -827,17 +832,9 @@ public class GenstarsTest {
 		AttributeUtils.createAttributesFromCsvFile(dataSet2Generator, dataSet2AttributesFile);
 		
 		AbstractAttribute ageAttr = dataSet2Generator.getAttributeByNameOnData("Age");
-		// 0:15; 16:20; 21:25; 26:30; 31:50; 51:60; 61:75; 76:80; 81:100
+		// 0:15; 16:20
 		RangeValue zeroValue = new RangeValue(DataType.INTEGER, "0", "15");
 		RangeValue sixteenValue = new RangeValue(DataType.INTEGER, "16", "20");
-		RangeValue twentyOneValue = new RangeValue(DataType.INTEGER, "21", "25");
-		RangeValue twentySixValue = new RangeValue(DataType.INTEGER, "26", "30");
-		RangeValue thirtyOneValue = new RangeValue(DataType.INTEGER, "31", "50");
-		RangeValue fiftyOneValue = new RangeValue(DataType.INTEGER, "51", "60");
-		RangeValue sixtyOneValue = new RangeValue(DataType.INTEGER, "61", "75");
-		RangeValue seventySixValue = new RangeValue(DataType.INTEGER, "76", "80");
-		RangeValue eightyOneValue = new RangeValue(DataType.INTEGER, "81", "100");
-
 		
 		AbstractAttribute genderAttr = dataSet2Generator.getAttributeByNameOnData("Gender");
 		AttributeValue maleValue = new UniqueValue(DataType.BOOL, "true");
@@ -849,9 +846,6 @@ public class GenstarsTest {
 		
 
 		new Expectations() {{
-			generationRule.getGenerator();
-			result = dataSet2Generator;
-			
 			generationRule.getControlTotalsFile();
 			result = dataSet2controlTotalFile;
 			
@@ -863,42 +857,24 @@ public class GenstarsTest {
 		IpfControlTotals dataSet2ControlTotals = new IpfControlTotals(generationRule);
 		Map<AbstractAttribute, AttributeValue> matchingCriteria = new HashMap<AbstractAttribute, AttributeValue>();
 		
-		// Age,0:15,1
+		// Age,0:15,4
 		matchingCriteria.put(ageAttr, zeroValue);
 		List<AttributeValuesFrequency> avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
 		assertTrue(avfs.size() == 1);
-		assertTrue(avfs.get(0).getFrequency() == 1);
+		assertTrue(avfs.get(0).getFrequency() == 4);
 		
-		// Age,21:25,0
-		matchingCriteria.put(ageAttr, twentyOneValue);
+		// Age,16:20,4
+		matchingCriteria.put(ageAttr, sixteenValue);
 		avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
 		assertTrue(avfs.size() == 1);
-		assertTrue(avfs.get(0).getFrequency() == 0);
+		assertTrue(avfs.get(0).getFrequency() == 4);
 		
-		// Age,31:50,5
-		matchingCriteria.put(ageAttr, thirtyOneValue);
-		avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
-		assertTrue(avfs.size() == 1);
-		assertTrue(avfs.get(0).getFrequency() == 5);
-		
-		// Age,61:75,1
-		matchingCriteria.put(ageAttr, sixtyOneValue);
-		avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
-		assertTrue(avfs.size() == 1);
-		assertTrue(avfs.get(0).getFrequency() == 1);
-		
-		// Age,81:100,0
-		matchingCriteria.put(ageAttr, eightyOneValue);
-		avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
-		assertTrue(avfs.size() == 1);
-		assertTrue(avfs.get(0).getFrequency() == 0);
-		
-		// Gender,true,6
+		// Gender,true,4
 		matchingCriteria.clear();
 		matchingCriteria.put(genderAttr, maleValue);
 		avfs = dataSet2ControlTotals.getMatchingAttributeValuesFrequencies(matchingCriteria);
 		assertTrue(avfs.size() == 1);
-		assertTrue(avfs.get(0).getFrequency() == 6);
+		assertTrue(avfs.get(0).getFrequency() == 4);
 		
 		// Gender,false,4
 		matchingCriteria.put(genderAttr, femaleValue);
@@ -906,6 +882,21 @@ public class GenstarsTest {
 		assertTrue(avfs.size() == 1);
 		assertTrue(avfs.get(0).getFrequency() == 4);
 		
+	}
+	
+	
+	@Test public void testExtractIpuPopulation() {
+		fail("not yet implemented");
+	}
+	
+	
+	@Test public void testExtractIpfSinglePopulation() {
+		fail("not yet implemented");
+	}
+	
+	
+	@Test public void testExtractIpfCompoundPopulation() {
+		fail("not yet implemented");
 	}
 
 }

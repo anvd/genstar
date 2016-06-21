@@ -1,14 +1,16 @@
 package ummisco.genstar.util;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import mockit.Deencapsulation;
 import mockit.Mocked;
@@ -60,7 +62,7 @@ public class GenstarUtilsTest {
 	
 	@Test public void testWriteContentToCsvFile() throws GenstarException {
 		GenstarCsvFile controlledAttributesFile1 = new GenstarCsvFile("test_data/ummisco/genstar/util/GenstarUtils/testWriteControlTotalsToCsvFile/controlled_attributes1.csv", true);
-		List<List<String>> controlTotals = IpfUtils.generateIpfControlTotals(controlledAttributesFile1, 500);
+		List<List<String>> controlTotals = IpfUtils.generateIpfControlTotalsFromTotal(controlledAttributesFile1, 500);
 		
 		String controlTotalsFilePath = "test_data/ummisco/genstar/util/GenstarUtils/testWriteControlTotalsToCsvFile/control_totals1.csv";
 		File controlTotalsFile = new File(controlTotalsFilePath);
@@ -579,5 +581,50 @@ public class GenstarUtilsTest {
 		Set<AttributeValuesFrequency> avfs = GenstarUtils.generateAttributeValuesFrequencies(new HashSet<AbstractAttribute>(generator.getAttributes()));
 		
 		assertTrue(avfs.size() == 72);
+	}
+	
+	
+	class AttributeComparatorByName implements Comparator<AbstractAttribute> {
+
+		@Override public int compare(AbstractAttribute arg0, AbstractAttribute arg1) {
+			return arg0.getNameOnData().charAt(0) - arg1.getNameOnData().charAt(0);
+		}
+	}
+	
+	@Test public void testBuildAttributeValueMap() throws GenstarException {
+		
+		String basePath = "test_data/ummisco/genstar/util/GenstarUtils/testBuildAttributeValueMap/";
+		GenstarCsvFile attributesFile = new GenstarCsvFile(basePath + "group_attributes.csv", true);
+		
+		ISyntheticPopulationGenerator generator = new SampleBasedGenerator("generator");
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
+		
+		Set<AbstractAttribute> attributes = new TreeSet<AbstractAttribute>(new AttributeComparatorByName());
+		
+		AbstractAttribute hhSizeAttr = generator.getAttributeByNameOnData("Household Size"); 
+		AbstractAttribute nbOfCars = generator.getAttributeByNameOnData("Number Of Cars");
+		
+		attributes.add(hhSizeAttr);
+		attributes.add(nbOfCars);
+		
+		List<AbstractAttribute> attributesList = new ArrayList<AbstractAttribute>(attributes);
+		assertTrue(attributesList.get(0).getNameOnData().equals("Household Size"));
+		assertTrue(attributesList.get(1).getNameOnData().equals("Number Of Cars"));
+		
+		// Number Of Cars: 0
+		AttributeValue nbOfCarsValue =  nbOfCars.getMatchingAttributeValueOnData(new UniqueValue(DataType.INTEGER, "0"));
+		
+		// Household Size: 1
+		AttributeValue hhSizeValue = hhSizeAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.INTEGER, "1"));
+		
+		List<AttributeValue> values = new ArrayList<AttributeValue>();
+		values.add(nbOfCarsValue);
+		values.add(hhSizeValue);
+		
+		Map<AbstractAttribute, AttributeValue> attributeValueMap = GenstarUtils.buildAttributeValueMap(attributes, values);
+		
+		assertTrue(attributeValueMap.size() == 2);
+		assertTrue(attributeValueMap.get(hhSizeAttr).equals(hhSizeValue));
+		assertTrue(attributeValueMap.get(nbOfCars).equals(nbOfCarsValue));
 	}
 }

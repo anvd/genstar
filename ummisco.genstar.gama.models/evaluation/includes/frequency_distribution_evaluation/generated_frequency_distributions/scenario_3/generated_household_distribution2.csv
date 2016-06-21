@@ -1,0 +1,19 @@
+HouseholdSize:Input,Household Income:Input,Household Type:Output,Frequency
+1,High,type1,203
+1,High,type2,340
+1,High,type3,190
+1,Low,type1,180
+1,Low,type2,226
+1,Low,type3,106
+2,High,type1,213
+2,High,type2,191
+2,High,type3,207
+2,Low,type1,136
+2,Low,type2,235
+2,Low,type3,146
+3,High,type1,155
+3,High,type2,226
+3,High,type3,223
+3,Low,type1,224
+3,Low,type2,270
+3,Low,type3,172

@@ -53,7 +53,7 @@ public class Entity {
 	}
 	
 	public List<EntityAttributeValue> getEntityAttributeValues() {
-		return new ArrayList<EntityAttributeValue>(entityAttributeValues.values()); // TODO return copy
+		return new ArrayList<EntityAttributeValue>(entityAttributeValues.values());
 	}
 	
 	public EntityAttributeValue getEntityAttributeValue(final AbstractAttribute attribute) throws GenstarException {
@@ -77,14 +77,6 @@ public class Entity {
 		if (attribute == null) { return null; }
 		
 		return entityAttributeValues.get(attribute); // TODO return a copy identity attribute value
-	}
-	
-	private void internalSetEntityAttributeValue(final EntityAttributeValue eav) throws GenstarException {
-		
-		// identity attribute
-		
-		// fire event -> population listens to the event to re-act accordingly
-		
 	}
 	
 	public void setEntityAttributeValues(final List<EntityAttributeValue> eAttributeValues) throws GenstarException {

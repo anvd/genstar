@@ -13,10 +13,13 @@ import ummisco.genstar.ipf.IpfGenerationRule;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
 import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
 import ummisco.genstar.metamodel.population.Entity;
 import ummisco.genstar.metamodel.population.IPopulation;
+import ummisco.genstar.metamodel.population.Population;
+import ummisco.genstar.metamodel.population.PopulationType;
 import ummisco.genstar.metamodel.sample_data.CompoundSampleData;
 import ummisco.genstar.metamodel.sample_data.ISampleData;
 import ummisco.genstar.metamodel.sample_data.SampleData;
@@ -43,7 +46,6 @@ public class IpfUtils {
 
 				int centerNumber = internalTotal / (numberOfElements - i);
 				
-//				int rndNumber = SharedInstances.RandomNumberGenerator.nextInt(internalTotal);
 				int rndNumber = SharedInstances.RandomNumberGenerator.nextInt(centerNumber);
 				result.add(1 + rndNumber);
 				internalTotal -= rndNumber;
@@ -54,9 +56,227 @@ public class IpfUtils {
 		
 		return result;
 	}
+	
+	
+	public static IPopulation extractIpfSinglePopulation(final IPopulation originalPopulation, final float percentage, final Set<AbstractAttribute> ipfControlledAttributes, 
+			final UniqueValuesAttributeWithRangeInput idAttribute) throws GenstarException {
+		
+		// 0. parameters validation
+		if (originalPopulation == null) { throw new GenstarException("'originalPopulation' parameter can not be null"); }
+		if (percentage <= 0 || percentage > 100) { throw new GenstarException("value of 'percentage' parameter must be in (0, 100] range"); }
+		if (ipfControlledAttributes == null || ipfControlledAttributes.isEmpty()) { throw new GenstarException("'ipfControlledAttributes' parameter can neither be null nor empty"); }
+		
+		for (AbstractAttribute controlledAttr : ipfControlledAttributes) {
+			if (!originalPopulation.containAttribute(controlledAttr)) {
+				throw new GenstarException("\'" + controlledAttr.getNameOnData() + "\' is not a valid attribute of the population");
+			}
+		}
+		
+		if (idAttribute != null) {
+			if (!originalPopulation.containAttribute(idAttribute)) {
+				throw new GenstarException("\'" + idAttribute.getNameOnData() + "\' is not a valid attribute of the population");
+			}
+			
+			if (ipfControlledAttributes.contains(idAttribute)) {
+				throw new GenstarException("\'" + idAttribute.getNameOnData() + "\' can not be a controlled attribute");
+			}
+		}
+		
+		
+		// 1. build entity categories (note that each entity can belong to several categories at the same time)
+		Map<AttributeValuesFrequency, List<Entity>> entityCategories = buildIpfEntityCategories(originalPopulation, ipfControlledAttributes);
+		
+		
+		// 2. Build extracted population
+		IPopulation extractedPopulation = new Population(PopulationType.SAMPLE_DATA_POPULATION, originalPopulation.getName(), originalPopulation.getAttributes());
+		extractedPopulation.addGroupReferences(originalPopulation.getGroupReferences());
+		extractedPopulation.addComponentReferences(originalPopulation.getGroupReferences());
+		
+		
+		// 2.1. firstly, try to satisfy that each attributeValueSet has one selected entity in the extracted population
+		int recodedIdAttributeValue = -1;
+		if (idAttribute != null) { recodedIdAttributeValue = idAttribute.getMinValue().getIntValue(); }
+		for (List<Entity> eCategory : entityCategories.values()) {
+			int entityIndex = SharedInstances.RandomNumberGenerator.nextInt(eCategory.size());
+			Entity selectedEntity = eCategory.get(entityIndex);
+			Entity createdEntity = extractedPopulation.createEntity(selectedEntity);
+			
+			// recode id attribute
+			if (idAttribute != null) {
+				GenstarUtils.recodeIdAttribute(createdEntity, idAttribute, null, null, recodedIdAttributeValue);
+				recodedIdAttributeValue++;
+			}
+		}
 
-	// TODO change name to buildIpfControlledAttributesValuesSubsets
-	public static List<List<Map<AbstractAttribute, AttributeValue>>> buildControlledAttributesValuesSubsets(final Set<AbstractAttribute> controlledAttributes) throws GenstarException {
+		
+		// 2.2. secondly, satisfy the "percentage" condition if possible
+		int alreadyExtractedEntities = entityCategories.size();
+		int nbOfAvailableEntities = 0; // note that nbOfAvailableEntities can be bigger then originalPopulation.getNbOfEntities()
+		List<AttributeValuesFrequency> avfList = new ArrayList<AttributeValuesFrequency>(entityCategories.keySet());
+		for (AttributeValuesFrequency avf : avfList) { nbOfAvailableEntities += avf.getFrequency(); }
+		int tobeExtractedEntities = (int) (((float)originalPopulation.getNbOfEntities()) * percentage / 100);
+		if (tobeExtractedEntities > alreadyExtractedEntities) {
+			int entitiesLeftToExtract = tobeExtractedEntities - alreadyExtractedEntities;
+			
+			for (int i=0; i<entitiesLeftToExtract; i++) {
+				int entityIndex = SharedInstances.RandomNumberGenerator.nextInt(nbOfAvailableEntities);
+				
+				AttributeValuesFrequency selectedAvf = null;
+				for (AttributeValuesFrequency avf : avfList) {
+					if (entityIndex >= avf.getFrequency()) {
+						entityIndex -= avf.getFrequency();
+					} else {
+						selectedAvf = avf;
+						break;
+					}
+				}
+				
+				Entity selectedEntity = entityCategories.get(selectedAvf).get(entityIndex);
+				Entity createdEntity = extractedPopulation.createEntity(selectedEntity);
+				
+				// recode id attribute
+				if (idAttribute != null) {
+					GenstarUtils.recodeIdAttribute(createdEntity, idAttribute, null, null, recodedIdAttributeValue);
+					recodedIdAttributeValue++;
+				}
+			}
+		}
+		
+		return extractedPopulation;
+	}
+	
+	
+	public static IPopulation extractIpfCompoundPopulation(final IPopulation originalCompoundPopulation, final float percentage, final Set<AbstractAttribute> ipfControlledAttributes,
+			final UniqueValuesAttributeWithRangeInput groupIdAttributeOnGroupEntity, final UniqueValuesAttributeWithRangeInput groupIdAttributeOnComponentEntity, final String componentPopulationName) throws GenstarException {
+		
+		// 0. parameters validation
+		if (originalCompoundPopulation == null) { throw new GenstarException("'originalCompoundPopulation' parameter can not be null"); }
+		if (percentage <= 0 || percentage > 100) { throw new GenstarException("value of 'percentage' parameter must be in (0, 100] range"); }
+		if (ipfControlledAttributes == null || ipfControlledAttributes.isEmpty()) { throw new GenstarException("'ipfControlledAttributes' parameter can neither be null nor empty"); }
+		if (groupIdAttributeOnGroupEntity == null) { throw new GenstarException("'groupIdAttributeOnGroupEntity' parameter can not be null"); }
+		if (groupIdAttributeOnComponentEntity == null) { throw new GenstarException("'groupIdAttributeOnComponentEntity' can not be null"); }
+		if (componentPopulationName == null) { throw new GenstarException("'componentPopulationName' can not be null"); }
+		
+		for (AbstractAttribute controlledAttr : ipfControlledAttributes) {
+			if (!originalCompoundPopulation.containAttribute(controlledAttr)) {
+				throw new GenstarException("\'" + controlledAttr.getNameOnData() + "\' is not a valid attribute of the population");
+			}
+		}
+		
+		if (ipfControlledAttributes.contains(groupIdAttributeOnGroupEntity)) {
+			throw new GenstarException("'groupIdAttributeOnGroupEntity' can not be a controlled attribute");
+		}
+		
+		
+		// 1. build entity categories (note that each entity can belong to several categories at the same time)
+		Map<AttributeValuesFrequency, List<Entity>> entityCategories = buildIpfEntityCategories(originalCompoundPopulation, ipfControlledAttributes);
+
+		
+		// 2. Build extracted population
+		IPopulation extractedPopulation = new Population(PopulationType.SAMPLE_DATA_POPULATION, originalCompoundPopulation.getName(), originalCompoundPopulation.getAttributes());
+		extractedPopulation.addGroupReferences(originalCompoundPopulation.getGroupReferences());
+		extractedPopulation.addComponentReferences(originalCompoundPopulation.getComponentReferences());
+		
+
+		// 2.1. firstly, try to satisfy that each attributeValueSet has one selected entity in the extracted population
+		int recodedIdAttributeValue = groupIdAttributeOnGroupEntity.getMinValue().getIntValue(); // recoded ID attribute value begins with the minimal supported value of the ID attribute
+		for (List<Entity> eCategory : entityCategories.values()) {
+			int entityIndex = SharedInstances.RandomNumberGenerator.nextInt(eCategory.size());
+			
+			Entity selectedEntity = eCategory.get(entityIndex);
+			Entity createdEntity = extractedPopulation.createEntity(selectedEntity);
+
+			// recode id attribute
+			GenstarUtils.recodeIdAttribute(createdEntity, groupIdAttributeOnGroupEntity, 
+					 groupIdAttributeOnComponentEntity, componentPopulationName, recodedIdAttributeValue);
+			recodedIdAttributeValue++;
+		}
+
+		
+		// 2.2. secondly, satisfy the "percentage" condition if possible
+		int alreadyExtractedEntities = entityCategories.size();
+		int nbOfAvailableEntities = 0; // note that nbOfAvailableEntities can be bigger then originalPopulation.getNbOfEntities()
+		List<AttributeValuesFrequency> avfList = new ArrayList<AttributeValuesFrequency>(entityCategories.keySet());
+		for (AttributeValuesFrequency avf : avfList) { nbOfAvailableEntities += avf.getFrequency(); }
+		int tobeExtractedEntities = (int) (((float)originalCompoundPopulation.getNbOfEntities()) * percentage / 100);
+		if (tobeExtractedEntities > alreadyExtractedEntities) {
+			int entitiesLeftToExtract = tobeExtractedEntities - alreadyExtractedEntities;
+			
+			for (int i=0; i<entitiesLeftToExtract; i++) {
+				int entityIndex = SharedInstances.RandomNumberGenerator.nextInt(nbOfAvailableEntities);
+				
+				AttributeValuesFrequency selectedAvf = null;
+				for (AttributeValuesFrequency avf : avfList) {
+					if (entityIndex >= avf.getFrequency()) {
+						entityIndex -= avf.getFrequency();
+					} else {
+						selectedAvf = avf;
+						break;
+					}
+				}
+				
+				Entity selectedEntity = entityCategories.get(selectedAvf).get(entityIndex);
+				Entity createdEntity = extractedPopulation.createEntity(selectedEntity);
+
+				// recode id attribute
+				GenstarUtils.recodeIdAttribute(createdEntity, groupIdAttributeOnGroupEntity, 
+						 groupIdAttributeOnComponentEntity, componentPopulationName, recodedIdAttributeValue);
+				recodedIdAttributeValue++;
+			}
+		}
+
+		
+		return extractedPopulation;
+	}
+	
+	
+	public static Map<AttributeValuesFrequency, List<Entity>> buildIpfEntityCategories(final IPopulation population, final Set<AbstractAttribute> ipfControlledAttributes) throws GenstarException {
+		
+		// 0. TODO parameters validation
+		
+		
+		// 1. build attributeValuesFrequencies (GenstarUtils.generateAttributeValuesFrequencies(attributes))
+		Set<AttributeValuesFrequency> attributeValuesFrequencies = new HashSet<AttributeValuesFrequency>();
+		
+		List<List<Map<AbstractAttribute, AttributeValue>>> ipfControlledAttributesValuesSubsets = buildIpfControlledAttributesValuesSubsets(ipfControlledAttributes);
+		for (List<Map<AbstractAttribute, AttributeValue>> ipfControlledAttributesValuesSubset : ipfControlledAttributesValuesSubsets) {
+			for (Map<AbstractAttribute, AttributeValue > ipfControlledAttributesValues : ipfControlledAttributesValuesSubset) {
+				attributeValuesFrequencies.add(new AttributeValuesFrequency(ipfControlledAttributesValues));
+			}
+		}
+		
+		// 2. build entityCategories
+		Map<AttributeValuesFrequency, List<Entity>> entityCategories = new HashMap<AttributeValuesFrequency, List<Entity>>();
+		for (AttributeValuesFrequency avf : attributeValuesFrequencies) {
+			entityCategories.put(avf, new ArrayList<Entity>());
+		}
+		
+		List<Entity> entities = population.getEntities();
+		for (AttributeValuesFrequency avf : entityCategories.keySet()) {
+			List<Entity> avfEntities = entityCategories.get(avf);
+			
+			for (Entity e : entities) {
+				if (avf.matchEntity(e)) {
+					avf.increaseFrequency();
+					avfEntities.add(e);
+				}
+			}
+		}
+		
+		
+		// 3. if there is no matching entity for any attribute values sets, then throw exception
+		for (AttributeValuesFrequency avf : entityCategories.keySet()) {
+			if (avf.getFrequency() == 0) {
+				throw new GenstarException("No matching entity for attribute values set: " + avf.toString());
+			}
+		}
+		 
+		
+		return entityCategories;
+	}
+
+
+	public static List<List<Map<AbstractAttribute, AttributeValue>>> buildIpfControlledAttributesValuesSubsets(final Set<AbstractAttribute> controlledAttributes) throws GenstarException {
 		
 		// parameters validation
 		if (controlledAttributes == null) { throw new GenstarException("Parameter controlledAttributes can not be null"); }
@@ -87,7 +307,6 @@ public class IpfUtils {
 			for (Map<AbstractAttribute, AttributeValue> attributeValuesMap : attributeValuesMaps) {
 				Set<AbstractAttribute> subsetAttributes = attributeValuesMap.keySet();
 				
-//				if (validSubsetAttributes.size() == subsetAttributes.size() && subsetAttributes.containsAll(validSubsetAttributes)) { // TODO redundant condition: validSubsetAttributes.size() == subsetAttributes.size()
 				if (subsetAttributes.containsAll(validSubsetAttributes)) {
 					controlledAttributesValuesSubset.add(attributeValuesMap);
 				}
@@ -102,7 +321,7 @@ public class IpfUtils {
 	}
 	
 		
-	public static List<List<String>> generateIpfControlTotals(final GenstarCsvFile attributesFile, final int total) throws GenstarException {
+	public static List<List<String>> generateIpfControlTotalsFromTotal(final GenstarCsvFile attributesFile, final int total) throws GenstarException {
 		// parameters validation
 		if (attributesFile == null) { throw new GenstarException("Parameter attributesFile can not be null"); }
 		if (total < 1) { throw new GenstarException("Parameter controlTotal must be positive"); }
@@ -111,7 +330,7 @@ public class IpfUtils {
 		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 		
 		// generate frequencies / control totals
-		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets = buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(generator.getAttributes()));
+		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets = buildIpfControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(generator.getAttributes()));
 		List<List<String>> controlTotals = new ArrayList<List<String>>();
 		for (List<Map<AbstractAttribute, AttributeValue>> controlledAttributesValuesSubset : controlledAttributesValuesSubsets) {
 
@@ -197,7 +416,7 @@ public class IpfUtils {
 		
 		
 		// build controlled attributes values subsets to verify the validity of control totals (file content)
-		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets = buildControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(controlledAttributes));
+		List<List<Map<AbstractAttribute, AttributeValue>>> controlledAttributesValuesSubsets = buildIpfControlledAttributesValuesSubsets(new HashSet<AbstractAttribute>(controlledAttributes));
 		int controlledAttributesValuesSubsetsSize = 0;
 		for (List<Map<AbstractAttribute, AttributeValue>> subset : controlledAttributesValuesSubsets) { controlledAttributesValuesSubsetsSize += subset.size(); }
 		
@@ -359,40 +578,6 @@ public class IpfUtils {
 	}
 
 	
-	// TODO remove, no class uses this method
-//	public static GenstarCsvFile writeAnalysisResultToFile(final GenstarCsvFile controlTotalsFile, final List<Integer> analysisResult, final String csvOutputFilePath) throws GenstarException {
-//		
-//		// parameters validation
-//		if (controlTotalsFile == null || analysisResult == null || csvOutputFilePath == null) {
-//			throw new GenstarException("Parameters controlTotalsFile, analysisResult, csvOutputFilePath can not be null");
-//		}
-//		
-//		if (controlTotalsFile.getRows() != analysisResult.size()) {
-//			throw new GenstarException("controlTotalsFile's row is different from analysisResult's size (" + controlTotalsFile.getRows() + " v.s. " + analysisResult.size() + ")");
-//		}
-//		
-//		// write analysis result to file
-//		CsvWriter writer = new CsvWriter(csvOutputFilePath);
-//		try {
-//			int line=0;
-//			for (List<String> row : controlTotalsFile.getContent()) {
-//				String[] newRow = new String[row.size() + 1];
-//				newRow = Arrays.copyOf(row.toArray(new String[0]), newRow.length);
-//				newRow[newRow.length - 1] = analysisResult.get(line).toString();
-//				
-//				writer.writeRecord(newRow);
-//				line++;
-//			}
-//		} catch (IOException ioe) {
-//			throw new GenstarException(ioe);
-//		} finally {
-//			writer.close();
-//		}
-//		
-//		return new GenstarCsvFile(csvOutputFilePath, false);
-//	}
-
-
 	public static void createIpfGenerationRule(final SampleBasedGenerator generator, final String ruleName, final GenstarCsvFile sampleFile,
 			final GenstarCsvFile controlledAttributesFile, final GenstarCsvFile controlledTotalsFile, 
 			final GenstarCsvFile supplementaryAttributesFile, final int maxIterations) throws GenstarException {

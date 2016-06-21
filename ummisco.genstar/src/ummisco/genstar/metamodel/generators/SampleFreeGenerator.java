@@ -17,6 +17,11 @@ import ummisco.genstar.sample_free.FrequencyDistributionGenerationRule;
 public class SampleFreeGenerator extends AbstractSyntheticPopulationGenerator {
 	
 	protected SortedMap<Integer, SampleFreeGenerationRule> generationRules; // rule order begins by 0
+	
+	
+	public SampleFreeGenerator(final String generatorName) throws GenstarException {
+		this(generatorName, 100);
+	}
 
 	public SampleFreeGenerator(final String generatorName, final int nbOfEntities) throws GenstarException {
 		this(generatorName, nbOfEntities, "no-name population");
@@ -199,7 +204,7 @@ public class SampleFreeGenerator extends AbstractSyntheticPopulationGenerator {
 		
 		for (Entity e : population.getEntities()) {
 			for (int order=0; order<generationRules.size(); order++) { generationRules.get(order).generate(e); }
-			// FIXME optimization : 
+			// TODO optimization : 
 			// 		Hypothesis : 
 			//			if first rule is a FrequencyDistributionGenerationRule contains only output attributes
 			//				and if it AttributeValues mirrors exactly real data's value (i.e., the sum of AttributeValues == nbOfEntities)

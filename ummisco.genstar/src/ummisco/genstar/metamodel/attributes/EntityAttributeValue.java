@@ -17,30 +17,28 @@ public class EntityAttributeValue {
 			throw new GenstarException("None of attribute, attributeValueOnData, attributeValueOnEntity parameters can be null");
 		}
 		
-		AttributeValue attributeValueOnDataInstance = attribute.getInstanceOfAttributeValue(attributeValueOnData);
-		if (attributeValueOnDataInstance == null) {
+		if (!(attribute.containInstanceOfAttributeValue(attributeValueOnData))) {
 			throw new GenstarException(attributeValueOnData + " is not a valid value of " + attribute.getNameOnData() + " attribute");
 		}
 
 		AttributeValue matchingAttributeValueOnData = attribute.getMatchingAttributeValueOnData(attributeValueOnEntity);
 		if (matchingAttributeValueOnData == null) { throw new GenstarException(attributeValueOnEntity + " is not a valid value of " + attribute.getNameOnData() + " attribute."); }
-		if (!matchingAttributeValueOnData.equals(attributeValueOnDataInstance)) { throw new GenstarException(attributeValueOnData + " and " + attributeValueOnEntity + " are not compatible values"); }
+		if (!matchingAttributeValueOnData.equals(attributeValueOnData)) { throw new GenstarException(attributeValueOnData + " and " + attributeValueOnEntity + " are not compatible values"); }
 		
 		this.attribute = attribute;
-		this.attributeValueOnData = attributeValueOnDataInstance;
+		this.attributeValueOnData = attributeValueOnData;
 		this.attributeValueOnEntity = attributeValueOnEntity;
 	}
 	
 	public EntityAttributeValue(final AbstractAttribute attribute, final AttributeValue attributeValueOnData) throws GenstarException {
 		if (attribute == null || attributeValueOnData == null) { throw new GenstarException("Neither 'attribute' nor 'attributeValueOnData' parameter can be null"); }
 		
-		AttributeValue attributeValueOnDataInstance = attribute.getInstanceOfAttributeValue(attributeValueOnData);
-		if (attributeValueOnDataInstance == null) {
+		if (!(attribute.containInstanceOfAttributeValue(attributeValueOnData))) {
 			throw new GenstarException(attributeValueOnData + " is not a valid value of " + attribute.getNameOnData() + " attribute");
 		}
 		
 		this.attribute = attribute;
-		this.attributeValueOnData = attributeValueOnDataInstance;
+		this.attributeValueOnData = attributeValueOnData;
 		this.attributeValueOnEntity = attributeValueOnData.cast(attribute.getValueClassOnEntity());
 	}
 	

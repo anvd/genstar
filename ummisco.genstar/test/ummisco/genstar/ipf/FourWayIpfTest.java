@@ -61,7 +61,7 @@ public class FourWayIpfTest {
 		File controlTotalsFile = new File(controlTotalsFilePath);
 		if (!controlTotalsFile.exists()) {
 			int numberOfHouseholds = 1000;
-			List<List<String>> householdControlTotals = IpfUtils.generateIpfControlTotals(controlAttributesFile, numberOfHouseholds);
+			List<List<String>> householdControlTotals = IpfUtils.generateIpfControlTotalsFromTotal(controlAttributesFile, numberOfHouseholds);
 			GenstarUtils.writeStringContentToCsvFile(householdControlTotals, controlTotalsFilePath);
 		}
 		

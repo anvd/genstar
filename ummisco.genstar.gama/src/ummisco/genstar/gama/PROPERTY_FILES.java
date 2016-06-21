@@ -1,6 +1,6 @@
 package ummisco.genstar.gama;
 
-// TODO move this class to "ummisco.genstar" project
+// TODO move this class to "ummisco.genstar" project, change class name to PROPERTY_FILE_FORMATS
 public class PROPERTY_FILES {
 
 	public static final class FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES {
@@ -15,7 +15,18 @@ public class PROPERTY_FILES {
 		
 		public static final String ANALYSIS_RESULT_OUTPUT_FOLDER_PROPERTY = "ANALYSIS_RESULT_OUTPUT_FOLDER";
 	}
+	
+	
+	public static final class FREQUENCY_DISTRIBUTIONS_PROPERTIES {
+		
+		public static final String ATTRIBUTES_PROPERTY = "ATTRIBUTES";
 
+		public static final String POPULATION_DATA_PROPERTY = "POPULATION_DATA";
+
+		public static final String FREQUENCY_DISTRIBUTION_FORMATS_PROPERTY = "FREQUENCY_DISTRIBUTION_FORMATS";
+	}
+	
+	
 	public static final class RANDOM_POPULATION_PROPERTIES {
 
 		public static final String POPULATION_NAME_PROPERTY = "POPULATION_NAME";
@@ -27,6 +38,7 @@ public class PROPERTY_FILES {
 		public static final String ID_ATTRIBUTE_PROPERTY = "ID_ATTRIBUTE";
 	}
 
+	
 	public static final class RANDOM_COMPOUND_POPULATION_PROPERTIES {
 
 		public static final String GROUP_POPULATION_NAME_PROPERTY = "GROUP_POPULATION_NAME";
@@ -57,7 +69,8 @@ public class PROPERTY_FILES {
 		public static final String GROUP_REFERENCE_ON_COMPONENT_PROPERTY = "GROUP_REFERENCE_ON_COMPONENT";
 	}
 
-	public static final class CONTROL_TOTALS_PROPERTIES { // IPF_CONTROL_TOTALS_PROPERTIES ???
+	
+	public static final class IPF_CONTROL_TOTALS_PROPERTIES {
 
 		public static final String ATTRIBUTES_PROPERTY = "ATTRIBUTES";
 
@@ -66,6 +79,8 @@ public class PROPERTY_FILES {
 		public static final String CONTROLLED_ATTRIBUTES_PROPERTY = "CONTROLLED_ATTRIBUTES";
 
 		public static final String POPULATION_DATA_PROPERTY = "POPULATION_DATA";
+		
+		public static final String OUTPUT_FILE_PROPERTY = "OUTPUT_FILE";
 	}
 
 	
@@ -133,6 +148,54 @@ public class PROPERTY_FILES {
 
 		public static final String GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_COMPONENT";
 
+		public static final String COMPONENT_REFERENCE_ON_GROUP_PROPERTY = "COMPONENT_REFERENCE_ON_GROUP";
+
+		public static final String GROUP_REFERENCE_ON_COMPONENT_PROPERTY = "GROUP_REFERENCE_ON_COMPONENT";
+	}
+	
+	
+	public static final class EXTRACT_IPF_POPULATION_PROPERTIES {
+		
+		public static final String ATTRIBUTES_PROPERTY = "ATTRIBUTES";
+		
+		public static final String POPULATION_NAME_PROPERTY = "POPULATION_NAME";
+		
+		public static final String POPULATION_DATA_PROPERTY = "POPULATION_DATA";
+		
+		public static final String CONTROLLED_ATTRIBUTES_PROPERTY = "CONTROLLED_ATTRIBUTES";
+		
+		public static final String ID_ATTRIBUTE_PROPERTY = "ID_ATTRIBUTE";
+		
+		
+		public static final String PERCENTAGE_PROPERTY = "PERCENTAGE";
+	}
+	
+	
+	public static final class EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES {
+		
+		public static final String GROUP_ATTRIBUTES_PROPERTY = "GROUP_ATTRIBUTES";
+		
+		public static final String GROUP_POPULATION_NAME_PROPERTY = "GROUP_POPULATION_NAME";
+		
+		public static final String GROUP_POPULATION_DATA_PROPERTY = "GROUP_POPULATION_DATA";
+		
+		public static final String CONTROLLED_ATTRIBUTES_PROPERTY = "CONTROLLED_ATTRIBUTES";
+		
+		public static final String GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_GROUP";
+		
+		
+		public static final String COMPONENT_ATTRIBUTES_PROPERTY = "COMPONENT_ATTRIBUTES";
+		
+		public static final String COMPONENT_POPULATION_NAME_PROPERTY = "COMPONENT_POPULATION_NAME";
+		
+		public static final String COMPONENT_POPULATION_DATA_PROPERTY = "COMPONENT_POPULATION_DATA";
+		
+		public static final String GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_COMPONENT";
+
+	
+		public static final String PERCENTAGE_PROPERTY = "PERCENTAGE";
+
+	
 		public static final String COMPONENT_REFERENCE_ON_GROUP_PROPERTY = "COMPONENT_REFERENCE_ON_GROUP";
 
 		public static final String GROUP_REFERENCE_ON_COMPONENT_PROPERTY = "GROUP_REFERENCE_ON_COMPONENT";

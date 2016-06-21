@@ -36,21 +36,28 @@ public class UniqueValuesAttributeWithRangeInputTest {
 		assertTrue(_maxValue.compareTo(maxValue) == 0);
 	}
 	
-	@Test public void testGetInstanceOfAttributeValue(@Mocked final ISyntheticPopulationGenerator generator) throws GenstarException {
+	@Test public void testContainInstanceOfAttributeValue(@Mocked final ISyntheticPopulationGenerator generator) throws GenstarException {
 		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1");
 		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "10");
 		UniqueValuesAttributeWithRangeInput attribute = new UniqueValuesAttributeWithRangeInput(generator, "dummy attribute", "dummy attribute", minValue, maxValue);
 
 		UniqueValue value1 = new UniqueValue(DataType.INTEGER, "0");
-		assertTrue(attribute.getInstanceOfAttributeValue(value1) == null);
+		assertFalse(attribute.containInstanceOfAttributeValue(value1));
 		
 		UniqueValue value2 = new UniqueValue(DataType.INTEGER, "1");
-		AttributeValue _value2 = attribute.getInstanceOfAttributeValue(value2);
+		assertFalse(attribute.containInstanceOfAttributeValue(value2));
+		
+		for (AttributeValue value : attribute.valuesOnData()) { assertTrue(attribute.containInstanceOfAttributeValue(value)); }
+		
+		
+		/*
+		AttributeValue _value2 = attribute.containsInstanceOfAttributeValue(value2);
 		assertTrue(value2.compareTo(_value2) == 0);
 		assertTrue(!value2.equals(_value2));
 		
-		AttributeValue __value2 = attribute.getInstanceOfAttributeValue(value2);
+		AttributeValue __value2 = attribute.containsInstanceOfAttributeValue(value2);
 		assertTrue(_value2.equals(__value2));
+		*/
 	}
 	
 	@Test public void testFindCorrespondingAttributeValueOnData(@Mocked final ISyntheticPopulationGenerator generator) throws GenstarException {
@@ -75,7 +82,7 @@ public class UniqueValuesAttributeWithRangeInputTest {
 		assertTrue(value1.equals(_value1));
 	}
 	
-	@Test public void testFindMatchingAttributeValueOnData(@Mocked final ISyntheticPopulationGenerator generator) throws GenstarException {
+	@Test public void testGetMatchingAttributeValueOnData(@Mocked final ISyntheticPopulationGenerator generator) throws GenstarException {
 		
 		UniqueValue minValue = new UniqueValue(DataType.INTEGER, "1");
 		UniqueValue maxValue = new UniqueValue(DataType.INTEGER, "10");

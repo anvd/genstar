@@ -15,8 +15,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import com.google.common.collect.Sets;
-
 import msi.gama.common.util.FileUtils;
 import msi.gama.runtime.IScope;
 import msi.gama.util.GamaListFactory;
@@ -29,7 +27,7 @@ import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
 import ummisco.genstar.metamodel.attributes.EntityAttributeValue;
-import ummisco.genstar.metamodel.generation_rules.SampleFreeGenerationRule;
+import ummisco.genstar.metamodel.attributes.UniqueValuesAttributeWithRangeInput;
 import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
 import ummisco.genstar.metamodel.generators.SampleBasedGenerator;
 import ummisco.genstar.metamodel.generators.SampleFreeGenerator;
@@ -42,14 +40,19 @@ import ummisco.genstar.sample_free.AttributeInferenceGenerationRule;
 import ummisco.genstar.sample_free.CustomSampleFreeGenerationRule;
 import ummisco.genstar.sample_free.FrequencyDistributionGenerationRule;
 import ummisco.genstar.util.AttributeUtils;
+import ummisco.genstar.util.CSV_FILE_FORMATS;
 import ummisco.genstar.util.CsvWriter;
 import ummisco.genstar.util.FrequencyDistributionUtils;
 import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
-import ummisco.genstar.util.CSV_FILE_FORMATS;
 import ummisco.genstar.util.IpfUtils;
 import ummisco.genstar.util.IpuUtils;
 
+import com.google.common.collect.Sets;
+
+// TODO change this class to GenstarServices 
+//		remove references to IScope
+// 		move it to "ummisco.genstar" project
 public class GamaGenstarUtils {
 	
 	static IPopulation generateIpfPopulation(final IScope scope, final Properties ipfPopulationProperties) throws GenstarException {
@@ -63,6 +66,7 @@ public class GamaGenstarUtils {
 		// 2. Create the generation rule
 		createIpfGenerationRule(scope, generator, "ipf generation rule", ipfPopulationProperties);
 		
+		// 3. Generate the population
 		return generator.generate();
 	}
 	
@@ -79,6 +83,7 @@ public class GamaGenstarUtils {
 		// 2. Create the generation rule
 		createIpuGenerationRule(scope, groupGenerator, "ipu generation rule", ipuPopulationProperties);
 		
+		// 3. Generate the population
 		return groupGenerator.generate();
 	}
 	
@@ -114,10 +119,12 @@ public class GamaGenstarUtils {
 		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
 		List<GenstarCsvFile> generationRuleFiles = GamaGenstarUtils.createSampleFreeGenerationRules(scope, generator, generationRulesCSVFile);
 		
+		
+		// 3. Generate the population
 		IPopulation population = generator.generate();
 		
 		
-		// 3. perform the post generation analysis if necessary  
+		// 4. perform the post generation analysis if necessary  
 		String analysisResultOutputFolderPath = frequencyDistributionPopulationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.ANALYSIS_RESULT_OUTPUT_FOLDER_PROPERTY);
 		if (analysisResultOutputFolderPath != null) {
 			String reconstructedFolderPath = FileUtils.constructAbsoluteFilePath(scope, analysisResultOutputFolderPath, true);
@@ -125,11 +132,78 @@ public class GamaGenstarUtils {
 		}
 		
 		
-		// 4. Generate the population
 		return population;
 	}
 	
 	
+	static List<String> generateFrequencyDistributionsFromSampleOrPopulationData(final IScope scope, final Properties frequencyDistributionsProperties) throws GenstarException {
+		
+		// 1. Read the properties
+		String attributesCSVFilePath = frequencyDistributionsProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTIONS_PROPERTIES.ATTRIBUTES_PROPERTY);
+		if (attributesCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTIONS_PROPERTIES.ATTRIBUTES_PROPERTY + " property not found"); }
+		GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
+
+		String sampleOrPopulationDataFilePath = frequencyDistributionsProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTIONS_PROPERTIES.POPULATION_DATA_PROPERTY);
+		if (sampleOrPopulationDataFilePath == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTIONS_PROPERTIES.POPULATION_DATA_PROPERTY + " property not found"); }
+		GenstarCsvFile sampleOrPopulationDataFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, sampleOrPopulationDataFilePath, true), true);
+		
+		String frequencyDistributionFormatsListFilePath = frequencyDistributionsProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTIONS_PROPERTIES.FREQUENCY_DISTRIBUTION_FORMATS_PROPERTY);
+		if (frequencyDistributionFormatsListFilePath == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTIONS_PROPERTIES.FREQUENCY_DISTRIBUTION_FORMATS_PROPERTY + " property not found"); }
+		GenstarCsvFile frequencyDistributionFormatsListFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, frequencyDistributionFormatsListFilePath, true), true);
+		
+		
+		// 2. parse the frequencyDistributionFormatsListFile
+		
+		// 2.1. header verification
+		List<String> frequencyDistributionFormatsListFileHeader = frequencyDistributionFormatsListFile.getHeaders();
+		if (frequencyDistributionFormatsListFileHeader.size() != CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_FORMATS_LIST.NB_OF_COLS) { // header length verification
+			throw new GenstarException("Invalid frequency distribution formats list file header: file header must have " 
+											+ CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_FORMATS_LIST.NB_OF_COLS + " columns."
+											+ " File: " + frequencyDistributionFormatsListFile.getPath());
+		}
+		
+		if (!frequencyDistributionFormatsListFileHeader.get(0).equals(CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_FORMATS_LIST.HEADERS[0])) { // header's first column
+			throw new GenstarException("Invalid header content. First element of the header must be \'" + CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_FORMATS_LIST.HEADERS[0]
+					+ "\'. File: " + frequencyDistributionFormatsListFile.getPath());
+		}
+		
+		if (!frequencyDistributionFormatsListFileHeader.get(1).equals(CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_FORMATS_LIST.HEADERS[1])) { // header's second column
+			throw new GenstarException("Invalid header content. Second element of the header must be \'" + CSV_FILE_FORMATS.FREQUENCY_DISTRIBUTION_FORMATS_LIST.HEADERS[1] 
+					+ "\'. File: " + frequencyDistributionFormatsListFile.getPath());
+		}
+		
+		// 2.2. read distribution format lists file content (first column: path to format file, second column: corresponding output file)
+		List<GenstarCsvFile> distributionFormatCsvFiles = new ArrayList<GenstarCsvFile>();
+		List<String> resultDistributionCsvFilePaths = new ArrayList<String>();
+		for (List<String> row : frequencyDistributionFormatsListFile.getContent()) {
+			
+			// first column: Format File
+			String distributionFormatFilePath = row.get(0);
+			GenstarCsvFile distributionFormatFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, distributionFormatFilePath, true), true);
+			distributionFormatCsvFiles.add(distributionFormatFile);
+			
+			// second column: Output File
+			String outputFilePath = row.get(1);
+			String constructedOutputFilePath = FileUtils.constructAbsoluteFilePath(scope, outputFilePath, false);
+			resultDistributionCsvFilePaths.add(constructedOutputFilePath);
+		}
+		
+		
+		// 3. create the generator then add attributes
+		SampleFreeGenerator generator = new SampleFreeGenerator("generator");
+		AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
+		
+		
+		// 4. generate frequency distributions and save results to files
+		return FrequencyDistributionUtils.generateAndSaveFrequencyDistributions(generator, sampleOrPopulationDataFile, distributionFormatCsvFiles, resultDistributionCsvFilePaths);
+	}
+	
+	
+	
+	// TODO remove this method
+	// change method name and signature to "List<String> generateFrequencyDistributionsFromSampleDataOrPopulationFile"
+	// method parameters: final IScope scope, final String attributesFilePath, final String sampleDataOrPopulationFilePath,
+	//						final String 
 	static String createFrequencyDistributionFromSampleDataOrPopulationFile(final IScope scope, final String attributesCsvFilePath, 
 			final String sampleDataCsvFilePath, final String distributionFormatCsvFilePath, final String resultDistributionCsvFilePath) throws GenstarException {
 //	TODO review this method due to two separate responsibilities
@@ -169,14 +243,12 @@ public class GamaGenstarUtils {
 			// 3. create a frequency generation rule from the sample data then write the generation rule to file.
 			FrequencyDistributionGenerationRule fdGenerationRule = FrequencyDistributionUtils.createFrequencyDistributionGenerationRuleFromSampleDataOrPopulationFile(generator, distributionFormatCsvFile, sampleDataCsvFile);
 			
-//			List<String[]> contents = new ArrayList<String[]>();
 			List<List<String>> contents = new ArrayList<List<String>>();
 			
 			// write the header
 			String[] generationRuleAttributeNamesArray = new String[attributeNamesOnData.size() + 1];
 			attributeNamesOnData.toArray(generationRuleAttributeNamesArray);
 			generationRuleAttributeNamesArray[generationRuleAttributeNamesArray.length - 1] = "Frequency";
-//			contents.add(generationRuleAttributeNamesArray);
 			contents.add(Arrays.asList(generationRuleAttributeNamesArray));
 			
 			
@@ -189,28 +261,20 @@ public class GamaGenstarUtils {
 			
 			
 			for (AttributeValuesFrequency avf : sortedAttributeValueFrequencies) {
-//				String[] row = new String[attributeNamesOnData.size() + 1];
 				List<String> row = new ArrayList<String>();
 
 				// build the string representation of each set of attribute values
 				for (int i=0; i<generationRuleAttributes.size(); i++) {
 					AttributeValue av = avf.getAttributeValueOnData(generationRuleAttributes.get(i));
-//					row[i] = av.toCsvString();
 					row.add(av.toCsvString());
 				}
-//				row[row.length - 1] = Integer.toString(avf.getFrequency());
 				row.add(Integer.toString(avf.getFrequency()));
 				
 				contents.add(row);
 			}
 			
-			// TODO delegate to GenstarUtils.writeStringContentToCsvFile
 			// save the CSV file
 			String exportFileName = FileUtils.constructAbsoluteFilePath(scope, resultDistributionCsvFilePath, false);
-//			CsvWriter writer = new CsvWriter(exportFileName);
-//			for ( String[] ss : contents ) { writer.writeRecord(ss); }
-//			writer.close();
-			
 			GenstarUtils.writeStringContentToCsvFile(contents, exportFileName);
 			
 			return exportFileName;
@@ -303,20 +367,16 @@ public class GamaGenstarUtils {
 	}
 	
 	
-	// TODO check duplication with GamaGenstarUtils.createFrequencyDistributionFromSample
-	static String generateControlTotals(final IScope scope, final String controlTotalPropertiesFilePath, final String resultControlsTotalFilePath) throws GenstarException {
-		// change method name to "generateIpfControlTotals"
-		// delegate to IpfUtils.parseIpfControlTotalsFile
-
+	static String generateIpfControlTotalsFromPopulationData(final IScope scope, final String ipfControlTotalsPropertiesFilePath) throws GenstarException {
 		
 		try {
 			// 0. Load the property file
-			Properties controlTotalProperties = null;
-			File propertiesFile = new File(FileUtils.constructAbsoluteFilePath(scope, controlTotalPropertiesFilePath, true));
+			Properties ipfControlTotalProperties = null;
+			File ipfPropertiesFile = new File(FileUtils.constructAbsoluteFilePath(scope, ipfControlTotalsPropertiesFilePath, true));
 			try {
-				FileInputStream propertyInputStream = new FileInputStream(propertiesFile);
-				controlTotalProperties = new Properties();
-				controlTotalProperties.load(propertyInputStream);
+				FileInputStream propertyInputStream = new FileInputStream(ipfPropertiesFile);
+				ipfControlTotalProperties = new Properties();
+				ipfControlTotalProperties.load(propertyInputStream);
 			} catch (FileNotFoundException e) {
 				throw new GenstarException(e);
 			} catch (IOException e) {
@@ -325,44 +385,53 @@ public class GamaGenstarUtils {
 			
 			
 			// 1. initialize CSV files
-			String attributesCSVFilePath = controlTotalProperties.getProperty(PROPERTY_FILES.CONTROL_TOTALS_PROPERTIES.ATTRIBUTES_PROPERTY);
-			if (attributesCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.CONTROL_TOTALS_PROPERTIES.ATTRIBUTES_PROPERTY + " property not found in " + controlTotalPropertiesFilePath); }
+			String attributesCSVFilePath = ipfControlTotalProperties.getProperty(PROPERTY_FILES.IPF_CONTROL_TOTALS_PROPERTIES.ATTRIBUTES_PROPERTY);
+			if (attributesCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.IPF_CONTROL_TOTALS_PROPERTIES.ATTRIBUTES_PROPERTY + " property not found in " + ipfControlTotalsPropertiesFilePath); }
 			GenstarCsvFile attributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesCSVFilePath, true), true);
 			
-			String idAttributeNameOnData = controlTotalProperties.getProperty(PROPERTY_FILES.CONTROL_TOTALS_PROPERTIES.ID_ATTRIBUTE_PROPERTY);
+			String idAttributeNameOnData = ipfControlTotalProperties.getProperty(PROPERTY_FILES.IPF_CONTROL_TOTALS_PROPERTIES.ID_ATTRIBUTE_PROPERTY);
 			
-			String controlAttributesCSVFilePath = controlTotalProperties.getProperty(PROPERTY_FILES.CONTROL_TOTALS_PROPERTIES.CONTROLLED_ATTRIBUTES_PROPERTY);
-			if (controlAttributesCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.CONTROL_TOTALS_PROPERTIES.CONTROLLED_ATTRIBUTES_PROPERTY + " property not found in " + controlTotalPropertiesFilePath); }
-			GenstarCsvFile controlAttributesCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlAttributesCSVFilePath, true), false);
+			String controlledAttributesFilePath = ipfControlTotalProperties.getProperty(PROPERTY_FILES.IPF_CONTROL_TOTALS_PROPERTIES.CONTROLLED_ATTRIBUTES_PROPERTY);
+			if (controlledAttributesFilePath == null) { throw new GenstarException(PROPERTY_FILES.IPF_CONTROL_TOTALS_PROPERTIES.CONTROLLED_ATTRIBUTES_PROPERTY + " property not found in " + ipfControlTotalsPropertiesFilePath); }
+			GenstarCsvFile controlledAttributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlledAttributesFilePath, true), false);
 			
-			String populationCSVFilePath = controlTotalProperties.getProperty(PROPERTY_FILES.CONTROL_TOTALS_PROPERTIES.POPULATION_DATA_PROPERTY);
-			if (populationCSVFilePath == null) { throw new GenstarException(PROPERTY_FILES.CONTROL_TOTALS_PROPERTIES.POPULATION_DATA_PROPERTY + " property not found in " + controlTotalPropertiesFilePath); }
-			GenstarCsvFile populationCSVFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, populationCSVFilePath, true), true);
+			String populationFilePath = ipfControlTotalProperties.getProperty(PROPERTY_FILES.IPF_CONTROL_TOTALS_PROPERTIES.POPULATION_DATA_PROPERTY);
+			if (populationFilePath == null) { throw new GenstarException(PROPERTY_FILES.IPF_CONTROL_TOTALS_PROPERTIES.POPULATION_DATA_PROPERTY + " property not found in " + ipfControlTotalsPropertiesFilePath); }
+			GenstarCsvFile populationFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, populationFilePath, true), true);
 			
-			int controlAttributesRows = controlAttributesCSVFile.getRows();
-			if (controlAttributesCSVFile.getColumns() != 1 || controlAttributesRows < 2) {
-				throw new GenstarException("Invalid controlAttributesCSVFile format. File: " + controlAttributesCSVFile);
+			String controlTotalsOuputFilePath = ipfControlTotalProperties.getProperty(PROPERTY_FILES.IPF_CONTROL_TOTALS_PROPERTIES.OUTPUT_FILE_PROPERTY);
+			if (controlTotalsOuputFilePath == null) { throw new GenstarException(PROPERTY_FILES.IPF_CONTROL_TOTALS_PROPERTIES.OUTPUT_FILE_PROPERTY + " property not found in " + ipfControlTotalsPropertiesFilePath); }
+			
+			int controlAttributesRows = controlledAttributesFile.getRows();
+			if (controlledAttributesFile.getColumns() != 1 || controlAttributesRows < 2) {
+				throw new GenstarException("Invalid controlAttributesCSVFile format. File: " + controlledAttributesFile);
 			}
 			Set<String> controlledAttributeNames = new HashSet<String>();
-			for (List<String> row : controlAttributesCSVFile.getContent()) { controlledAttributeNames.add(row.get(0)); }
+			for (List<String> row : controlledAttributesFile.getContent()) { controlledAttributeNames.add(row.get(0)); }
 			
+			
+			// TODO move the logic of generating Ipf control totals to IpfUtils
 			// 2. create the generator then add attributes
 			ISyntheticPopulationGenerator generator = new SampleFreeGenerator("dummy generator", 10);
 			AttributeUtils.createAttributesFromCsvFile(generator, attributesCSVFile);
+			
 			
 			// 3. process ID attribute
 			if (idAttributeNameOnData != null) {
 				AbstractAttribute idAttribute = generator.getAttributeByNameOnData(idAttributeNameOnData);
 				if (idAttribute == null) { throw new GenstarException(idAttributeNameOnData + " is not recognized as an attribute a valid"); }
+				if (controlledAttributeNames.contains(idAttributeNameOnData)) { throw new GenstarException("Identity attribute (" + idAttributeNameOnData + ") can not be a controlled attribute."); }
 			}
+
 			
 			// 4. ensure that all controlled attributes exist
 			for (String attributeNameOnData : controlledAttributeNames) { 
 				if (generator.getAttributeByNameOnData(attributeNameOnData) == null) {
-					throw new GenstarException(attributeNameOnData + " is not a valid attribute. File: " + controlAttributesCSVFilePath);
+					throw new GenstarException(attributeNameOnData + " is not a valid attribute. File: " + controlledAttributesFilePath);
 				}
 			}
 
+			
 			// 5. only retain the "valid" controlledAttributeNameSets ("valid" means what?)
 			int controlTotalsAttributeNumbers = controlAttributesRows - 1;
 			Set<Set<String>> controlledAttributeNameSets = Sets.powerSet(controlledAttributeNames);
@@ -370,6 +439,7 @@ public class GamaGenstarUtils {
 			for (Set<String> candidate : controlledAttributeNameSets) {
 				if (candidate.size() == controlTotalsAttributeNumbers) { validControlledAttributeNameSets.add(candidate); }
 			}
+			
 			
 			// 6. build a list of AttributeValueFrequencies
 			List<AttributeValuesFrequency> attributeValuesFrequencies = new ArrayList<AttributeValuesFrequency>();
@@ -390,9 +460,11 @@ public class GamaGenstarUtils {
 				}
 			}
 			
+			
+			
 			// 7. calculate frequencies
-			SampleData populationData = new SampleData("dummy population", generator.getAttributes(), populationCSVFile);
-			List<Entity> sampleEntities = populationData.getSampleEntityPopulation().getEntities();
+			SampleData populationData = new SampleData("dummy population", generator.getAttributes(), populationFile);
+			List<Entity> populationEntities = populationData.getSampleEntityPopulation().getEntities();
 			Map<Integer, List<AbstractAttribute>> cachedAvfAttributes = new HashMap<Integer, List<AbstractAttribute>>();
 			Map<Integer, AttributeValuesFrequency> cachedAvfs = new HashMap<Integer, AttributeValuesFrequency>();
 			for (int index=0; index<attributeValuesFrequencies.size(); index++) {
@@ -404,13 +476,14 @@ public class GamaGenstarUtils {
 			for (int index=0; index<attributeValuesFrequencies.size(); index++) {
 				List<AbstractAttribute> avfAttributes = new ArrayList<AbstractAttribute>(cachedAvfAttributes.get(index));
 				
-				for (Entity sampleEntity : sampleEntities) {
+				for (Entity sampleEntity : populationEntities) {
 					AttributeValuesFrequency avf = cachedAvfs.get(index);
 					if (avf.matchAttributeValuesOnData(sampleEntity.getAttributesValuesOnData(avfAttributes))) { avf.increaseFrequency(); }
 				}
 			}
 			
-			// 8. build CSV file content
+			
+			// 8. build CSV file content of the output file
 			List<String[]> csvFileContents = new ArrayList<String[]>();
 			for (AttributeValuesFrequency avf : attributeValuesFrequencies) {
 				String[] row = new String[(avf.getAttributes().size() * 2) + 1];
@@ -429,13 +502,13 @@ public class GamaGenstarUtils {
 				csvFileContents.add(row);
 			}
 			
-			// 9. write CSV file
-			String exportFileName = FileUtils.constructAbsoluteFilePath(scope, resultControlsTotalFilePath, false);
-			CsvWriter writer = new CsvWriter(exportFileName);
+			// 9. write the output file
+			String outputFileNamePath = FileUtils.constructAbsoluteFilePath(scope, controlTotalsOuputFilePath, false);
+			CsvWriter writer = new CsvWriter(outputFileNamePath);
 			for ( String[] ss : csvFileContents ) { writer.writeRecord(ss); }
 			writer.close();
 			
-			return exportFileName;
+			return outputFileNamePath;
 		} catch (Exception e) {
 			throw new GenstarException(e);
 		}
@@ -660,7 +733,7 @@ public class GamaGenstarUtils {
 			
 			
 			if (ruleTypeName.equals(FrequencyDistributionGenerationRule.RULE_TYPE_NAME)) {
-				FrequencyDistributionUtils.createFrequencyDistributionGenerationRule(generator, ruleName, ruleDataFile);
+				FrequencyDistributionUtils.createFrequencyDistributionGenerationRuleFromRuleDataFile(generator, ruleName, ruleDataFile);
 				generationRuleFiles.add(ruleDataFile); // ATTENTION: only save FrequencyDistributionGenerationRule file
 			} else if (ruleTypeName.equals(AttributeInferenceGenerationRule.RULE_TYPE_NAME)) {
 				GenstarUtils.createAttributeInferenceGenerationRule(generator, ruleName, ruleDataFile);
@@ -750,14 +823,210 @@ public class GamaGenstarUtils {
 		for (List<String> row : ipuGroupControlledAttributesFile.getContent()) {
 			for (String attributeNameOnData : row) {
 				AbstractAttribute attr = originalCompoundPopulation.getAttributeByNameOnData(attributeNameOnData);
-				if (attr == null) { throw new GenstarException("Attribute '" + attributeNameOnData + "' defined in " + ipuGroupControlledFilePath + "not found in the population"); }
+				if (attr == null) { throw new GenstarException("Attribute '" + attributeNameOnData + "' defined in " + ipuGroupControlledFilePath + " not found in the population"); }
 				ipuControlledAttributes.add(attr);
+			}
+		}
+		
+		AbstractAttribute _groupIdAttributeOnGroupEntity = originalCompoundPopulation.getAttributeByNameOnData(groupIdAttributeNameOnDataOfGroupEntity);
+		if (_groupIdAttributeOnGroupEntity == null) {
+			throw new GenstarException("\'" + groupIdAttributeNameOnDataOfGroupEntity + "\' is not a valid attribute");
+		}
+		if (!(_groupIdAttributeOnGroupEntity instanceof UniqueValuesAttributeWithRangeInput)) {
+			throw new GenstarException("\'" + groupIdAttributeNameOnDataOfGroupEntity + "\' must be an instance of UniqueValuesAttributeWithRangeInput");
+		}
+		UniqueValuesAttributeWithRangeInput groupIdAttributeOnGroupEntity = (UniqueValuesAttributeWithRangeInput)_groupIdAttributeOnGroupEntity;
+
+		UniqueValuesAttributeWithRangeInput groupIdAttributeOnComponentEntity = null;
+		for (Entity groupEntity : originalCompoundPopulation.getEntities()) {
+			IPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
+			if (componentPopulation != null) { 
+				AbstractAttribute _groupIdAttributeOnComponentEntity = componentPopulation.getAttributeByNameOnData(groupIdAttributeNameOnDataOfGroupEntity);
+				if (!(_groupIdAttributeOnComponentEntity instanceof UniqueValuesAttributeWithRangeInput)) {
+					throw new GenstarException("\'" + groupIdAttributeNameOnDataOfGroupEntity + "\' must be an instance of UniqueValuesAttributeWithRangeInput");
+				}
+				groupIdAttributeOnComponentEntity = (UniqueValuesAttributeWithRangeInput)_groupIdAttributeOnComponentEntity;
+				break;
 			}
 		}
 
 		
 		// 2. extract the sample population
-		return IpuUtils.extractIpuPopulation(originalCompoundPopulation, percentage, ipuControlledAttributes);
+		return IpuUtils.extractIpuPopulation(originalCompoundPopulation, percentage, ipuControlledAttributes, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, componentPopulationName);
+	}
+	
+	
+	public static IPopulation extractIpfSinglePopulation(final IScope scope, final Properties ipfSinglePopulationProperties) throws GenstarException {
+		// 0. Read the properties
+		
+		// ATTRIBUTES_PROPERTY
+		String attributesFilePath = ipfSinglePopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.ATTRIBUTES_PROPERTY);
+		if (attributesFilePath == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.ATTRIBUTES_PROPERTY + "' not found in the property file."); }
+		GenstarCsvFile attributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, attributesFilePath, true), true);
+		
+		// POPULATION_NAME_PROPERTY
+		String populationName = ipfSinglePopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.POPULATION_NAME_PROPERTY);
+		if (populationName == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.POPULATION_NAME_PROPERTY + "' not found in the property file."); }
+		
+		// POPULATION_DATA_PROPERTY
+		String populationFilePath = ipfSinglePopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.POPULATION_DATA_PROPERTY);
+		if (populationFilePath == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.POPULATION_DATA_PROPERTY + "' not found in the property file."); }
+		GenstarCsvFile singlePopulationFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, populationFilePath, true), true);
+		
+		// CONTROLLED_ATTRIBUTES_PROPERTY
+		String ipfControlledAttributesFilePath = ipfSinglePopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.CONTROLLED_ATTRIBUTES_PROPERTY);
+		if (ipfControlledAttributesFilePath == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.CONTROLLED_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
+		GenstarCsvFile ipfControlledAttributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, ipfControlledAttributesFilePath, true), false);
+		
+		// ID_ATTRIBUTE_PROPERTY
+		String idAttributeName = ipfSinglePopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.ID_ATTRIBUTE_PROPERTY);
+		
+		// PERCENTAGE_PROPERTY
+		String percentageProperty = ipfSinglePopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.PERCENTAGE_PROPERTY);
+		if (percentageProperty == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.PERCENTAGE_PROPERTY + "' not found in the property file."); }
+		float percentage = 0;
+		try {
+			percentage = Float.parseFloat(percentageProperty);
+		} catch (NumberFormatException nfe) {
+			throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.PERCENTAGE_PROPERTY + "' is not a float number");
+		}
+		
+
+		// 1. Load the population from file
+		IPopulation originalSinglePopulation = GenstarUtils.loadSinglePopulation(PopulationType.SYNTHETIC_POPULATION, populationName, attributesFile, singlePopulationFile);
+		
+		
+		// 2. parse controlled attributes
+		Set<AbstractAttribute> ipfControlledAttributes = new HashSet<AbstractAttribute>();
+		for (List<String> row : ipfControlledAttributesFile.getContent()) {
+			for (String attributeNameOnData : row) {
+				AbstractAttribute attr = originalSinglePopulation.getAttributeByNameOnData(attributeNameOnData);
+				if (attr == null) { throw new GenstarException("Attribute '" + attributeNameOnData + "' defined in " + ipfControlledAttributesFilePath + " not found in the population"); }
+				ipfControlledAttributes.add(attr);
+			}
+		}
+		
+		
+		UniqueValuesAttributeWithRangeInput idAttribute = null;
+		if (idAttributeName != null) {
+			AbstractAttribute _idAttribute = originalSinglePopulation.getAttributeByNameOnData(idAttributeName);
+			
+			if (_idAttribute == null) { throw new GenstarException("\'" + idAttributeName + "\' is not a valid attribute of the population"); }
+			if (!(_idAttribute instanceof UniqueValuesAttributeWithRangeInput)) { throw new GenstarException("Identity attribute (" + idAttributeName + ") must be an instance of UniqueValuesAttributeWithRangeInput"); }
+			idAttribute = (UniqueValuesAttributeWithRangeInput)_idAttribute;
+		}
+		
+		
+		// 3. Extract the loaded population
+		return IpfUtils.extractIpfSinglePopulation(originalSinglePopulation, percentage, ipfControlledAttributes, idAttribute);
+	}
+	
+	
+	public static IPopulation extractIpfCompoundPopulation(final IScope scope, final Properties ipfCompoundPopulationProperties) throws GenstarException {
+		// 0. Read the properties
+		
+		// GROUP_ATTRIBUTES_PROPERTY
+		String groupAttributesFilePath = ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.GROUP_ATTRIBUTES_PROPERTY);
+		if (groupAttributesFilePath == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.GROUP_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
+		GenstarCsvFile groupAttributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, groupAttributesFilePath, true), true);
+		
+		// GROUP_POPULATION_NAME_PROPERTY
+		String groupPopulationName = ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.GROUP_POPULATION_NAME_PROPERTY);
+		if (groupPopulationName == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.GROUP_POPULATION_NAME_PROPERTY + "' not found in the property file."); }
+		
+		// GROUP_POPULATION_DATA_PROPERTY
+		String groupPopulationFilePath = ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.GROUP_POPULATION_DATA_PROPERTY);
+		if (groupPopulationFilePath == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.GROUP_POPULATION_DATA_PROPERTY + "' not found in the property file."); }
+		GenstarCsvFile groupPopulationFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, groupPopulationFilePath, true), true);
+	
+		// CONTROLLED_ATTRIBUTES_PROPERTY
+		String ipfGroupControlledAttributesFilePath = ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.CONTROLLED_ATTRIBUTES_PROPERTY);
+		if (ipfGroupControlledAttributesFilePath == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_POPULATION_PROPERTIES.CONTROLLED_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
+		GenstarCsvFile ipfGroupControlledAttributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, ipfGroupControlledAttributesFilePath, true), false);
+		
+		// GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY
+		String groupIdAttributeNameOnDataOfGroupEntity = ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY);
+		if (groupIdAttributeNameOnDataOfGroupEntity == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY + "' not found in the property file."); }
+		
+		
+		// COMPONENT_ATTRIBUTES_PROPERTY
+		String componentAttributesFilePath =  ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.COMPONENT_ATTRIBUTES_PROPERTY);
+		if (componentAttributesFilePath == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.COMPONENT_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
+		GenstarCsvFile componentAttributesFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, componentAttributesFilePath, true), true);
+		
+		// COMPONENT_POPULATION_NAME_PROPERTY
+		String componentPopulationName = ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.COMPONENT_POPULATION_NAME_PROPERTY);
+		if (componentPopulationName == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.COMPONENT_POPULATION_NAME_PROPERTY + "' not found in the property file."); }
+		
+		// COMPONENT_POPULATION_DATA_PROPERTY
+		String componentPopulationFilePath = ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.COMPONENT_POPULATION_DATA_PROPERTY);
+		if (componentPopulationFilePath == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.COMPONENT_POPULATION_DATA_PROPERTY + "' not found in the property file."); }
+		GenstarCsvFile componentPopulationFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, componentPopulationFilePath, true), true);
+		
+		// GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY
+		String groupIdAttributeNameOnDataOfComponentEntity = ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY);
+		if (groupIdAttributeNameOnDataOfComponentEntity == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY + "' not found in the property file."); }
+
+	
+		// PERCENTAGE_PROPERTY
+		String percentageProperty = ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.PERCENTAGE_PROPERTY);
+		if (percentageProperty == null) { throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.PERCENTAGE_PROPERTY + "' not found in the property file."); }
+		float percentage = 0;
+		try {
+			percentage = Float.parseFloat(percentageProperty);
+		} catch (NumberFormatException nfe) {
+			throw new GenstarException("Property '" + PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.PERCENTAGE_PROPERTY + "' is not a float number");
+		}
+		
+		
+		// COMPONENT_REFERENCE_ON_GROUP_PROPERTY
+		String componentReferenceOnGroup = ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.COMPONENT_REFERENCE_ON_GROUP_PROPERTY);
+		
+		// GROUP_REFERENCE_ON_COMPONENT_PROPERTY
+		String groupReferenceOnComponent = ipfCompoundPopulationProperties.getProperty(PROPERTY_FILES.EXTRACT_IPF_COMPOUND_POPULATION_PROPERTIES.GROUP_REFERENCE_ON_COMPONENT_PROPERTY);
+
+		// 1. Load the population from file
+		IPopulation originalCompoundPopulation = GenstarUtils.loadCompoundPopulation(PopulationType.SYNTHETIC_POPULATION, 
+				groupPopulationName, groupAttributesFile, groupPopulationFile, componentPopulationName, 
+				componentAttributesFile, componentPopulationFile, groupIdAttributeNameOnDataOfGroupEntity, groupIdAttributeNameOnDataOfComponentEntity,
+				componentReferenceOnGroup, groupReferenceOnComponent);
+		
+		
+		// 2. parse controlled attributes
+		Set<AbstractAttribute> ipfGroupControlledAttributes = new HashSet<AbstractAttribute>();
+		for (List<String> row : ipfGroupControlledAttributesFile.getContent()) {
+			for (String attributeNameOnData : row) {
+				AbstractAttribute attr = originalCompoundPopulation.getAttributeByNameOnData(attributeNameOnData);
+				if (attr == null) { throw new GenstarException("Attribute '" + attributeNameOnData + "' defined in " + ipfGroupControlledAttributesFilePath + " not found in the population"); }
+				ipfGroupControlledAttributes.add(attr);
+			}
+		}
+
+		AbstractAttribute _groupIdAttributeOnGroupEntity = originalCompoundPopulation.getAttributeByNameOnData(groupIdAttributeNameOnDataOfGroupEntity);
+		if (_groupIdAttributeOnGroupEntity == null) {
+			throw new GenstarException("\'" + groupIdAttributeNameOnDataOfGroupEntity + "\' is not a valid attribute");
+		}
+		if (!(_groupIdAttributeOnGroupEntity instanceof UniqueValuesAttributeWithRangeInput)) {
+			throw new GenstarException("\'" + groupIdAttributeNameOnDataOfGroupEntity + "\' must be an instance of UniqueValuesAttributeWithRangeInput");
+		}
+		UniqueValuesAttributeWithRangeInput groupIdAttributeOnGroupEntity = (UniqueValuesAttributeWithRangeInput)_groupIdAttributeOnGroupEntity;
+
+		UniqueValuesAttributeWithRangeInput groupIdAttributeOnComponentEntity = null;
+		for (Entity groupEntity : originalCompoundPopulation.getEntities()) {
+			IPopulation componentPopulation = groupEntity.getComponentPopulation(componentPopulationName);
+			if (componentPopulation != null) { 
+				AbstractAttribute _groupIdAttributeOnComponentEntity = componentPopulation.getAttributeByNameOnData(groupIdAttributeNameOnDataOfGroupEntity);
+				if (!(_groupIdAttributeOnComponentEntity instanceof UniqueValuesAttributeWithRangeInput)) {
+					throw new GenstarException("\'" + groupIdAttributeNameOnDataOfGroupEntity + "\' must be an instance of UniqueValuesAttributeWithRangeInput");
+				}
+				groupIdAttributeOnComponentEntity = (UniqueValuesAttributeWithRangeInput)_groupIdAttributeOnComponentEntity;
+				break;
+			}
+		}
+
+		
+		// 3. Extract the loaded population
+		return IpfUtils.extractIpfCompoundPopulation(originalCompoundPopulation, percentage, ipfGroupControlledAttributes, groupIdAttributeOnGroupEntity, groupIdAttributeOnComponentEntity, componentPopulationName);
 	}
 	
 	

@@ -261,7 +261,7 @@ public final class BondyData {
 		
 		UniqueValuesAttribute pcsAttr = new UniqueValuesAttribute(bondyInhabitantPopGenerator, "pcs", DataType.INTEGER);
 		for (int v : pcs_values) { pcsAttr.add(new UniqueValue(DataType.INTEGER, Integer.toString(v))); }
-		pcsAttr.setDefaultValue(new UniqueValue(DataType.INTEGER, "8"));
+		pcsAttr.setDefaultValue(pcsAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.INTEGER, "8")));
 		bondyInhabitantPopGenerator.addAttribute(pcsAttr);
 		
 		RangeValuesAttribute hourlyNetWageAttr = new RangeValuesAttribute(bondyInhabitantPopGenerator, "hourlyNetWage", DataType.DOUBLE, RangeValue.class);
@@ -351,8 +351,8 @@ public final class BondyData {
 		AttributeValue inferringValue, inferredValue;
 		for (double[] net_wage : hourly_net_wages) {
 			
-			inferringValue = pcsAttr.getInstanceOfAttributeValue(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0])));
-			inferredValue = hourlyNetWageAttr.getInstanceOfAttributeValue(new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2])));
+			inferringValue = pcsAttr.getMatchingAttributeValueOnData(new UniqueValue(DataType.INTEGER, Integer.toString((int) net_wage[0])));
+			inferredValue = hourlyNetWageAttr.getMatchingAttributeValueOnData(new RangeValue(DataType.DOUBLE, Double.toString(net_wage[1]), Double.toString(net_wage[2])));
 			
 			if (inferringValue == null || inferredValue == null) {
 				throw new GenstarException("Some attribute values are not contained in either inferring attribute or inferred attribute");

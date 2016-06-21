@@ -14,25 +14,40 @@ global {
 	
 	init {
 		
-		if (generate_household_frequencies) { // generate household frequencies
-			
-			string frequency_base_folder <- '../includes/frequency_distribution_evaluation/';
-			string setup_base_folder <- '../includes/setup/';
-			
-			string population_data <- setup_base_folder + 'household_population.csv';
-			string attribute_data <- setup_base_folder + 'household_attributes.csv';
-			
-			string distribution_format <- frequency_base_folder + 'household_distribution_format.csv';
-			string resulting_distribution <- frequency_base_folder + 'household_resulting_frequency_distribution.csv';
-			
-			write 'Household frequency distribution generation starts...';
+		if (generate_household_frequencies) { // generate household frequencies of the reference population
+		
+			string base_path <- '../includes/frequency_distribution_evaluation/generated_frequency_distributions/';
+		
+			// scenario_1
+			string scenario_1_properties <- base_path + 'scenario_1/frequency_distributions.properties';
+			list<string> scenario_1_resulting_files <- frequency_distributions(scenario_1_properties);
+			write 'Generated scenario 1\'s frequency distributions to \'includes/frequency_distribution_evaluation/generated_frequency_distributions/scenario_1\' folder.';
+		
+			// scenario_2
+			string scenario_2_properties <- base_path + 'scenario_2/frequency_distributions.properties';
+			list<string> scenario_2_resulting_files <- frequency_distributions(scenario_2_properties);
+			write 'Generated scenario 2\'s frequency distributions to \'includes/frequency_distribution_evaluation/generated_frequency_distributions/scenario_2\' folder.';
 
-			string distribution_result_file <- frequency_distribution(attribute_data, population_data, distribution_format, resulting_distribution);
+			// scenario_3
+			string scenario_3_properties <- base_path + 'scenario_3/frequency_distributions.properties';
+			list<string> scenario_3_resulting_files <- frequency_distributions(scenario_3_properties);
+			write 'Generated scenario 3\'s frequency distributions to \'includes/frequency_distribution_evaluation/generated_frequency_distributions/scenario_3\' folder.';
 
-			write 'Household frequency distribution generation finishes. Result is written to distribution_result_file';
-			
+
 		} else { // generate household population
-			TODO
+			 string base_path <- '../includes/frequency_distribution_evaluation/generated_populations/';
+			 
+			 // scenario_1
+			 list generated_population_scenario_1 <- frequency_distribution_population(base_path + 'scenario_1/HouseholdPopulation_Generator.properties');
+			 write 'Generated scenario 1\'s household population';
+
+			 // scenario_2
+			 list generated_population_scenario_2 <- frequency_distribution_population(base_path + 'scenario_2/HouseholdPopulation_Generator.properties');
+			 write 'Generated scenario 2\'s household population';
+
+			 // scenario_3
+			 list generated_population_scenario_3 <- frequency_distribution_population(base_path + 'scenario_3/HouseholdPopulation_Generator.properties');
+			 write 'Generated scenario 3\'s household population';
 		}
 	}
 	
@@ -40,7 +55,7 @@ global {
 
 experiment household_frequencies_generator type: gui {
 	
-	parameter 'Generator household frequecnies?' var: generate_household_frequencies <- true;
+	parameter 'Generate household frequencies?' var: generate_household_frequencies <- true;
 	
 	output {
 		

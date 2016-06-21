@@ -31,14 +31,12 @@ public class AttributeValuesFrequency {
 		if (attributeValues == null || attributeValues.size() == 0) { throw new IllegalArgumentException("'data' parameter can not be null or empty"); }
 		
 		for (AbstractAttribute attribute : attributeValues.keySet()) {
-//			if (!attribute.containsInstanceOfAttributeValue(attributeValues.get(attribute))) {
-			if (attribute.getInstanceOfAttributeValue(attributeValues.get(attribute)) == null) {
+			if (!(attribute.containInstanceOfAttributeValue(attributeValues.get(attribute)))) {
 				throw new GenstarException("Some attribute values don't belong to the corresponding attributes.");
 			}
 		}
 		
 		this.attributeValuesOnData = new HashMap<AbstractAttribute, AttributeValue>(attributeValues);
-//		this.attributes = new HashSet<AbstractAttribute>(attributeValues.keySet());
 	}
 	
 	public AttributeValue getAttributeValueOnData(final AbstractAttribute attribute) {

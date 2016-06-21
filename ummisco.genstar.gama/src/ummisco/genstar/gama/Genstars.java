@@ -19,17 +19,12 @@ import msi.gama.precompiler.GamlAnnotations.operator;
 import msi.gama.precompiler.IOperatorCategory;
 import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
-import msi.gama.util.GamaMap;
 import msi.gama.util.IList;
-import msi.gama.util.file.GamaCSVFile;
-import msi.gama.util.file.IGamaFile;
 import msi.gaml.compilation.AbstractGamlAdditions;
 import msi.gaml.extensions.genstar.IGamaPopulationsLinker;
 import msi.gaml.types.IType;
-import msi.gaml.types.Types;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.population.IPopulation;
-import ummisco.genstar.util.CSV_FILE_FORMATS;
 import ummisco.genstar.util.CsvWriter;
 import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
@@ -78,62 +73,39 @@ public abstract class Genstars {
 		}
 		
 		
-		@operator(value = "frequency_distribution", type = IType.FILE, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "generates a frequency distribution generation rule from a sample data or a population then saves the resulting generation rule to a CSV file",
-			returns = "a boolean value, indicating where the operator is successful or not",
+		@operator(value = "frequency_distributions", type = IType.LIST, content_type = IType.STRING, category = { IOperatorCategory.GENSTAR })
+		@doc(value = "generates frequency distribution(s) from sample data or population data file following the distribution format file(s) then saves the result to CSV file(s)",
+			returns = "a list of strings, representing the path to the resulting frequency distribution files",
 			special_cases = { "" },
 			comment = "",
-			examples = { @example(value = "file result_file <- frequency_distribution_from_sample('Attributes.csv', 'SampleData.csv', 'DistributionFormat.csv', 'ResultingDistribution.csv')",
-				equals = "a file containing the resulting frequency distribution generation rule and locating at the resultDistributionCSVFilePath path",
+			examples = { @example(value = "list<string> result_file_paths <- frequency_distributions('frequency_distributions.properties')",
+				equals = "",
 				test = false) }, see = { "population_from_csv", "link_populations" })
-		public static String createFrequencyDistributionFromSample(final IScope scope, final String attributesFilePath, 
-				final String sampleDataFilePath, final String distributionFormatFilePath, final String resultDistributionFilePath) {
+		public static List<String> generateFrequencyDistributionsFromSampleDataOrPopulationFile(final IScope scope, final String frequencyDistributionsPropertiesFilePath) {
 			
 			try {
-				return GamaGenstarUtils.createFrequencyDistributionFromSampleDataOrPopulationFile(scope, attributesFilePath, sampleDataFilePath, distributionFormatFilePath, resultDistributionFilePath);
+				
+				// 0. Load the property file
+				Properties frequencyDistributionsProperties = null;
+				File propertiesFile = new File(FileUtils.constructAbsoluteFilePath(scope, frequencyDistributionsPropertiesFilePath, true));
+				try {
+					FileInputStream propertyInputStream = new FileInputStream(propertiesFile);
+					frequencyDistributionsProperties = new Properties();
+					frequencyDistributionsProperties.load(propertyInputStream);
+				} catch (FileNotFoundException e) {
+					throw new GenstarException(e);
+				} catch (IOException e) {
+					throw new GenstarException(e);
+				}
+				
+				// 1. generates frequency distributions then saves results to files
+				return GamaGenstarUtils.generateFrequencyDistributionsFromSampleOrPopulationData(scope, frequencyDistributionsProperties);
 			} catch (final Exception e) {
 				if (e instanceof GamaRuntimeException) { throw (GamaRuntimeException) e; }
 				else { throw GamaRuntimeException.create(e, scope); }
 			}
 		}
 		
-		
-		/*
-		@operator(value = "analyse_frequency_distribution_population_to_file", type = IType.MAP, content_type = IType.INT, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "analyze a synthetic population with respect to the frequency distributions then write analysis result to files",
-		returns = "",
-		special_cases = { "" },
-		comment = "",
-		examples = { @example(value = "map<string, list> analysisResult <- analyse_frequency_distribution_population_to_file(gamaPopulation, populationPropertiesFilePath, outputFolderPath)",
-			equals = "",
-			test = false) }, see = { "" })
-		public static GamaMap<String, IList<Integer>> analyseFrequencyDistributionPopulation_ToFile(final IScope scope, final IList population, final String attributesFilePath, List<String> frequencyDistributionFilesPath, final String outputFolderPath) {
-			
-			try {
-
-				GamaGenstarUtils.analyseFrequencyDistributionPopulation(scope, population, attributesFilePath, frequencyDistributionFilesPath);
-				
-				return null;
-				
-			} catch (final Exception e) {
-				throw GamaRuntimeException.create(e, scope);
-			}
-			
-		}
-		
-		
-		@operator(value = "analyse_frequency_distribution_population_to_console", type = IType.MAP, content_type = IType.INT, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "analyze a synthetic population with respect to the frequency distributions then write analysis result to GAMA console",
-		returns = "",
-		special_cases = { "" },
-		comment = "",
-		examples = { @example(value = "map<string, list> analysisResult <- analyse_frequency_distribution_population_to_console(gamaPopulation, populationPropertiesFilePath)",
-			equals = "",
-			test = false) }, see = { "" })
-		public static GamaMap<String, IList<Integer>> analyseFrequencyDistributionPopulation_ToConsole(final IScope scope, final IList population, final String attributesFilePath, List<String> frequencyDistributionFilesPath) {
-			return null;
-		}
-		*/
 	}
 	
 	
@@ -209,24 +181,98 @@ public abstract class Genstars {
 			}
 		}
 		
+		
+		@operator(value = "extract_ipf_population", type = IType.MAP, category = { IOperatorCategory.GENSTAR })
+		@doc(value = "Extracts certain percentage of a population so that the result population can be used as sample data to generate a synthetic population using IPF approach."
+				+ "This operator tries to ensure that there is at least one individual of each attribute value set of the controlled attributes in the extracted population.",
+		returns = "The extracted population",
+		special_cases = { "" },
+		comment = "",
+		examples = { @example(value = "list extracted_population <- extract_ipf_population('ipf_population_configuration.properties')",
+			equals = "",
+			test = false) }, see = { "extract_ipu_population, extract_ipf_compound_population, ipf_population" })
+		public static IList extractIpfSinglePopulation(final IScope scope, final String ipfSinglePopulationPropertiesFilePath) {
 
-		// TODO change to "ipf_control_totals"
-		@operator(value = "control_totals", type = IType.FILE, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "generates the control totals then save them to a CSV file",
-			returns = "a reference to the file containing the resulting control totals",
+			try {
+				// 0. Load the properties file
+				Properties ipfSinglePopulationProperties = null;
+				File ipfSinglePopulationPropertiesFile = new File(FileUtils.constructAbsoluteFilePath(scope, ipfSinglePopulationPropertiesFilePath, true));
+				try {
+					FileInputStream propertyInputStream = new FileInputStream(ipfSinglePopulationPropertiesFile);
+					ipfSinglePopulationProperties = new Properties();
+					ipfSinglePopulationProperties.load(propertyInputStream);
+				} catch (FileNotFoundException e) {
+					throw new GenstarException(e);
+				} catch (IOException e) {
+					throw new GenstarException(e);
+				}
+				
+				
+				// 1. extract the population
+				IPopulation extractedSingledIpfPopulation = GamaGenstarUtils.extractIpfSinglePopulation(scope, ipfSinglePopulationProperties);
+				
+				// 2. convert the extracted population from Gen* format to GAMA format
+				return GamaGenstarUtils.convertGenstarPopulationToGamaPopulation(extractedSingledIpfPopulation);
+			} catch (GenstarException e) {
+				throw GamaRuntimeException.error(e.getMessage(), scope);
+			}
+		}
+		
+		
+		@operator(value = "extract_ipf_compound_population", type = IType.MAP, category = { IOperatorCategory.GENSTAR })
+		@doc(value = "Extracts certain percentage of a compound population (group-component) so that the result population can be used as sample data to generate a synthetic population using IPF approach."
+				+ "This operator tries to ensure that there is at least one individual of each attribute value set of the controlled attributes (of group entity) in the extracted population.",
+		returns = "The extracted population",
+		special_cases = { "" },
+		comment = "",
+		examples = { @example(value = "list extracted_population <- extract_ipf_compound_population('ipf_compound_population_configuration.properties')",
+			equals = "",
+			test = false) }, see = { "extract_ipu_population, extract_ipf_population, ipu_compound_population" })
+		public static IList extractIpfCompoundPopulation(final IScope scope, final String ipfCompoundPopulationPropertiesFilePath) {
+			
+			try {
+				// 0. Load the properties file
+				Properties ipfCompoundPopulationProperties = null;
+				File ipfCompoundPopulationPropertiesFile = new File(FileUtils.constructAbsoluteFilePath(scope, ipfCompoundPopulationPropertiesFilePath, true));
+				try {
+					FileInputStream propertyInputStream = new FileInputStream(ipfCompoundPopulationPropertiesFile);
+					ipfCompoundPopulationProperties = new Properties();
+					ipfCompoundPopulationProperties.load(propertyInputStream);
+				} catch (FileNotFoundException e) {
+					throw new GenstarException(e);
+				} catch (IOException e) {
+					throw new GenstarException(e);
+				}
+				
+				
+				// 1. extract the population
+				IPopulation extractedCompoundIpfPopulation = GamaGenstarUtils.extractIpfCompoundPopulation(scope, ipfCompoundPopulationProperties);
+				
+				// 2. convert the extracted population from Gen* format to GAMA format
+				return GamaGenstarUtils.convertGenstarPopulationToGamaPopulation(extractedCompoundIpfPopulation);
+			} catch (GenstarException e) {
+				throw GamaRuntimeException.error(e.getMessage(), scope);
+			}
+			
+		}
+		
+
+
+		@operator(value = "ipf_control_totals", type = IType.STRING, category = { IOperatorCategory.GENSTAR })
+		@doc(value = "generates the IPF control totals then save them to a CSV file",
+			returns = "the file name path of the resulting IPF control totals",
 			special_cases = { "" },
 			comment = "",
-			examples = { @example(value = "file result_file <- control_totals('controlTotalPropertiesFilePath.properties', 'resultControlsTotalFilePath.csv')",
+			examples = { @example(value = "file result_file <- ipf_control_totals('controlTotalPropertiesFilePath.properties', 'resultControlsTotalFilePath.csv')",
 				equals = "a file containing the resulting control totals and locating at the path specified by resultControlsTotalFilePath.csv",
 				test = false) }, see = { "population_from_csv", "link_populations" })
-		public static IGamaFile generateControlTotals(final IScope scope, final String controlTotalPropertiesFilePath, final String resultControlsTotalFilePath) {
+		public static String generateIpfControlTotals(final IScope scope, final String controlTotalsPropertiesFilePath) {
 			try {
-				String exportFileName = GamaGenstarUtils.generateControlTotals(scope, controlTotalPropertiesFilePath, resultControlsTotalFilePath);
-				return new GamaCSVFile(scope, exportFileName, CSV_FILE_FORMATS.ATTRIBUTES.FIELD_DELIMITER, Types.STRING, false);
+				String exportFileName = GamaGenstarUtils.generateIpfControlTotalsFromPopulationData(scope, controlTotalsPropertiesFilePath);
+				return exportFileName;
 			} catch (GenstarException e) {
 				throw GamaRuntimeException.create(e, scope);
 			}
-			
 		}
 		
 
@@ -365,13 +411,14 @@ public abstract class Genstars {
 		
 		
 		@operator(value = "extract_ipu_population", type = IType.MAP, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "Extracts certain percentage of an IPU population",
+		@doc(value = "Extracts certain percentage of a population so that the extracted population can be used as sample data to generate the synthetic population using IPU approach."
+				+ " This operator tries to ensure that there is at least one individual of each attribute value set of the controlled attributes in the extracted population.",
 		returns = "The extracted population",
 		special_cases = { "" },
 		comment = "",
 		examples = { @example(value = "list extracted_population <- extract_ipu_population('ipu_population_configuration.properties')",
 			equals = "",
-			test = false) }, see = { "ipf_population, ipf_compound_population, frequency_distribution_population" })
+			test = false) }, see = { "ipu_population, extract_ipf_population, extract_ipf_compound_population" })
 		public static IList extractIpuPopulation(final IScope scope, final String ipuSourcePopulationPropertiesFilePath) {
 			
 			//TODO test this method

@@ -75,7 +75,7 @@ public class CustomPeopleAgeGenerationRule extends CustomSampleFreeGenerationRul
 			String maxValue = minMaxValueToken.nextToken().trim();
 			RangeValue rangeValue = new RangeValue(dataType, minValue, maxValue);
 			
-			if (ageAttribute.getInstanceOfAttributeValue(rangeValue) != null) { throw new GenstarException(rangeValue.toString() + " not found in 'Age' attribute."); }
+			if (ageAttribute.getMatchingAttributeValueOnData(rangeValue) == null) { throw new GenstarException(rangeValue.toString() + " not found in 'Age' attribute."); }
 			if (valueFrequencies.containsKey(rangeValue)) { throw new GenstarException("Duplicated attribute value: " + rangeValue.toString() + ". File: " + ruleDataCSVFile.getPath()); }
 			
 			

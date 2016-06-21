@@ -75,7 +75,11 @@ public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 
 
 	@Override
-	public AttributeValue getInstanceOfAttributeValue(final AttributeValue value) {
+	public boolean containInstanceOfAttributeValue(final AttributeValue value) {
+		
+		return internalValuesOnData.contains(value);
+		
+		/*
 		if (!(value instanceof UniqueValue) || !value.getDataType().equals(DataType.INTEGER)) { return null; }
 		
 		if (internalValuesOnData.contains(value)) { return value; }
@@ -85,23 +89,47 @@ public class UniqueValuesAttributeWithRangeInput extends AbstractAttribute {
 		
 		int index = intValue - minValue.getIntValue();
 		return internalValuesOnData.get(index);
+		*/
 	}
 
 	@Override
 	public void clear() {}
 
 	@Override
-	public AttributeValue getMatchingAttributeValueOnData(final List<String> stringValue) throws GenstarException {
-		if (stringValue == null || stringValue.isEmpty()) { throw new GenstarException("'stringValue' parameter can not be null or empty"); }
-		return getInstanceOfAttributeValue(new UniqueValue(dataType, stringValue.get(0)));
+	public AttributeValue getMatchingAttributeValueOnData(final List<String> stringRepresentationOfValue) throws GenstarException {
+		if (stringRepresentationOfValue == null || stringRepresentationOfValue.isEmpty()) { throw new GenstarException("'stringRepresentationOfValue' parameter can not be null or empty"); }
+		
+		if (stringRepresentationOfValue.size() == 1) {
+			UniqueValue uniqueValue = new UniqueValue(this.dataType, stringRepresentationOfValue.get(0));
+			for (UniqueValue value : internalValuesOnData) { if (value.compareTo(uniqueValue) == 0) { return value; } }
+			return null;
+		}
+		
+		RangeValue rangeValue = new RangeValue(dataType, stringRepresentationOfValue.get(0), stringRepresentationOfValue.get(1));
+		for (UniqueValue value : internalValuesOnData) { if (rangeValue.cover(value)) { return value; } }
+		
+		return null;
 	}
 
 	@Override
-	public AttributeValue getMatchingAttributeValueOnData(final AttributeValue attributeValue) { // throws GenstarException {
-		if (attributeValue instanceof UniqueValue) { return this.getInstanceOfAttributeValue(attributeValue); }
+	public AttributeValue getMatchingAttributeValueOnData(final AttributeValue attributeValue) throws GenstarException {
+		
+		
+		if (attributeValue instanceof UniqueValue) { 
+			for (UniqueValue value : internalValuesOnData) { if (value.compareTo(attributeValue) == 0) { return value; } }
+			return null;
+		}
+		
+		RangeValue rangeValue = (RangeValue) attributeValue;
+		if (rangeValue.getDataType().isNumericValue() && this.dataType.isNumericValue()) {
+			for (UniqueValue value : internalValuesOnData) {
+				if (rangeValue.cover(value)) { return value; }
+			}
+		}
+		 
+//		if (attributeValue instanceof UniqueValue) { return this.containsInstanceOfAttributeValue(attributeValue); }
 
 		return null;
-		// throw new GenstarException("Not supported operation for attributeValue of " + attributeValue.getClass().getName());
 	}
 	
 	public UniqueValue getMinValue() {

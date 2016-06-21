@@ -1,0 +1,4 @@
+Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On Entity
+Age,age,int,Range,0:15; 16:20,Unique
+Gender,gender,bool,Unique,true; false,Unique
+Work,work,string,Unique,agriculteur; artisant,Unique

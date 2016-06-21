@@ -25,8 +25,7 @@ public class UniqueValuesAttributeTest {
 	@Rule public ExpectedException exception = ExpectedException.none();
 	
 
-	@Test
-	public void testNullPopulationParamConstructor() throws GenstarException {
+	@Test public void testNullPopulationParamConstructor() throws GenstarException {
 		exception.expect(GenstarException.class);
 		new UniqueValuesAttribute(null, "data var name", "entity var name", DataType.BOOL);
 	}
@@ -95,8 +94,7 @@ public class UniqueValuesAttributeTest {
 		attr.addAll(null);
 	}
 	
-	@Test
-	public void testGetValues() throws GenstarException {
+	@Test public void testGetValues() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 
@@ -136,19 +134,19 @@ public class UniqueValuesAttributeTest {
 		assertFalse(attr.add(testValue1));
 	}
 	
-	@Test public void testGetInstanceOfValue() throws GenstarException {
+	@Test public void testContainInstanceOfAttributeValue() throws GenstarException {
 		SampleFreeGenerator p = new SampleFreeGenerator("test population", 100);
 		UniqueValuesAttribute attr = new UniqueValuesAttribute(p, "data var name", "entity var name", DataType.INTEGER);
 		
 		UniqueValue testValue = new UniqueValue(DataType.INTEGER, "1");
 		
-		assertTrue(attr.getInstanceOfAttributeValue(testValue) == null);
+		assertFalse(attr.containInstanceOfAttributeValue(testValue));
 		
 		attr.add(testValue);
-		assertTrue(attr.getInstanceOfAttributeValue(testValue) != null);
+		assertTrue(attr.containInstanceOfAttributeValue(testValue));
 		
 		UniqueValue testValue1 = new UniqueValue(DataType.INTEGER, "1");
-		assertTrue(attr.getInstanceOfAttributeValue(testValue1).equals(testValue));
+		assertFalse(attr.containInstanceOfAttributeValue(testValue1));
 	}
 	
 	@Test public void testGetDefaultValueOnEntity() throws GenstarException {
@@ -188,6 +186,22 @@ public class UniqueValuesAttributeTest {
 		AttributeValue defaultValue2 = new RangeValue(DataType.INTEGER, "1", "2");
 		exception.expect(GenstarException.class);
 		attribute1.setDefaultValue(defaultValue2);
+	}
+	
+	@Test public void testCast() throws GenstarException {
+		UniqueValue uniqueValue = new UniqueValue(DataType.INTEGER, "1");
+		
+		assertTrue(uniqueValue.cast(UniqueValue.class).equals(uniqueValue));
+		
+		RangeValue castValue = (RangeValue) uniqueValue.cast(RangeValue.class);
+		assertTrue(castValue.dataType.equals(uniqueValue.dataType));
+		assertTrue(castValue.cover(uniqueValue));
+		
+		int minValue = Integer.parseInt(castValue.getMinStringValue());
+		int maxValue = Integer.parseInt(castValue.getMaxStringValue());
+		
+		assertTrue(minValue == 1);
+		assertTrue(maxValue == 1);
 	}
 	
 }
