@@ -165,7 +165,7 @@ public class IpfUtilsTest {
 		duplicatedAttributes.add(attributes.get(0));
 		duplicatedAttributes.add(attributes.get(0));
 		
-		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(controlTotalsFile, duplicatedAttributes);
+		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(duplicatedAttributes, controlTotalsFile);
 	}
 	
 	@Test(expected = GenstarException.class) public void testReadAttributeValuesFrequenciesFromControlTotalsFileWithControlledAttributesFromDifferentGenerators() throws GenstarException {
@@ -185,7 +185,7 @@ public class IpfUtilsTest {
 
 		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/control_totals1.csv", false);
 
-		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(controlTotalsFile, attributesFromDifferentGenerators);
+		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(attributesFromDifferentGenerators, controlTotalsFile);
 	}
 
 	@Test(expected = GenstarException.class) public void testReadAttributeValuesFrequenciesFromControlTotalsFileWithMismatchedControlTotalsFileContentAndAttributesValuesSizes() throws GenstarException {
@@ -195,7 +195,7 @@ public class IpfUtilsTest {
 		
 		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithMismatchedControlTotalsFileContentAndAttributesValuesSizes/control_totals1.csv", false);
 		
-		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(controlTotalsFile, generator.getAttributes());
+		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(generator.getAttributes(), controlTotalsFile);
 	}
 
 	@Test(expected = GenstarException.class) public void testReadAttributeValuesFrequenciesFromControlTotalsFileWithInvalidControlTotalFormat() throws GenstarException {
@@ -205,7 +205,7 @@ public class IpfUtilsTest {
 		
 		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithInvalidControlTotalFormat/control_totals1.csv", false);
 		
-		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(controlTotalsFile, generator.getAttributes());
+		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(generator.getAttributes(), controlTotalsFile);
 	}
 
 	@Test(expected = GenstarException.class) public void testReadAttributeValuesFrequenciesFromControlTotalsFileWithUnregconizedAttribute() throws GenstarException {
@@ -215,7 +215,7 @@ public class IpfUtilsTest {
 		
 		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithUnregconizedAttribute/control_totals1.csv", false);
 		
-		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(controlTotalsFile, generator.getAttributes());
+		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(generator.getAttributes(), controlTotalsFile);
 	}
 
 	@Test(expected = GenstarException.class) public void testReadAttributeValuesFrequenciesFromControlTotalsFileWithDuplicatedControlTotals() throws GenstarException {
@@ -225,7 +225,7 @@ public class IpfUtilsTest {
 		
 		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFileWithDuplicatedControlTotals/control_totals1.csv", false);
 		
-		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(controlTotalsFile, generator.getAttributes());
+		IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(generator.getAttributes(), controlTotalsFile);
 		
 	}
 	
@@ -238,7 +238,7 @@ public class IpfUtilsTest {
 		
 		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testReadAttributeValuesFrequenciesFromControlTotalsFile/control_totals1.csv", false);
 		
-		List<AttributeValuesFrequency> avfs = IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(controlTotalsFile, generator.getAttributes());
+		List<AttributeValuesFrequency> avfs = IpfUtils.parseAttributeValuesFrequenciesFromIpfControlTotalsFile(generator.getAttributes(), controlTotalsFile);
 		
 		assertTrue(avfs.size() == controlTotalsFile.getRows());
 		
@@ -309,16 +309,23 @@ public class IpfUtilsTest {
 		GenstarCsvFile controlledAttributesListFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/controlled_attributes_list.csv", false);
 		GenstarCsvFile controlTotalsFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/control_totals.csv", false);
 		GenstarCsvFile supplementaryAttributesFile = new GenstarCsvFile("test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/supplementary_attributes_list.csv", false);
-//		IpfUtils.createIpfGenerationRule(generator, "dummy rule", sampleCSVFile, controlledAttributesListFile, controlTotalsFile, supplementaryAttributesFile, null, IpfGenerationRule.DEFAULT_MAX_ITERATIONS);
 		IpfUtils.createIpfGenerationRule(generator, "dummy rule", sampleCSVFile, controlledAttributesListFile, controlTotalsFile, supplementaryAttributesFile, IpfGenerationRule.DEFAULT_MAX_ITERATIONS);
 		
 		// 3. generate the population
 		IPopulation population = generator.generate();
 		
 		// 4. do the analysis
-		List<Integer> analsysisResult = IpfUtils.analyseIpfPopulation(population, controlledAttributesListFile, controlTotalsFile);
+		String analysisResultOutputFilePath = "test_data/ummisco/genstar/util/IpfUtils/testAnalyseIpfPopulation/analysis_result.csv";
+		File f = new File(analysisResultOutputFilePath);
+		if (f.exists()) { f.delete(); }
 		
-		assertTrue(analsysisResult.size() == controlTotalsFile.getRows());
+		List<Integer> analysisResult = IpfUtils.analyseIpfPopulation(population, controlledAttributesListFile, controlTotalsFile, analysisResultOutputFilePath);
+		
+		assertTrue(analysisResult.size() == controlTotalsFile.getRows());
+		
+		GenstarCsvFile analysisResultFile = new GenstarCsvFile(analysisResultOutputFilePath, false);
+		assertTrue(analysisResultFile.getRows() == controlTotalsFile.getRows());
+		assertTrue(analysisResultFile.getColumns() == controlTotalsFile.getColumns() + 1);
 	}
 
 

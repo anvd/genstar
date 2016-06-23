@@ -82,18 +82,19 @@ public class IpuTest {
 		// extract control totals of the generated compound population
 		GenstarCsvFile groupControlledAttributesListFile = new GenstarCsvFile(base_folder_path + "group_controlled_attributes.csv", false);
 		GenstarCsvFile componentControlledAttributesListFile = new GenstarCsvFile(base_folder_path + "component_controlled_attributes.csv", false);
-		List<AttributeValuesFrequency> groupControlTotalsToBeBuilt = new ArrayList<AttributeValuesFrequency>();
-		List<AttributeValuesFrequency> componentControlTotalsToBeBuilt = new ArrayList<AttributeValuesFrequency>();
-		IpuUtils.buildIpuControlTotalsOfCompoundPopulation(generatedCompoundPopulation, componentPopulationName, groupControlledAttributesListFile, 
-				componentControlledAttributesListFile, groupControlTotalsToBeBuilt, componentControlTotalsToBeBuilt);
+
+		Map<String, List<AttributeValuesFrequency>> generatedControlTotals =  IpuUtils.buildIpuControlTotalsOfCompoundPopulation(generatedCompoundPopulation, componentPopulationName, groupControlledAttributesListFile, componentControlledAttributesListFile);
+		
+		List<AttributeValuesFrequency> groupControlTotals = generatedControlTotals.get(groupPopulationName);
+		List<AttributeValuesFrequency> componentControlTotals = generatedControlTotals.get(componentPopulationName);
 		
 		
 		// write control totals to CSV files
 		String groupControlTotalsOutputFilePath = base_folder_path + "group_control_totals.csv";
-		IpuUtils.writeIpuControlTotalsToCsvFile(groupControlTotalsToBeBuilt, groupControlTotalsOutputFilePath);
+		IpuUtils.writeIpuControlTotalsToCsvFile(groupControlTotals, groupControlTotalsOutputFilePath);
 		
 		String componentControlTotalsOutputFilePath = base_folder_path + "component_control_totals.csv";
-		IpuUtils.writeIpuControlTotalsToCsvFile(componentControlTotalsToBeBuilt, componentControlTotalsOutputFilePath);
+		IpuUtils.writeIpuControlTotalsToCsvFile(componentControlTotals, componentControlTotalsOutputFilePath);
 		
 		// TODO extract sample population from generatedCompoundPopulation
 		String based_extracted_populations_folder = base_folder_path + "extracted_populations/";

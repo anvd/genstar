@@ -23,6 +23,7 @@ import msi.gama.util.GamaMapFactory;
 import msi.gama.util.IList;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.IpfGenerationRule;
+import ummisco.genstar.ipu.IpuGenerationRule;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
 import ummisco.genstar.metamodel.attributes.AttributeValue;
 import ummisco.genstar.metamodel.attributes.AttributeValuesFrequency;
@@ -67,7 +68,22 @@ public class GamaGenstarUtils {
 		createIpfGenerationRule(scope, generator, "ipf generation rule", ipfPopulationProperties);
 		
 		// 3. Generate the population
-		return generator.generate();
+		IPopulation population = generator.generate();
+		
+		// 4. Perform the result analysis if necessary
+		String analysisOutput = ipfPopulationProperties.getProperty(PROPERTY_FILES.IPF_POPULATION_PROPERTIES.ANALYSIS_OUTPUT_PROPERTY);
+		if (analysisOutput != null) {
+			IpfGenerationRule generationRule = (IpfGenerationRule)generator.getGenerationRule();
+			GenstarCsvFile controlledAttributesListFile = generationRule.getControlledAttributesFile();
+			GenstarCsvFile controlTotalsFile = generationRule.getControlTotalsFile();
+			
+			String analysisOutputFilePath = FileUtils.constructAbsoluteFilePath(scope, analysisOutput, false);
+			
+			IpfUtils.analyseIpfPopulation(population, controlledAttributesListFile, controlTotalsFile, analysisOutputFilePath);
+		}
+		
+		
+		return population;
 	}
 	
 	
@@ -84,7 +100,36 @@ public class GamaGenstarUtils {
 		createIpuGenerationRule(scope, groupGenerator, "ipu generation rule", ipuPopulationProperties);
 		
 		// 3. Generate the population
-		return groupGenerator.generate();
+		IPopulation population = groupGenerator.generate();
+		
+		// 4. Perform the post generation analysis if necessary
+		// GROUP_ANALYSIS_OUTPUT_PROPERTY
+		String groupAnalysisOutput = ipuPopulationProperties.getProperty(PROPERTY_FILES.IPU_POPULATION_PROPERTIES.GROUP_ANALYSIS_OUTPUT_PROPERTY);
+		
+		// COMPONENT_ANALYSIS_OUTPUT_PROPERTY
+		String componentAnalysisOutput = ipuPopulationProperties.getProperty(PROPERTY_FILES.IPU_POPULATION_PROPERTIES.COMPONENT_ANALYSIS_OUTPUT_PROPERTY);
+		
+		if (groupAnalysisOutput != null && componentAnalysisOutput != null) {
+			String componentPopulationName = ipuPopulationProperties.getProperty(PROPERTY_FILES.IPU_POPULATION_PROPERTIES.COMPONENT_POPULATION_NAME_PROPERTY);
+			
+			IpuGenerationRule generationRule = (IpuGenerationRule) groupGenerator.getGenerationRule();
+			GenstarCsvFile groupControlledAttributesListFile = generationRule.getGroupControlledAttributesFile();
+			GenstarCsvFile groupControlTotalsFile = generationRule.getGroupControlTotalsFile();
+			GenstarCsvFile componentControlledAttributesListFile = generationRule.getComponentControlledAttributesFile();
+			GenstarCsvFile componentControlTotalsFile = generationRule.getComponentControlTotalsFile();
+			
+			Map<String, String> analysisOutputFilePaths = new HashMap<String, String>();
+			String reconstructedGroupAnalysisOutputFilePath = FileUtils.constructAbsoluteFilePath(scope, groupAnalysisOutput, false);
+			analysisOutputFilePaths.put(population.getName(), reconstructedGroupAnalysisOutputFilePath);
+			String reconstructedComponentAnalysisOutputFilePath = FileUtils.constructAbsoluteFilePath(scope, componentAnalysisOutput, false);
+			analysisOutputFilePaths.put(componentPopulationName, reconstructedComponentAnalysisOutputFilePath);
+
+			IpuUtils.analyseIpuPopulation(population, componentPopulationName, groupControlledAttributesListFile, 
+					groupControlTotalsFile, componentControlledAttributesListFile, componentControlTotalsFile, analysisOutputFilePaths);
+		}
+		
+		
+		return population;
 	}
 	
 	
@@ -125,7 +170,7 @@ public class GamaGenstarUtils {
 		
 		
 		// 4. perform the post generation analysis if necessary  
-		String analysisResultOutputFolderPath = frequencyDistributionPopulationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.ANALYSIS_RESULT_OUTPUT_FOLDER_PROPERTY);
+		String analysisResultOutputFolderPath = frequencyDistributionPopulationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.ANALYSIS_OUTPUT_FOLDER_PROPERTY);
 		if (analysisResultOutputFolderPath != null) {
 			String reconstructedFolderPath = FileUtils.constructAbsoluteFilePath(scope, analysisResultOutputFolderPath, true);
 			FrequencyDistributionUtils.analyseFrequencyDistributionPopulation(population, generationRuleFiles, reconstructedFolderPath);
@@ -461,7 +506,6 @@ public class GamaGenstarUtils {
 			}
 			
 			
-			
 			// 7. calculate frequencies
 			SampleData populationData = new SampleData("dummy population", generator.getAttributes(), populationFile);
 			List<Entity> populationEntities = populationData.getSampleEntityPopulation().getEntities();
@@ -512,6 +556,61 @@ public class GamaGenstarUtils {
 		} catch (Exception e) {
 			throw new GenstarException(e);
 		}
+	}
+	
+	
+	static Map<String, String> generateIpuControlTotalsFromPopulationData(final IScope scope, final Properties ipuControlTotalsProperties) throws GenstarException {
+		
+		// Read the properties
+		
+		// GROUP_POPULATION_NAME_PROPERTY
+		String groupPopulationName = ipuControlTotalsProperties.getProperty(PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.GROUP_POPULATION_NAME_PROPERTY);
+		if (groupPopulationName == null) { throw new GenstarException(PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.GROUP_POPULATION_NAME_PROPERTY + " property not found in the property file."); }
+
+		// COMPONENT_POPULATION_NAME_PROPERTY
+		String componentPopulationName = ipuControlTotalsProperties.getProperty(PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.COMPONENT_POPULATION_NAME_PROPERTY);
+		if (componentPopulationName == null) { throw new GenstarException(PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.COMPONENT_POPULATION_NAME_PROPERTY + " property not found in the property file."); }
+		
+		
+		// GROUP_CONTROLLED_ATTRIBUTES_PROPERTY 
+		String groupControlledAttributesFilePath = ipuControlTotalsProperties.getProperty(PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.GROUP_CONTROLLED_ATTRIBUTES_PROPERTY);
+		if (groupControlledAttributesFilePath == null) { throw new GenstarException("Property '" + PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.GROUP_CONTROLLED_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
+		GenstarCsvFile groupControlledAttributesListFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, groupControlledAttributesFilePath, true), false);
+
+		// COMPONENT_CONTROLLED_ATTRIBUTES_PROPERTY
+		String componentControlledAttributesFilePath = ipuControlTotalsProperties.getProperty(PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.COMPONENT_CONTROLLED_ATTRIBUTES_PROPERTY);
+		if (componentControlledAttributesFilePath == null) { throw new GenstarException("Property '" + PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.COMPONENT_CONTROLLED_ATTRIBUTES_PROPERTY + "' not found in the property file."); }
+		GenstarCsvFile componentControlledAttributesListFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, componentControlledAttributesFilePath, true), false);
+
+		
+		// GROUP_OUTPUT_FILE_PROPERTY
+		String groupControlTotalsOuputFilePath = ipuControlTotalsProperties.getProperty(PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.GROUP_OUTPUT_FILE_PROPERTY);
+		if (groupControlTotalsOuputFilePath == null) { throw new GenstarException(PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.GROUP_OUTPUT_FILE_PROPERTY + " property not found"); }
+		
+		// COMPONENT_OUTPUT_FILE_PROPERTY
+		String componentControlTotalsOuputFilePath = ipuControlTotalsProperties.getProperty(PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.COMPONENT_OUTPUT_FILE_PROPERTY);
+		if (componentControlTotalsOuputFilePath == null) { throw new GenstarException(PROPERTY_FILES.IPU_CONTROL_TOTALS_PROPERTIES.COMPONENT_OUTPUT_FILE_PROPERTY + " property not found"); }
+		
+		
+		// 1. load compound population
+		IPopulation compoundPopulation = GamaGenstarUtils.loadCompoundPopulation(scope, ipuControlTotalsProperties);
+		
+		// 2. build Ipu control totals
+		Map<String, List<AttributeValuesFrequency>> ipuControlTotals = IpuUtils.buildIpuControlTotalsOfCompoundPopulation(compoundPopulation, componentPopulationName, groupControlledAttributesListFile, componentControlledAttributesListFile);
+		
+		// 3. save the generated control totals to CSV files
+		String constructedGroupFilePath = FileUtils.constructAbsoluteFilePath(scope, groupControlTotalsOuputFilePath, false);
+		String constructedComponentFilePath = FileUtils.constructAbsoluteFilePath(scope, componentControlTotalsOuputFilePath, false);
+		
+		IpuUtils.writeIpuControlTotalsToCsvFile(ipuControlTotals.get(groupPopulationName), constructedGroupFilePath);
+		IpuUtils.writeIpuControlTotalsToCsvFile(ipuControlTotals.get(componentPopulationName), constructedComponentFilePath);
+		
+		
+		Map<String, String> controlTotalsFilePaths = new HashMap<String, String>();
+		controlTotalsFilePaths.put(groupPopulationName, constructedGroupFilePath);
+		controlTotalsFilePaths.put(componentPopulationName, constructedComponentFilePath);
+		
+		return controlTotalsFilePaths;
 	}
 	
 	
@@ -1098,11 +1197,6 @@ public class GamaGenstarUtils {
 	}
 
 
-	public static void analyseFrequencyDistributionPopulation(final IScope scope, final IList population, final Properties populationProperties) {
-		
-	}
-
-	
 	public static IPopulation convertGamaPopulationToGenstarPopulation(final IScope scope, final IList gamaPopulation, final Map<String, String> populationAttributesFilePathsByPopulationNames) throws GenstarException {
 		
 		// build population attributes

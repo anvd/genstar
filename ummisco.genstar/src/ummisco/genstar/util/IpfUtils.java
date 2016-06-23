@@ -358,7 +358,7 @@ public class IpfUtils {
 
 
 	public static List<Integer> analyseIpfPopulation(final IPopulation population, final GenstarCsvFile controlledAttributesListFile, 
-			final GenstarCsvFile controlTotalsFile) throws GenstarException {
+			final GenstarCsvFile controlTotalsFile, final String analysisOutputFilePath) throws GenstarException {
 		
 		// parameters validation
 		if (population == null || controlledAttributesListFile == null || controlTotalsFile == null) {
@@ -381,7 +381,7 @@ public class IpfUtils {
 		}
 
 		// read attribute values frequencies from control totals file then do the analysis
-		List<AttributeValuesFrequency> attributeValuesFrequencies = parseAttributeValuesFrequenciesFromIpfControlTotalsFile(controlTotalsFile, controlledAttributes);
+		List<AttributeValuesFrequency> attributeValuesFrequencies = parseAttributeValuesFrequenciesFromIpfControlTotalsFile(controlledAttributes, controlTotalsFile);
 		List<Integer> generatedFrequencies = new ArrayList<Integer>();
 		List<Entity> entities = population.getEntities();
 		for (AttributeValuesFrequency avf : attributeValuesFrequencies) {
@@ -390,12 +390,27 @@ public class IpfUtils {
 			generatedFrequencies.add(matched);
 		}
 		
+		// write the analysis result to file if necessary
+		if (analysisOutputFilePath != null) {
+			List<List<String>> analysisResultContent = new ArrayList<List<String>>();
+			List<List<String>> ipfControlTotalsContent = controlTotalsFile.getContent();
+			for (int i=0; i<generatedFrequencies.size(); i++) {
+				List<String> analysisResultRowContent = new ArrayList<String>(ipfControlTotalsContent.get(i));
+				analysisResultRowContent.add(Integer.toString(generatedFrequencies.get(i)));
+				
+				analysisResultContent.add(analysisResultRowContent);
+			}
+			
+			GenstarUtils.writeStringContentToCsvFile(analysisResultContent, analysisOutputFilePath);			
+		}
+		
+		
 		return generatedFrequencies;
 	}
 	
 
-	public static List<AttributeValuesFrequency> parseAttributeValuesFrequenciesFromIpfControlTotalsFile(final GenstarCsvFile ipfControlTotalsFile, 
-			final List<AbstractAttribute> controlledAttributes) throws GenstarException {
+	public static List<AttributeValuesFrequency> parseAttributeValuesFrequenciesFromIpfControlTotalsFile(final List<AbstractAttribute> controlledAttributes, 
+			final GenstarCsvFile ipfControlTotalsFile) throws GenstarException {
 		
 		// parameters validation
 		if (ipfControlTotalsFile == null || controlledAttributes == null) {

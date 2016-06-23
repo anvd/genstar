@@ -134,11 +134,14 @@ public class IpuUtilsTest {
 		String base_folder_path2 = "test_data/ummisco/genstar/util/IpuUtils/buildIpuControlTotalsOfCompoundPopulation/";
 		GenstarCsvFile groupControlledAttributesListFile = new GenstarCsvFile(base_folder_path2 + "group_controlled_attributes.csv", false);
 		GenstarCsvFile componentControlledAttributesListFile = new GenstarCsvFile(base_folder_path2 + "component_controlled_attributes.csv", false);
-		List<AttributeValuesFrequency> groupControlTotalsToBeBuilt = new ArrayList<AttributeValuesFrequency>();
-		List<AttributeValuesFrequency> componentControlTotalsToBeBuilt = new ArrayList<AttributeValuesFrequency>();
-		IpuUtils.buildIpuControlTotalsOfCompoundPopulation(compoundPopulation, "people", 
-				groupControlledAttributesListFile, componentControlledAttributesListFile, groupControlTotalsToBeBuilt, componentControlTotalsToBeBuilt);
 		
+		
+		Map<String, List<AttributeValuesFrequency>> ipuControlTotals = IpuUtils.buildIpuControlTotalsOfCompoundPopulation(compoundPopulation, "people", 
+				groupControlledAttributesListFile, componentControlledAttributesListFile);
+		
+		List<AttributeValuesFrequency> groupControlTotals = ipuControlTotals.get("household");
+		List<AttributeValuesFrequency> componentControlTotals = ipuControlTotals.get("people");
+
 		// 2. do the necessary verifications/assertions of the built group and component control totals
 		
 		//		2.1. group control totals
@@ -156,7 +159,7 @@ public class IpuUtilsTest {
 			6,2,High
 			7,2,Low
 		 */
-		assertTrue(groupControlTotalsToBeBuilt.size() == 4);
+		assertTrue(groupControlTotals.size() == 4);
 		
 		AbstractAttribute householdSizeAttr = compoundPopulation.getAttributeByNameOnData("Household Size");
 		AbstractAttribute householdIncomeAttr = compoundPopulation.getAttributeByNameOnData("Household Income");
@@ -194,7 +197,7 @@ public class IpuUtilsTest {
 		boolean valueSet4Matched = false;
 		
 		
-		for (AttributeValuesFrequency avf : groupControlTotalsToBeBuilt) {
+		for (AttributeValuesFrequency avf : groupControlTotals) {
 			if (avf.matchAttributeValuesOnData(valueSet1)) {
 				assertTrue(avf.getFrequency() == 2);
 				valueSet1Matched = true;
@@ -236,9 +239,9 @@ public class IpuUtilsTest {
 			false,work1,7
 			true,work2,7
 		 */
-		assertTrue(componentControlTotalsToBeBuilt.size() == 4);
+		assertTrue(componentControlTotals.size() == 4);
 		
-		AttributeValuesFrequency componentAvf = componentControlTotalsToBeBuilt.get(0);
+		AttributeValuesFrequency componentAvf = componentControlTotals.get(0);
 		AbstractAttribute peopleGenderAttr = null;
 		AbstractAttribute peopleWorkAttr = null;
 		for (AbstractAttribute attr : componentAvf.getAttributes()) {
@@ -278,7 +281,7 @@ public class IpuUtilsTest {
 		peopleValueSet4.put(peopleWorkAttr, work2);
 		boolean peopleValueSet4Matched = false;
 
-		for (AttributeValuesFrequency avf : componentControlTotalsToBeBuilt) {
+		for (AttributeValuesFrequency avf : componentControlTotals) {
 			if (avf.matchAttributeValuesOnData(peopleValueSet1)) {
 				assertTrue(avf.getFrequency() == 3);
 				peopleValueSet1Matched = true;

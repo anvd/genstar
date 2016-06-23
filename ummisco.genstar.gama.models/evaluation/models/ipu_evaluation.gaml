@@ -10,10 +10,124 @@ model ipu_evaluation
 
 global {
 	
+	string household_population_attributes_file_path <- '../includes/setup/household_attributes.csv';
+	string people_population_attributes_file_path <- '../includes/setup/people_attributes.csv';
+	map<string, string> population_attributes_file_paths;
+
+	init {
+		put household_population_attributes_file_path at: 'household' in: population_attributes_file_paths;
+		put people_population_attributes_file_path at: 'people' in: population_attributes_file_paths;
+
+		do extract_samples;
+		do generate_control_totals;
+		do generate_populations;
+	}
+	
+	action extract_samples {
+		
+		write 'Start extracting samples ...';
+		
+		string base_path <- '../includes/ipu_evaluation/extracted_ipu_samples/';
+		list<string> sample_properties_file_paths <- [
+			base_path + 'scenario_1/ExtractedIpuPopulation_TwoPercents_1.properties',
+			base_path + 'scenario_2/ExtractedIpuPopulation_TwoPercents_2.properties',
+			base_path + 'scenario_3/ExtractedIpuPopulation_TwoPercents_3.properties'
+		];
+		
+		list<string> extracted_household_population_file_paths <- [
+			base_path + 'scenario_1/household_sample_1.csv',
+			base_path + 'scenario_2/household_sample_2.csv',
+			base_path + 'scenario_3/household_sample_3.csv'
+		];
+		
+		list<string> extracted_people_population_file_paths <- [
+			base_path + 'scenario_1/people_sample_1.csv',
+			base_path + 'scenario_2/people_sample_2.csv',
+			base_path + 'scenario_3/people_sample_3.csv'
+		];
+		
+		loop i from: 0 to: (length(sample_properties_file_paths) - 1) {
+			write '\tStart extracting sample for ' + (sample_properties_file_paths at i) + '...';
+			list extracted_household_population <- extract_ipu_population(sample_properties_file_paths at i);
+			write '\tFinished extracting sample.';
+			
+			// save extracted sample
+			write '\tStart saving extracted sample to ' + (extracted_household_population_file_paths at i) + ' and ...';
+			map<string, string> population_file_paths;
+			put (extracted_household_population_file_paths at i) at: 'household' in: population_file_paths;
+			put (extracted_people_population_file_paths at i) at: 'people' in: population_file_paths;
+			
+			map<string, string> resulting_population_file_paths <- save_population(extracted_household_population, population_file_paths, population_attributes_file_paths);
+			write '\tFinished saving extracted sample.';
+		}
+
+		write 'Finished extracting samples.\n';
+	}
+	
+	
+	action generate_control_totals {
+		write 'Start generating Ipu control totals ...';
+		
+		string base_path <- '../includes/ipu_evaluation/generated_ipu_control_totals/';
+		
+		list<string> ipu_control_totals_properties_file_paths <- [
+			base_path + 'scenario_1/ipu_control_totals_1.properties',
+			base_path + 'scenario_2/ipu_control_totals_2.properties',
+			base_path + 'scenario_3/ipu_control_totals_3.properties'
+		];
+		
+		loop i from: 0 to: length(ipu_control_totals_properties_file_paths) - 1 {
+			write '\tStart generating Ipu control totals for ' + (ipu_control_totals_properties_file_paths at i) + ' ...';
+			map<string,string> result_control_totals_file_path <- ipu_control_totals(ipu_control_totals_properties_file_paths at i);
+			write '\tFinished generating and saving Ipu control totals to \'' + result_control_totals_file_path + '\'.';
+		}
+		
+		write 'Finished generating Ipu control totals.\n';
+	}
+	
+	
+	action generate_populations {
+		
+		write 'Start generating, saving Ipu populations and analyzing generated population ...';
+		
+		string base_path <- '../includes/ipu_evaluation/generated_populations/';
+		list<string> population_generator_properties_file_paths <- [
+			base_path + 'scenario_1/IpuPopulation_1.properties',
+			base_path + 'scenario_2/IpuPopulation_2.properties',
+			base_path + 'scenario_3/IpuPopulation_3.properties'
+		];
+		
+		list<string> generated_household_population_file_paths <- [
+			base_path + 'scenario_1/generated_household_population_1.csv',
+			base_path + 'scenario_2/generated_household_population_2.csv',
+			base_path + 'scenario_3/generated_household_population_3.csv'
+		];
+		
+		list<string> generated_people_population_file_paths <- [
+			base_path + 'scenario_1/generated_people_population_1.csv',
+			base_path + 'scenario_2/generated_people_population_2.csv',
+			base_path + 'scenario_3/generated_people_population_3.csv'
+		];
+
+		loop i from: 0 to: (length(population_generator_properties_file_paths) - 1) {
+			write '\tStart generating population for \'' + (population_generator_properties_file_paths at i) + '\'...';
+			list household_population <- ipu_population(population_generator_properties_file_paths at i);
+			write '\tFinished generating population.';
+			
+			// save the generated population
+			write '\tStart saving generated popultion to \'' + (population_generator_properties_file_paths at i) + '\' ...';
+			map<string, string> population_file_paths;
+			put (generated_household_population_file_paths at i) at: 'household' in: population_file_paths;
+			put (generated_people_population_file_paths at i) at: 'people' in: population_file_paths;
+			
+			map<string, string> resulting_population_file_paths <- save_population(household_population, population_file_paths, population_attributes_file_paths);
+			write '\tFinished saving generated popultion.';
+		}
+
+		write 'Finished generating, saving Ipu populations and analyzing generated population.\n';
+	}
 }
 
-experiment ipu_generator type: gui {
-	output {
-		
-	}
+experiment ipu_evaluation_expr type: gui {
+	output {}
 }

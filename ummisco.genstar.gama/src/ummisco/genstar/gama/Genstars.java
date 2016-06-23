@@ -45,7 +45,7 @@ public abstract class Genstars {
 			comment = "",
 			examples = { @example(value = "list synthetic_population <- frequency_distribution_population(population_configuration.properties)",
 				equals = "",
-				test = false) }, see = { "frequency_distribution", "link_populations" })
+				test = false) }, see = { "frequency_distribution", "link_populations", "ipf_population", "ipf_compound_population", "ipu_population" })
 		public static IList generatePopulationFromFrequencyDistribution(final IScope scope, final String populationPropertiesFilePath) {
 
 			try {
@@ -80,7 +80,7 @@ public abstract class Genstars {
 			comment = "",
 			examples = { @example(value = "list<string> result_file_paths <- frequency_distributions('frequency_distributions.properties')",
 				equals = "",
-				test = false) }, see = { "population_from_csv", "link_populations" })
+				test = false) }, see = { "population_from_csv", "link_populations", "ipf_control_totals", "ipu_control_totals" })
 		public static List<String> generateFrequencyDistributionsFromSampleDataOrPopulationFile(final IScope scope, final String frequencyDistributionsPropertiesFilePath) {
 			
 			try {
@@ -118,7 +118,7 @@ public abstract class Genstars {
 		comment = "",
 		examples = { @example(value = "list synthetic_population <- ipf_population('single_population_configuration.properties')",
 			equals = "",
-			test = false) }, see = { "ipf_compound_population, ipu_population, frequency_distribution_single_population" })
+			test = false) }, see = { "ipf_compound_population", "ipu_population", "frequency_distribution_single_population" })
 		public static IList generateIpfSinglePopulation(final IScope scope, final String ipfSinglePopulationPropertiesFilePath) {
 			try {
 				
@@ -190,7 +190,7 @@ public abstract class Genstars {
 		comment = "",
 		examples = { @example(value = "list extracted_population <- extract_ipf_population('ipf_population_configuration.properties')",
 			equals = "",
-			test = false) }, see = { "extract_ipu_population, extract_ipf_compound_population, ipf_population" })
+			test = false) }, see = { "extract_ipu_population", "extract_ipf_compound_population", "ipf_population" })
 		public static IList extractIpfSinglePopulation(final IScope scope, final String ipfSinglePopulationPropertiesFilePath) {
 
 			try {
@@ -227,7 +227,7 @@ public abstract class Genstars {
 		comment = "",
 		examples = { @example(value = "list extracted_population <- extract_ipf_compound_population('ipf_compound_population_configuration.properties')",
 			equals = "",
-			test = false) }, see = { "extract_ipu_population, extract_ipf_population, ipu_compound_population" })
+			test = false) }, see = { "extract_ipu_population", "extract_ipf_population", "ipf_compound_population" })
 		public static IList extractIpfCompoundPopulation(final IScope scope, final String ipfCompoundPopulationPropertiesFilePath) {
 			
 			try {
@@ -253,22 +253,20 @@ public abstract class Genstars {
 			} catch (GenstarException e) {
 				throw GamaRuntimeException.error(e.getMessage(), scope);
 			}
-			
 		}
 		
-
 
 		@operator(value = "ipf_control_totals", type = IType.STRING, category = { IOperatorCategory.GENSTAR })
 		@doc(value = "generates the IPF control totals then save them to a CSV file",
 			returns = "the file name path of the resulting IPF control totals",
 			special_cases = { "" },
 			comment = "",
-			examples = { @example(value = "file result_file <- ipf_control_totals('controlTotalPropertiesFilePath.properties', 'resultControlsTotalFilePath.csv')",
-				equals = "a file containing the resulting control totals and locating at the path specified by resultControlsTotalFilePath.csv",
-				test = false) }, see = { "population_from_csv", "link_populations" })
-		public static String generateIpfControlTotals(final IScope scope, final String controlTotalsPropertiesFilePath) {
+			examples = { @example(value = "string result_file_path <- ipf_control_totals('controlTotalPropertiesFilePath.properties')",
+				equals = "the file name path of the resulting IPF control totals",
+				test = false) }, see = { "ipu_control_totals", "ipf_population", "ipf_compound_population" })
+		public static String generateIpfControlTotals(final IScope scope, final String ipfControlTotalsPropertiesFilePath) {
 			try {
-				String exportFileName = GamaGenstarUtils.generateIpfControlTotalsFromPopulationData(scope, controlTotalsPropertiesFilePath);
+				String exportFileName = GamaGenstarUtils.generateIpfControlTotalsFromPopulationData(scope, ipfControlTotalsPropertiesFilePath);
 				return exportFileName;
 			} catch (GenstarException e) {
 				throw GamaRuntimeException.create(e, scope);
@@ -276,6 +274,7 @@ public abstract class Genstars {
 		}
 		
 
+		/*
 		@operator(value = "analyse_ipf_population_to_console", type = IType.LIST, content_type = IType.INT, category = { IOperatorCategory.GENSTAR })
 		@doc(value = "analyze a synthetic population with respect to the IPF control totals then write analysis result to the GAMA console if necessary",
 		returns = "",
@@ -283,7 +282,7 @@ public abstract class Genstars {
 		comment = "",
 		examples = { @example(value = "list<int> analysisResult <- analyse_ipf_population_to_console(gamaPopulation, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath, writeResultToConsole)",
 			equals = "",
-			test = false) }, see = { "" })
+			test = false) }, see = { "ipf_population" })
 		public static List<Integer> analyseIpfPopulation_ToConsole(final IScope scope, final IList gamaPopulation, final String attributesFilePath, 
 				final String controlledAttributesListFilePath, final String controlTotalsFilePath) {
 			
@@ -319,7 +318,7 @@ public abstract class Genstars {
 		comment = "",
 		examples = { @example(value = "list<int> analysisResult <- analyse_ipf_population_to_file(gamaPopulation, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath, outputFilePath)",
 			equals = "",
-			test = false) }, see = { "" })
+			test = false) }, see = { "ipf_population" })
 		public static List<Integer> analyseIpfPopulation_ToFile(final IScope scope, final IList gamaPopulation, final String attributesFilePath, 
 				final String controlledAttributesListFilePath, final String controlTotalsFilePath, final String outputFilePath) {
 			
@@ -368,8 +367,7 @@ public abstract class Genstars {
 			GenstarCsvFile controlledAttributesListFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlledAttributesListFilePath, true), false);
 			return IpfUtils.analyseIpfPopulation(genstarPopulation, controlledAttributesListFile, controlTotalsFile);
 		}
-
-		// TODO analyseIpfCompoundPopulation
+		*/
 	}
 	
 	
@@ -382,7 +380,7 @@ public abstract class Genstars {
 		comment = "",
 		examples = { @example(value = "list synthetic_population <- ipu_population('ipu_population_configuration.properties')",
 			equals = "",
-			test = false) }, see = { "ipf_population, ipf_compound_population, frequency_distribution_population" })
+			test = false) }, see = { "ipu_control_totals", "extract_ipu_population", "ipf_population", "ipf_compound_population", "frequency_distribution_population" })
 		public static IList generateIpuPopulation(final IScope scope, final String ipuPopulationPropertiesFilePath) {
 			
 			try {
@@ -418,10 +416,8 @@ public abstract class Genstars {
 		comment = "",
 		examples = { @example(value = "list extracted_population <- extract_ipu_population('ipu_population_configuration.properties')",
 			equals = "",
-			test = false) }, see = { "ipu_population, extract_ipf_population, extract_ipf_compound_population" })
+			test = false) }, see = { "ipu_population", "extract_ipf_population", "extract_ipf_compound_population" })
 		public static IList extractIpuPopulation(final IScope scope, final String ipuSourcePopulationPropertiesFilePath) {
-			
-			//TODO test this method
 			
 			try {
 				// 0. Load the properties file
@@ -448,6 +444,42 @@ public abstract class Genstars {
 			}
 		}
 		
+		
+		@operator(value = "ipu_control_totals", type = IType.MAP, content_type = IType.STRING,category = { IOperatorCategory.GENSTAR })
+		@doc(value = "generates the IPU control totals then save them to CSV files",
+			returns = "a map of two elements in which keys are two population names (group, component) and values are two file paths of the resulting IPU control totals",
+			special_cases = { "" },
+			comment = "",
+			examples = { @example(value = "map<string,string> results <- ips_control_totals('ipuControlTotalsPropertiesFilePath.properties')",
+				equals = "",
+				test = false) }, see = { "ipf_control_totals", "ipu_population" })
+		public static Map<String, String> generateIpuControlTotals(final IScope scope,  final String ipuControlTotalsPropertiesFilePath) {
+			
+			try {
+				
+				Properties ipuControlTotalsProperties = null;
+				File ipuControlTotalsPropertiesFile = new File(FileUtils.constructAbsoluteFilePath(scope, ipuControlTotalsPropertiesFilePath, true));
+				try {
+					FileInputStream propertyInputStream = new FileInputStream(ipuControlTotalsPropertiesFile);
+					ipuControlTotalsProperties = new Properties();
+					ipuControlTotalsProperties.load(propertyInputStream);
+				} catch (FileNotFoundException e) {
+					throw new GenstarException(e);
+				} catch (IOException e) {
+					throw new GenstarException(e);
+				}
+				
+				
+				return GamaGenstarUtils.generateIpuControlTotalsFromPopulationData(scope, ipuControlTotalsProperties);
+			} catch (GenstarException e) {
+				throw GamaRuntimeException.create(e, scope);
+			}
+		}
+		
+		/*
+		public static Map<String, List<Integer>> analyseIpuPopulation_ToFile(final IScope scope, final IList ipuPopulation, final String attributesFilePath, 
+				final String controlledAttributesListFilePath, final String controlTotalsFilePath, final String outputFilePath) {
+		 */
 	}
 	
 	
@@ -546,13 +578,13 @@ public abstract class Genstars {
 
 		
 		@operator(value = {"population_to_csv", "save_population" }, type = IType.LIST, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "Writes a synthetic population to CSV file(s).",
+		@doc(value = "Saves a synthetic population to CSV file(s).",
 		returns = "A map in which keys are population names and values are absolute file paths to the CSV files of the corresponding populations.",
 		special_cases = { "" },
 		comment = "",
 		examples = { @example(value = "map<string, string> outputFilePaths <- population_to_csv(gamaPopulation, populationOutputFilePaths, populationAttributesFilePaths)",
 			equals = "",
-			test = false) }, see = { "" })
+			test = false) }, see = { "load_population", "population_from_csv" })
 		public static final Map<String, String> writePopulationsToCsvFiles(final IScope scope, final IList gamaPopulation, final Map<String, String> populationOutputFilePaths, 
 				final Map<String, String> populationAttributesFilePaths) {
 			
@@ -582,7 +614,7 @@ public abstract class Genstars {
 		comment = "",
 		examples = { @example(value = "list loaded_single_population <- load_population(loaded_single_population.properties)",
 			equals = "",
-			test = false) }, see = { "" })
+			test = false) }, see = { "population_to_csv", "save_population" })
 		public static IList loadSinglePopulation(final IScope scope, final String singlePopulationPropertiesFilePath) {
 			
 			try {
@@ -617,7 +649,7 @@ public abstract class Genstars {
 		comment = "",
 		examples = { @example(value = "list loaded_compound_population <- load_compound_population(loaded_compound_population.properties)",
 			equals = "",
-			test = false) }, see = { "" })
+			test = false) }, see = { "population_to_csv", "save_population" })
 		public static IList loadCompoundPopulation(final IScope scope, final String compoundPopulationPropertiesFilePath) {
 			
 			try {

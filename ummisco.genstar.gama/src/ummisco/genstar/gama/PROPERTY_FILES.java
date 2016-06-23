@@ -1,5 +1,6 @@
 package ummisco.genstar.gama;
 
+
 // TODO move this class to "ummisco.genstar" project, change class name to PROPERTY_FILE_FORMATS
 public class PROPERTY_FILES {
 
@@ -13,7 +14,7 @@ public class PROPERTY_FILES {
 
 		public static final String NUMBER_OF_ENTITIES_PROPERTY = "NUMBER_OF_ENTITIES";
 		
-		public static final String ANALYSIS_RESULT_OUTPUT_FOLDER_PROPERTY = "ANALYSIS_RESULT_OUTPUT_FOLDER";
+		public static final String ANALYSIS_OUTPUT_FOLDER_PROPERTY = "ANALYSIS_OUTPUT_FOLDER";
 	}
 	
 	
@@ -81,6 +82,38 @@ public class PROPERTY_FILES {
 		public static final String POPULATION_DATA_PROPERTY = "POPULATION_DATA";
 		
 		public static final String OUTPUT_FILE_PROPERTY = "OUTPUT_FILE";
+	}
+	
+	
+	public static final class IPU_CONTROL_TOTALS_PROPERTIES {
+		
+		public static final String GROUP_POPULATION_NAME_PROPERTY = "GROUP_POPULATION_NAME";
+
+		public static final String GROUP_ATTRIBUTES_PROPERTY = "GROUP_ATTRIBUTES";
+
+		public static final String GROUP_POPULATION_DATA_PROPERTY = "GROUP_POPULATION_DATA";
+		
+
+		public static final String COMPONENT_POPULATION_NAME_PROPERTY = "COMPONENT_POPULATION_NAME";
+
+		public static final String COMPONENT_ATTRIBUTES_PROPERTY = "COMPONENT_ATTRIBUTES";
+
+		public static final String COMPONENT_POPULATION_DATA_PROPERTY = "COMPONENT_POPULATION_DATA";
+
+	
+		public static final String GROUP_ID_ATTRIBUTE_ON_GROUP_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_GROUP";
+
+		public static final String GROUP_ID_ATTRIBUTE_ON_COMPONENT_PROPERTY = "GROUP_ID_ATTRIBUTE_ON_COMPONENT";
+
+		
+		public static final String GROUP_CONTROLLED_ATTRIBUTES_PROPERTY = "GROUP_CONTROLLED_ATTRIBUTES";
+		
+		public static final String COMPONENT_CONTROLLED_ATTRIBUTES_PROPERTY = "COMPONENT_CONTROLLED_ATTRIBUTES";
+		
+		
+		public static final String GROUP_OUTPUT_FILE_PROPERTY = "GROUP_OUTPUT_FILE";
+		
+		public static final String COMPONENT_OUTPUT_FILE_PROPERTY = "COMPONENT_OUTPUT_FILE";
 	}
 
 	
@@ -151,6 +184,9 @@ public class PROPERTY_FILES {
 		public static final String COMPONENT_REFERENCE_ON_GROUP_PROPERTY = "COMPONENT_REFERENCE_ON_GROUP";
 
 		public static final String GROUP_REFERENCE_ON_COMPONENT_PROPERTY = "GROUP_REFERENCE_ON_COMPONENT";
+		
+		
+		public static final String ANALYSIS_OUTPUT_PROPERTY = "ANALYSIS_OUTPUT";
 	}
 	
 	
@@ -243,6 +279,11 @@ public class PROPERTY_FILES {
 		public static final String GROUP_REFERENCE_ON_COMPONENT_PROPERTY = "GROUP_REFERENCE_ON_COMPONENT";
 
 		public static final String MAX_ITERATIONS_PROPERTY = "MAX_ITERATIONS";
+		
+		
+		public static final String GROUP_ANALYSIS_OUTPUT_PROPERTY = "GROUP_ANALYSIS_OUTPUT";
+		
+		public static final String COMPONENT_ANALYSIS_OUTPUT_PROPERTY = "COMPONENT_ANALYSIS_OUTPUT";
 
 	}
 	
