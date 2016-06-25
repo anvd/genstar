@@ -1051,6 +1051,4 @@ public class GenstarUtils {
 			}
 		}
 	}
-	
-	
 }

@@ -15,14 +15,6 @@ global {
 		write 'Finished generating the population. Duration: ' + (machine_time - begining_time) + ' miliseconds';
 		
 		genstar_create synthetic_population: household_population;
-		
-		// analyze the generated population 
-		write 'Analyze generation result ...';
-		string attributesFilePath <- '../includes/household_population/attributes.csv';
-		string controlledAttributesListFilePath <- '../includes/household_population/controlled_attributes_list.csv';
-		string controlTotalsFilePath <- '../includes/household_population/control_totals.csv';
-		bool writeResultToConsole <- true;
-		list<int> analysisResult <- analyse_ipf_population_to_console(household_population, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath);
 	}
 }
 

@@ -4,14 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import msi.gama.common.util.FileUtils;
-import msi.gama.common.util.GuiUtils;
 import msi.gama.metamodel.agent.IMacroAgent;
 import msi.gama.precompiler.GamlAnnotations.doc;
 import msi.gama.precompiler.GamlAnnotations.example;
@@ -25,10 +23,7 @@ import msi.gaml.extensions.genstar.IGamaPopulationsLinker;
 import msi.gaml.types.IType;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.population.IPopulation;
-import ummisco.genstar.util.CsvWriter;
-import ummisco.genstar.util.GenstarCsvFile;
 import ummisco.genstar.util.GenstarUtils;
-import ummisco.genstar.util.IpfUtils;
 
 /**
  * A set of Genstar-related operators.
@@ -261,113 +256,31 @@ public abstract class Genstars {
 			returns = "the file name path of the resulting IPF control totals",
 			special_cases = { "" },
 			comment = "",
-			examples = { @example(value = "string result_file_path <- ipf_control_totals('controlTotalPropertiesFilePath.properties')",
+			examples = { @example(value = "string control_totals_file_path <- ipf_control_totals('controlTotalPropertiesFilePath.properties')",
 				equals = "the file name path of the resulting IPF control totals",
 				test = false) }, see = { "ipu_control_totals", "ipf_population", "ipf_compound_population" })
 		public static String generateIpfControlTotals(final IScope scope, final String ipfControlTotalsPropertiesFilePath) {
 			try {
-				String exportFileName = GamaGenstarUtils.generateIpfControlTotalsFromPopulationData(scope, ipfControlTotalsPropertiesFilePath);
-				return exportFileName;
+				// 0. Load the properties file
+				Properties ipfControlTotalsProperties = null;
+				File ipfControlTotalsPropertiesFile = new File(FileUtils.constructAbsoluteFilePath(scope, ipfControlTotalsPropertiesFilePath, true));
+				try {
+					FileInputStream propertyInputStream = new FileInputStream(ipfControlTotalsPropertiesFile);
+					ipfControlTotalsProperties = new Properties();
+					ipfControlTotalsProperties.load(propertyInputStream);
+				} catch (FileNotFoundException e) {
+					throw new GenstarException(e);
+				} catch (IOException e) {
+					throw new GenstarException(e);
+				}
+				
+				
+				String controlTotalsFilePath = GamaGenstarUtils.generateIpfControlTotalsFromPopulationData(scope, ipfControlTotalsProperties);
+				return controlTotalsFilePath;
 			} catch (GenstarException e) {
 				throw GamaRuntimeException.create(e, scope);
 			}
 		}
-		
-
-		/*
-		@operator(value = "analyse_ipf_population_to_console", type = IType.LIST, content_type = IType.INT, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "analyze a synthetic population with respect to the IPF control totals then write analysis result to the GAMA console if necessary",
-		returns = "",
-		special_cases = { "" },
-		comment = "",
-		examples = { @example(value = "list<int> analysisResult <- analyse_ipf_population_to_console(gamaPopulation, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath, writeResultToConsole)",
-			equals = "",
-			test = false) }, see = { "ipf_population" })
-		public static List<Integer> analyseIpfPopulation_ToConsole(final IScope scope, final IList gamaPopulation, final String attributesFilePath, 
-				final String controlledAttributesListFilePath, final String controlTotalsFilePath) {
-			
-			try {
-				
-				// TODO analyseIpfPopulation need the information of ID attribute -> option 1: analyse compound Ipf population
-				GenstarCsvFile controlTotalsFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
-				List<Integer> generatedFrequencies = analyseIpfPopulation(scope, gamaPopulation, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath);
-				
-				// write analysis result to GAMA console
-				GuiUtils.informConsole("Row format: (attribute name, attribute value)+, control total, generated total");
-				int line = 0;
-				for (List<String> controlTotalsRow : controlTotalsFile.getContent()) {
-					StringBuffer aRow = new StringBuffer();
-					for (String e : controlTotalsRow) { aRow.append(e); aRow.append(","); }
-					aRow.append(generatedFrequencies.get(line));
-					line++;
-					
-					GuiUtils.informConsole(aRow.toString());				
-				}
-				
-				return generatedFrequencies;
-			} catch (GenstarException e){
-				throw GamaRuntimeException.error(e.getMessage(), scope);
-			}
-		}
-		
-		
-		@operator(value = "analyse_ipf_population_to_file", type = IType.LIST, content_type = IType.INT, category = { IOperatorCategory.GENSTAR })
-		@doc(value = "analyze a synthetic population with respect to the IPF control totals then write analysis result to the GAMA console if necessary",
-		returns = "",
-		special_cases = { "" },
-		comment = "",
-		examples = { @example(value = "list<int> analysisResult <- analyse_ipf_population_to_file(gamaPopulation, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath, outputFilePath)",
-			equals = "",
-			test = false) }, see = { "ipf_population" })
-		public static List<Integer> analyseIpfPopulation_ToFile(final IScope scope, final IList gamaPopulation, final String attributesFilePath, 
-				final String controlledAttributesListFilePath, final String controlTotalsFilePath, final String outputFilePath) {
-			
-			try {
-				
-				GenstarCsvFile controlTotalsFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlTotalsFilePath, true), false);
-				List<Integer> generatedFrequencies = analyseIpfPopulation(scope, gamaPopulation, attributesFilePath, controlledAttributesListFilePath, controlTotalsFilePath);
-
-				// output file
-				CsvWriter outputFileWriter = new CsvWriter(FileUtils.constructAbsoluteFilePath(scope, outputFilePath, false));
-				
-				// write analysis result to output file
-				int line = 0;
-				for (List<String> controlTotalsRow : controlTotalsFile.getContent()) {
-					List<String> aRow = new ArrayList<String>();
-					for (String e : controlTotalsRow) { aRow.add(e); }
-					aRow.add(Integer.toString(generatedFrequencies.get(line)));
-					line++;
-					
-					outputFileWriter.writeRecord(aRow.toArray(new String[0]));			
-				}
-				outputFileWriter.flush();
-				outputFileWriter.close();
-				
-				return generatedFrequencies;
-			} catch (GenstarException e){
-				throw GamaRuntimeException.error(e.getMessage(), scope);
-			} catch (IOException ioe) {
-				throw GamaRuntimeException.error(ioe.getMessage(), scope);
-			}
-			
-		}
-		
-		
-		private static List<Integer> analyseIpfPopulation(final IScope scope, final IList gamaPopulation, final String attributesFilePath, 
-				final String controlledAttributesListFilePath, final String ipfControlTotalsFilePath) throws GenstarException {
-			// convert GAMA population to Gen* population
-			String populationName = (String)gamaPopulation.get(0); // first element is the population name
-			Map<String, String> populationsAttributes = new HashMap<String, String>();
-			populationsAttributes.put(populationName, attributesFilePath);
-
-			IPopulation genstarPopulation = GamaGenstarUtils.convertGamaPopulationToGenstarPopulation(scope, gamaPopulation, populationsAttributes);
-			
-			// do the analysis
-			GenstarCsvFile controlTotalsFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, ipfControlTotalsFilePath, true), false);
-			GenstarCsvFile controlledAttributesListFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, controlledAttributesListFilePath, true), false);
-			return IpfUtils.analyseIpfPopulation(genstarPopulation, controlledAttributesListFile, controlTotalsFile);
-		}
-		*/
 	}
 	
 	
@@ -475,11 +388,6 @@ public abstract class Genstars {
 				throw GamaRuntimeException.create(e, scope);
 			}
 		}
-		
-		/*
-		public static Map<String, List<Integer>> analyseIpuPopulation_ToFile(final IScope scope, final IList ipuPopulation, final String attributesFilePath, 
-				final String controlledAttributesListFilePath, final String controlTotalsFilePath, final String outputFilePath) {
-		 */
 	}
 	
 	

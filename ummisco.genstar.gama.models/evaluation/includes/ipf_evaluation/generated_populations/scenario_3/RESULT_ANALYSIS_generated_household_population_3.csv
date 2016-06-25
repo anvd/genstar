@@ -1,102 +1,102 @@
-Number Of Cars,0,HouseholdSize,1,Household Income,High,223,235
-Number Of Cars,1,HouseholdSize,1,Household Income,High,161,169
-Number Of Cars,2,HouseholdSize,1,Household Income,High,131,133
-Number Of Cars,3,HouseholdSize,1,Household Income,High,218,197
-Number Of Cars,0,HouseholdSize,1,Household Income,Low,118,121
-Number Of Cars,1,HouseholdSize,1,Household Income,Low,159,161
-Number Of Cars,2,HouseholdSize,1,Household Income,Low,116,113
-Number Of Cars,3,HouseholdSize,1,Household Income,Low,119,117
-Number Of Cars,0,HouseholdSize,2,Household Income,High,116,113
-Number Of Cars,1,HouseholdSize,2,Household Income,High,114,112
-Number Of Cars,2,HouseholdSize,2,Household Income,High,167,167
-Number Of Cars,3,HouseholdSize,2,Household Income,High,214,219
-Number Of Cars,0,HouseholdSize,2,Household Income,Low,97,98
-Number Of Cars,1,HouseholdSize,2,Household Income,Low,99,100
-Number Of Cars,2,HouseholdSize,2,Household Income,Low,137,138
-Number Of Cars,3,HouseholdSize,2,Household Income,Low,184,182
-Number Of Cars,0,HouseholdSize,3,Household Income,High,173,135
-Number Of Cars,1,HouseholdSize,3,Household Income,High,104,119
-Number Of Cars,2,HouseholdSize,3,Household Income,High,167,163
-Number Of Cars,3,HouseholdSize,3,Household Income,High,160,188
-Number Of Cars,0,HouseholdSize,3,Household Income,Low,185,183
-Number Of Cars,1,HouseholdSize,3,Household Income,Low,103,103
-Number Of Cars,2,HouseholdSize,3,Household Income,Low,239,238
-Number Of Cars,3,HouseholdSize,3,Household Income,Low,139,141
-Number Of Cars,0,Household Type,type1,Household Income,High,184,146
-Number Of Cars,1,Household Type,type1,Household Income,High,94,104
-Number Of Cars,2,Household Type,type1,Household Income,High,134,107
-Number Of Cars,3,Household Type,type1,Household Income,High,159,214
-Number Of Cars,0,Household Type,type2,Household Income,High,162,144
-Number Of Cars,1,Household Type,type2,Household Income,High,158,174
-Number Of Cars,2,Household Type,type2,Household Income,High,223,253
-Number Of Cars,3,Household Type,type2,Household Income,High,214,187
-Number Of Cars,0,Household Type,type3,Household Income,High,166,193
-Number Of Cars,1,Household Type,type3,Household Income,High,127,122
-Number Of Cars,2,Household Type,type3,Household Income,High,108,103
-Number Of Cars,3,Household Type,type3,Household Income,High,219,203
-Number Of Cars,0,Household Type,type1,Household Income,Low,107,104
-Number Of Cars,1,Household Type,type1,Household Income,Low,142,147
-Number Of Cars,2,Household Type,type1,Household Income,Low,131,142
-Number Of Cars,3,Household Type,type1,Household Income,Low,160,146
-Number Of Cars,0,Household Type,type2,Household Income,Low,176,180
-Number Of Cars,1,Household Type,type2,Household Income,Low,164,167
-Number Of Cars,2,Household Type,type2,Household Income,Low,203,202
-Number Of Cars,3,Household Type,type2,Household Income,Low,188,183
-Number Of Cars,0,Household Type,type3,Household Income,Low,117,118
-Number Of Cars,1,Household Type,type3,Household Income,Low,55,50
-Number Of Cars,2,Household Type,type3,Household Income,Low,158,145
-Number Of Cars,3,Household Type,type3,Household Income,Low,94,111
-Household Type,type1,HouseholdSize,1,Household Income,High,203,203
-Household Type,type2,HouseholdSize,1,Household Income,High,340,340
-Household Type,type3,HouseholdSize,1,Household Income,High,190,191
-Household Type,type1,HouseholdSize,1,Household Income,Low,180,180
-Household Type,type2,HouseholdSize,1,Household Income,Low,226,226
-Household Type,type3,HouseholdSize,1,Household Income,Low,106,106
-Household Type,type1,HouseholdSize,2,Household Income,High,213,213
-Household Type,type2,HouseholdSize,2,Household Income,High,191,191
-Household Type,type3,HouseholdSize,2,Household Income,High,207,207
-Household Type,type1,HouseholdSize,2,Household Income,Low,136,136
-Household Type,type2,HouseholdSize,2,Household Income,Low,235,236
-Household Type,type3,HouseholdSize,2,Household Income,Low,146,146
-Household Type,type1,HouseholdSize,3,Household Income,High,155,155
-Household Type,type2,HouseholdSize,3,Household Income,High,226,227
-Household Type,type3,HouseholdSize,3,Household Income,High,223,223
-Household Type,type1,HouseholdSize,3,Household Income,Low,224,223
-Household Type,type2,HouseholdSize,3,Household Income,Low,270,270
-Household Type,type3,HouseholdSize,3,Household Income,Low,172,172
-Number Of Cars,0,Household Type,type1,HouseholdSize,1,102,94
-Number Of Cars,1,Household Type,type1,HouseholdSize,1,113,111
-Number Of Cars,2,Household Type,type1,HouseholdSize,1,40,41
-Number Of Cars,3,Household Type,type1,HouseholdSize,1,128,137
-Number Of Cars,0,Household Type,type2,HouseholdSize,1,153,168
-Number Of Cars,1,Household Type,type2,HouseholdSize,1,136,153
-Number Of Cars,2,Household Type,type2,HouseholdSize,1,151,160
-Number Of Cars,3,Household Type,type2,HouseholdSize,1,126,85
-Number Of Cars,0,Household Type,type3,HouseholdSize,1,86,94
-Number Of Cars,1,Household Type,type3,HouseholdSize,1,71,66
-Number Of Cars,2,Household Type,type3,HouseholdSize,1,56,45
-Number Of Cars,3,Household Type,type3,HouseholdSize,1,83,92
-Number Of Cars,0,Household Type,type1,HouseholdSize,2,70,70
-Number Of Cars,1,Household Type,type1,HouseholdSize,2,52,54
-Number Of Cars,2,Household Type,type1,HouseholdSize,2,111,107
-Number Of Cars,3,Household Type,type1,HouseholdSize,2,116,118
-Number Of Cars,0,Household Type,type2,HouseholdSize,2,76,73
-Number Of Cars,1,Household Type,type2,HouseholdSize,2,71,67
-Number Of Cars,2,Household Type,type2,HouseholdSize,2,91,94
-Number Of Cars,3,Household Type,type2,HouseholdSize,2,188,193
-Number Of Cars,0,Household Type,type3,HouseholdSize,2,67,68
-Number Of Cars,1,Household Type,type3,HouseholdSize,2,90,91
-Number Of Cars,2,Household Type,type3,HouseholdSize,2,102,104
-Number Of Cars,3,Household Type,type3,HouseholdSize,2,94,90
-Number Of Cars,0,Household Type,type1,HouseholdSize,3,119,86
-Number Of Cars,1,Household Type,type1,HouseholdSize,3,71,86
-Number Of Cars,2,Household Type,type1,HouseholdSize,3,114,101
-Number Of Cars,3,Household Type,type1,HouseholdSize,3,75,105
-Number Of Cars,0,Household Type,type2,HouseholdSize,3,109,83
-Number Of Cars,1,Household Type,type2,HouseholdSize,3,115,121
-Number Of Cars,2,Household Type,type2,HouseholdSize,3,184,201
-Number Of Cars,3,Household Type,type2,HouseholdSize,3,88,92
-Number Of Cars,0,Household Type,type3,HouseholdSize,3,130,149
-Number Of Cars,1,Household Type,type3,HouseholdSize,3,21,15
-Number Of Cars,2,Household Type,type3,HouseholdSize,3,108,99
-Number Of Cars,3,Household Type,type3,HouseholdSize,3,136,132
+Number Of Cars,0,HouseholdSize,1,Household Income,High,195,317
+Number Of Cars,1,HouseholdSize,1,Household Income,High,151,99
+Number Of Cars,2,HouseholdSize,1,Household Income,High,89,58
+Number Of Cars,3,HouseholdSize,1,Household Income,High,150,111
+Number Of Cars,0,HouseholdSize,1,Household Income,Low,243,252
+Number Of Cars,1,HouseholdSize,1,Household Income,Low,234,236
+Number Of Cars,2,HouseholdSize,1,Household Income,Low,169,165
+Number Of Cars,3,HouseholdSize,1,Household Income,Low,61,55
+Number Of Cars,0,HouseholdSize,2,Household Income,High,189,190
+Number Of Cars,1,HouseholdSize,2,Household Income,High,176,180
+Number Of Cars,2,HouseholdSize,2,Household Income,High,225,223
+Number Of Cars,3,HouseholdSize,2,Household Income,High,169,165
+Number Of Cars,0,HouseholdSize,2,Household Income,Low,166,218
+Number Of Cars,1,HouseholdSize,2,Household Income,Low,177,163
+Number Of Cars,2,HouseholdSize,2,Household Income,Low,54,43
+Number Of Cars,3,HouseholdSize,2,Household Income,Low,230,203
+Number Of Cars,0,HouseholdSize,3,Household Income,High,177,181
+Number Of Cars,1,HouseholdSize,3,Household Income,High,140,155
+Number Of Cars,2,HouseholdSize,3,Household Income,High,149,141
+Number Of Cars,3,HouseholdSize,3,Household Income,High,165,155
+Number Of Cars,0,HouseholdSize,3,Household Income,Low,170,204
+Number Of Cars,1,HouseholdSize,3,Household Income,Low,181,123
+Number Of Cars,2,HouseholdSize,3,Household Income,Low,197,229
+Number Of Cars,3,HouseholdSize,3,Household Income,Low,184,176
+Number Of Cars,0,Household Income,High,Household Type,type1,188,161
+Number Of Cars,1,Household Income,High,Household Type,type1,125,130
+Number Of Cars,2,Household Income,High,Household Type,type1,128,165
+Number Of Cars,3,Household Income,High,Household Type,type1,214,200
+Number Of Cars,0,Household Income,High,Household Type,type2,170,342
+Number Of Cars,1,Household Income,High,Household Type,type2,146,142
+Number Of Cars,2,Household Income,High,Household Type,type2,172,77
+Number Of Cars,3,Household Income,High,Household Type,type2,143,70
+Number Of Cars,0,Household Income,High,Household Type,type3,203,185
+Number Of Cars,1,Household Income,High,Household Type,type3,196,162
+Number Of Cars,2,Household Income,High,Household Type,type3,163,180
+Number Of Cars,3,Household Income,High,Household Type,type3,127,161
+Number Of Cars,0,Household Income,Low,Household Type,type1,156,274
+Number Of Cars,1,Household Income,Low,Household Type,type1,155,177
+Number Of Cars,2,Household Income,Low,Household Type,type1,77,46
+Number Of Cars,3,Household Income,Low,Household Type,type1,168,59
+Number Of Cars,0,Household Income,Low,Household Type,type2,196,163
+Number Of Cars,1,Household Income,Low,Household Type,type2,270,208
+Number Of Cars,2,Household Income,Low,Household Type,type2,202,255
+Number Of Cars,3,Household Income,Low,Household Type,type2,224,267
+Number Of Cars,0,Household Income,Low,Household Type,type3,227,237
+Number Of Cars,1,Household Income,Low,Household Type,type3,167,137
+Number Of Cars,2,Household Income,Low,Household Type,type3,141,136
+Number Of Cars,3,Household Income,Low,Household Type,type3,83,108
+HouseholdSize,1,Household Income,High,Household Type,type1,270,270
+HouseholdSize,1,Household Income,High,Household Type,type2,166,166
+HouseholdSize,1,Household Income,High,Household Type,type3,149,149
+HouseholdSize,1,Household Income,Low,Household Type,type1,183,183
+HouseholdSize,1,Household Income,Low,Household Type,type2,312,313
+HouseholdSize,1,Household Income,Low,Household Type,type3,212,212
+HouseholdSize,2,Household Income,High,Household Type,type1,249,249
+HouseholdSize,2,Household Income,High,Household Type,type2,265,265
+HouseholdSize,2,Household Income,High,Household Type,type3,245,244
+HouseholdSize,2,Household Income,Low,Household Type,type1,180,180
+HouseholdSize,2,Household Income,Low,Household Type,type2,232,232
+HouseholdSize,2,Household Income,Low,Household Type,type3,215,215
+HouseholdSize,3,Household Income,High,Household Type,type1,136,137
+HouseholdSize,3,Household Income,High,Household Type,type2,200,200
+HouseholdSize,3,Household Income,High,Household Type,type3,295,295
+HouseholdSize,3,Household Income,Low,Household Type,type1,193,193
+HouseholdSize,3,Household Income,Low,Household Type,type2,348,348
+HouseholdSize,3,Household Income,Low,Household Type,type3,191,191
+Number Of Cars,0,HouseholdSize,1,Household Type,type1,121,123
+Number Of Cars,1,HouseholdSize,1,Household Type,type1,156,153
+Number Of Cars,2,HouseholdSize,1,Household Type,type1,71,94
+Number Of Cars,3,HouseholdSize,1,Household Type,type1,105,83
+Number Of Cars,0,HouseholdSize,1,Household Type,type2,138,247
+Number Of Cars,1,HouseholdSize,1,Household Type,type2,116,86
+Number Of Cars,2,HouseholdSize,1,Household Type,type2,140,93
+Number Of Cars,3,HouseholdSize,1,Household Type,type2,84,53
+Number Of Cars,0,HouseholdSize,1,Household Type,type3,179,199
+Number Of Cars,1,HouseholdSize,1,Household Type,type3,113,96
+Number Of Cars,2,HouseholdSize,1,Household Type,type3,47,36
+Number Of Cars,3,HouseholdSize,1,Household Type,type3,22,30
+Number Of Cars,0,HouseholdSize,2,Household Type,type1,161,230
+Number Of Cars,1,HouseholdSize,2,Household Type,type1,32,29
+Number Of Cars,2,HouseholdSize,2,Household Type,type1,95,84
+Number Of Cars,3,HouseholdSize,2,Household Type,type1,141,86
+Number Of Cars,0,HouseholdSize,2,Household Type,type2,83,76
+Number Of Cars,1,HouseholdSize,2,Household Type,type2,163,164
+Number Of Cars,2,HouseholdSize,2,Household Type,type2,81,80
+Number Of Cars,3,HouseholdSize,2,Household Type,type2,170,177
+Number Of Cars,0,HouseholdSize,2,Household Type,type3,111,102
+Number Of Cars,1,HouseholdSize,2,Household Type,type3,158,150
+Number Of Cars,2,HouseholdSize,2,Household Type,type3,103,102
+Number Of Cars,3,HouseholdSize,2,Household Type,type3,88,105
+Number Of Cars,0,HouseholdSize,3,Household Type,type1,62,82
+Number Of Cars,1,HouseholdSize,3,Household Type,type1,92,125
+Number Of Cars,2,HouseholdSize,3,Household Type,type1,39,33
+Number Of Cars,3,HouseholdSize,3,Household Type,type1,136,90
+Number Of Cars,0,HouseholdSize,3,Household Type,type2,145,182
+Number Of Cars,1,HouseholdSize,3,Household Type,type2,137,100
+Number Of Cars,2,HouseholdSize,3,Household Type,type2,153,159
+Number Of Cars,3,HouseholdSize,3,Household Type,type2,113,107
+Number Of Cars,0,HouseholdSize,3,Household Type,type3,140,121
+Number Of Cars,1,HouseholdSize,3,Household Type,type3,92,53
+Number Of Cars,2,HouseholdSize,3,Household Type,type3,154,178
+Number Of Cars,3,HouseholdSize,3,Household Type,type3,100,134

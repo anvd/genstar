@@ -8,11 +8,8 @@ import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
-import ummisco.genstar.util.PersistentObject;
 
 public abstract class AbstractSyntheticPopulationGenerator implements ISyntheticPopulationGenerator {
-
-	protected int id = PersistentObject.NEW_OBJECT_ID;
 	
 	protected String generatorName;
 	
@@ -32,14 +29,6 @@ public abstract class AbstractSyntheticPopulationGenerator implements ISynthetic
 		this.attributes = new ArrayList<AbstractAttribute>();
 	}
 
-	@Override public void setID(final int id) {
-		this.id = id;
-	}
-	
-	@Override public int getID() {
-		return id;
-	}
-	
 	@Override public String getGeneratorName() {
 		return generatorName;
 	}

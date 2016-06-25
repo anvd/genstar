@@ -8,13 +8,10 @@ import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.population.Entity;
-import ummisco.genstar.util.PersistentObject;
 
 public class AttributeValuesFrequency {
 	
-	private int attributeValuesFrequencyID = PersistentObject.NEW_OBJECT_ID;
-	
-	private Map<AbstractAttribute, AttributeValue> attributeValuesOnData; // TODO change to Map<String, AttributeValue> <attribute name on data, attribute value>
+	private Map<AbstractAttribute, AttributeValue> attributeValuesOnData;
 	
 	private int frequency = 0;
 	
@@ -98,14 +95,6 @@ public class AttributeValuesFrequency {
 		}
 		
 		return true;
-	}
-
-	public int getID() {
-		return attributeValuesFrequencyID;
-	}
-
-	public void setID(final int attributeValuesFrequencyID) {
-		this.attributeValuesFrequencyID = attributeValuesFrequencyID;
 	}
 
 	@Override

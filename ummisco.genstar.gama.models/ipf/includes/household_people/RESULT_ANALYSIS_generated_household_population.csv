@@ -1,0 +1,26 @@
+Household Size,1,Household Income,High,200,200
+Household Size,1,Household Income,Low,100,100
+Household Size,2,Household Income,High,50,50
+Household Size,2,Household Income,Low,250,249
+Household Size,3,Household Income,High,300,301
+Household Size,3,Household Income,Low,100,100
+Household Size,1,Number Of Cars,0,50,44
+Household Size,1,Number Of Cars,1,150,163
+Household Size,1,Number Of Cars,2,30,30
+Household Size,1,Number Of Cars,3,70,63
+Household Size,2,Number Of Cars,0,150,90
+Household Size,2,Number Of Cars,1,170,139
+Household Size,2,Number Of Cars,2,30,25
+Household Size,2,Number Of Cars,3,50,45
+Household Size,3,Number Of Cars,0,40,50
+Household Size,3,Number Of Cars,1,60,87
+Household Size,3,Number Of Cars,2,150,199
+Household Size,3,Number Of Cars,3,50,65
+Household Income,Low,Number Of Cars,0,50,59
+Household Income,Low,Number Of Cars,1,150,246
+Household Income,Low,Number Of Cars,2,30,82
+Household Income,Low,Number Of Cars,3,70,62
+Household Income,High,Number Of Cars,0,250,125
+Household Income,High,Number Of Cars,1,150,143
+Household Income,High,Number Of Cars,2,100,172
+Household Income,High,Number Of Cars,3,200,111

@@ -70,7 +70,7 @@ global {
 		loop i from: 0 to: length(control_totals_properties_file_paths) - 1 {
 			write '\tStart generating Ipf control totals for ' + (control_totals_properties_file_paths at i) + ' ...';
 			string result_control_totals_file_path <- ipf_control_totals(control_totals_properties_file_paths at i);
-			write 'Finished generating and saving Ipf control totals to \'' + result_control_totals_file_path + '\'.';
+			write '\tFinished generating and saving Ipf control totals to \'' + result_control_totals_file_path + '\'.';
 		}
 		
 		write 'Finished generating Ipf control totals.\n';

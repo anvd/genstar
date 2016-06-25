@@ -29,9 +29,9 @@ global {
 		
 		string base_path <- '../includes/ipu_evaluation/extracted_ipu_samples/';
 		list<string> sample_properties_file_paths <- [
-			base_path + 'scenario_1/ExtractedIpuPopulation_TwoPercents_1.properties',
-			base_path + 'scenario_2/ExtractedIpuPopulation_TwoPercents_2.properties',
-			base_path + 'scenario_3/ExtractedIpuPopulation_TwoPercents_3.properties'
+			base_path + 'scenario_1/ExtractedIpuPopulation_FivePercents_1.properties',
+			base_path + 'scenario_2/ExtractedIpuPopulation_FivePercents_2.properties',
+			base_path + 'scenario_3/ExtractedIpuPopulation_FivePercents_3.properties'
 		];
 		
 		list<string> extracted_household_population_file_paths <- [

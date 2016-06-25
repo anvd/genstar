@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ummisco.genstar.exception.GenstarException;
-import ummisco.genstar.util.PersistentObject;
 
 public abstract class AttributeValue implements Comparable<AttributeValue> {
 	
@@ -25,8 +24,6 @@ public abstract class AttributeValue implements Comparable<AttributeValue> {
 		AttributeValue.registerValueTypeID(UniqueValue.class, UniqueValue.UNIQUE_VALUE_TYPE, UniqueValue.UNIQUE_VALUE_NAME);
 		AttributeValue.registerValueTypeID(RangeValue.class, RangeValue.RANGE_VALUE_TYPE, RangeValue.RANGE_VALUE_NAME);
 	}
-
-	protected int attributeValueID = PersistentObject.NEW_OBJECT_ID;
 	
 	protected DataType dataType;
 	
@@ -47,17 +44,6 @@ public abstract class AttributeValue implements Comparable<AttributeValue> {
 	public abstract boolean isValueMatched(final AttributeValue otherValue);
 	
 	public abstract AttributeValue cast(final Class<? extends AttributeValue> targetType) throws GenstarException;
-	
-	// FIXME refactoring:
-	// 			1. create a "PersistableObject" class that contains DBMS related-attributes
-	//			2. them move this method to the class
-	public void setAttributeValueID(final int attributeValueID) {
-		this.attributeValueID = attributeValueID;
-	}
-	
-	public int getAttributeValueID() {
-		return attributeValueID;
-	}
 	
 	public abstract int getValueTypeID();
 	

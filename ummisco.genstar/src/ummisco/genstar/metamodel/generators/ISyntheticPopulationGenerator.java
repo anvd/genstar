@@ -10,10 +10,6 @@ import ummisco.genstar.metamodel.population.IPopulation;
 
 public interface ISyntheticPopulationGenerator extends IWithAttributes {
 	
-	public abstract void setID(final int id);
-	
-	public abstract int getID();
-
 	public abstract String getGeneratorName();
 	
 	public abstract void setPopulationName(final String populationName);

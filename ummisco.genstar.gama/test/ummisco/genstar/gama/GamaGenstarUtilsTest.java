@@ -114,7 +114,7 @@ public class GamaGenstarUtilsTest {
 		GenstarCsvFile attributesFile = new GenstarCsvFile(groupAttributesFilePath, true);
 		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 		
-		GamaGenstarUtils.createIpfGenerationRule(scope, generator, ruleName, ipfPopulationProperties);
+		DeprecatedGamaGenstarUtils.createIpfGenerationRule(scope, generator, ruleName, ipfPopulationProperties);
 		
 		assertTrue(generator.getGenerationRule() instanceof IpfGenerationRule);
 
@@ -179,7 +179,7 @@ public class GamaGenstarUtilsTest {
 		GenstarCsvFile attributesFile = new GenstarCsvFile(attributesFilePath, true);
 		AttributeUtils.createAttributesFromCsvFile(generator, attributesFile);
 		
-		GamaGenstarUtils.createIpfGenerationRule(scope, generator, ruleName, ipfPopulationProperties);
+		DeprecatedGamaGenstarUtils.createIpfGenerationRule(scope, generator, ruleName, ipfPopulationProperties);
 		
 		assertTrue(generator.getGenerationRule() instanceof IpfGenerationRule);
 
@@ -220,7 +220,7 @@ public class GamaGenstarUtilsTest {
 		
 		assertTrue(generator.getGenerationRules().size() == 0);
 
-		List<GenstarCsvFile> ruleFiles = GamaGenstarUtils.createSampleFreeGenerationRules(scope, generator, sampleFreeGenerationRulesListFile);
+		List<GenstarCsvFile> ruleFiles = DeprecatedGamaGenstarUtils.createSampleFreeGenerationRules(scope, generator, sampleFreeGenerationRulesListFile);
 		
 		assertTrue(ruleFiles.size() == 2);
 		assertTrue(ruleFiles.get(0).getPath().endsWith("people_distribution_1.csv"));
@@ -318,7 +318,7 @@ public class GamaGenstarUtilsTest {
 		GenstarCsvFile groupAttributesFile = new GenstarCsvFile(groupAttributesFilePath, true);
 		AttributeUtils.createAttributesFromCsvFile(groupGenerator, groupAttributesFile);
 		
-		GamaGenstarUtils.createIpuGenerationRule(scope, groupGenerator, ruleName, ipuPopulationProperties);
+		DeprecatedGamaGenstarUtils.createIpuGenerationRule(scope, groupGenerator, ruleName, ipuPopulationProperties);
 		
 		IpuGenerationRule generationRule = (IpuGenerationRule) groupGenerator.getGenerationRule();
 		
@@ -449,7 +449,7 @@ public class GamaGenstarUtilsTest {
 		
 		// 2. extract the generated population and verify the extracted populations
 		
-		IPopulation extractedPopulation_ZeroPointOne = GamaGenstarUtils.extractIpuPopulation(scope, ipuPopulationProperties_ZeroPointOne);
+		IPopulation extractedPopulation_ZeroPointOne = DeprecatedGamaGenstarUtils.extractIpuPopulation(scope, ipuPopulationProperties_ZeroPointOne);
 		
 		
 		// 3. Verifications of the extracted population
@@ -471,7 +471,7 @@ public class GamaGenstarUtilsTest {
 			throw new GenstarException(e);
 		}
 		 
-		IPopulation extractedPopulation_Ten = GamaGenstarUtils.extractIpuPopulation(scope, ipuPopulationProperties_Ten);
+		IPopulation extractedPopulation_Ten = DeprecatedGamaGenstarUtils.extractIpuPopulation(scope, ipuPopulationProperties_Ten);
 		assertTrue(extractedPopulation_Ten.getNbOfEntities() == 12);
 		
 		
@@ -489,7 +489,7 @@ public class GamaGenstarUtilsTest {
 			throw new GenstarException(e);
 		}
 		 
-		IPopulation extractedPopulation_Thirty = GamaGenstarUtils.extractIpuPopulation(scope, ipuPopulationProperties_Thirty);
+		IPopulation extractedPopulation_Thirty = DeprecatedGamaGenstarUtils.extractIpuPopulation(scope, ipuPopulationProperties_Thirty);
 		assertTrue(extractedPopulation_Thirty.getNbOfEntities() == 36);
 		 
 	}
@@ -544,7 +544,7 @@ public class GamaGenstarUtilsTest {
 			throw new GenstarException(e);
 		}
 		 
-		IPopulation loadedSinglePopulation = GamaGenstarUtils.loadSinglePopulation(scope, properties);
+		IPopulation loadedSinglePopulation = DeprecatedGamaGenstarUtils.loadSinglePopulation(scope, properties);
 
 	
 		// verify file entities' attribute values on entity with respect to populationFile content
@@ -610,7 +610,7 @@ public class GamaGenstarUtilsTest {
 			throw new GenstarException(e);
 		}
 		 
-		IPopulation loadedCompoundPopulation = GamaGenstarUtils.loadCompoundPopulation(scope, properties);
+		IPopulation loadedCompoundPopulation = DeprecatedGamaGenstarUtils.loadCompoundPopulation(scope, properties);
 		 
 		
 		// verifications		
@@ -693,7 +693,7 @@ public class GamaGenstarUtilsTest {
 			throw new GenstarException(e);
 		}
 
-		IPopulation population = GamaGenstarUtils.generateFrequencyDistributionPopulation(scope, frequencyDistributionPopulationProperties);
+		IPopulation population = DeprecatedGamaGenstarUtils.generateFrequencyDistributionPopulation(scope, frequencyDistributionPopulationProperties);
 		
 		// verify population name
 		assertTrue(population.getName().equals("people"));
@@ -764,7 +764,7 @@ public class GamaGenstarUtilsTest {
 		}};
 		 
 		
-		GamaGenstarUtils.generateFrequencyDistributionsFromSampleOrPopulationData(scope, frequencyDistributionsProperties);
+		DeprecatedGamaGenstarUtils.generateFrequencyDistributionsFromSampleOrPopulationData(scope, frequencyDistributionsProperties);
 		
 		
 		File recreatedResultFile1 = new File(resultDistribution1FilePath);

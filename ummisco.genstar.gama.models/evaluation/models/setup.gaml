@@ -33,15 +33,16 @@ global {
 		put people_population_attributes_file_path at: 'people' in: population_attributes_file_paths;
 		
 		
-		if (self frequency_distribution_files_exist()) {
-			write 'Please delete all the generated frequency distribution files before proceeding with the generation of the reference population';
-		} else { // generate the reference population
+//		if (self frequency_distribution_files_exist()) {
+//			write 'Please delete all the generated frequency distribution files before proceeding with the generation of the reference population';
+//		} else { // generate the reference population
 			map<string, string> resulting_population_file_paths <- population_to_csv(genstar_household_people_compound_population, population_file_paths, population_attributes_file_paths);
 			write 'Save generated populations to ' + household_population_attributes_file_path + ' and ' + people_population_attributes_file_path;
-		}
+//		}
 	}
 
-	
+
+	/*
 	bool frequency_distribution_files_exist {
 		bool distribution_files_exist <- false;
 		
@@ -77,9 +78,10 @@ global {
 		
 		return distribution_files_exist;
 	}
+	*/
 }
 
-experiment generate_reference_population type: gui {
+experiment setup type: gui {
 	output {
 		
 	}

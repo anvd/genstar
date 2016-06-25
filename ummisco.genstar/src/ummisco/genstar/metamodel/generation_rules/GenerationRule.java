@@ -3,12 +3,9 @@ package ummisco.genstar.metamodel.generation_rules;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.IWithAttributes;
 import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
-import ummisco.genstar.util.PersistentObject;
 
 
 public abstract class GenerationRule implements IWithAttributes {
-	
-	protected int generationRuleID = PersistentObject.NEW_OBJECT_ID;
 	
 	protected ISyntheticPopulationGenerator populationGenerator;
 	
@@ -21,14 +18,6 @@ public abstract class GenerationRule implements IWithAttributes {
 
 		this.populationGenerator = populationGenerator;
 		this.name = name;
-	}
-	
-	public void setGenerationRuleID(final int generationRuleID) {
-		this.generationRuleID = generationRuleID;
-	}
-	
-	public int getGenerationRuleID() {
-		return generationRuleID;
 	}
 	
 	public ISyntheticPopulationGenerator getGenerator() {

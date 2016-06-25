@@ -6,13 +6,10 @@ import java.util.Set;
 
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.metamodel.generators.ISyntheticPopulationGenerator;
-import ummisco.genstar.util.PersistentObject;
 
 
 public abstract class AbstractAttribute {
 	
-	
-	protected int attributeID = PersistentObject.NEW_OBJECT_ID;
 	
 	protected ISyntheticPopulationGenerator populationGenerator;
 	
@@ -117,14 +114,6 @@ public abstract class AbstractAttribute {
 	
 	public AttributeValue getDefaultValueOnData() {
 		return defaultValue;
-	}
-	
-	public int getAttributeID() {
-		return attributeID;
-	}
-	
-	public void setAttributeID(final int attributeID) {
-		this.attributeID = attributeID;
 	}
 	
 	public abstract Set<AttributeValue> valuesOnData();
