@@ -1,3 +1,2 @@
-Name,File,Rule Type
-Distribution 1,../includes/people_population/experiment_3/people_distribution_1.csv,Frequency Distribution
-Distribution 2,../includes/people_population/experiment_3/people_distribution_2.csv,Frequency Distribution
+../includes/people_population/experiment_3/people_distribution_1.csv
+../includes/people_population/experiment_3/people_distribution_2.csv

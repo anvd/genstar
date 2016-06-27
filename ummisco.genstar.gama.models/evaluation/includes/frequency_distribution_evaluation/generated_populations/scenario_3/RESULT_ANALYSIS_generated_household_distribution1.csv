@@ -1,7 +1,7 @@
 HouseholdSize:Output,Household Income:Output,Frequency,Generated Frequency
-1,High,585,535
-1,Low,707,658
-2,High,759,670
-2,Low,627,549
-3,High,631,565
-3,Low,732,665
+1,High,585,542
+1,Low,707,618
+2,High,759,703
+2,Low,627,552
+3,High,631,569
+3,Low,732,658

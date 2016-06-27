@@ -49,6 +49,7 @@ import ummisco.genstar.util.PROPERTY_FILES;
 
 import com.google.common.collect.Sets;
 
+// TODO remove
 @Deprecated
 public class DeprecatedGamaGenstarUtils {
 	

@@ -94,7 +94,7 @@ public abstract class AbstractAttribute {
 	}
 
 	@Override public String toString() {
-		return this.getClass().getSimpleName() + " with dataType : " + dataType.getName() + "; nameOnData : " + this.nameOnData + "; nameOnEntity : " + this.nameOnEntity;
+		return "Attribute information: [" + " nameOnData : " + this.nameOnData + "; nameOnEntity : " + this.nameOnEntity + "; dataType : " + dataType.getName() + "]";
 	}
 	
 

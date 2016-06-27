@@ -1,3 +1,2 @@
-Name,File,Rule Type
-Distribution 1,../includes/frequency_distribution_evaluation/generated_frequency_distributions/scenario_2/generated_household_distribution1.csv,Frequency Distribution
-Distribution 2,../includes/frequency_distribution_evaluation/generated_frequency_distributions/scenario_2/generated_household_distribution2.csv,Frequency Distribution
+../includes/frequency_distribution_evaluation/generated_frequency_distributions/scenario_2/generated_household_distribution1.csv
+../includes/frequency_distribution_evaluation/generated_frequency_distributions/scenario_2/generated_household_distribution2.csv

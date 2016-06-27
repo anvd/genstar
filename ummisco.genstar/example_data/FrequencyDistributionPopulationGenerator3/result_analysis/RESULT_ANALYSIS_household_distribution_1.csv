@@ -1,0 +1,7 @@
+HouseholdSize:Output,Household Income:Output,Frequency,Generated Frequency
+1,High,300,303
+1,Low,500,513
+2,High,500,517
+2,Low,250,217
+3,High,200,183
+3,Low,250,267

@@ -12,6 +12,7 @@ import msi.gama.util.GamaListFactory;
 import msi.gama.util.GamaMap;
 import msi.gama.util.GamaMapFactory;
 import msi.gama.util.IList;
+import ummisco.genstar.GenstarService;
 import ummisco.genstar.exception.GenstarException;
 import ummisco.genstar.ipf.IpfGenerationRule;
 import ummisco.genstar.metamodel.attributes.AbstractAttribute;
@@ -31,7 +32,6 @@ import ummisco.genstar.util.AttributeUtils;
 import ummisco.genstar.util.CSV_FILE_FORMATS;
 import ummisco.genstar.util.FrequencyDistributionUtils;
 import ummisco.genstar.util.GenstarCsvFile;
-import ummisco.genstar.util.GenstarService;
 import ummisco.genstar.util.GenstarUtils;
 import ummisco.genstar.util.PROPERTY_FILES;
 
@@ -157,7 +157,7 @@ public class GamaGenstarUtils {
 		
 		String generationRulesListFilePath = frequencyDistributionPopulationProperties.getProperty(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.GENERATION_RULES_PROPERTY);
 		if (generationRulesListFilePath == null) { throw new GenstarException(PROPERTY_FILES.FREQUENCY_DISTRIBUTION_POPULATION_PROPERTIES.GENERATION_RULES_PROPERTY + " property not found"); }
-		GenstarCsvFile generationRulesListFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, generationRulesListFilePath, true), true);
+		GenstarCsvFile generationRulesListFile = new GenstarCsvFile(FileUtils.constructAbsoluteFilePath(scope, generationRulesListFilePath, true), false);
 		List<String> fdGenerationRuleFilePaths = accumulateFrequencyDistributionGenerationRuleFilePaths(scope, generationRulesListFile);
 		
 
@@ -167,6 +167,17 @@ public class GamaGenstarUtils {
 	
 	private static List<String> accumulateFrequencyDistributionGenerationRuleFilePaths(final IScope scope, final GenstarCsvFile generationRulesListFile) throws GenstarException {
 		
+		// TODO simplify it
+		
+		List<String> frequencyDistributionGenerationRuleDataFilePaths = new ArrayList<String>();
+		
+		for (List<String> generationRulesListFileRow : generationRulesListFile.getContent()) {
+			String ruleDataFilePath = generationRulesListFileRow.get(0);
+			frequencyDistributionGenerationRuleDataFilePaths.add(FileUtils.constructAbsoluteFilePath(scope, ruleDataFilePath, true));
+		}
+
+		return frequencyDistributionGenerationRuleDataFilePaths;
+		/*
 		// 1. Parse the header
 		List<String> header = generationRulesListFile.getHeaders();
 		for (int i=0; i<header.size(); i++) {
@@ -195,6 +206,7 @@ public class GamaGenstarUtils {
 		 
 		
 		return frequencyDistributionGenerationRuleDataFilePaths;
+		*/
 	}
 	
 	

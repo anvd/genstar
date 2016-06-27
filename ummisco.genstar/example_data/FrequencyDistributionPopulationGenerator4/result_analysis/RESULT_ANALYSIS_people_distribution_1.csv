@@ -1,0 +1,7 @@
+Age:Output,Gender:Output,Frequency,Generated Frequency
+0:30,true,800,798
+0:30,false,800,762
+31:75,true,1000,1013
+31:75,false,900,935
+76:100,true,700,682
+76:100,false,800,810

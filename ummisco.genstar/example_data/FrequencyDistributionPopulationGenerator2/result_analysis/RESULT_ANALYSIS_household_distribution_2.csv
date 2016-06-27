@@ -1,0 +1,7 @@
+HouseholdSize:Input,Number Of Cars:Output,Frequency,Generated Frequency
+1,0,300,271
+1,1,500,492
+2,0,300,317
+2,1,450,484
+3,0,350,339
+3,1,100,97

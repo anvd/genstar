@@ -1,13 +1,13 @@
 HouseholdSize:Output,Household Income:Output,Number Of Cars:Output,Frequency,Generated Frequency
-1,High,0,100,103
-1,High,1,200,194
-1,Low,0,200,199
-1,Low,1,300,323
-2,High,0,100,88
-2,High,1,400,405
-2,Low,0,200,211
-2,Low,1,50,54
-3,High,0,150,132
-3,High,1,50,40
-3,Low,0,200,202
-3,Low,1,50,49
+1,High,0,100,105
+1,High,1,200,209
+1,Low,0,200,168
+1,Low,1,300,322
+2,High,0,100,116
+2,High,1,400,391
+2,Low,0,200,185
+2,Low,1,50,55
+3,High,0,150,144
+3,High,1,50,43
+3,Low,0,200,206
+3,Low,1,50,56

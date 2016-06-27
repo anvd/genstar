@@ -1,0 +1,5 @@
+Name On Data,Name On Entity,Data Type,Value Type On Data,Values,Value Type On Entity
+HouseholdID,householdID,int,UniqueWithRangeInput,0:119,Unique
+HouseholdSize,householdSize,int,Unique,1;2,Unique
+Household Income,householdIncome,string,Unique,High;Low,Unique
+Household Type,householdType,string,Unique,type1;type2,Unique
